@@ -8,9 +8,10 @@ class MorseHumanReader : public HumanReader{
 
   public:
     MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, fullHuman);
-    void updateHuman(tf::TransformListener &listener);
+    void updateHumans(tf::TransformListener &listener);
+    void updateHuman(tf::TransformListener &listener, int humId, std::string humanBase);
 
   private:
-    static void humanJointStateCallBack(const sensor_msgs::JointState::ConstPtr& msg);
+    //static void humanJointStateCallBack(const sensor_msgs::JointState::ConstPtr& msg);
     ros::Subscriber sub;
 }

@@ -11,28 +11,39 @@ MorseHumanReader::MorseHumanReader(ros::NodeHandle& node): node_(node), fullHuma
   m_LastTime = 0;
 }
 
-void MorseHumanReader::updateHuman(tf::TransformListener &listener) {
+void MorseHumanReader::updateHumans(tf::TransformListener &listener) {
+  //update 1st human, this should be extended for multi human
+  updateHuman(listener, 101, "/human_base")
+}
+
+void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, std::string humanBase){
   tf::StampedTransform transform;
+  Human curHuman(humId);
   try{
     ros::Time now = ros::Time::now();
-    listener.waitForTransform("/map", "/human_base",
+    listener.waitForTransform("/map", humanBase,
         now, ros::Duration(3.0));
-        listener.lookupTransform("/map", "/human_base",
+        listener.lookupTransform("/map", humanBase,
         now, transform);
-        //TODO: replace this with human from toaster!
-        humanConf.dof[0] = transform.getOrigin().x();
-        humanConf.dof[1] = transform.getOrigin().y();
-        humanConf.dof[2] = transform.getOrigin().z()+1.0;
-        humanConf.dof[3] = tf::getRoll(transform.getRotation());
-        humanConf.dof[4] = tf::getPitch(transform.getRotation());
-        humanConf.dof[5] = tf::getYaw(transform.getRotation());
+
+        //Human position
+        curHuman.position.set<0>(transform.getOrigin().x());
+        curHuman.position.set<1>(transform.getOrigin().y());
+        curHuman.position.set<2>(transform.getOrigin().z());
+
+        //Human orientation
+        curHuman.orientation.push_back(tf::getRoll(transform.getRotation()));
+        curHuman.orientation.push_back(tf::getPitch(transform.getRotation()));
+        curHuman.orientation.push_back(tf::getYaw(transform.getRotation()));
+        
+        m_LastConfig[humId] = curHuman;
+        m_LastTime[humId] = now.toNSec();
+
   }
   catch (tf::TransformException ex){
     ROS_ERROR("%s",ex.what());
   }
-  return TRUE;
 }
-
 
 //TODO: full human case
 /*static void MorseHumanReader::humanJointStateCallBack(const sensor_msgs::JointState::ConstPtr& msg){
