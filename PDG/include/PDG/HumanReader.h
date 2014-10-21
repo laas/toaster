@@ -13,9 +13,11 @@ class HumanReader{
         std::map<int, Human> m_LastConfig;
         std::map<int, unsigned long> m_LastTime;
 
-        virtual HumanReader(ros::NodeHandle& node) = 0;     // This function will depend on the type of input used.
+        virtual HumanReader(ros::NodeHandle& node, fullHuman) = 0;     // This function will depend on the type of input used.
 							    // It will fill the m_LastConfig map.
-        std::map<int, bool> isPresent();
+        bool fullHuman_;
+
+        bool isPresent(int id);
 
     private:
         ros::NodeHandle node_;
