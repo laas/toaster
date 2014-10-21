@@ -1,5 +1,7 @@
+#include "MorseHumanReader.h"
 
-MorseHumanReader::MorseHumanReader(ros::NodeHandle& node): node_(node), fullHuman_(fullHuman){
+
+MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, fullHuman): node_(node), fullHuman_(fullHuman){
   std::cout << "Initializing MorseHumanReader" << std::endl;
   // ******************************************
   // Starts listening to the joint_states topic
