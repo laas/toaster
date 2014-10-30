@@ -13,3 +13,16 @@ assessment.
 
 This framework could be used for various application, from navigation to joint action,
 from situated dialogue to temporal reasoning on events.
+
+
+
+
+Nodes included:
+
+PDG: Perception Data Gathering
+This node will collect all the perception data (agents configuration, object positions...).
+These data will be cast in toaster-lib data types and send in topics.
+
+SPAR: SPAtial Reasoning
+This node will use the data from PDG to compute geometric facts concerning the environment.
+
