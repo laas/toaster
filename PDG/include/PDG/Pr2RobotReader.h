@@ -1,3 +1,5 @@
+#include "RobotReader.h"
+
 #include <ostream>
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
@@ -7,9 +9,11 @@
 class Pr2RobotReader : public RobotReader{
 
   public:
-    Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, fullRobot);
+    Pr2RobotReader(ros::NodeHandle& node, int id, bool fullRobot);
     void updateRobot(tf::TransformListener &listener);
+    void init();
 
   private:
-    ros::Subscriber sub;
-}
+    ros::Subscriber sub_;
+    int pr2Id_;
+};

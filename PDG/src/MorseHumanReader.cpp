@@ -1,26 +1,32 @@
-#include "MorseHumanReader.h"
+#include "PDG/MorseHumanReader.h"
 
 
-MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, fullHuman): node_(node), fullHuman_(fullHuman){
+MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, bool fullHuman){
+  node_ = node;
+  fullHuman_ = fullHuman;
   std::cout << "Initializing MorseHumanReader" << std::endl;
-  // ******************************************
-  // Starts listening to the joint_states topic
-  // ******************************************
+  init();
+}
 
+void MorseHumanReader::init(){
   if(fullHuman_){
-    //ros::Subscriber sub = node.subscribe("/human/armature/joint_states", 1, humanJointStateCallBack);
+    // Starts listening to the joint_states topic
+    //ros::Subscriber sub_ = node_.subscribe("/human/armature/joint_states", 1, humanJointStateCallBack);
   }
-  m_LastTime = 0;
 }
 
 void MorseHumanReader::updateHumans(tf::TransformListener &listener) {
   //update 1st human, this should be extended for multi human
-  updateHuman(listener, 101, "/human_base")
+  updateHuman(listener, 101, "/human_base");
 }
 
 void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, std::string humanBase){
   tf::StampedTransform transform;
-  Human curHuman(humId);
+  Human* curHuman = new Human(humId);
+  std::vector<double> humanOrientation;
+  bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
+
+
   try{
     ros::Time now = ros::Time::now();
     listener.waitForTransform("/map", humanBase,
@@ -29,15 +35,20 @@ void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, s
         now, transform);
 
         //Human position
-        curHuman.position.set<0>(transform.getOrigin().x());
-        curHuman.position.set<1>(transform.getOrigin().y());
-        curHuman.position.set<2>(transform.getOrigin().z());
+        humanPosition.set<0>(transform.getOrigin().x());
+        humanPosition.set<1>(transform.getOrigin().y());
+        humanPosition.set<2>(transform.getOrigin().z());
 
         //Human orientation
-        curHuman.orientation.push_back(tf::getRoll(transform.getRotation()));
-        curHuman.orientation.push_back(tf::getPitch(transform.getRotation()));
-        curHuman.orientation.push_back(tf::getYaw(transform.getRotation()));
+        //curHuman->orientation.push_back(tf::getRoll(transform.getRotation()));
+        //curHuman->orientation.push_back(tf::getPitch(transform.getRotation()));
+        humanOrientation.push_back(0.0);
+        humanOrientation.push_back(0.0);
+        humanOrientation.push_back(tf::getYaw(transform.getRotation()));
         
+        curHuman->setOrientation(humanOrientation);
+        curHuman->setPosition(humanPosition);
+
         m_LastConfig[humId] = curHuman;
         m_LastTime[humId] = now.toNSec();
 
