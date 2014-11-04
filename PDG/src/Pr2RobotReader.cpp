@@ -41,9 +41,9 @@ void Pr2RobotReader::updateRobot(tf::TransformListener &listener){
         
         curRobot->setOrientation(robotOrientation);
         curRobot->setPosition(robotPosition);
+        curRobot->setTime(now.toNSec());
 
         m_LastConfig[pr2Id_] = curRobot;
-        m_LastTime[pr2Id_] = now.toNSec();
 
   }
   catch (tf::TransformException ex){

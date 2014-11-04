@@ -27,6 +27,7 @@ int main(int argc, char** argv){
   ros::Rate loop_rate(30);
 
   tf::TransformListener listener;
+  printf("[SPAR] initializing\n");
 
   while( node.ok() ){
     PDG::Human human_msg;
@@ -34,36 +35,46 @@ int main(int argc, char** argv){
 
     //update data
     morseHumanRd.updateHumans(listener);
-    printf("Last time human 101: %d\n", morseHumanRd.m_LastTime[101]);
+    if(morseHumanRd.m_LastConfig[101] != NULL)
+      printf("[SPAR] Last time human 101: %lu\n", morseHumanRd.m_LastConfig[101]->getTime());
 
     pr2RobotRd.updateRobot(listener);
-    printf("Last time robot pr2: %d\n", pr2RobotRd.m_LastTime[1]);
+    if(pr2RobotRd.m_LastConfig[1] != NULL)
+      printf("[SPAR] Last time robot pr2: %lu\n", pr2RobotRd.m_LastConfig[1]->getTime());
 
     //publish data
 
-    //Human
-    human_msg.meAgent.mobility = 0;
-    human_msg.meAgent.meEntity.id = morseHumanRd.m_LastConfig[101]->getId();
-    human_msg.meAgent.meEntity.id = morseHumanRd.m_LastConfig[101]->getTime();
-//    human_msg.meAgent.meEntity.name = morseHumanRd.m_LastConfig[101]->getName;
-    human_msg.meAgent.meEntity.positionX = morseHumanRd.m_LastConfig[101]->getPosition().get<0>();
-    human_msg.meAgent.meEntity.positionY = morseHumanRd.m_LastConfig[101]->getPosition().get<1>();
-    human_msg.meAgent.meEntity.positionZ = morseHumanRd.m_LastConfig[101]->getPosition().get<2>();
-    human_msg.meAgent.meEntity.orientationRoll = morseHumanRd.m_LastConfig[101]->getOrientation()[0];
-    human_msg.meAgent.meEntity.orientationPitch = morseHumanRd.m_LastConfig[101]->getOrientation()[1];
-    human_msg.meAgent.meEntity.orientationYaw = morseHumanRd.m_LastConfig[101]->getOrientation()[2];
-    
-    //Robot
-    robot_msg.meAgent.mobility = 0;
-    robot_msg.meAgent.meEntity.id = pr2RobotRd.m_LastConfig[1]->getId();
-//    robot_msg.meAgent.meEntity.name = pr2RobotRd.m_LastConfig[1]->name;
-    robot_msg.meAgent.meEntity.positionX = pr2RobotRd.m_LastConfig[1]->getPosition().get<0>();
-    robot_msg.meAgent.meEntity.positionY = pr2RobotRd.m_LastConfig[1]->getPosition().get<1>();
-    robot_msg.meAgent.meEntity.positionZ = pr2RobotRd.m_LastConfig[1]->getPosition().get<2>();
-    robot_msg.meAgent.meEntity.orientationRoll = pr2RobotRd.m_LastConfig[1]->getOrientation()[0];
-    robot_msg.meAgent.meEntity.orientationPitch = pr2RobotRd.m_LastConfig[1]->getOrientation()[1];
-    robot_msg.meAgent.meEntity.orientationYaw = pr2RobotRd.m_LastConfig[1]->getOrientation()[2];
 
+    if(morseHumanRd.m_LastConfig[101] != NULL)
+      if(morseHumanRd.isPresent(101)){
+
+        //Human
+        human_msg.meAgent.mobility = 0;
+        human_msg.meAgent.meEntity.id = morseHumanRd.m_LastConfig[101]->getId();
+        human_msg.meAgent.meEntity.time = morseHumanRd.m_LastConfig[101]->getTime();
+//      human_msg.meAgent.meEntity.name = morseHumanRd.m_LastConfig[101]->getName;
+        human_msg.meAgent.meEntity.positionX = morseHumanRd.m_LastConfig[101]->getPosition().get<0>();
+        human_msg.meAgent.meEntity.positionY = morseHumanRd.m_LastConfig[101]->getPosition().get<1>();
+        human_msg.meAgent.meEntity.positionZ = morseHumanRd.m_LastConfig[101]->getPosition().get<2>();
+        human_msg.meAgent.meEntity.orientationRoll = morseHumanRd.m_LastConfig[101]->getOrientation()[0];
+        human_msg.meAgent.meEntity.orientationPitch = morseHumanRd.m_LastConfig[101]->getOrientation()[1];
+        human_msg.meAgent.meEntity.orientationYaw = morseHumanRd.m_LastConfig[101]->getOrientation()[2];
+    
+      }
+
+    if(pr2RobotRd.m_LastConfig[1] != NULL){
+      //Robot
+      robot_msg.meAgent.mobility = 0;
+      robot_msg.meAgent.meEntity.id = pr2RobotRd.m_LastConfig[1]->getId();
+      robot_msg.meAgent.meEntity.time = pr2RobotRd.m_LastConfig[1]->getTime();
+//    robot_msg.meAgent.meEntity.name = pr2RobotRd.m_LastConfig[1]->name;
+      robot_msg.meAgent.meEntity.positionX = pr2RobotRd.m_LastConfig[1]->getPosition().get<0>();
+      robot_msg.meAgent.meEntity.positionY = pr2RobotRd.m_LastConfig[1]->getPosition().get<1>();
+      robot_msg.meAgent.meEntity.positionZ = pr2RobotRd.m_LastConfig[1]->getPosition().get<2>();
+      robot_msg.meAgent.meEntity.orientationRoll = pr2RobotRd.m_LastConfig[1]->getOrientation()[0];
+      robot_msg.meAgent.meEntity.orientationPitch = pr2RobotRd.m_LastConfig[1]->getOrientation()[1];
+      robot_msg.meAgent.meEntity.orientationYaw = pr2RobotRd.m_LastConfig[1]->getOrientation()[2];
+    }
     //ROS_INFO("%s", msg.data.c_str());
 
     human_pub.publish(human_msg);

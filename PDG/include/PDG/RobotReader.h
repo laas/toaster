@@ -11,11 +11,12 @@ class RobotReader{
 
     public:
         std::map<int, Robot*> m_LastConfig;
-        std::map<int, unsigned long> m_LastTime;
         bool fullRobot_;
 
         virtual void init() = 0;     // This function will depend on the type of input used.
 			             // It will fill the m_LastConfig map.
+
+        bool isPresent(int id);
 
     protected:
         ros::NodeHandle node_;

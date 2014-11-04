@@ -48,9 +48,9 @@ void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, s
         
         curHuman->setOrientation(humanOrientation);
         curHuman->setPosition(humanPosition);
+        curHuman->setTime(now.toNSec());
 
         m_LastConfig[humId] = curHuman;
-        m_LastTime[humId] = now.toNSec();
 
   }
   catch (tf::TransformException ex){

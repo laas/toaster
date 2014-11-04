@@ -10,7 +10,6 @@ class HumanReader{
 
     public:
         std::map<int, Human*> m_LastConfig;
-        std::map<int, unsigned long> m_LastTime;
         bool fullHuman_;
 
         bool isPresent(int id);
