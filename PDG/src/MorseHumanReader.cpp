@@ -4,7 +4,7 @@
 MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, bool fullHuman){
   node_ = node;
   fullHuman_ = fullHuman;
-  std::cout << "Initializing MorseHumanReader" << std::endl;
+  std::cout << "[PDG] Initializing MorseHumanReader" << std::endl;
   init();
 }
 

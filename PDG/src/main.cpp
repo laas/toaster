@@ -44,6 +44,7 @@ int main(int argc, char** argv){
     //Human
     human_msg.meAgent.mobility = 0;
     human_msg.meAgent.meEntity.id = morseHumanRd.m_LastConfig[101]->getId();
+    human_msg.meAgent.meEntity.id = morseHumanRd.m_LastConfig[101]->getTime();
 //    human_msg.meAgent.meEntity.name = morseHumanRd.m_LastConfig[101]->getName;
     human_msg.meAgent.meEntity.positionX = morseHumanRd.m_LastConfig[101]->getPosition().get<0>();
     human_msg.meAgent.meEntity.positionY = morseHumanRd.m_LastConfig[101]->getPosition().get<1>();

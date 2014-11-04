@@ -1,5 +1,6 @@
 uint32 id
 string name
+uint64 time
 float64 positionX
 float64 positionY
 float64 positionZ
