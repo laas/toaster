@@ -6,19 +6,19 @@ PDGHumanReader::PDGHumanReader(ros::NodeHandle& node, bool fullHuman){
   std::cout << "[SPAR] Initializing PDGHumanReader" << std::endl;
 
   // Starts listening to the topic
-  ros::Subscriber sub = node.subscribe("/human/human1", 1, &PDGHumanReader::humanJointStateCallBack, this);
+  sub_ = node.subscribe("/human/human1", 1, &PDGHumanReader::humanJointStateCallBack, this);
 }
 
 void PDGHumanReader::humanJointStateCallBack(const PDG::Human::ConstPtr& msg){
+  std::cout << "[SPAR] new data for human received" << std::endl;
   
-  Human* curHuman = new Human(0);
+  Human* curHuman = new Human(msg->meAgent.meEntity.id);
   std::vector<double> humanOrientation;
   bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
 
   Mobility curHumanMobility = FULL;
 
   curHuman->setMobility(curHumanMobility);
-  curHuman->setId(msg->meAgent.meEntity.id);
   curHuman->setTime(msg->meAgent.meEntity.time);
 
   humanPosition.set<0>(msg->meAgent.meEntity.positionX);

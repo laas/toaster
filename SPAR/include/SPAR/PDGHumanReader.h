@@ -16,6 +16,7 @@ class PDGHumanReader{
 
     private:
        void humanJointStateCallBack(const PDG::Human::ConstPtr& msg);
+       ros::Subscriber sub_;
 
 };
 

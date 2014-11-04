@@ -27,7 +27,7 @@ int main(int argc, char** argv){
   ros::Rate loop_rate(30);
 
   tf::TransformListener listener;
-  printf("[SPAR] initializing\n");
+  printf("[PDG] initializing\n");
 
   while( node.ok() ){
     PDG::Human human_msg;
@@ -36,11 +36,11 @@ int main(int argc, char** argv){
     //update data
     morseHumanRd.updateHumans(listener);
     if(morseHumanRd.m_LastConfig[101] != NULL)
-      printf("[SPAR] Last time human 101: %lu\n", morseHumanRd.m_LastConfig[101]->getTime());
+      printf("[PDG] Last time human 101: %lu\n", morseHumanRd.m_LastConfig[101]->getTime());
 
     pr2RobotRd.updateRobot(listener);
     if(pr2RobotRd.m_LastConfig[1] != NULL)
-      printf("[SPAR] Last time robot pr2: %lu\n", pr2RobotRd.m_LastConfig[1]->getTime());
+      printf("[PDG] Last time robot pr2: %lu\n", pr2RobotRd.m_LastConfig[1]->getTime());
 
     //publish data
 
