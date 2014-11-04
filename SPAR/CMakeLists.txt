@@ -28,3 +28,12 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
+
+set(BOOST_ROOT /home/gmilliez/devel/boost_1_56_0/)
+set(Boost_NO_SYSTEM_PATHS ON)
+
+find_package(Boost REQUIRED COMPONENTS)# system)
+include_directories(${Boost_INCLUDE_DIRS} /home/gmilliez/devel/include)
+rosbuild_add_executable(spar src/PDGHumanReader.cpp src/main.cpp)
+target_link_libraries(spar /home/gmilliez/devel/lib/libtoaster.so)
+

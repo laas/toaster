@@ -1,41 +1,43 @@
-#include "SPAR/HumanReader.h"
+#include "SPAR/PDGHumanReader.h"
 #include "PDG/Human.h"
 
-HumanReader::HumanReader(ros::NodeHandle& node, bool fullHuman){
+PDGHumanReader::PDGHumanReader(ros::NodeHandle& node, bool fullHuman){
   fullHuman_ = fullHuman;
-  std::cout << "[SPAR] Initializing HumanReader" << std::endl;
+  std::cout << "[SPAR] Initializing PDGHumanReader" << std::endl;
 
   // Starts listening to the topic
-  ros::Subscriber sub = node.subscribe("/human/human1", 1, humanJointStateCallBack);
+  ros::Subscriber sub = node.subscribe("/human/human1", 1, &PDGHumanReader::humanJointStateCallBack, this);
 }
 
-static void HumanReader::humanJointStateCallBack(const PDG::Human::ConstPtr& msg){
+void PDGHumanReader::humanJointStateCallBack(const PDG::Human::ConstPtr& msg){
   
   Human* curHuman = new Human(0);
   std::vector<double> humanOrientation;
   bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
 
-  curHuman.setMobility(msg->meAgent.mobility);
-  curHuman.setId(msg->meAgent.meEntity.id);
-  curHuman.setTime(msg->meAgent.meEntity.time);
+  Mobility curHumanMobility = FULL;
+
+  curHuman->setMobility(curHumanMobility);
+  curHuman->setId(msg->meAgent.meEntity.id);
+  curHuman->setTime(msg->meAgent.meEntity.time);
 
   humanPosition.set<0>(msg->meAgent.meEntity.positionX);
   humanPosition.set<1>(msg->meAgent.meEntity.positionY);
   humanPosition.set<2>(msg->meAgent.meEntity.positionZ);
-  curHuman.setPosition(humanPosition);
+  curHuman->setPosition(humanPosition);
 
   humanOrientation.push_back(msg->meAgent.meEntity.orientationRoll);
   humanOrientation.push_back(msg->meAgent.meEntity.orientationPitch);
   humanOrientation.push_back(msg->meAgent.meEntity.orientationYaw);
-  curHuman.setOrientation(humanOrientation);
+  curHuman->setOrientation(humanOrientation);
 
-  m_LastConfig[curHuman.getId()] = curHuman;
+  m_LastConfig[curHuman->getId()] = curHuman;
 
   if(fullHuman_){
   }
 }
 
-bool HumanReader::isPresent(int id){
+bool PDGHumanReader::isPresent(int id){
   timeval curTime;
   gettimeofday(&curTime, NULL);
   unsigned long now = curTime.tv_sec * pow(10,9) + curTime.tv_usec;

@@ -8,7 +8,7 @@
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/SPAR</url>
-  <depend package="std_msgs"/>
+  <depend package="PDG"/>
   <depend package="rospy"/>
   <depend package="roscpp"/>
 
