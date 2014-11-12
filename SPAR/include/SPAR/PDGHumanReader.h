@@ -1,4 +1,16 @@
-//This class will be used to read toaster-lib humans from topic.
+
+/* 
+ * File:   PDGRobotReader.h
+ * Author: gmilliez
+ *
+ * Created on November 12, 2014, 6:24 PM
+ * This class will be used to read toaster-lib humans from topic.
+
+ */
+
+#ifndef PDGHUMANREADER_H
+#define	PDGHUMANREADER_H
+
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
 #include "PDG/Human.h"
@@ -20,3 +32,4 @@ class PDGHumanReader{
 
 };
 
+#endif	/* PDGHUMANREADER_H */
