@@ -31,6 +31,6 @@ set(Boost_NO_SYSTEM_PATHS ON)
 
 find_package(Boost REQUIRED COMPONENTS)# system)
 include_directories(${Boost_INCLUDE_DIRS} /home/gmilliez/devel/include)
-rosbuild_add_executable(pdg src/MorseHumanReader.cpp src/HumanReader.cpp src/Pr2RobotReader.cpp src/main.cpp)
+rosbuild_add_executable(pdg src/MorseHumanReader.cpp src/HumanReader.cpp src/Pr2RobotReader.cpp src/RobotReader.cpp src/main.cpp)
 target_link_libraries(pdg /home/gmilliez/devel/lib/libtoaster.so)
 
