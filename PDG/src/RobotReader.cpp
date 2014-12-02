@@ -1,6 +1,6 @@
 #include "PDG/RobotReader.h"
 
-bool RobotReader::isPresent(int id){
+bool RobotReader::isPresent(unsigned int id){
   timeval curTime;
   gettimeofday(&curTime, NULL);
   unsigned long now = curTime.tv_sec * pow(10,9) + curTime.tv_usec;

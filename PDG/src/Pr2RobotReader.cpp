@@ -1,55 +1,108 @@
 #include "PDG/Pr2RobotReader.h"
 
-Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, int id, bool fullRobot): pr2Id_(id) {
+Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, unsigned int id, bool fullRobot): pr2Id_(id) {
   node_ = node;
   fullRobot_ = fullRobot;
   std::cout << "Initializing Pr2RobotReader" << std::endl;
   init();
 }
 
+
+// Maybe get this from a config file?
+void Pr2RobotReader::initJointsName(){
+    pr2JointsName_.push_back("base_link");
+    pr2JointsName_.push_back("torso_lift_joint");
+    pr2JointsName_.push_back("head_pan_joint");
+    pr2JointsName_.push_back("head_tilt_joint");
+    pr2JointsName_.push_back("laser_tilt_mount_joint");
+    pr2JointsName_.push_back("r_shoulder_pan_joint");
+    pr2JointsName_.push_back("r_shoulder_lift_joint");
+    pr2JointsName_.push_back("r_upper_arm_roll_joint");
+    pr2JointsName_.push_back("r_elbow_flex_joint");
+    pr2JointsName_.push_back("r_forearm_roll_joint");
+    pr2JointsName_.push_back("r_wrist_flex_joint");
+    pr2JointsName_.push_back("r_wrist_roll_joint");
+    pr2JointsName_.push_back("r_gripper_joint");
+    pr2JointsName_.push_back("l_shoulder_pan_joint");
+    pr2JointsName_.push_back("l_shoulder_lift_joint");
+    pr2JointsName_.push_back("l_upper_arm_roll_joint");
+    pr2JointsName_.push_back("l_elbow_flex_joint");
+    pr2JointsName_.push_back("l_forearm_roll_joint");
+    pr2JointsName_.push_back("l_wrist_flex_joint");
+    pr2JointsName_.push_back("l_wrist_roll_joint");
+    pr2JointsName_.push_back("l_gripper_joint");
+}
+
+
 void Pr2RobotReader::init(){
-  // Starts listening to the joint_states topic
-  if(fullRobot_){
-    //ros::Subscriber sub = node.subscribe("joint_states", 1, pr2JointStateCallBack);
-  }
+  Robot* curRobot = new Robot(pr2Id_);
+    if(fullRobot_){
+        for(unsigned int i=0; i<pr2JointsName_.size(); i++){
+            curRobot->skeleton[pr2JointsName_[i]] = new Joint(10001 + i, pr2Id_);
+        }
+    }
+  m_LastConfig[pr2Id_] = curRobot;
 }
 
 void Pr2RobotReader::updateRobot(tf::TransformListener &listener){
   tf::StampedTransform transform;
-  Robot* curRobot = new Robot(pr2Id_);
-  std::vector<double> robotOrientation;
-  bg::model::point<double, 3, bg::cs::cartesian> robotPosition;
+  Robot* curRobot = m_LastConfig[pr2Id_];
+  Joint* curJoint = curRobot->skeleton[pr2JointsName_[0]];
 
-  try{
-    ros::Time now = ros::Time::now();
-    listener.waitForTransform("/map", "/base_link",
-        now, ros::Duration(3.0));
-        listener.lookupTransform("/map", "/base_link",
-        now, transform);
-
-        //Robot position
-        robotPosition.set<0>(transform.getOrigin().x());
-        robotPosition.set<1>(transform.getOrigin().y());
-        robotPosition.set<2>(transform.getOrigin().z());
-
-        //Robot orientation
-        //curRobot->orientation.push_back(tf::getRoll(transform.getRotation()));
-        //curRobot->orientation.push_back(tf::getPitch(transform.getRotation()));
-        robotOrientation.push_back(0.0);
-        robotOrientation.push_back(0.0);
-        robotOrientation.push_back(tf::getYaw(transform.getRotation()));
+  // We start with base:
+  setRobotJointLocation(listener, curJoint);
         
-        curRobot->setOrientation(robotOrientation);
-        curRobot->setPosition(robotPosition);
-        curRobot->setTime(now.toNSec());
-
-        m_LastConfig[pr2Id_] = curRobot;
-
-  }
-  catch (tf::TransformException ex){
-    ROS_ERROR("%s",ex.what());
+  curRobot->setOrientation(curJoint->getOrientation());
+  curRobot->setPosition(curJoint->getPosition());
+  curRobot->setTime(curJoint->getTime());
+  
+  //Then other joints if needed
+  if(fullRobot_){
+      for(unsigned int i=0; i<pr2JointsName_.size(); i++){
+        curJoint = curRobot->skeleton[pr2JointsName_[i]];
+        setRobotJointLocation(listener, curJoint);
+      }
   }
 }
 
+void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Joint* joint){
+    tf::StampedTransform transform;
+    std::string jointId = "/";
+    std::vector<double> jointOrientation;
+    bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
+    jointId.append(joint->getName());
+    try{
+        ros::Time now = ros::Time::now();
+        listener.waitForTransform("/map", jointId,
+                              now, ros::Duration(3.0));
+        listener.lookupTransform("/map", jointId,
+                              now, transform);
+        
+        //Joint position
+        jointPosition.set<0>(transform.getOrigin().x());
+        jointPosition.set<1>(transform.getOrigin().y());
+        jointPosition.set<2>(transform.getOrigin().z());
 
-//TODO: full robot case
+        //Joint orientation
+        //curRobot->orientation.push_back(tf::getRoll(transform.getRotation()));
+        //curRobot->orientation.push_back(tf::getPitch(transform.getRotation()));
+        jointOrientation.push_back(0.0);
+        jointOrientation.push_back(0.0);
+        jointOrientation.push_back(tf::getYaw(transform.getRotation()));
+        
+        joint->setTime(now.toNSec());
+        joint->setPosition(jointPosition);
+        joint->setOrientation(jointOrientation);
+        
+    }    
+    catch (tf::TransformException ex){
+        ROS_ERROR("%s",ex.what());
+    }
+}
+
+//Destructor
+Pr2RobotReader::~Pr2RobotReader(){
+    for(std::map<unsigned int, Robot*>::iterator it = m_LastConfig.begin() ; it != m_LastConfig.end() ; ++it){
+        delete it->second;
+    }
+}

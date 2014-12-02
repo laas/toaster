@@ -3,7 +3,7 @@
 #include "PDG/HumanReader.h"
 
 
-bool HumanReader::isPresent(int id){
+bool HumanReader::isPresent(unsigned int id){
   timeval curTime;
   gettimeofday(&curTime, NULL);
   unsigned long now = curTime.tv_sec * pow(10,9) + curTime.tv_usec;

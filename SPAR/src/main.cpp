@@ -16,8 +16,8 @@ bg::model::point <double, 2, bg::cs::cartesian> convert3dTo2d(bg::model::point<d
 
 // Entity should be a vector or a map with all entities
 // This function update all the area that depends on an entity position.
-void updateEntityArea(std::map<int, Area*>& mpArea, Entity* entity){
-  for(std::map<int, Area*>::iterator it = mpArea.begin() ; it != mpArea.end() ; ++it){
+void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity){
+  for(std::map<unsigned int, Area*>::iterator it = mpArea.begin() ; it != mpArea.end() ; ++it){
     if( it->second->getMyOwner() == entity->getId() )
         // Dangerous casting? Only CircleArea has Owner...
         ((CircleArea*) it->second)->setCenter( convert3dTo2d( entity->getPosition() ) );
@@ -26,8 +26,8 @@ void updateEntityArea(std::map<int, Area*>& mpArea, Entity* entity){
 
 
 
-void updateInArea(Entity* ent, std::map<int, Area*>& mpArea){
-  for(std::map<int, Area*>::iterator it = mpArea.begin() ; it != mpArea.end() ; ++it){
+void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea){
+  for(std::map<unsigned int, Area*>::iterator it = mpArea.begin() ; it != mpArea.end() ; ++it){
       // If we already know that entity is in Area, we update if needed.
       if( ent->isInArea( it->second->getId() ) )
               if( it->second->isPointInArea( convert3dTo2d( ent->getPosition() ) ) )
@@ -86,7 +86,7 @@ int main(int argc, char** argv){
 
   // Vector of Area
   // It should be possible to add an area on the fly with a ros service.
-  std::map<int, Area*> mapArea;
+  std::map<unsigned int, Area*> mapArea;
 
   // Origin point
   bg::model::point<double, 2, bg::cs::cartesian> origin(0.0, 0.0);

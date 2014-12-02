@@ -9,10 +9,10 @@
 class HumanReader{
 
     public:
-        std::map<int, Human*> m_LastConfig;
+        std::map<unsigned int, Human*> m_LastConfig;
         bool fullHuman_;
 
-        bool isPresent(int id);
+        bool isPresent(unsigned int id);
 
     protected:
         ros::NodeHandle node_;
