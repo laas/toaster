@@ -1,7 +1,7 @@
 toaster
 =======
 
-Tracking Of Human (actions and belief) and Spatio-TEmporal Reasoning.
+Tracking Of Agent (actions and belief) and Spatio-TEmporal Reasoning.
 
 This framework implement ros nodes that play a specific role in building situation assessment 
 for the robot to understand its surrounding environment and have spatio-temporal reasoning on
