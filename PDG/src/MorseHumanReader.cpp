@@ -50,7 +50,7 @@ void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, s
         curHuman->setPosition(humanPosition);
         curHuman->setTime(now.toNSec());
 
-        m_LastConfig[humId] = curHuman;
+        lastConfig_[humId] = curHuman;
 
   }
   catch (tf::TransformException ex){
@@ -76,3 +76,10 @@ void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, s
       m_LastConfig[101]->skeleton[l_ankle] = msg->position[5]; //Left ankle
   }
 }*/
+
+//Destructor
+MorseHumanReader::~MorseHumanReader(){
+    for(std::map<unsigned int, Human*>::iterator it = lastConfig_.begin() ; it != lastConfig_.end() ; ++it){
+        delete it->second;
+    }
+}

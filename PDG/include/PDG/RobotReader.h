@@ -3,21 +3,19 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Robot.h"
-#include "std_msgs/String.h"
 #include <map>
 #include <string>
 
 class RobotReader{
 
     public:
-        std::map<unsigned int, Robot*> m_LastConfig;
+        std::map<unsigned int, Robot*> lastConfig_;
         bool fullRobot_;
 
         virtual void init() = 0;     // This function will depend on the robot
 
         bool isPresent(unsigned int id);
         
-        // Destructor
 
     protected:
         ros::NodeHandle node_;

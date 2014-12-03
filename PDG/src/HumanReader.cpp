@@ -9,7 +9,7 @@ bool HumanReader::isPresent(unsigned int id){
   unsigned long now = curTime.tv_sec * pow(10,9) + curTime.tv_usec;
   unsigned long timeThreshold = pow(10,9);
   //std::cout << "current time: " << now <<  "  human time: " << m_LastTime << std::endl;
-  long timeDif = m_LastConfig[id]->getTime() - now;
+  long timeDif = lastConfig_[id]->getTime() - now;
   //std::cout << "time dif: " << timeDif << std::endl;
 
   if ( fabs(timeDif) < timeThreshold)

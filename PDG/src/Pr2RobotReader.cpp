@@ -41,12 +41,12 @@ void Pr2RobotReader::init(){
             curRobot->skeleton[pr2JointsName_[i]] = new Joint(10001 + i, pr2Id_);
         }
     }
-  m_LastConfig[pr2Id_] = curRobot;
+  lastConfig_[pr2Id_] = curRobot;
 }
 
 void Pr2RobotReader::updateRobot(tf::TransformListener &listener){
   tf::StampedTransform transform;
-  Robot* curRobot = m_LastConfig[pr2Id_];
+  Robot* curRobot = lastConfig_[pr2Id_];
   Joint* curJoint = curRobot->skeleton[pr2JointsName_[0]];
 
   // We start with base:
@@ -102,7 +102,7 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
 
 //Destructor
 Pr2RobotReader::~Pr2RobotReader(){
-    for(std::map<unsigned int, Robot*>::iterator it = m_LastConfig.begin() ; it != m_LastConfig.end() ; ++it){
+    for(std::map<unsigned int, Robot*>::iterator it = lastConfig_.begin() ; it != lastConfig_.end() ; ++it){
         delete it->second;
     }
 }

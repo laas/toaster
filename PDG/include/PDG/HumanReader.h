@@ -4,12 +4,11 @@
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
 #include <map>
-#include <string>
 
 class HumanReader{
 
     public:
-        std::map<unsigned int, Human*> m_LastConfig;
+        std::map<unsigned int, Human*> lastConfig_;
         bool fullHuman_;
 
         bool isPresent(unsigned int id);
