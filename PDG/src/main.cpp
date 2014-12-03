@@ -16,7 +16,7 @@ int main(int argc, char** argv) {
 
     //Data reading
     MorseHumanReader morseHumanRd(node, AGENT_FULL_CONFIG);
-    Pr2RobotReader pr2RobotRd(node, 1, AGENT_FULL_CONFIG);
+    Pr2RobotReader pr2RobotRd(1, AGENT_FULL_CONFIG);
 
     //Data writting
     ros::Publisher human_pub = node.advertise<PDG::Human>("human/human1", 1000);

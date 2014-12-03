@@ -6,7 +6,7 @@
 class Pr2RobotReader : public RobotReader{
 
   public:
-    Pr2RobotReader(ros::NodeHandle& node, unsigned int id, bool fullRobot);
+    Pr2RobotReader(unsigned int id, bool fullRobot);
     void updateRobot(tf::TransformListener &listener);
     
     //Destructor

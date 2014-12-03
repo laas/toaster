@@ -1,7 +1,5 @@
 #include "HumanReader.h"
 
-#include <ostream>
-#include <ros/ros.h>
 #include <tf/transform_listener.h>
 
 class MorseHumanReader : public HumanReader

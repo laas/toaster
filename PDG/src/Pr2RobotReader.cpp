@@ -1,7 +1,6 @@
 #include "PDG/Pr2RobotReader.h"
 
-Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, unsigned int id, bool fullRobot): pr2Id_(id) {
-  node_ = node;
+Pr2RobotReader::Pr2RobotReader(unsigned int id, bool fullRobot): pr2Id_(id) {
   fullRobot_ = fullRobot;
   std::cout << "Initializing Pr2RobotReader" << std::endl;
   init();

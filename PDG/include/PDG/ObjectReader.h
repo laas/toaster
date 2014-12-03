@@ -9,12 +9,9 @@ class ObjectReader{
 
     public:
         std::map<unsigned int, MovableObject*> lastConfig_;
+        unsigned int nbObjects_; /// total object number
 
         virtual void init() = 0;     // This function will depend on the middleware
 
         bool isPresent(unsigned int id);
-        
-
-    protected:
-        ros::NodeHandle node_;
 };

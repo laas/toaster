@@ -15,8 +15,4 @@ class RobotReader{
         virtual void init() = 0;     // This function will depend on the robot
 
         bool isPresent(unsigned int id);
-        
-
-    protected:
-        ros::NodeHandle node_;
 };
