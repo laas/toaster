@@ -1,6 +1,18 @@
+/* 
+ * File:   VimanObjectReader.h
+ * Author: Grégoire Milliez
+ * mail: gregoire.milliez@laas.fr
+ *  Copyright 2014 LAAS/CNRS. All rights reserved.
+ *
+ * Created on December 3, 2014, 6:19 PM
+ */
+
+#ifndef VIMANOBJECTREADER_H
+#define	VIMANOBJECTREADER_H
+
 #include "ObjectReader.h"
 #include "middleware/GenomPoster.h"
-#include "vimanStruct.h"
+#include "viman/vimanStruct.h"
 
 class VimanObjectReader : public ObjectReader
 {
@@ -12,9 +24,12 @@ class VimanObjectReader : public ObjectReader
     ~VimanObjectReader();
     
     void init();
+    void initObject(unsigned int i);
     void updateObjects();
     
   private:
     GenomPoster* vimanPoster_;
     VimanObjectPublicArray vimanPosterStruct_;    
 };
+
+#endif /* VIMANOBJECTREADER_H */

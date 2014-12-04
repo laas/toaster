@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 
             if (AGENT_FULL_CONFIG) {
                 unsigned int i = 0;
-                for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[1]->skeleton.begin(); it != pr2RobotRd.lastConfig_[1]->skeleton.end(); ++it) {
+                for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[1]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[1]->skeleton_.end(); ++it) {
                     robot_msg.meAgent.skeletonNames[i] = it->first;
                     joint_msg.meEntity.id = (it->second)->getId();
                     joint_msg.meEntity.time = (it->second)->getTime();

@@ -10,7 +10,6 @@
 #include "middleware/GenomPoster.h"
 
 #include <iostream>
-//#include <unistd.h>
 
 #include <stdio.h>
 
@@ -38,9 +37,9 @@ void GenomPoster::update() {
             if( size != posterSize_)
             {
                 updatedStatus_ = false;
-                cout << "ERROR: GenomPoster::refresh() poster " << posterName_ << " size mismatch (" << size << " , " << posterSize_ << " ) for posterID " << posterID_ << endl;
+                std::cout << "ERROR: GenomPoster::refresh() poster " << posterName_ << " size mismatch (" << size << " , " << posterSize_ << " ) for posterID " << posterID_ << std::endl;
             }
-            //cout << "GenomPoster::refresh() poster " << posterName_ << endl;
+            //std::cout << "GenomPoster::refresh() poster " << posterName_ << std::endl;
             updatedStatus_ = true;
         };
     return;
@@ -55,11 +54,11 @@ bool GenomPoster::findPoster()
 {
     if(posterFind(posterName_.c_str(), &(posterID_))==ERROR)
     {
-        cout << "ERROR: GenomPoster::findPoster can't find poster \""<< posterName_ << "\", retry within 2 sec. " << endl;
+        std::cout << "ERROR: GenomPoster::findPoster can't find poster \""<< posterName_ << "\", retry within 2 sec. " << std::endl;
         posterID_ = NULL;
         return false;
     }
-    cout << "*********************  INFO: GenomPoster::findPoster: Poster " <<  posterName_ << " found ***********************" << endl;
+    std::cout << "*********************  INFO: GenomPoster::findPoster: Poster " <<  posterName_ << " found ***********************" << std::endl;
     return true;
 }
 

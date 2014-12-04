@@ -30,7 +30,7 @@ set(BOOST_ROOT /home/gmilliez/devel/boost_1_56_0/)
 set(Boost_NO_SYSTEM_PATHS ON)
 
 find_package(Boost REQUIRED COMPONENTS)# system)
-include_directories(${Boost_INCLUDE_DIRS} /home/gmilliez/devel/include)
-rosbuild_add_executable(pdg src/MorseHumanReader.cpp src/HumanReader.cpp src/Pr2RobotReader.cpp src/RobotReader.cpp src/ObjectReader.cpp src/main.cpp)
+include_directories(${Boost_INCLUDE_DIRS} /home/gmilliez/devel/include /home/gmilliez/openrobots/include/)
+rosbuild_add_executable(pdg src/MorseHumanReader.cpp src/HumanReader.cpp src/Pr2RobotReader.cpp src/RobotReader.cpp src/ObjectReader.cpp src/VimanObjectReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
 target_link_libraries(pdg /home/gmilliez/devel/lib/libtoaster.so)
 

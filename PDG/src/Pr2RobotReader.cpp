@@ -37,7 +37,7 @@ void Pr2RobotReader::init(){
   Robot* curRobot = new Robot(pr2Id_);
     if(fullRobot_){
         for(unsigned int i=0; i<pr2JointsName_.size(); i++){
-            curRobot->skeleton[pr2JointsName_[i]] = new Joint(10001 + i, pr2Id_);
+            curRobot->skeleton_[pr2JointsName_[i]] = new Joint(10001 + i, pr2Id_);
         }
     }
   lastConfig_[pr2Id_] = curRobot;
@@ -46,7 +46,7 @@ void Pr2RobotReader::init(){
 void Pr2RobotReader::updateRobot(tf::TransformListener &listener){
   tf::StampedTransform transform;
   Robot* curRobot = lastConfig_[pr2Id_];
-  Joint* curJoint = curRobot->skeleton[pr2JointsName_[0]];
+  Joint* curJoint = curRobot->skeleton_[pr2JointsName_[0]];
 
   // We start with base:
   setRobotJointLocation(listener, curJoint);
@@ -58,7 +58,7 @@ void Pr2RobotReader::updateRobot(tf::TransformListener &listener){
   //Then other joints if needed
   if(fullRobot_){
       for(unsigned int i=0; i<pr2JointsName_.size(); i++){
-        curJoint = curRobot->skeleton[pr2JointsName_[i]];
+        curJoint = curRobot->skeleton_[pr2JointsName_[i]];
         setRobotJointLocation(listener, curJoint);
       }
   }
