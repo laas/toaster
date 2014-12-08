@@ -1,5 +1,6 @@
 #include "PDG/MorseHumanReader.h"
 #include "PDG/Pr2RobotReader.h"
+#include "PDG/VimanObjectReader.h"
 
 #include <PDG/Entity.h>
 #include <PDG/Agent.h>
@@ -17,6 +18,7 @@ int main(int argc, char** argv) {
     //Data reading
     MorseHumanReader morseHumanRd(node, AGENT_FULL_CONFIG);
     Pr2RobotReader pr2RobotRd(1, AGENT_FULL_CONFIG);
+    VimanObjectReader vimanObjectRd("morseViman");
 
     //Data writting
     ros::Publisher human_pub = node.advertise<PDG::Human>("human/human1", 1000);
@@ -33,14 +35,19 @@ int main(int argc, char** argv) {
         PDG::Robot robot_msg;
         PDG::Joint joint_msg;
 
+        
         //update data
+        vimanObjectRd.updateObjects();
+        if (vimanObjectRd.nbObjects_ != 0){
+            for(unsigned int i = 0; i < vimanObjectRd.nbObjects_; i++){
+                if(vimanObjectRd.isPresent(vimanObjectRd.objectIdOffset_ + i))
+                    printf("object %d is present\n", vimanObjectRd.objectIdOffset_ + i);
+            }
+        }
+        
         morseHumanRd.updateHumans(listener);
-        if (morseHumanRd.lastConfig_[101] != NULL)
-            printf("[PDG] Last time human 101: %lu\n", morseHumanRd.lastConfig_[101]->getTime());
 
         pr2RobotRd.updateRobot(listener);
-        if (pr2RobotRd.lastConfig_[1] != NULL)
-            printf("[PDG] Last time robot pr2: %lu\n", pr2RobotRd.lastConfig_[1]->getTime());
 
         //publish data
         if (morseHumanRd.isPresent(101)) {

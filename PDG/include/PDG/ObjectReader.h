@@ -17,16 +17,14 @@
 #include "toaster-lib/MovableObject.h"
 #include <map>
 
-class ObjectReader{
+class ObjectReader {
+public:
+    static const unsigned int objectIdOffset_ = 1001;
+    std::map<unsigned int, MovableObject*> lastConfig_;
+    unsigned int nbObjects_; /// total object number
 
-    public:
-        static const unsigned int objectIdOffset_ = 1001; 
-        std::map<unsigned int, MovableObject*> lastConfig_;
-        unsigned int nbObjects_; /// total object number
+    bool isPresent(unsigned int id);
 
-        virtual void init() = 0;     // This function will depend on the middleware
-
-        bool isPresent(unsigned int id);
 };
 
 #endif /* OBJECTREADER_H */
