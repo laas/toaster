@@ -39,9 +39,12 @@ int main(int argc, char** argv) {
         //update data
         vimanObjectRd.updateObjects();
         if (vimanObjectRd.nbObjects_ != 0){
+            printf("[PDG] nbobject %d\n", vimanObjectRd.nbObjects_ );
             for(unsigned int i = 0; i < vimanObjectRd.nbObjects_; i++){
-                if(vimanObjectRd.isPresent(vimanObjectRd.objectIdOffset_ + i))
-                    printf("object %d is present\n", vimanObjectRd.objectIdOffset_ + i);
+                if(vimanObjectRd.isPresent(vimanObjectRd.objectIdOffset_ + i)){
+                    printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
+                    printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
+                }
             }
         }
         
@@ -102,7 +105,6 @@ int main(int argc, char** argv) {
 
         human_pub.publish(human_msg);
         robot_pub.publish(robot_msg);
-
         ros::spinOnce();
 
         loop_rate.sleep();
