@@ -23,6 +23,7 @@ class HumanReader{
     public:
         std::map<unsigned int, Human*> lastConfig_;
         bool fullHuman_;
+        static const unsigned int humanIdOffset_ = 101;
 
         bool isPresent(unsigned int id);
 

@@ -13,20 +13,26 @@
 #define	NIUTHUMANREADER_H
 
 #include <ros/ros.h>
-#include "humanMonitor/niut_HUMAN_LIST.h"
+#include "PDG/niut_HUMAN_LIST.h"
 #include "toaster-lib/Human.h"
-#include "std_msgs/String.h"
-#include <map>
-#include <string>
+#include "HumanReader.h"
 
-class HumanReader{
+class NiutHumanReader : public HumanReader{
 
     public:
-        HumanReader(ros::NodeHandle& node);     // This function will fill the m_LastConfig map.
+        NiutHumanReader(ros::NodeHandle& node, double * kinectPos, bool fullHuman);
 
     private:
-        ros::Subscriber sub;
-        void humanJointCallBack(const humanMonitor::niut_HUMAN_LIST::ConstPtr& msg);
+        static const unsigned short NB_MAX_NIUT = 16;
+        double* kinectPos_;
+        ros::Subscriber sub_;
+        
+        //Functions
+        void humanJointCallBack(const PDG::niut_HUMAN_LIST::ConstPtr& msg);
+        void projectJoint(Joint& joint, double* kinectPos);
+        void updateJoint(int i, int j, Joint& curJoint, int toasterId, std::vector<int>& trackedJoints,
+             const PDG::niut_HUMAN_LIST::ConstPtr& msg);
+
 };
 
 #endif /* NIUTHUMANREADER_H */
