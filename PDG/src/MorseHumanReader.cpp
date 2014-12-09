@@ -17,7 +17,7 @@ void MorseHumanReader::init(){
 
 void MorseHumanReader::updateHumans(tf::TransformListener &listener) {
   //update 1st human, this should be extended for multi human
-  updateHuman(listener, 101, "/human_base");
+  updateHuman(listener, humanIdOffset_, "/human_base");
 }
 
 void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, std::string humanBase){

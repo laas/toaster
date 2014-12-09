@@ -23,6 +23,7 @@ class RobotReader{
     public:
         std::map<unsigned int, Robot*> lastConfig_;
         bool fullRobot_;
+        static const unsigned int robotIdOffset_ = 1;
 
         virtual void init() = 0;     // This function will depend on the robot
 

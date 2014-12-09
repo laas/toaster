@@ -1,6 +1,6 @@
 #include "PDG/Pr2RobotReader.h"
 
-Pr2RobotReader::Pr2RobotReader(unsigned int id, bool fullRobot): pr2Id_(id) {
+Pr2RobotReader::Pr2RobotReader(bool fullRobot) {
   fullRobot_ = fullRobot;
   std::cout << "Initializing Pr2RobotReader" << std::endl;
   init();
@@ -34,18 +34,18 @@ void Pr2RobotReader::initJointsName(){
 
 
 void Pr2RobotReader::init(){
-  Robot* curRobot = new Robot(pr2Id_);
+  Robot* curRobot = new Robot(robotIdOffset_);
     if(fullRobot_){
         for(unsigned int i=0; i<pr2JointsName_.size(); i++){
-            curRobot->skeleton_[pr2JointsName_[i]] = new Joint(10001 + i, pr2Id_);
+            curRobot->skeleton_[pr2JointsName_[i]] = new Joint(10001 + i, robotIdOffset_);
         }
     }
-  lastConfig_[pr2Id_] = curRobot;
+  lastConfig_[robotIdOffset_] = curRobot;
 }
 
 void Pr2RobotReader::updateRobot(tf::TransformListener &listener){
   tf::StampedTransform transform;
-  Robot* curRobot = lastConfig_[pr2Id_];
+  Robot* curRobot = lastConfig_[robotIdOffset_];
   Joint* curJoint = curRobot->skeleton_[pr2JointsName_[0]];
 
   // We start with base:
