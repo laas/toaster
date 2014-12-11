@@ -2,11 +2,13 @@
 #include "PDG/Pr2RobotReader.h"
 #include "PDG/VimanObjectReader.h"
 
+// Message generated class
 #include <PDG/Entity.h>
 #include <PDG/Agent.h>
 #include <PDG/Joint.h>
 #include <PDG/Robot.h>
 #include <PDG/Human.h>
+#include <PDG/Object.h>
 
 int main(int argc, char** argv) {
     const bool AGENT_FULL_CONFIG = false; //If false we will use only position and orientation
@@ -31,6 +33,7 @@ int main(int argc, char** argv) {
     printf("[PDG] initializing\n");
 
     while (node.ok()) {
+        PDG::Object object_msg;
         PDG::Human human_msg;
         PDG::Robot robot_msg;
         PDG::Joint joint_msg;
@@ -42,14 +45,26 @@ int main(int argc, char** argv) {
         pr2RobotRd.updateRobot(listener);
 
         //publish data
+        //TODO: create function to set entity
 
         //Objects
         if (vimanObjectRd.nbObjects_ != 0) {
             printf("[PDG] nbobject %d\n", vimanObjectRd.nbObjects_);
             for (unsigned int i = 0; i < vimanObjectRd.nbObjects_; i++) {
                 if (vimanObjectRd.isPresent(vimanObjectRd.objectIdOffset_ + i)) {
-                    printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
-                    printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
+                     //Object
+                    object_msg.meEntity.id = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getId();
+                    object_msg.meEntity.time = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime();
+                    object_msg.meEntity.name = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName();
+                    object_msg.meEntity.positionX = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getPosition().get<0>();
+                    object_msg.meEntity.positionY = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getPosition().get<1>();
+                    object_msg.meEntity.positionZ = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getPosition().get<2>();
+                    object_msg.meEntity.orientationRoll = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getOrientation()[0];
+                    object_msg.meEntity.orientationPitch = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getOrientation()[1];
+                    object_msg.meEntity.orientationYaw = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getOrientation()[2];
+
+                    //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
+                    //printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
                 }
             }
         }
@@ -61,15 +76,15 @@ int main(int argc, char** argv) {
                 if (morseHumanRd.isPresent(morseHumanRd.humanIdOffset_ + i)) {
                     //Human
                     human_msg.meAgent.mobility = 0;
-                    human_msg.meAgent.meEntity.id = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_]->getId();
-                    human_msg.meAgent.meEntity.time = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_]->getTime();
-                    //      human_msg.meAgent.meEntity.name = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_]->getName;
-                    human_msg.meAgent.meEntity.positionX = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_]->getPosition().get<0>();
-                    human_msg.meAgent.meEntity.positionY = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_]->getPosition().get<1>();
-                    human_msg.meAgent.meEntity.positionZ = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_]->getPosition().get<2>();
-                    human_msg.meAgent.meEntity.orientationRoll = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_]->getOrientation()[0];
-                    human_msg.meAgent.meEntity.orientationPitch = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_]->getOrientation()[1];
-                    human_msg.meAgent.meEntity.orientationYaw = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_]->getOrientation()[2];
+                    human_msg.meAgent.meEntity.id = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i]->getId();
+                    human_msg.meAgent.meEntity.time = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i]->getTime();
+                    //      human_msg.meAgent.meEntity.name = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i]->getName;
+                    human_msg.meAgent.meEntity.positionX = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i]->getPosition().get<0>();
+                    human_msg.meAgent.meEntity.positionY = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i]->getPosition().get<1>();
+                    human_msg.meAgent.meEntity.positionZ = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i]->getPosition().get<2>();
+                    human_msg.meAgent.meEntity.orientationRoll = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i]->getOrientation()[0];
+                    human_msg.meAgent.meEntity.orientationPitch = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i]->getOrientation()[1];
+                    human_msg.meAgent.meEntity.orientationYaw = morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i]->getOrientation()[2];
 
                 }
             }
