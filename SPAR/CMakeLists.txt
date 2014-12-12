@@ -34,6 +34,6 @@ set(Boost_NO_SYSTEM_PATHS ON)
 
 find_package(Boost REQUIRED COMPONENTS)# system)
 include_directories(${Boost_INCLUDE_DIRS} /home/gmilliez/devel/include)
-rosbuild_add_executable(spar src/PDGHumanReader.cpp src/PDGRobotReader.cpp src/main.cpp)
+rosbuild_add_executable(spar src/PDGHumanReader.cpp src/PDGRobotReader.cpp src/PDGObjectReader.cpp src/main.cpp)
 target_link_libraries(spar /home/gmilliez/devel/lib/libtoaster.so)
 

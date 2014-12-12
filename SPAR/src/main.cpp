@@ -39,8 +39,8 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea){
       // Same if entity is not in Area
       else
     if( it->second->isPointInArea( convert3dTo2d( ent->getPosition() ) ) ){
-        ent->inArea.push_back(it->second->getId());
-        it->second->insideEntities.push_back( ent->getId() );
+        ent->inArea_.push_back(it->second->getId());
+        it->second->insideEntities_.push_back( ent->getId() );
     }else
         continue;
   }
@@ -114,18 +114,18 @@ int main(int argc, char** argv){
   /************************/
 
   while( node.ok() ){
-    if( (humanRd.m_LastConfig[101] != NULL) && (robotRd.m_LastConfig[1] != NULL) ){
+    if( (humanRd.lastConfig_[101] != NULL) && (robotRd.lastConfig_[1] != NULL) ){
         // We update area with robot center
-        updateEntityArea(mapArea, robotRd.m_LastConfig[1]);
+        updateEntityArea(mapArea, robotRd.lastConfig_[1]);
 
         // We update entities vector inArea
-        updateInArea(humanRd.m_LastConfig[101], mapArea);
+        updateInArea(humanRd.lastConfig_[101], mapArea);
         
-        if( humanRd.m_LastConfig[101]->isInArea(0) ){
+        if( humanRd.lastConfig_[101]->isInArea(0) ){
             // We will compute here facts that are relevant for interacting
-            isFacing( humanRd.m_LastConfig[101], robotRd.m_LastConfig[1], 0.5 );
+            isFacing( humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5 );
         }
-        else if( humanRd.m_LastConfig[101]->isInArea(1) ){
+        else if( humanRd.lastConfig_[101]->isInArea(1) ){
             // We will compute here facts that are relevant when human is in danger zone
         }
         else{

@@ -11,21 +11,21 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Robot.h"
-#include "PDG/Robot.h"
+#include "PDG/RobotList.h"
 #include <map>
 
 class PDGRobotReader{
 
     public:
-       std::map<int, Robot*> m_LastConfig;
+       std::map<unsigned int, Robot*> lastConfig_;
        bool fullRobot_;
 
-       bool isPresent(int id);
+       bool isPresent(unsigned int id);
 
        PDGRobotReader(ros::NodeHandle& node, bool fullRobot);
 
     private:
-       void robotJointStateCallBack(const PDG::Robot::ConstPtr& msg);
+       void robotJointStateCallBack(const PDG::RobotList::ConstPtr& msg);
        ros::Subscriber sub_;
 
 };

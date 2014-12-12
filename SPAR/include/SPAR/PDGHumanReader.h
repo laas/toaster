@@ -13,13 +13,13 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
-#include "PDG/Human.h"
+#include "PDG/HumanList.h"
 #include <map>
 
 class PDGHumanReader{
 
     public:
-       std::map<unsigned int, Human*> m_LastConfig;
+       std::map<unsigned int, Human*> lastConfig_;
        bool fullHuman_;
 
        bool isPresent(unsigned int id);
@@ -27,7 +27,7 @@ class PDGHumanReader{
        PDGHumanReader(ros::NodeHandle& node, bool fullHuman);
 
     private:
-       void humanJointStateCallBack(const PDG::Human::ConstPtr& msg);
+       void humanJointStateCallBack(const PDG::HumanList::ConstPtr& msg);
        ros::Subscriber sub_;
 
 };
