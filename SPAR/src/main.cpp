@@ -3,16 +3,9 @@
 #include "SPAR/PDGHumanReader.h"
 #include "SPAR/PDGRobotReader.h"
 #include "toaster-lib/CircleArea.h"
+#include "toaster-lib/MathFunctions.h"
 #include <iterator>
 
-// Look into boost geometry if there is a better way to do this
-bg::model::point <double, 2, bg::cs::cartesian> convert3dTo2d(bg::model::point<double, 3, bg::cs::cartesian> position){
-  bg::model::point <double, 2, bg::cs::cartesian> point2d;
-  point2d.set<0>(position.get<0>());
-  point2d.set<1>(position.get<1>());
-
-  return point2d;
-}
 
 // Entity should be a vector or a map with all entities
 // This function update all the area that depends on an entity position.
