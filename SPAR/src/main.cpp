@@ -3,6 +3,7 @@
 #include "SPAR/PDGHumanReader.h"
 #include "SPAR/PDGRobotReader.h"
 #include "toaster-lib/CircleArea.h"
+#include "toaster-lib/PolygonArea.h"
 #include "toaster-lib/MathFunctions.h"
 #include <iterator>
 
@@ -13,7 +14,7 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity){
   for(std::map<unsigned int, Area*>::iterator it = mpArea.begin() ; it != mpArea.end() ; ++it){
     if( it->second->getMyOwner() == entity->getId() )
         // Dangerous casting? Only CircleArea has Owner...
-        ((CircleArea*) it->second)->setCenter( convert3dTo2d( entity->getPosition() ) );
+        ((CircleArea*) it->second)->setCenter( MathFunctions::convert3dTo2d( entity->getPosition() ) );
   }
 }
 
@@ -23,15 +24,17 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea){
   for(std::map<unsigned int, Area*>::iterator it = mpArea.begin() ; it != mpArea.end() ; ++it){
       // If we already know that entity is in Area, we update if needed.
       if( ent->isInArea( it->second->getId() ) )
-              if( it->second->isPointInArea( convert3dTo2d( ent->getPosition() ) ) )
+              if( it->second->isPointInArea( MathFunctions::convert3dTo2d( ent->getPosition() ) ) )
                 continue;
               else{
+            printf("[SPAR] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                   ent->removeInArea(it->second->getId());
                   it->second->removeEntity( ent->getId() );
               }
       // Same if entity is not in Area
       else
-    if( it->second->isPointInArea( convert3dTo2d( ent->getPosition() ) ) ){
+    if( it->second->isPointInArea( MathFunctions::convert3dTo2d( ent->getPosition() ) ) ){
+            printf("[SPAR] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
         ent->inArea_.push_back(it->second->getId());
         it->second->insideEntities_.push_back( ent->getId() );
     }else
@@ -43,7 +46,7 @@ bool isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold){
   
 	double entFacingAngle = entFacing->getOrientation()[2];
 	double entFacingSubjectAngle = acos( ( fabs( entFacing->getPosition().get<0>() - entSubject->getPosition().get<0>() ) ) 
-                   /  bg::distance( convert3dTo2d(entFacing->getPosition()), convert3dTo2d(entSubject->getPosition()) ) );
+                   /  bg::distance( MathFunctions::convert3dTo2d(entFacing->getPosition()), MathFunctions::convert3dTo2d(entSubject->getPosition()) ) );
    
         // Trigonometric adjustment
 	if ( entSubject->getPosition().get<0>() < entFacing->getPosition().get<0>() )
@@ -98,9 +101,25 @@ int main(int argc, char** argv){
   CircleArea* danger = new CircleArea(1,  origin, dangerDist);
   danger->setMyOwner(1);
   danger->setName("pr2_danger");
+  
+  // We define here some room (Adream)
+  double pointsBed[5][2] = {{1.9, 13.1}, {6.0, 13.1}, {6.0, 9.0}, {1.9, 9.0}, {1.9, 13.1}};
+  double pointsKitch[5][2] = {{6.0, 13.1}, {9.0, 13.1}, {9.0, 9.0}, {6.0, 9.0}, {6.0, 13.1}};
+  double pointsLiving[5][2] = {{1.9, 9.0}, {9.0, 9.0}, {9.0, 5.0}, {1.9, 5.0}, {1.9, 9.0}};
+  PolygonArea* bedroom = new PolygonArea(2, pointsBed);
+  bedroom->setName("bedroom");
+  
+  PolygonArea* kitchen = new PolygonArea(3, pointsKitch);
+  kitchen->setName("kitchen");
+  
+  PolygonArea* livingroom = new PolygonArea(4, pointsLiving);
+  livingroom->setName("livingroom");
 
   mapArea[0] = interacting;
   mapArea[1] = danger;
+  mapArea[2] = bedroom;
+  mapArea[3] = kitchen;
+  mapArea[4] = livingroom;
 
   /************************/
   /* Start of the Ros loop*/

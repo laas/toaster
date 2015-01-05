@@ -38,9 +38,9 @@ int main(int argc, char** argv) {
     VimanObjectReader vimanObjectRd("morseViman");
 
     //Data writing
-    ros::Publisher object_pub = node.advertise<PDG::Robot>("objectList", 1000);
-    ros::Publisher human_pub = node.advertise<PDG::Human>("humanList", 1000);
-    ros::Publisher robot_pub = node.advertise<PDG::Robot>("robotList", 1000);
+    ros::Publisher object_pub = node.advertise<PDG::ObjectList>("objectList", 1000);
+    ros::Publisher human_pub = node.advertise<PDG::HumanList>("humanList", 1000);
+    ros::Publisher robot_pub = node.advertise<PDG::RobotList>("robotList", 1000);
 
 
     ros::Rate loop_rate(30);
@@ -48,17 +48,15 @@ int main(int argc, char** argv) {
     tf::TransformListener listener;
     printf("[PDG] initializing\n");
 
+    PDG::ObjectList objectList_msg;
+    PDG::HumanList humanList_msg;
+    PDG::RobotList robotList_msg;
+    PDG::Object object_msg;
+    PDG::Human human_msg;
+    PDG::Robot robot_msg;
+    PDG::Joint joint_msg;
+
     while (node.ok()) {
-        // TODO: Modify this, publish object list, human list, robot list.
-        PDG::ObjectList objectList_msg;
-        PDG::HumanList humanList_msg;
-        PDG::RobotList robotList_msg;
-        PDG::Object object_msg;
-        PDG::Human human_msg;
-        PDG::Robot robot_msg;
-        PDG::Joint joint_msg;
-
-
 
         //update data
         vimanObjectRd.updateObjects();
@@ -66,31 +64,32 @@ int main(int argc, char** argv) {
         pr2RobotRd.updateRobot(listener);
 
         //publish data
-        //TODO: create function to set entity
 
         //Objects
         for (unsigned int i = 0; i < vimanObjectRd.nbObjects_; i++) {
             if (vimanObjectRd.isPresent(vimanObjectRd.objectIdOffset_ + i)) {
                 //Object
                 feelEntity(vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i], object_msg.meEntity);
-                objectList_msg.objectList[i] = object_msg;
+                objectList_msg.objectList.push_back(object_msg);
 
                 //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
                 //printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
             }
         }
 
-
-
-        //Human
+        //Humans
         for (unsigned int i = 0; i < morseHumanRd.lastConfig_.size(); i++) {
             if (morseHumanRd.isPresent(morseHumanRd.humanIdOffset_ + i)) {
                 //Human
+                printf("[PDG] human is present\n");
                 feelEntity(morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i], human_msg.meAgent.meEntity);
-                humanList_msg.humanList[i] = human_msg;
+                printf("[PDG] human is present\n");
+                humanList_msg.humanList.push_back(human_msg);
+                printf("[PDG] human ready\n");
             }
         }
 
+        //Robots
         for (unsigned int i = 0; i < pr2RobotRd.lastConfig_.size(); i++) {
             if (pr2RobotRd.isPresent(pr2RobotRd.robotIdOffset_)) {
                 //Robot
@@ -105,19 +104,27 @@ int main(int argc, char** argv) {
 
                         joint_msg.jointOwner = 1;
 
-                        robot_msg.meAgent.skeletonJoint[i] = joint_msg;
+                        robot_msg.meAgent.skeletonJoint.push_back(joint_msg);
                         i++;
                     }
                 }
-                robotList_msg.robotList[i] = robot_msg;
+                robotList_msg.robotList.push_back(robot_msg);
             }
         }
         //ROS_INFO("%s", msg.data.c_str());
 
+        printf("[PDG] publish\n");
         object_pub.publish(objectList_msg);
         human_pub.publish(humanList_msg);
         robot_pub.publish(robotList_msg);
+
         ros::spinOnce();
+
+        // Clear vectors
+        objectList_msg.objectList.clear();
+        humanList_msg.humanList.clear();
+        robotList_msg.robotList.clear();
+        robot_msg.meAgent.skeletonJoint.clear();
 
         loop_rate.sleep();
 

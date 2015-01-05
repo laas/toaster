@@ -25,6 +25,7 @@ void PDGHumanReader::humanJointStateCallBack(const PDG::HumanList::ConstPtr& msg
         Mobility curHumanMobility = FULL;
 
         curHuman->setMobility(curHumanMobility);
+        curHuman->setName("Human1");
         curHuman->setTime(msg->humanList[i].meAgent.meEntity.time);
 
         humanPosition.set<0>(msg->humanList[i].meAgent.meEntity.positionX);
