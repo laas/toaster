@@ -26,6 +26,7 @@ void feelEntity(Entity* srcEntity, PDG::Entity& msgEntity) {
 }
 
 int main(int argc, char** argv) {
+    bool object_present = false;
     const bool AGENT_FULL_CONFIG = false; //If false we will use only position and orientation
 
     ros::init(argc, argv, "PDG");
@@ -59,23 +60,27 @@ int main(int argc, char** argv) {
     while (node.ok()) {
 
         //update data
-        vimanObjectRd.updateObjects();
+
+        if (object_present)
+            vimanObjectRd.updateObjects();
         morseHumanRd.updateHumans(listener);
         pr2RobotRd.updateRobot(listener);
 
         //publish data
 
         //Objects
-        for (unsigned int i = 0; i < vimanObjectRd.nbObjects_; i++) {
-            if (vimanObjectRd.isPresent(vimanObjectRd.objectIdOffset_ + i)) {
-                //Object
-                feelEntity(vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i], object_msg.meEntity);
-                objectList_msg.objectList.push_back(object_msg);
 
-                //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
-                //printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
+        if (object_present)
+            for (unsigned int i = 0; i < vimanObjectRd.nbObjects_; i++) {
+                if (vimanObjectRd.isPresent(vimanObjectRd.objectIdOffset_ + i)) {
+                    //Object
+                    feelEntity(vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i], object_msg.meEntity);
+                    objectList_msg.objectList.push_back(object_msg);
+
+                    //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
+                    //printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
+                }
             }
-        }
 
         //Humans
         for (unsigned int i = 0; i < morseHumanRd.lastConfig_.size(); i++) {
@@ -114,6 +119,7 @@ int main(int argc, char** argv) {
         //ROS_INFO("%s", msg.data.c_str());
 
         printf("[PDG] publish\n");
+
         object_pub.publish(objectList_msg);
         human_pub.publish(humanList_msg);
         robot_pub.publish(robotList_msg);
