@@ -28,12 +28,17 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
                 printf("[SPAR] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                 ent->removeInArea(it->second->getId());
                 it->second->removeEntity(ent->getId());
-            }            // Same if entity is not in Area
+            }// Same if entity is not in Area
         else
             if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition()))) {
             printf("[SPAR] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
             ent->inArea_.push_back(it->second->getId());
             it->second->insideEntities_.push_back(ent->getId());
+            
+            //User has to be in a room. May it be a "global room".
+            if (it->second->getIsRoom()) {
+                ent->setRoomId(it->second->getId());
+            }
         } else {
             //printf("[SPAR][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
             continue;
@@ -95,10 +100,12 @@ int main(int argc, char** argv) {
     CircleArea* interacting = new CircleArea(0, origin, interDist);
     interacting->setMyOwner(1);
     interacting->setName("pr2_interacting");
+    interacting->setIsRoom(false);
     // Danger
     CircleArea* danger = new CircleArea(1, origin, dangerDist);
     danger->setMyOwner(1);
     danger->setName("pr2_danger");
+    danger->setIsRoom(false);
 
     // We define here some room (Adream)
     double pointsBed[5][2] = {
@@ -106,27 +113,33 @@ int main(int argc, char** argv) {
         {6.0, 13.1},
         {6.0, 9.0},
         {1.9, 9.0},
-        {1.9, 13.1}};
+        {1.9, 13.1}
+    };
     double pointsKitch[5][2] = {
         {6.0, 13.1},
         {9.0, 13.1},
         {9.0, 9.0},
         {6.0, 9.0},
-        {6.0, 13.1}};
+        {6.0, 13.1}
+    };
     double pointsLiving[5][2] = {
         {1.9, 9.0},
         {9.0, 9.0},
         {9.0, 5.0},
         {1.9, 5.0},
-        {1.9, 9.0}};
+        {1.9, 9.0}
+    };
     PolygonArea* bedroom = new PolygonArea(2, pointsBed, 5);
     bedroom->setName("bedroom");
+    bedroom->setIsRoom(true);
 
     PolygonArea* kitchen = new PolygonArea(3, pointsKitch, 5);
     kitchen->setName("kitchen");
+    kitchen->setIsRoom(true);
 
     PolygonArea* livingroom = new PolygonArea(4, pointsLiving, 5);
     livingroom->setName("livingroom");
+    livingroom->setIsRoom(true);
 
     mapArea[0] = interacting;
     mapArea[1] = danger;
@@ -138,28 +151,27 @@ int main(int argc, char** argv) {
     /* Start of the Ros loop*/
     /************************/
 
-    while( node.ok() ){
-      if( (humanRd.lastConfig_[101] != NULL) && (robotRd.lastConfig_[1] != NULL) ){
-          // We update area with robot center
-          updateEntityArea(mapArea, robotRd.lastConfig_[1]);
+    while (node.ok()) {
+        if ((humanRd.lastConfig_[101] != NULL) && (robotRd.lastConfig_[1] != NULL)) {
+            // We update area with robot center
+            //TODO: Update this only if they are in same room?
+            updateEntityArea(mapArea, robotRd.lastConfig_[1]);
 
-          // We update entities vector inArea
-          updateInArea(humanRd.lastConfig_[101], mapArea);
-        
-          if( humanRd.lastConfig_[101]->isInArea(0) ){
-              // We will compute here facts that are relevant for interacting
-              isFacing( humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5 );
-              //printf("[SPAR][DEGUG] %s is facing %s\n", humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str());
-          }
-          else if( humanRd.lastConfig_[101]->isInArea(1) ){
-              // We will compute here facts that are relevant when human is in danger zone
-          }
-          else{
-              // We will compute here facts that are relevant for human out of interacting zone
-          }
-      }
-      ros::spinOnce();
-      loop_rate.sleep();
+            // We update entities vector inArea
+            updateInArea(humanRd.lastConfig_[101], mapArea);
+
+            if (humanRd.lastConfig_[101]->isInArea(0)) {
+                // We will compute here facts that are relevant for interacting
+                isFacing(humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5);
+                //printf("[SPAR][DEGUG] %s is facing %s\n", humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str());
+            } else if (humanRd.lastConfig_[101]->isInArea(1)) {
+                // We will compute here facts that are relevant when human is in danger zone
+            } else {
+                // We will compute here facts that are relevant for human out of interacting zone
+            }
+        }
+        ros::spinOnce();
+        loop_rate.sleep();
     }
     return 0;
 }
