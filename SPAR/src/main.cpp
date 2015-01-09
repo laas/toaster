@@ -34,7 +34,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
             printf("[SPAR] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
             ent->inArea_.push_back(it->second->getId());
             it->second->insideEntities_.push_back(ent->getId());
-            
+
             //User has to be in a room. May it be a "global room".
             if (it->second->getIsRoom()) {
                 ent->setRoomId(it->second->getId());
@@ -152,17 +152,19 @@ int main(int argc, char** argv) {
     /************************/
 
     while (node.ok()) {
-        if ((humanRd.lastConfig_[101] != NULL) && (robotRd.lastConfig_[1] != NULL)) {
+        if ((humanRd.lastConfig_[101] != NULL) || (robotRd.lastConfig_[1] != NULL)) {
             // We update area with robot center
             //TODO: Update this only if they are in same room?
-            updateEntityArea(mapArea, robotRd.lastConfig_[1]);
+            if (robotRd.lastConfig_[1] != NULL)
+                updateEntityArea(mapArea, robotRd.lastConfig_[1]);
 
             // We update entities vector inArea
             updateInArea(humanRd.lastConfig_[101], mapArea);
 
             if (humanRd.lastConfig_[101]->isInArea(0)) {
                 // We will compute here facts that are relevant for interacting
-                isFacing(humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5);
+                if (robotRd.lastConfig_[1] != NULL)
+                    isFacing(humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5);
                 //printf("[SPAR][DEGUG] %s is facing %s\n", humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str());
             } else if (humanRd.lastConfig_[101]->isInArea(1)) {
                 // We will compute here facts that are relevant when human is in danger zone
