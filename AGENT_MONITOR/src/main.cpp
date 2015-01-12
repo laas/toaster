@@ -2,6 +2,7 @@
 
 #include "SPAR/PDGHumanReader.h"
 #include "SPAR/PDGRobotReader.h"
+//#include "SPAR/PDGObjectReader.h"
 #include "toaster-lib/TRBuffer.h"
 
 void initTRBuffer(unsigned int agentMonitored, TRBuffer<Entity*>& TRBEntity, unsigned int historyLength) {
@@ -13,6 +14,7 @@ void initTRBuffer(unsigned int agentMonitored, TRBuffer<Entity*>& TRBEntity, uns
 int main(int argc, char** argv) {
     // Set this in a ros service
     const bool AGENT_FULL_CONFIG = false; //If false we will use only position and orientation
+    unsigned int roomOfInterest = 0;
 
     // Set this in a ros service
     // TODO: Make it a vector?
@@ -41,17 +43,24 @@ int main(int argc, char** argv) {
 
     while (node.ok()) {
         // We received agentMonitored
-        unsigned int roomOfInterest = 0;
+
+        //////////////////////////////////////
+        //           Updating data          //
+        //////////////////////////////////////
 
         if ((!humanMonitored && (robotRd.lastConfig_[agentMonitored] != NULL))
                 || (humanMonitored && (humanRd.lastConfig_[agentMonitored] != NULL))) {
 
             // We add the agent to the mapTRBEntity and update roomOfInterest
             if (humanMonitored) {
-                mapTRBEntity[agentMonitored].push_back(humanRd.lastConfig_[agentMonitored]->getTime(), humanRd.lastConfig_[agentMonitored]);
+                // If this is a new data we add it
+                if ((mapTRBEntity[agentMonitored].empty()) || (mapTRBEntity[agentMonitored].back()->getTime() < humanRd.lastConfig_[agentMonitored]->getTime()))
+                    mapTRBEntity[agentMonitored].push_back(humanRd.lastConfig_[agentMonitored]->getTime(), humanRd.lastConfig_[agentMonitored]);
                 roomOfInterest = humanRd.lastConfig_[agentMonitored]->getRoomId();
             } else {
-                mapTRBEntity[agentMonitored].push_back(robotRd.lastConfig_[agentMonitored]->getTime(), robotRd.lastConfig_[agentMonitored]);
+                // If this is a new data we add it
+                if ((mapTRBEntity[agentMonitored].empty()) || (mapTRBEntity[agentMonitored].back()->getTime() < robotRd.lastConfig_[agentMonitored]->getTime()))
+                    mapTRBEntity[agentMonitored].push_back(robotRd.lastConfig_[agentMonitored]->getTime(), robotRd.lastConfig_[agentMonitored]);
                 roomOfInterest = robotRd.lastConfig_[agentMonitored]->getRoomId();
             }
 
@@ -62,7 +71,9 @@ int main(int argc, char** argv) {
             for (std::map<unsigned int, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
                 // if in same room as monitored agent and not monitored agent
                 if (roomOfInterest == it->second->getRoomId() && it->second->getId() != agentMonitored) {
-                    mapTRBEntity[it->second->getId()].push_back(it->second->getTime(), it->second);
+                    // If this is a new data we add it
+                    if ((mapTRBEntity[it->second->getId()].empty()) || mapTRBEntity[it->second->getId()].back()->getTime() < it->second->getTime())
+                        mapTRBEntity[it->second->getId()].push_back(it->second->getTime(), it->second);
                 }
 
             }
@@ -72,20 +83,25 @@ int main(int argc, char** argv) {
             for (std::map<unsigned int, Robot*>::iterator it = robotRd.lastConfig_.begin(); it != robotRd.lastConfig_.end(); ++it) {
                 // if in same room as monitored agent and not monitored agent
                 if ((roomOfInterest == it->second->getRoomId()) && (it->second->getId() != agentMonitored)) {
-                    mapTRBEntity[it->second->getId()].push_back(it->second->getTime(), it->second);
+                    // If this is a new data we add it
+                    if ((mapTRBEntity[it->second->getId()].empty()) || mapTRBEntity[it->second->getId()].back()->getTime() < it->second->getTime())
+                        mapTRBEntity[it->second->getId()].push_back(it->second->getTime(), it->second);
                 }
 
             }
 
             //  For Objects
 
-
-            // Add lastConfig to TimedRingBuffer
-
-            // Compute facts concerning monitored agent
+            //////////////////////////////////////////////
+            // Compute facts concerning monitored agent //
+            //////////////////////////////////////////////
+            
+            
+            
+            
         }
         ros::spinOnce();
-                loop_rate.sleep();
+        loop_rate.sleep();
     }
     return 0;
 }
