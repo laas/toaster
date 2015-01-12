@@ -4,6 +4,33 @@
 #include "SPAR/PDGRobotReader.h"
 //#include "SPAR/PDGObjectReader.h"
 #include "toaster-lib/TRBuffer.h"
+#include "toaster-lib/MathFunctions.h"
+
+bool computeMotion2D(TRBuffer< Entity* >&  confBuffer, std::string joint, unsigned long timelapse, unsigned int distanceThreshold) {
+    int index;
+    double dist = 0.0;
+    long actualTimelapse = 0;
+    long timeNew = confBuffer.getTimeFromIndex( confBuffer.size() -1 );
+    long timeOld = timeNew - timelapse;
+    Entity* entNew = confBuffer.getDataFromIndex( confBuffer.size() -1 );
+
+
+    index = confBuffer.getIndexAfter(timeOld);
+    actualTimelapse = timeNew - confBuffer.getTimeFromIndex(index);   // Actual timelapse
+    Entity* entOld = confBuffer.getDataFromIndex( index );
+    
+    dist = bg::distance(MathFunctions::convert3dTo2d(entNew->getPosition()), MathFunctions::convert3dTo2d(entOld->getPosition()));
+    
+    // std::cout << "Distance is " << dist << std::endl;
+    //		std::cout << "ds*actualTimeLapse / timelapse " << distanceThreshold * actualTimelapse / timelapse << std::endl;
+    //	std::cout << "actual timelapse "<< actualTimelapse << std::endl;
+    if( dist < distanceThreshold * actualTimelapse / timelapse) {
+	return false;
+    }
+    else { 
+	return true;
+    } 
+}
 
 void initTRBuffer(unsigned int agentMonitored, TRBuffer<Entity*>& TRBEntity, unsigned int historyLength) {
     //We need to initiate the ringbuffer
