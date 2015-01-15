@@ -6,7 +6,7 @@
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
 
-bool computeMotion2D(TRBuffer< Entity* >& confBuffer, unsigned long timelapse, unsigned int distanceThreshold) {
+bool computeMotion2D(TRBuffer< Entity* >& confBuffer, unsigned long timelapse, double distanceThreshold) {
     int index;
     double dist = 0.0;
     long actualTimelapse = 0;
@@ -20,9 +20,11 @@ bool computeMotion2D(TRBuffer< Entity* >& confBuffer, unsigned long timelapse, u
 
     dist = bg::distance(MathFunctions::convert3dTo2d(entNew->getPosition()), MathFunctions::convert3dTo2d(entOld->getPosition()));
 
-    // std::cout << "Distance is " << dist << std::endl;
-    //		std::cout << "ds*actualTimeLapse / timelapse " << distanceThreshold * actualTimelapse / timelapse << std::endl;
-    //	std::cout << "actual timelapse "<< actualTimelapse << std::endl;
+    /*std::cout << "Distance is " << dist << std::endl;
+    std::cout << "ds*actualTimeLapse / timelapse " << distanceThreshold * actualTimelapse / timelapse << std::endl;
+    std::cout << "ds " << distanceThreshold << std::endl;
+    std::cout << "timelapse " << timelapse << std::endl;
+    std::cout << "actual timelapse " << actualTimelapse << std::endl;*/
     if (dist < distanceThreshold * actualTimelapse / timelapse) {
         return false;
     } else {
@@ -87,7 +89,6 @@ int main(int argc, char** argv) {
     // Map of Timed Ring Buffer Entities
     std::map<unsigned int, TRBuffer < Entity* > > mapTRBEntity;
 
-
     ros::init(argc, argv, "AGENT_MONITOR");
     ros::NodeHandle node;
 
@@ -107,6 +108,9 @@ int main(int argc, char** argv) {
     while (node.ok()) {
         // We received agentMonitored
 
+        Human* humCur;
+        Robot* robCur;
+
         //////////////////////////////////////
         //           Updating data          //
         //////////////////////////////////////
@@ -116,15 +120,22 @@ int main(int argc, char** argv) {
 
             // We add the agent to the mapTRBEntity and update roomOfInterest
             if (humanMonitored) {
-                // If this is a new data we add it
-                if ((mapTRBEntity[agentMonitored].empty()) || (mapTRBEntity[agentMonitored].back()->getTime() < humanRd.lastConfig_[agentMonitored]->getTime()))
-                    mapTRBEntity[agentMonitored].push_back(humanRd.lastConfig_[agentMonitored]->getTime(), humanRd.lastConfig_[agentMonitored]);
                 roomOfInterest = humanRd.lastConfig_[agentMonitored]->getRoomId();
-            } else {
                 // If this is a new data we add it
-                if ((mapTRBEntity[agentMonitored].empty()) || (mapTRBEntity[agentMonitored].back()->getTime() < robotRd.lastConfig_[agentMonitored]->getTime()))
-                    mapTRBEntity[agentMonitored].push_back(robotRd.lastConfig_[agentMonitored]->getTime(), robotRd.lastConfig_[agentMonitored]);
+                
+                if ((mapTRBEntity[agentMonitored].empty()) || (mapTRBEntity[agentMonitored].back()->getTime() < humanRd.lastConfig_[agentMonitored]->getTime())) {
+                    humCur = humanRd.lastConfig_[agentMonitored];
+                    humanRd.lastConfig_[agentMonitored] = new Human(agentMonitored);
+                    mapTRBEntity[agentMonitored].push_back(humCur->getTime(), humCur);
+                }
+            } else {
                 roomOfInterest = robotRd.lastConfig_[agentMonitored]->getRoomId();
+                // If this is a new data we add it
+                if ((mapTRBEntity[agentMonitored].empty()) || (mapTRBEntity[agentMonitored].back()->getTime() < robotRd.lastConfig_[agentMonitored]->getTime())) {
+                    robCur = robotRd.lastConfig_[agentMonitored];
+                    robotRd.lastConfig_[agentMonitored] = new Robot(agentMonitored);
+                    mapTRBEntity[agentMonitored].push_back(robCur->getTime(), robCur);
+                }
             }
 
             // for each entity
@@ -133,10 +144,14 @@ int main(int argc, char** argv) {
             // For humans
             for (std::map<unsigned int, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
                 // if in same room as monitored agent and not monitored agent
-                if (roomOfInterest == it->second->getRoomId() && it->second->getId() != agentMonitored) {
+                if (roomOfInterest == it->second->getRoomId() && it->first != agentMonitored) {
                     // If this is a new data we add it
-                    if ((mapTRBEntity[it->second->getId()].empty()) || mapTRBEntity[it->second->getId()].back()->getTime() < it->second->getTime())
-                        mapTRBEntity[it->second->getId()].push_back(it->second->getTime(), it->second);
+                    if ((mapTRBEntity[it->first].empty()) || mapTRBEntity[it->first].back()->getTime() < it->second->getTime()) {
+                        Human * hum = it->second;
+                        it->second = new Human(it->first);
+
+                        mapTRBEntity[it->first].push_back(hum->getTime(), hum);
+                    }
                 } // TODO: else remove
 
             }
@@ -145,10 +160,13 @@ int main(int argc, char** argv) {
 
             for (std::map<unsigned int, Robot*>::iterator it = robotRd.lastConfig_.begin(); it != robotRd.lastConfig_.end(); ++it) {
                 // if in same room as monitored agent and not monitored agent
-                if ((roomOfInterest == it->second->getRoomId()) && (it->second->getId() != agentMonitored)) {
+                if ((roomOfInterest == it->second->getRoomId()) && (it->first != agentMonitored)) {
                     // If this is a new data we add it
-                    if ((mapTRBEntity[it->second->getId()].empty()) || mapTRBEntity[it->second->getId()].back()->getTime() < it->second->getTime())
-                        mapTRBEntity[it->second->getId()].push_back(it->second->getTime(), it->second);
+                    if ((mapTRBEntity[it->first].empty()) || mapTRBEntity[it->first].back()->getTime() < it->second->getTime()) {
+                        Robot* rob = it->second;
+                        it->second = new Robot(it->first);
+                        mapTRBEntity[it->first].push_back(rob->getTime(), rob);
+                    }
                 } // TODO: else remove
 
             }
@@ -162,19 +180,24 @@ int main(int argc, char** argv) {
 
             // Compute motion:
             unsigned long oneSecond = pow(10, 9);
-            if (computeMotion2D(mapTRBEntity[agentMonitored], oneSecond / 2, 0.03)) {
-                printf("[AGENT_MONITOR][DEBUG] %s is moving\n", mapTRBEntity[agentMonitored].back()->getName().c_str());
 
-                double angleDirection = 0.0;
-                std::map<unsigned int, double> towardConfidence;
+            if (mapTRBEntity[agentMonitored].empty()) {
+                printf("[AGENT_MONITOR][WARNING] agent monitored not found\n");
+            } else {
+                if (computeMotion2D(mapTRBEntity[agentMonitored], oneSecond / 2, 0.03)) {
+                    printf("[AGENT_MONITOR][DEBUG] %s is moving\n", mapTRBEntity[agentMonitored].back()->getName().c_str());
 
-                angleDirection = computeMotion2DDirection(mapTRBEntity[agentMonitored], oneSecond);
-                towardConfidence = computeMotion2DToward(mapTRBEntity, agentMonitored, angleDirection, 0.5);
-                for (std::map<unsigned int, double>::iterator it = towardConfidence.begin(); it != towardConfidence.end(); ++it) {
-                    printf("[AGENT_MONITOR][DEBUG] %s is moving toward %s with a confidence of %f\n",
-                            mapTRBEntity[agentMonitored].back()->getName().c_str(), mapTRBEntity[it->first].back()->getName().c_str(), it->second);
+                    double angleDirection = 0.0;
+                    std::map<unsigned int, double> towardConfidence;
+
+                    angleDirection = computeMotion2DDirection(mapTRBEntity[agentMonitored], oneSecond);
+                    towardConfidence = computeMotion2DToward(mapTRBEntity, agentMonitored, angleDirection, 0.5);
+                    for (std::map<unsigned int, double>::iterator it = towardConfidence.begin(); it != towardConfidence.end(); ++it) {
+                        printf("[AGENT_MONITOR][DEBUG] %s is moving toward %d with a confidence of %f\n",
+                                mapTRBEntity[agentMonitored].back()->getName().c_str(), mapTRBEntity[it->first].back()->getId(), it->second);
+                    }
+
                 }
-
             }
         }
 

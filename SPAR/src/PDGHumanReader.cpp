@@ -9,7 +9,7 @@ PDGHumanReader::PDGHumanReader(ros::NodeHandle& node, bool fullHuman) {
 }
 
 void PDGHumanReader::humanJointStateCallBack(const PDG::HumanList::ConstPtr& msg) {
-    std::cout << "[SPAR] new data for human received" << std::endl;
+    //std::cout << "[SPAR][DEBUG] new data for human received" << std::endl;
     Human * curHuman;
     for (unsigned int i = 0; i < msg->humanList.size(); i++) {
         
@@ -25,7 +25,7 @@ void PDGHumanReader::humanJointStateCallBack(const PDG::HumanList::ConstPtr& msg
         Mobility curHumanMobility = FULL;
 
         curHuman->setMobility(curHumanMobility);
-        curHuman->setName("Human1");
+        curHuman->setName(msg->humanList[i].meAgent.meEntity.name);
         curHuman->setTime(msg->humanList[i].meAgent.meEntity.time);
 
         humanPosition.set<0>(msg->humanList[i].meAgent.meEntity.positionX);

@@ -9,7 +9,7 @@ PDGRobotReader::PDGRobotReader(ros::NodeHandle& node, bool fullRobot) {
 }
 
 void PDGRobotReader::robotJointStateCallBack(const PDG::RobotList::ConstPtr& msg) {
-    std::cout << "[SPAR] new data for robot received" << std::endl;
+    //std::cout << "[SPAR][DEBUG] new data for robot received" << std::endl;
 
     Robot* curRobot;
     for (unsigned int i = 0; i < msg->robotList.size(); i++) {

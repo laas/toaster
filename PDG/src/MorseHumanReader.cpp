@@ -23,6 +23,8 @@ void MorseHumanReader::updateHumans(tf::TransformListener &listener) {
 void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, std::string humanBase){
   tf::StampedTransform transform;
   Human* curHuman = new Human(humId);
+  //TODO set name with humId
+  curHuman->setName("Human1");
   std::vector<double> humanOrientation;
   bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
 

@@ -86,11 +86,8 @@ int main(int argc, char** argv) {
         for (unsigned int i = 0; i < morseHumanRd.lastConfig_.size(); i++) {
             if (morseHumanRd.isPresent(morseHumanRd.humanIdOffset_ + i)) {
                 //Human
-                printf("[PDG] human is present\n");
                 feelEntity(morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i], human_msg.meAgent.meEntity);
-                printf("[PDG] human is present\n");
                 humanList_msg.humanList.push_back(human_msg);
-                printf("[PDG] human ready\n");
             }
         }
 
@@ -117,8 +114,6 @@ int main(int argc, char** argv) {
             }
         }
         //ROS_INFO("%s", msg.data.c_str());
-
-        printf("[PDG] publish\n");
 
         object_pub.publish(objectList_msg);
         human_pub.publish(humanList_msg);

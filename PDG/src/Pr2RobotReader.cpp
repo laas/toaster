@@ -35,6 +35,8 @@ void Pr2RobotReader::initJointsName() {
 
 void Pr2RobotReader::init() {
     Robot* curRobot = new Robot(robotIdOffset_);
+    //TODO: setname with id
+    curRobot->setName("pr2");
     initJointsName();
     if (fullRobot_) {
         for (unsigned int i = 0; i < pr2JointsName_.size(); i++) {
