@@ -54,7 +54,7 @@ double computeMotion2DDirection(TRBuffer< Entity* >& confBuffer, unsigned long t
     return towardAngle;
 }
 
-std::map<unsigned int, double> motion2DToward(std::map<unsigned int, TRBuffer < Entity* > >& mapEnts,
+std::map<unsigned int, double> computeMotion2DToward(std::map<unsigned int, TRBuffer < Entity* > >& mapEnts,
         unsigned int agentMonitored, double towardAngle, double angleThreshold) {
 
     std::map<unsigned int, double> towardConfidence;
@@ -160,9 +160,24 @@ int main(int argc, char** argv) {
             //////////////////////////////////////////////
 
 
+            // Compute motion:
+            unsigned long oneSecond = pow(10, 9);
+            if (computeMotion2D(mapTRBEntity[agentMonitored], oneSecond / 2, 0.03)) {
+                printf("[AGENT_MONITOR][DEBUG] %s is moving\n", mapTRBEntity[agentMonitored].back()->getName().c_str());
 
+                double angleDirection = 0.0;
+                std::map<unsigned int, double> towardConfidence;
 
+                angleDirection = computeMotion2DDirection(mapTRBEntity[agentMonitored], oneSecond);
+                towardConfidence = computeMotion2DToward(mapTRBEntity, agentMonitored, angleDirection, 0.5);
+                for (std::map<unsigned int, double>::iterator it = towardConfidence.begin(); it != towardConfidence.end(); ++it) {
+                    printf("[AGENT_MONITOR][DEBUG] %s is moving toward %s with a confidence of %f\n",
+                            mapTRBEntity[agentMonitored].back()->getName().c_str(), mapTRBEntity[it->first].back()->getName().c_str(), it->second);
+                }
+
+            }
         }
+
         ros::spinOnce();
         loop_rate.sleep();
     }
