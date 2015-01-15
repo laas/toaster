@@ -6,34 +6,70 @@
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
 
-bool computeMotion2D(TRBuffer< Entity* >&  confBuffer, std::string joint, unsigned long timelapse, unsigned int distanceThreshold) {
+bool computeMotion2D(TRBuffer< Entity* >& confBuffer, unsigned long timelapse, unsigned int distanceThreshold) {
     int index;
     double dist = 0.0;
     long actualTimelapse = 0;
-    long timeNew = confBuffer.getTimeFromIndex( confBuffer.size() -1 );
+    long timeNew = confBuffer.getTimeFromIndex(confBuffer.size() - 1);
     long timeOld = timeNew - timelapse;
-    Entity* entNew = confBuffer.getDataFromIndex( confBuffer.size() -1 );
-
+    Entity* entNew = confBuffer.getDataFromIndex(confBuffer.size() - 1);
 
     index = confBuffer.getIndexAfter(timeOld);
-    actualTimelapse = timeNew - confBuffer.getTimeFromIndex(index);   // Actual timelapse
-    Entity* entOld = confBuffer.getDataFromIndex( index );
-    
+    actualTimelapse = timeNew - confBuffer.getTimeFromIndex(index); // Actual timelapse
+    Entity* entOld = confBuffer.getDataFromIndex(index);
+
     dist = bg::distance(MathFunctions::convert3dTo2d(entNew->getPosition()), MathFunctions::convert3dTo2d(entOld->getPosition()));
-    
+
     // std::cout << "Distance is " << dist << std::endl;
     //		std::cout << "ds*actualTimeLapse / timelapse " << distanceThreshold * actualTimelapse / timelapse << std::endl;
     //	std::cout << "actual timelapse "<< actualTimelapse << std::endl;
-    if( dist < distanceThreshold * actualTimelapse / timelapse) {
-	return false;
+    if (dist < distanceThreshold * actualTimelapse / timelapse) {
+        return false;
+    } else {
+        return true;
     }
-    else { 
-	return true;
-    } 
+}
+
+double computeMotion2DDirection(TRBuffer< Entity* >& confBuffer, unsigned long timelapse) {
+    double towardAngle;
+    int index;
+    //long actualTimelapse = 0;
+    long timeNew = confBuffer.getTimeFromIndex(confBuffer.size() - 1);
+    long timeOld = timeNew - timelapse;
+    Entity* entNew = confBuffer.getDataFromIndex(confBuffer.size() - 1);
+
+    index = confBuffer.getIndexAfter(timeOld);
+    //actualTimelapse = timeNew - confBuffer.getTimeFromIndex(index);   // Actual timelapse
+    Entity* entOld = confBuffer.getDataFromIndex(index);
+    towardAngle = acos(fabs(entOld->getPosition().get<0>() - entNew->getPosition().get<0>())
+            / bg::distance(MathFunctions::convert3dTo2d(entOld->getPosition()), MathFunctions::convert3dTo2d(entNew->getPosition())));
+
+    // Trigonometric adjustment
+    if (entNew->getPosition().get<0>() < entOld->getPosition().get<0>())
+        towardAngle = 3.1416 - towardAngle;
+
+    if (entNew->getPosition().get<1>() < entOld->getPosition().get<1>())
+        towardAngle = -towardAngle;
+
+    return towardAngle;
+}
+
+std::map<unsigned int, double> motion2DToward(std::map<unsigned int, TRBuffer < Entity* > >& mapEnts,
+        unsigned int agentMonitored, double towardAngle, double angleThreshold) {
+
+    std::map<unsigned int, double> towardConfidence;
+
+    //For each entities in the same room
+    for (std::map<unsigned int, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) {
+        if (it->second.back()->getId() != agentMonitored)
+            towardConfidence[it->second.back()->getId()] = MathFunctions::isInAngle(mapEnts[agentMonitored].back(), it->second.back(), towardAngle, angleThreshold);
+    }
+    return towardConfidence;
 }
 
 void initTRBuffer(unsigned int agentMonitored, TRBuffer<Entity*>& TRBEntity, unsigned int historyLength) {
     //We need to initiate the ringbuffer
+
     TRBuffer<Entity*> mybuffer(historyLength);
     TRBEntity = mybuffer;
 }
@@ -101,7 +137,7 @@ int main(int argc, char** argv) {
                     // If this is a new data we add it
                     if ((mapTRBEntity[it->second->getId()].empty()) || mapTRBEntity[it->second->getId()].back()->getTime() < it->second->getTime())
                         mapTRBEntity[it->second->getId()].push_back(it->second->getTime(), it->second);
-                }
+                } // TODO: else remove
 
             }
 
@@ -113,7 +149,7 @@ int main(int argc, char** argv) {
                     // If this is a new data we add it
                     if ((mapTRBEntity[it->second->getId()].empty()) || mapTRBEntity[it->second->getId()].back()->getTime() < it->second->getTime())
                         mapTRBEntity[it->second->getId()].push_back(it->second->getTime(), it->second);
-                }
+                } // TODO: else remove
 
             }
 
@@ -122,10 +158,10 @@ int main(int argc, char** argv) {
             //////////////////////////////////////////////
             // Compute facts concerning monitored agent //
             //////////////////////////////////////////////
-            
-            
-            
-            
+
+
+
+
         }
         ros::spinOnce();
         loop_rate.sleep();

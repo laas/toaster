@@ -46,26 +46,9 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
     }
 }
 
-bool isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold) {
-
-    double entFacingAngle = entFacing->getOrientation()[2];
-    double entFacingSubjectAngle = acos((fabs(entFacing->getPosition().get<0>() - entSubject->getPosition().get<0>()))
-            / bg::distance(MathFunctions::convert3dTo2d(entFacing->getPosition()), MathFunctions::convert3dTo2d(entSubject->getPosition())));
-
-    // Trigonometric adjustment
-    if (entSubject->getPosition().get<0>() < entFacing->getPosition().get<0>())
-        entFacingSubjectAngle = 3.1416 - entFacingSubjectAngle;
-
-    if (entSubject->getPosition().get<1>() < entFacing->getPosition().get<1>())
-        entFacingSubjectAngle = -entFacingSubjectAngle;
-
-    double angleResult = fabs(entFacingAngle - entFacingSubjectAngle);
-
-    if (angleResult > angleThreshold) {
-        return false;
-    } else {
-        return true;
-    }
+// Return confidence: 0.0 if not facing 1.0 if facing
+double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold) {
+    return MathFunctions::isInAngle(entFacing, entSubject, entFacing->getOrientation()[2], angleThreshold);
 }
 
 int main(int argc, char** argv) {
@@ -163,9 +146,12 @@ int main(int argc, char** argv) {
 
             if (humanRd.lastConfig_[101]->isInArea(0)) {
                 // We will compute here facts that are relevant for interacting
-                if (robotRd.lastConfig_[1] != NULL)
-                    isFacing(humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5);
-                //printf("[SPAR][DEGUG] %s is facing %s\n", humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str());
+                if (robotRd.lastConfig_[1] != NULL){
+                    double confidence = 0.0;
+                    confidence = isFacing(humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5);
+                printf("[SPAR][DEGUG] %s is facing %s with confidence %f\n", 
+                        humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str(), confidence);
+                }
             } else if (humanRd.lastConfig_[101]->isInArea(1)) {
                 // We will compute here facts that are relevant when human is in danger zone
             } else {
