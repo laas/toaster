@@ -6,7 +6,7 @@
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
 
-bool computeMotion2D(TRBuffer< Entity* >& confBuffer, unsigned long timelapse, double distanceThreshold) {
+bool computeMotion2D(TRBuffer< Entity* > confBuffer, unsigned long timelapse, double distanceThreshold) {
     int index;
     double dist = 0.0;
     long actualTimelapse = 0;
@@ -32,7 +32,7 @@ bool computeMotion2D(TRBuffer< Entity* >& confBuffer, unsigned long timelapse, d
     }
 }
 
-double computeMotion2DDirection(TRBuffer< Entity* >& confBuffer, unsigned long timelapse) {
+double computeMotion2DDirection(TRBuffer< Entity* > confBuffer, unsigned long timelapse) {
     double towardAngle;
     int index;
     //long actualTimelapse = 0;
@@ -56,7 +56,7 @@ double computeMotion2DDirection(TRBuffer< Entity* >& confBuffer, unsigned long t
     return towardAngle;
 }
 
-std::map<unsigned int, double> computeMotion2DToward(std::map<unsigned int, TRBuffer < Entity* > >& mapEnts,
+std::map<unsigned int, double> computeMotion2DToward(std::map<unsigned int, TRBuffer < Entity* > > mapEnts,
         unsigned int agentMonitored, double towardAngle, double angleThreshold) {
 
     std::map<unsigned int, double> towardConfidence;
@@ -69,7 +69,7 @@ std::map<unsigned int, double> computeMotion2DToward(std::map<unsigned int, TRBu
     return towardConfidence;
 }
 
-std::map<unsigned int, double> computeDeltaDist(std::map<unsigned int, TRBuffer < Entity* > >& mapEnts, unsigned int agentMonitored, unsigned long timelapse) {
+std::map<unsigned int, double> computeDeltaDist(std::map<unsigned int, TRBuffer < Entity* > > mapEnts, unsigned int agentMonitored, unsigned long timelapse) {
     std::map<unsigned int, double> deltaDistMap;
     double curDist = 0.0;
     double prevDist = 0.0;
@@ -224,23 +224,27 @@ int main(int argc, char** argv) {
             if (mapTRBEntity[agentMonitored].empty()) {
                 printf("[AGENT_MONITOR][WARNING] agent monitored not found\n");
             } else {
-                if (computeMotion2D(mapTRBEntity[agentMonitored], oneSecond / 2, 0.03)) {
-                    printf("[AGENT_MONITOR][DEBUG] %s is moving\n", mapTRBEntity[agentMonitored].back()->getName().c_str());
+                if (computeMotion2D(mapTRBEntity[agentMonitored], oneSecond / 4, 0.03)) {
+                    printf("[AGENT_MONITOR][DEBUG] %s is moving %lu\n", mapTRBEntity[agentMonitored].back()->getName().c_str(), mapTRBEntity[agentMonitored].back()->getTime());
 
                     double angleDirection = 0.0;
-                    std::map<unsigned int, double> towardConfidence;
+                    std::map<unsigned int, double> mapIdValue;
 
                     // We compute the direction toward fact:
                     angleDirection = computeMotion2DDirection(mapTRBEntity[agentMonitored], oneSecond);
-                    towardConfidence = computeMotion2DToward(mapTRBEntity, agentMonitored, angleDirection, 0.5);
-                    for (std::map<unsigned int, double>::iterator it = towardConfidence.begin(); it != towardConfidence.end(); ++it) {
+                    mapIdValue = computeMotion2DToward(mapTRBEntity, agentMonitored, angleDirection, 0.5);
+                    for (std::map<unsigned int, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
                         if (it->second > 0.0)
                             printf("[AGENT_MONITOR][DEBUG] %s is moving toward %d with a confidence of %f\n",
                                 mapTRBEntity[agentMonitored].back()->getName().c_str(), it->first, it->second);
                     }
 
                     // Then we compute /_\distance
-                    towardConfidence = computeDeltaDist(mapTRBEntity, agentMonitored, oneSecond / 4);
+                    mapIdValue = computeDeltaDist(mapTRBEntity, agentMonitored, oneSecond / 4);
+                    for (std::map<unsigned int, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
+                        printf("[AGENT_MONITOR][DEBUG] agent %s has a deltadist toward  %d of %f\n",
+                                mapTRBEntity[agentMonitored].back()->getName().c_str(), it->first, it->second);
+                    }
 
 
                 }
