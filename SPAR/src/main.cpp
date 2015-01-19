@@ -47,6 +47,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
 }
 
 // Return confidence: 0.0 if not facing 1.0 if facing
+
 double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold) {
     return MathFunctions::isInAngle(entFacing, entSubject, entFacing->getOrientation()[2], angleThreshold);
 }
@@ -74,8 +75,8 @@ int main(int argc, char** argv) {
     bg::model::point<double, 2, bg::cs::cartesian> origin(0.0, 0.0);
 
     // AreaRays:
-    double interDist = 3.0;
-    double dangerDist = 1.0;
+    double interDist = 5.0;
+    double dangerDist = 1.5;
 
     // TODO: put this in a service with parameters
     // We create 2 Area for the robot:
@@ -146,11 +147,12 @@ int main(int argc, char** argv) {
 
             if (humanRd.lastConfig_[101]->isInArea(0)) {
                 // We will compute here facts that are relevant for interacting
-                if (robotRd.lastConfig_[1] != NULL){
+                if (robotRd.lastConfig_[1] != NULL) {
                     double confidence = 0.0;
                     confidence = isFacing(humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5);
-                printf("[SPAR][DEGUG] %s is facing %s with confidence %f\n", 
-                        humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str(), confidence);
+                    if (confidence > 0.0)
+                        printf("[SPAR][DEGUG] %s is facing %s with confidence %f\n",
+                            humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str(), confidence);
                 }
             } else if (humanRd.lastConfig_[101]->isInArea(1)) {
                 // We will compute here facts that are relevant when human is in danger zone

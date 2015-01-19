@@ -63,10 +63,50 @@ std::map<unsigned int, double> computeMotion2DToward(std::map<unsigned int, TRBu
 
     //For each entities in the same room
     for (std::map<unsigned int, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) {
-        if (it->second.back()->getId() != agentMonitored)
-            towardConfidence[it->second.back()->getId()] = MathFunctions::isInAngle(mapEnts[agentMonitored].back(), it->second.back(), towardAngle, angleThreshold);
+        if (it->first != agentMonitored)
+            towardConfidence[it->first] = MathFunctions::isInAngle(mapEnts[agentMonitored].back(), it->second.back(), towardAngle, angleThreshold);
     }
     return towardConfidence;
+}
+
+std::map<unsigned int, double> computeDeltaDist(std::map<unsigned int, TRBuffer < Entity* > >& mapEnts, unsigned int agentMonitored, unsigned long timelapse) {
+    std::map<unsigned int, double> deltaDistMap;
+    double curDist = 0.0;
+    double prevDist = 0.0;
+    double deltaDist = 0.0;
+    unsigned long timeCur = 0;
+    unsigned long timePrev = 0;
+    Entity* entCur(0);
+    Entity* entMonitoredCur(0);
+    Entity* entMonitoredPrev(0);
+
+    //For each entities in the same room
+    for (std::map<unsigned int, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) {
+        if (it->first != agentMonitored) {
+            // We compute the current distance
+            entCur = it->second.back();
+            entMonitoredCur = mapEnts[agentMonitored].back();
+            
+            //Put this in a function
+            curDist = bg::distance(MathFunctions::convert3dTo2d(entCur->getPosition()), MathFunctions::convert3dTo2d(entMonitoredCur->getPosition()));
+            
+            // We compute the distance at now - timelapse
+            timeCur = entMonitoredCur->getTime();
+            timePrev = timeCur - timelapse;
+
+            entMonitoredPrev = mapEnts[agentMonitored].getDataFromIndex(mapEnts[agentMonitored].getIndexAfter(timePrev));
+            
+            prevDist = bg::distance(MathFunctions::convert3dTo2d(entCur->getPosition()), MathFunctions::convert3dTo2d(entMonitoredPrev->getPosition()));
+            
+
+            //We compute Deltadist
+            deltaDist = curDist - prevDist;
+            
+            // We fill towardConfidence
+            deltaDistMap[it->first] = deltaDist;
+        }
+    }
+    return deltaDistMap;
 }
 
 void initTRBuffer(unsigned int agentMonitored, TRBuffer<Entity*>& TRBEntity, unsigned int historyLength) {
@@ -122,7 +162,7 @@ int main(int argc, char** argv) {
             if (humanMonitored) {
                 roomOfInterest = humanRd.lastConfig_[agentMonitored]->getRoomId();
                 // If this is a new data we add it
-                
+
                 if ((mapTRBEntity[agentMonitored].empty()) || (mapTRBEntity[agentMonitored].back()->getTime() < humanRd.lastConfig_[agentMonitored]->getTime())) {
                     humCur = humanRd.lastConfig_[agentMonitored];
                     humanRd.lastConfig_[agentMonitored] = new Human(agentMonitored);
@@ -190,12 +230,18 @@ int main(int argc, char** argv) {
                     double angleDirection = 0.0;
                     std::map<unsigned int, double> towardConfidence;
 
+                    // We compute the direction toward fact:
                     angleDirection = computeMotion2DDirection(mapTRBEntity[agentMonitored], oneSecond);
                     towardConfidence = computeMotion2DToward(mapTRBEntity, agentMonitored, angleDirection, 0.5);
                     for (std::map<unsigned int, double>::iterator it = towardConfidence.begin(); it != towardConfidence.end(); ++it) {
-                        printf("[AGENT_MONITOR][DEBUG] %s is moving toward %d with a confidence of %f\n",
-                                mapTRBEntity[agentMonitored].back()->getName().c_str(), mapTRBEntity[it->first].back()->getId(), it->second);
+                        if (it->second > 0.0)
+                            printf("[AGENT_MONITOR][DEBUG] %s is moving toward %d with a confidence of %f\n",
+                                mapTRBEntity[agentMonitored].back()->getName().c_str(), it->first, it->second);
                     }
+
+                    // Then we compute /_\distance
+                    towardConfidence = computeDeltaDist(mapTRBEntity, agentMonitored, oneSecond / 4);
+
 
                 }
             }
