@@ -224,6 +224,7 @@ int main(int argc, char** argv) {
             if (mapTRBEntity[agentMonitored].empty()) {
                 printf("[AGENT_MONITOR][WARNING] agent monitored not found\n");
             } else {
+                printf("[AGENT_MONITOR][WARNING] agent monitored buffer size %d, max_size %d, full %d, back is null? %d\n", mapTRBEntity[agentMonitored].size(), mapTRBEntity[agentMonitored].max_size(), mapTRBEntity[agentMonitored].full(), mapTRBEntity[agentMonitored].back() == NULL );
                 if (computeMotion2D(mapTRBEntity[agentMonitored], oneSecond / 4, 0.03)) {
                     printf("[AGENT_MONITOR][DEBUG] %s is moving %lu\n", mapTRBEntity[agentMonitored].back()->getName().c_str(), mapTRBEntity[agentMonitored].back()->getTime());
 

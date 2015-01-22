@@ -31,7 +31,7 @@ set(Boost_NO_SYSTEM_PATHS ON)
 
 find_package(Boost REQUIRED COMPONENTS)# system)
 include_directories(${Boost_INCLUDE_DIRS} /home/gmilliez/devel/include /home/gmilliez/openrobots/include/)
-rosbuild_add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/HumanReader.cpp src/Pr2RobotReader.cpp src/RobotReader.cpp src/ObjectReader.cpp src/VimanObjectReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
+rosbuild_add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/HumanReader.cpp src/Pr2RobotReader.cpp src/RobotReader.cpp src/ObjectReader.cpp src/VimanObjectReader.cpp src/SparkObjectReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
 #This is for vimanReader.
 target_link_libraries(pdg $ENV{ROBOTPKG_BASE}/lib/libposterLib.so)
 target_link_libraries(pdg /home/gmilliez/devel/lib/libtoaster.so)
