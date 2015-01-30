@@ -9,6 +9,8 @@
 #include <PDG/Robot.h>
 #include <PDG/Human.h>
 #include <PDG/Object.h>
+#include <PDG/Fact.h>
+#include <PDG/FactList.h>
 #include <PDG/RobotList.h>
 #include <PDG/HumanList.h>
 #include <PDG/ObjectList.h>
@@ -39,9 +41,10 @@ int main(int argc, char** argv) {
     VimanObjectReader vimanObjectRd("morseViman");
 
     //Data writing
-    ros::Publisher object_pub = node.advertise<PDG::ObjectList>("objectList", 1000);
-    ros::Publisher human_pub = node.advertise<PDG::HumanList>("humanList", 1000);
-    ros::Publisher robot_pub = node.advertise<PDG::RobotList>("robotList", 1000);
+    ros::Publisher object_pub = node.advertise<PDG::ObjectList>("PDG/objectList", 1000);
+    ros::Publisher human_pub = node.advertise<PDG::HumanList>("PDG/humanList", 1000);
+    ros::Publisher robot_pub = node.advertise<PDG::RobotList>("PDG/robotList", 1000);
+    ros::Publisher fact_pub = node.advertise<PDG::FactList>("PDG/factList", 1000);
 
 
     ros::Rate loop_rate(30);
@@ -52,6 +55,8 @@ int main(int argc, char** argv) {
     PDG::ObjectList objectList_msg;
     PDG::HumanList humanList_msg;
     PDG::RobotList robotList_msg;
+    PDG::FactList factList_msg;
+    PDG::Fact fact_msg;
     PDG::Object object_msg;
     PDG::Human human_msg;
     PDG::Robot robot_msg;
@@ -73,6 +78,16 @@ int main(int argc, char** argv) {
         if (object_present)
             for (unsigned int i = 0; i < vimanObjectRd.nbObjects_; i++) {
                 if (vimanObjectRd.isPresent(vimanObjectRd.objectIdOffset_ + i)) {
+                    
+                    //Fact
+                    fact_msg.property = "isPresent";
+                    fact_msg.subjectId = vimanObjectRd.objectIdOffset_ + i;
+                    fact_msg.confidence = 90;
+                    fact_msg.time = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime();
+                    
+                    factList_msg.factList.push_back(fact_msg);
+                    
+                    
                     //Object
                     feelEntity(vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i], object_msg.meEntity);
                     objectList_msg.objectList.push_back(object_msg);
@@ -85,6 +100,15 @@ int main(int argc, char** argv) {
         //Humans
         for (unsigned int i = 0; i < morseHumanRd.lastConfig_.size(); i++) {
             if (morseHumanRd.isPresent(morseHumanRd.humanIdOffset_ + i)) {
+                
+                //Fact
+                fact_msg.property = "isPresent";
+                fact_msg.subjectId = morseHumanRd.humanIdOffset_ + i;
+                fact_msg.confidence = 90;
+                    
+                factList_msg.factList.push_back(fact_msg);
+                
+                
                 //Human
                 feelEntity(morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i], human_msg.meAgent.meEntity);
                 humanList_msg.humanList.push_back(human_msg);
@@ -94,6 +118,16 @@ int main(int argc, char** argv) {
         //Robots
         for (unsigned int i = 0; i < pr2RobotRd.lastConfig_.size(); i++) {
             if (pr2RobotRd.isPresent(pr2RobotRd.robotIdOffset_)) {
+                
+                
+                //Fact
+                fact_msg.property = "isPresent";
+                fact_msg.subjectId = pr2RobotRd.robotIdOffset_ + i;
+                fact_msg.confidence = 100;
+                    
+                factList_msg.factList.push_back(fact_msg);
+                
+                
                 //Robot
                 robot_msg.meAgent.mobility = 0;
                 feelEntity(pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
@@ -118,6 +152,7 @@ int main(int argc, char** argv) {
         object_pub.publish(objectList_msg);
         human_pub.publish(humanList_msg);
         robot_pub.publish(robotList_msg);
+        fact_pub.publish(factList_msg);
 
         ros::spinOnce();
 
@@ -126,6 +161,7 @@ int main(int argc, char** argv) {
         humanList_msg.humanList.clear();
         robotList_msg.robotList.clear();
         robot_msg.meAgent.skeletonJoint.clear();
+        factList_msg.factList.clear();
 
         loop_rate.sleep();
 

@@ -5,6 +5,8 @@
 #include "toaster-lib/CircleArea.h"
 #include "toaster-lib/PolygonArea.h"
 #include "toaster-lib/MathFunctions.h"
+#include <PDG/Fact.h>
+#include <PDG/FactList.h>
 #include <iterator>
 
 // Entity should be a vector or a map with all entities
@@ -63,6 +65,12 @@ int main(int argc, char** argv) {
     PDGHumanReader humanRd(node, AGENT_FULL_CONFIG);
     PDGRobotReader robotRd(node, AGENT_FULL_CONFIG);
     //PDGObjectReader objectRd(node);
+
+
+    ros::Publisher fact_pub = node.advertise<PDG::FactList>("SPAR/factList", 1000);
+
+    PDG::FactList factList_msg;
+    PDG::Fact fact_msg;
 
     // Set this in a ros service?
     ros::Rate loop_rate(30);
@@ -143,24 +151,76 @@ int main(int argc, char** argv) {
                 updateEntityArea(mapArea, robotRd.lastConfig_[1]);
 
             // We update entities vector inArea
+            // TODO: actually do this for every entities!
             updateInArea(humanRd.lastConfig_[101], mapArea);
+            updateInArea(robotRd.lastConfig_[1], mapArea);
 
             if (humanRd.lastConfig_[101]->isInArea(0)) {
+
+                //Fact
+                fact_msg.property = "isInArea";
+                fact_msg.subProperty = "interacting";
+                fact_msg.subjectId = 101;
+                fact_msg.targetId = 1;
+                fact_msg.confidence = 100;
+                fact_msg.time = humanRd.lastConfig_[101]->getTime();
+
+                factList_msg.factList.push_back(fact_msg);
+
                 // We will compute here facts that are relevant for interacting
                 if (robotRd.lastConfig_[1] != NULL) {
                     double confidence = 0.0;
                     confidence = isFacing(humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5);
-                    if (confidence > 0.0)
+                    if (confidence > 0.0) {
                         printf("[SPAR][DEGUG] %s is facing %s with confidence %f\n",
-                            humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str(), confidence);
+                                humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str(), confidence);
+
+                        //Fact
+                        fact_msg.property = "isFacing";
+                        fact_msg.subProperty = "orientationAngle";
+                        fact_msg.subjectId = 101;
+                        fact_msg.targetId = 1;
+                        fact_msg.confidence = confidence * 100;
+                        fact_msg.time = humanRd.lastConfig_[101]->getTime();
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
                 }
             } else if (humanRd.lastConfig_[101]->isInArea(1)) {
                 // We will compute here facts that are relevant when human is in danger zone
+
+                //Fact
+                fact_msg.property = "isInArea";
+                fact_msg.subProperty = "Danger";
+                fact_msg.subjectId = 101;
+                fact_msg.targetId = 1;
+                fact_msg.confidence = 100;
+                fact_msg.time = humanRd.lastConfig_[101]->getTime();
+
+                factList_msg.factList.push_back(fact_msg);
             } else {
                 // We will compute here facts that are relevant for human out of interacting zone
             }
+
+            // TODO: For each entities
+            
+            //Fact room
+            fact_msg.property = "isInArea";
+            fact_msg.subProperty = "Room";
+            fact_msg.subjectId = 101;
+            fact_msg.targetId = humanRd.lastConfig_[101]->getRoomId();
+            fact_msg.confidence = 100;
+            fact_msg.time = humanRd.lastConfig_[101]->getTime();
+
+            factList_msg.factList.push_back(fact_msg);
+
         }
+        fact_pub.publish(factList_msg);
+
         ros::spinOnce();
+
+        factList_msg.factList.clear();
+
         loop_rate.sleep();
     }
     return 0;

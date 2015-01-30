@@ -5,7 +5,7 @@ PDGRobotReader::PDGRobotReader(ros::NodeHandle& node, bool fullRobot) {
     std::cout << "[SPAR] Initializing PDGRobotReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/robotList", 1, &PDGRobotReader::robotJointStateCallBack, this);
+    sub_ = node.subscribe("/PDG/robotList", 1, &PDGRobotReader::robotJointStateCallBack, this);
 }
 
 void PDGRobotReader::robotJointStateCallBack(const PDG::RobotList::ConstPtr& msg) {

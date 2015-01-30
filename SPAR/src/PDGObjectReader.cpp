@@ -11,7 +11,7 @@ PDGObjectReader::PDGObjectReader(ros::NodeHandle& node) {
     std::cout << "[SPAR] Initializing PDGObjectReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/objectList", 1, &PDGObjectReader::objectStateCallBack, this);
+    sub_ = node.subscribe("/PDG/objectList", 1, &PDGObjectReader::objectStateCallBack, this);
 }
 
 void PDGObjectReader::objectStateCallBack(const PDG::ObjectList::ConstPtr& msg) {

@@ -5,7 +5,7 @@ PDGHumanReader::PDGHumanReader(ros::NodeHandle& node, bool fullHuman) {
     std::cout << "[SPAR] Initializing PDGHumanReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/humanList", 1, &PDGHumanReader::humanJointStateCallBack, this);
+    sub_ = node.subscribe("/PDG/humanList", 1, &PDGHumanReader::humanJointStateCallBack, this);
 }
 
 void PDGHumanReader::humanJointStateCallBack(const PDG::HumanList::ConstPtr& msg) {

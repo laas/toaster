@@ -3,6 +3,8 @@
 #include "SPAR/PDGHumanReader.h"
 #include "SPAR/PDGRobotReader.h"
 //#include "SPAR/PDGObjectReader.h"
+#include "PDG/FactList.h"
+#include "PDG/Fact.h"
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
 
@@ -76,9 +78,9 @@ std::map<unsigned int, double> computeDeltaDist(std::map<unsigned int, TRBuffer 
     double deltaDist = 0.0;
     unsigned long timeCur = 0;
     unsigned long timePrev = 0;
-    Entity* entCur(0);
-    Entity* entMonitoredCur(0);
-    Entity* entMonitoredPrev(0);
+    Entity * entCur(0);
+    Entity * entMonitoredCur(0);
+    Entity * entMonitoredPrev(0);
 
     //For each entities in the same room
     for (std::map<unsigned int, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) {
@@ -86,22 +88,22 @@ std::map<unsigned int, double> computeDeltaDist(std::map<unsigned int, TRBuffer 
             // We compute the current distance
             entCur = it->second.back();
             entMonitoredCur = mapEnts[agentMonitored].back();
-            
+
             //Put this in a function
             curDist = bg::distance(MathFunctions::convert3dTo2d(entCur->getPosition()), MathFunctions::convert3dTo2d(entMonitoredCur->getPosition()));
-            
+
             // We compute the distance at now - timelapse
             timeCur = entMonitoredCur->getTime();
             timePrev = timeCur - timelapse;
 
             entMonitoredPrev = mapEnts[agentMonitored].getDataFromIndex(mapEnts[agentMonitored].getIndexAfter(timePrev));
-            
+
             prevDist = bg::distance(MathFunctions::convert3dTo2d(entCur->getPosition()), MathFunctions::convert3dTo2d(entMonitoredPrev->getPosition()));
-            
+
 
             //We compute Deltadist
             deltaDist = curDist - prevDist;
-            
+
             // We fill towardConfidence
             deltaDistMap[it->first] = deltaDist;
         }
@@ -136,6 +138,12 @@ int main(int argc, char** argv) {
     PDGHumanReader humanRd(node, AGENT_FULL_CONFIG);
     PDGRobotReader robotRd(node, AGENT_FULL_CONFIG);
     //PDGObjectReader objectRd(node);
+
+    ros::Publisher fact_pub = node.advertise<PDG::FactList>("AGENT_MONITOR/factList", 1000);
+
+    PDG::FactList factList_msg;
+    PDG::Fact fact_msg;
+
 
     // Set this in a ros service?
     ros::Rate loop_rate(30);
@@ -224,9 +232,21 @@ int main(int argc, char** argv) {
             if (mapTRBEntity[agentMonitored].empty()) {
                 printf("[AGENT_MONITOR][WARNING] agent monitored not found\n");
             } else {
-                printf("[AGENT_MONITOR][WARNING] agent monitored buffer size %d, max_size %d, full %d, back is null? %d\n", mapTRBEntity[agentMonitored].size(), mapTRBEntity[agentMonitored].max_size(), mapTRBEntity[agentMonitored].full(), mapTRBEntity[agentMonitored].back() == NULL );
+                printf("[AGENT_MONITOR][WARNING] agent monitored buffer size %d, max_size %d, full %d, back is null? %d\n", mapTRBEntity[agentMonitored].size(), mapTRBEntity[agentMonitored].max_size(), mapTRBEntity[agentMonitored].full(), mapTRBEntity[agentMonitored].back() == NULL);
                 if (computeMotion2D(mapTRBEntity[agentMonitored], oneSecond / 4, 0.03)) {
                     printf("[AGENT_MONITOR][DEBUG] %s is moving %lu\n", mapTRBEntity[agentMonitored].back()->getName().c_str(), mapTRBEntity[agentMonitored].back()->getTime());
+
+
+                    //Fact moving
+                    fact_msg.property = "isMoving";
+                    fact_msg.subProperty = "";
+                    fact_msg.subjectId = 101;
+                    fact_msg.stringValue = "true";
+                    fact_msg.confidence = 100;
+                    fact_msg.time = humanRd.lastConfig_[101]->getTime();
+
+                    factList_msg.factList.push_back(fact_msg);
+
 
                     double angleDirection = 0.0;
                     std::map<unsigned int, double> mapIdValue;
@@ -238,6 +258,16 @@ int main(int argc, char** argv) {
                         if (it->second > 0.0)
                             printf("[AGENT_MONITOR][DEBUG] %s is moving toward %d with a confidence of %f\n",
                                 mapTRBEntity[agentMonitored].back()->getName().c_str(), it->first, it->second);
+
+                        //Fact moving toward
+                        fact_msg.property = "isMovingToward";
+                        fact_msg.subProperty = "Direction";
+                        fact_msg.subjectId = 101;
+                        fact_msg.targetId = it->first;
+                        fact_msg.confidence = it->second * 100;
+                        fact_msg.time = humanRd.lastConfig_[101]->getTime();
+
+                        factList_msg.factList.push_back(fact_msg);
                     }
 
                     // Then we compute /_\distance
@@ -245,6 +275,14 @@ int main(int argc, char** argv) {
                     for (std::map<unsigned int, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
                         printf("[AGENT_MONITOR][DEBUG] agent %s has a deltadist toward  %d of %f\n",
                                 mapTRBEntity[agentMonitored].back()->getName().c_str(), it->first, it->second);
+
+                        //Fact moving toward
+                        fact_msg.property = "isMovingToward";
+                        fact_msg.subProperty = "Distance";
+                        fact_msg.subjectId = 101;
+                        fact_msg.targetId = it->first;
+                        fact_msg.confidence = it->second * 100;
+                        fact_msg.time = humanRd.lastConfig_[101]->getTime();
                     }
 
 
@@ -252,7 +290,12 @@ int main(int argc, char** argv) {
             }
         }
 
+        fact_pub.publish(factList_msg);
+
         ros::spinOnce();
+
+        factList_msg.factList.clear();
+
         loop_rate.sleep();
     }
     return 0;
