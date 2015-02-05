@@ -2,6 +2,9 @@ string property
 string subProperty
 uint32 subjectId
 uint32 targetId
+string subjectName
+string targetName
+uint32 valueType
 float64 doubleValue
 string stringValue
 uint64 confidence

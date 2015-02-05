@@ -1,0 +1,18 @@
+<package>
+  <description brief="BELIEF_MANAGER">
+
+     BELIEF_MANAGER
+
+  </description>
+  <author>gmilliez</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/BELIEF_MANAGER</url>
+  <depend package="PDG"/>
+  <depend package="SPAR"/>
+  <depend package="rospy"/>
+  <depend package="roscpp"/>
+
+</package>
+
+
