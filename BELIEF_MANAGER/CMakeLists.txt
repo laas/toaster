@@ -36,6 +36,6 @@ set(Boost_NO_SYSTEM_PATHS ON)
 
 find_package(Boost REQUIRED COMPONENTS)# system)
 include_directories(${Boost_INCLUDE_DIRS} /home/gmilliez/devel/include /home/gmilliez/work/toaster/SPAR/include)
-rosbuild_add_executable(belief_manager ../SPAR/src/PDGObjectReader.cpp src/main.cpp)
+rosbuild_add_executable(belief_manager ../SPAR/src/PDGObjectReader.cpp ../SPAR/src/PDGFactReader.cpp src/main.cpp)
 target_link_libraries(belief_manager /home/gmilliez/devel/lib/libtoaster.so)
 

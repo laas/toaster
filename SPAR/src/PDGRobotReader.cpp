@@ -14,7 +14,7 @@ void PDGRobotReader::robotJointStateCallBack(const PDG::RobotList::ConstPtr& msg
     Robot* curRobot;
     for (unsigned int i = 0; i < msg->robotList.size(); i++) {
 
-        // If this human is not assigned we have to allocate data.
+        // If this robot is not assigned we have to allocate data.
         if (lastConfig_[msg->robotList[i].meAgent.meEntity.id] == NULL)
             curRobot = new Robot(msg->robotList[i].meAgent.meEntity.id);
         else
