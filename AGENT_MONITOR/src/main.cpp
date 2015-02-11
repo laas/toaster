@@ -134,6 +134,7 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "AGENT_MONITOR");
     ros::NodeHandle node;
 
+    // TODO: add SPAR data reading to get the room of entities.
     //Data reading
     PDGHumanReader humanRd(node, AGENT_FULL_CONFIG);
     PDGRobotReader robotRd(node, AGENT_FULL_CONFIG);
