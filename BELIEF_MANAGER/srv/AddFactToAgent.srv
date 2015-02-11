@@ -1,0 +1,5 @@
+PDG/Fact fact
+string agentName
+int32 agentId
+---
+string answer
