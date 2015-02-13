@@ -9,5 +9,5 @@ uint32 valueType
 float64 factObservability
 float64 doubleValue
 string stringValue
-uint64 confidence
+uint32 confidence
 uint64 time

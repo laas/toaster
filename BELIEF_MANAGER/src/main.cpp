@@ -46,25 +46,46 @@ bool RemoveFactToAgent(PDG::Fact myFact, unsigned int agentId) {
 }
 
 bool addFactToAgent(PDG::Fact myFact, double confidenceDecrease, unsigned int agentId) {
+    bool addFact = true;
     //Do verify consistency
-    if (myFact.propertyType == "position") {
+    if (myFact.propertyType == "Position") {
         // We need to remove other position properties if not compatible.
         for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
             if (factListMap_[agentId].factList[i].subjectId == myFact.subjectId) {
-                // If it is a position property, we remove it:
-                if (factListMap_[agentId].factList[i].propertyType == "position") {
+                // If it is a position property, we remove it if less probable:
+                if (factListMap_[agentId].factList[i].propertyType == "position"
+                        && factListMap_[agentId].factList[i].confidence <= myFact.confidence) {
+
                     RemoveFactToAgent(i, agentId);
+
                     printf("[BELIEF_MANAGER][WARNING] Fact added to agent %d inconsistent with"
-                            "current fact list: \n fact %s %s %s was removed\n",
+                            "current fact list: \n fact %s %s %s was removed because less probable (%d)\n",
                             agentId, factListMap_[agentId].factList[i].subjectName.c_str(),
                             factListMap_[agentId].factList[i].property.c_str(),
-                            factListMap_[agentId].factList[i].targetName.c_str());
+                            factListMap_[agentId].factList[i].targetName.c_str(),
+                            factListMap_[agentId].factList[i].confidence);
+
+                } else if (factListMap_[agentId].factList[i].propertyType == "Position" &&
+                        factListMap_[agentId].factList[i].confidence > myFact.confidence) {
+
+                    printf("[BELIEF_MANAGER][WARNING] Fact not added to agent %d because an"
+                            " inconsistent fact with higher probability was foung"
+                            "current fact list: \n fact %s %s %s, confidence: %d \n",
+                            agentId, factListMap_[agentId].factList[i].subjectName.c_str(),
+                            factListMap_[agentId].factList[i].property.c_str(),
+                            factListMap_[agentId].factList[i].targetName.c_str(),
+                            factListMap_[agentId].factList[i].confidence);
+
+                    addFact = false;
+                    break;
                 }
             }
         }
-        myFact.confidence *= confidenceDecrease;
-        factListMap_[agentId].factList.push_back(myFact);
-        return true;
+        if (addFact) {
+            myFact.confidence *= confidenceDecrease;
+            factListMap_[agentId].factList.push_back(myFact);
+        }
+        return addFact;
     } else if (myFact.propertyType == "") {
         printf("[BELIEF_MANAGER][WARNING] Fact added to agent %d had no propertyType\n", agentId);
         return false;
@@ -77,7 +98,7 @@ bool addFactToAgent(PDG::Fact myFact, double confidenceDecrease, unsigned int ag
                 // as it is the same fact, we remove the previous value:
                 RemoveFactToAgent(i, agentId);
                 printf("[BELIEF_MANAGER][WARNING] Fact added to agent %d was already in"
-                        "current fact list: \n fact %s %s %s was removed\n",
+                        "current fact list: \n fact %s %s %s was removed to avoid double\n",
                         agentId, factListMap_[agentId].factList[i].subjectName.c_str(),
                         factListMap_[agentId].factList[i].property.c_str(),
                         factListMap_[agentId].factList[i].targetName.c_str());
@@ -92,7 +113,8 @@ bool addFactToAgent(PDG::Fact myFact, double confidenceDecrease, unsigned int ag
 bool addFact(BELIEF_MANAGER::AddFact::Request &req,
         BELIEF_MANAGER::AddFact::Response & res) {
     // Add safely the fact to main agent
-    addFactToAgent(req.fact, 1.0, mainAgentId_);
+
+    res.answer = addFactToAgent(req.fact, 1.0, mainAgentId_);
     // If fact is observable, add it to agents model if in same room.
     // alternative, add it only if agent has visibility => do this only for update
     if (req.fact.factObservability > 0.0) {
@@ -106,9 +128,8 @@ bool addFact(BELIEF_MANAGER::AddFact::Request &req,
         }
     }
 
-    res.answer = "OK";
     ROS_INFO("request: adding a new fact");
-    ROS_INFO("sending back response: [%s]", res.answer.c_str());
+    ROS_INFO("sending back response: [%d]", (int) res.answer);
     return true;
 }
 
@@ -133,11 +154,13 @@ int main(int argc, char** argv) {
     // Agent with monitored belief
     // TODO make a ros service
     agentsTracked_["HERAKLES_HUMAN1"] = 101;
+    agentsTracked_["HERAKLES_HUMAN2"] = 102;
 
-    static ros::Publisher fact_pub = node.advertise<PDG::FactList>("BELIEF_MANAGER/HERAKLES_HUMAN1/factList", 1000);
+    static ros::Publisher fact_pub_main = node.advertise<PDG::FactList>("BELIEF_MANAGER/PR2/factList", 1000);
+    static ros::Publisher fact_pub_human1 = node.advertise<PDG::FactList>("BELIEF_MANAGER/HERAKLES_HUMAN1/factList", 1000);
+    static ros::Publisher fact_pub_human2 = node.advertise<PDG::FactList>("BELIEF_MANAGER/HERAKLES_HUMAN2/factList", 1000);
 
     PDG::FactList factList_msg;
-    PDG::Fact fact_msg;
 
     // Set this in a ros service?
     ros::Rate loop_rate(30);
@@ -199,23 +222,53 @@ int main(int argc, char** argv) {
             for (unsigned int i = 0; i < factRdAM.lastMsgFact.factList.size(); i++) {
                 addFactToAgent(factRdAM.lastMsgFact.factList[i], 1.0, mainAgentId_);
             }
-            
+
             // TODO: multi agent:
-            // Update if:
-            // 1) Agent has visibility on fact subject
-            // 2) fact is observable
-            
-            // If fact is not observable, the supervisor will have to add manually
-            // the fact to the agent. (If the robot tell something to human).            
-            
-            factUpdating_= false;
+
+            for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
+                for (unsigned int i = 0; i < factListMap_[mainAgentId_].factList.size(); i++) {
+
+                    // Update if:
+                    // 1) fact is observable
+                    if (factListMap_[mainAgentId_].factList[i].factObservability > 0.0) {
+
+                        // 2) Agent has visibility on fact subject
+                        for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
+                            if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+                                    && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
+                                    && factListMap_[mainAgentId_].factList[i_visibility].targetName
+                                    == factListMap_[mainAgentId_].factList[i].subjectName) {
+                                
+                                
+                                printf("Agent %s has visibility on %s. We add related fact to agent model "
+                                        "\n fact added to %s: %s %s %s \n",
+                                        it->first.c_str(), 
+                                        factListMap_[mainAgentId_].factList[i].subjectName.c_str(), 
+                                        it->first.c_str(),
+                                        factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
+                                        factListMap_[mainAgentId_].factList[i].property.c_str(),
+                                        factListMap_[mainAgentId_].factList[i].targetName.c_str());
+
+                                
+                                addFactToAgent(factRdAM.lastMsgFact.factList[i], 1.0, mainAgentId_);
+                            }
+                        }
+                    }
+                }
+
+                // If fact is not observable, the supervisor will have to add manually
+                // the fact to the agent. (If the robot tell something to human).           
+
+            }
+            factUpdating_ = false;
         }
 
-        fact_pub.publish(factList_msg);
+        //TODO: publish for each agent:
+        fact_pub_main.publish(factListMap_[mainAgentId_]);
+        fact_pub_human1.publish(factListMap_[101]);
+        fact_pub_human2.publish(factListMap_[102]);
 
         ros::spinOnce();
-
-        factList_msg.factList.clear();
 
         loop_rate.sleep();
     }
