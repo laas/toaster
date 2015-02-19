@@ -164,8 +164,9 @@ int main(int argc, char** argv) {
 
             if (humanRd.lastConfig_[101]->isInArea(0)) {
 
-                //Fact
+                //Fact Area
                 fact_msg.property = "isInArea";
+                fact_msg.propertyType = "position";
                 fact_msg.subProperty = "interacting";
                 fact_msg.subjectId = 101;
                 fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
@@ -186,6 +187,7 @@ int main(int argc, char** argv) {
 
                         //Fact
                         fact_msg.property = "isFacing";
+                        fact_msg.propertyType = "posture";
                         fact_msg.subProperty = "orientationAngle";
                         fact_msg.subjectId = 101;
                         fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
@@ -202,6 +204,7 @@ int main(int argc, char** argv) {
 
                 //Fact
                 fact_msg.property = "isInArea";
+                fact_msg.propertyType = "position";
                 fact_msg.subProperty = "Danger";
                 fact_msg.subjectId = 101;
                 fact_msg.targetId = 1;
@@ -229,7 +232,8 @@ int main(int argc, char** argv) {
 
               //Fact room
               fact_msg.property = "isInArea";
-              fact_msg.subProperty = "Room";
+              fact_msg.propertyType = "position";
+              fact_msg.subProperty = "room";
               fact_msg.subjectId = it->first;
               fact_msg.subjectName =  objectRd.lastConfig_[it->first]->getName();
               fact_msg.targetId = objectRd.lastConfig_[it->first]->getRoomId();
@@ -246,7 +250,8 @@ int main(int argc, char** argv) {
  
             //Fact room
             fact_msg.property = "isInArea";
-            fact_msg.subProperty = "Room";
+            fact_msg.propertyType = "position";
+            fact_msg.subProperty = "room";
             fact_msg.subjectId = 101;
             fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
             fact_msg.targetId = humanRd.lastConfig_[101]->getRoomId();
