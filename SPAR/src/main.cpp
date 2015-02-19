@@ -2,9 +2,11 @@
 
 #include "SPAR/PDGHumanReader.h"
 #include "SPAR/PDGRobotReader.h"
+#include "SPAR/PDGObjectReader.h"
 #include "toaster-lib/CircleArea.h"
 #include "toaster-lib/PolygonArea.h"
 #include "toaster-lib/MathFunctions.h"
+#include "toaster-lib/Object.h"
 #include <PDG/Fact.h>
 #include <PDG/FactList.h>
 #include <iterator>
@@ -30,6 +32,8 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
                 printf("[SPAR] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                 ent->removeInArea(it->second->getId());
                 it->second->removeEntity(ent->getId());
+            if (it->second->getIsRoom()) 
+                ent->setRoomId(0);
             }// Same if entity is not in Area
         else
             if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition()))) {
@@ -38,9 +42,8 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
             it->second->insideEntities_.push_back(ent->getId());
 
             //User has to be in a room. May it be a "global room".
-            if (it->second->getIsRoom()) {
+            if (it->second->getIsRoom())
                 ent->setRoomId(it->second->getId());
-            }
         } else {
             //printf("[SPAR][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
             continue;
@@ -64,7 +67,7 @@ int main(int argc, char** argv) {
     //Data reading
     PDGHumanReader humanRd(node, AGENT_FULL_CONFIG);
     PDGRobotReader robotRd(node, AGENT_FULL_CONFIG);
-    //PDGObjectReader objectRd(node);
+    PDGObjectReader objectRd(node);
 
 
     ros::Publisher fact_pub = node.advertise<PDG::FactList>("SPAR/factList", 1000);
@@ -144,8 +147,8 @@ int main(int argc, char** argv) {
     /************************/
 
     while (node.ok()) {
-        if ((humanRd.lastConfig_[101] != NULL) || (robotRd.lastConfig_[1] != NULL)) {
-            // We update area with robot center
+        if ((humanRd.lastConfig_[101] != NULL)  && (robotRd.lastConfig_[1] != NULL)) {
+	    // We update area with robot center
             //TODO: Update this only if they are in same room?
             if (robotRd.lastConfig_[1] != NULL)
                 updateEntityArea(mapArea, robotRd.lastConfig_[1]);
@@ -154,6 +157,10 @@ int main(int argc, char** argv) {
             // TODO: actually do this for every entities!
             updateInArea(humanRd.lastConfig_[101], mapArea);
             updateInArea(robotRd.lastConfig_[1], mapArea);
+            for(std::map<unsigned int, Object*>::const_iterator it=objectRd.lastConfig_.begin() ; it!=objectRd.lastConfig_.end() ; ++it)
+            {
+              updateInArea(objectRd.lastConfig_[it->first], mapArea);
+            }
 
             if (humanRd.lastConfig_[101]->isInArea(0)) {
 
@@ -161,6 +168,8 @@ int main(int argc, char** argv) {
                 fact_msg.property = "isInArea";
                 fact_msg.subProperty = "interacting";
                 fact_msg.subjectId = 101;
+                fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
+                fact_msg.targetName = robotRd.lastConfig_[1]->getName();
                 fact_msg.targetId = 1;
                 fact_msg.confidence = 100;
                 fact_msg.time = humanRd.lastConfig_[101]->getTime();
@@ -179,6 +188,8 @@ int main(int argc, char** argv) {
                         fact_msg.property = "isFacing";
                         fact_msg.subProperty = "orientationAngle";
                         fact_msg.subjectId = 101;
+                        fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
+                        fact_msg.targetName = robotRd.lastConfig_[1]->getName();
                         fact_msg.targetId = 1;
                         fact_msg.confidence = confidence * 100;
                         fact_msg.time = humanRd.lastConfig_[101]->getTime();
@@ -194,6 +205,8 @@ int main(int argc, char** argv) {
                 fact_msg.subProperty = "Danger";
                 fact_msg.subjectId = 101;
                 fact_msg.targetId = 1;
+                fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
+                fact_msg.targetName = robotRd.lastConfig_[1]->getName();
                 fact_msg.confidence = 100;
                 fact_msg.time = humanRd.lastConfig_[101]->getTime();
 
@@ -202,14 +215,43 @@ int main(int argc, char** argv) {
                 // We will compute here facts that are relevant for human out of interacting zone
             }
 
+            std::string roomName;
+
             // TODO: For each entities
-            
+            for(std::map<unsigned int, Object*>::const_iterator it=objectRd.lastConfig_.begin() ; it!=objectRd.lastConfig_.end() ; ++it)
+            {
+              printf("[SPAR][DEBUG] object %s is in room %d\n", objectRd.lastConfig_[it->first]->getName().c_str(), objectRd.lastConfig_[it->first]->getRoomId());
+
+              if(objectRd.lastConfig_[it->first]->getRoomId() == 0)
+                roomName = "global";
+              else
+                roomName = mapArea[objectRd.lastConfig_[it->first]->getRoomId()]->getName();
+
+              //Fact room
+              fact_msg.property = "isInArea";
+              fact_msg.subProperty = "Room";
+              fact_msg.subjectId = it->first;
+              fact_msg.subjectName =  objectRd.lastConfig_[it->first]->getName();
+              fact_msg.targetId = objectRd.lastConfig_[it->first]->getRoomId();
+              fact_msg.targetName = roomName;
+              fact_msg.confidence = 99;
+              fact_msg.time = objectRd.lastConfig_[it->first]->getTime();
+ 
+            }
+
+            if(humanRd.lastConfig_[101]->getRoomId() == 0)
+                roomName = "global";
+              else
+                roomName = mapArea[humanRd.lastConfig_[101]->getRoomId()]->getName();            
+ 
             //Fact room
             fact_msg.property = "isInArea";
             fact_msg.subProperty = "Room";
             fact_msg.subjectId = 101;
+            fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
             fact_msg.targetId = humanRd.lastConfig_[101]->getRoomId();
-            fact_msg.confidence = 100;
+            fact_msg.targetName = roomName;
+            fact_msg.confidence = 99;
             fact_msg.time = humanRd.lastConfig_[101]->getTime();
 
             factList_msg.factList.push_back(fact_msg);
