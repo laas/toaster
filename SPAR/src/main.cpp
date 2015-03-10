@@ -165,14 +165,15 @@ int main(int argc, char** argv) {
             if (humanRd.lastConfig_[101]->isInArea(0)) {
 
                 //Fact Area
-                fact_msg.property = "isInArea";
+                fact_msg.property = "IsInArea";
                 fact_msg.propertyType = "position";
                 fact_msg.subProperty = "interacting";
                 fact_msg.subjectId = 101;
                 fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
                 fact_msg.targetName = robotRd.lastConfig_[1]->getName();
                 fact_msg.targetId = 1;
-                fact_msg.confidence = 100;
+                fact_msg.confidence = 1.0;
+                fact_msg.observability = 1.0;
                 fact_msg.time = humanRd.lastConfig_[101]->getTime();
 
                 factList_msg.factList.push_back(fact_msg);
@@ -186,14 +187,15 @@ int main(int argc, char** argv) {
                                 humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str(), confidence);
 
                         //Fact
-                        fact_msg.property = "isFacing";
+                        fact_msg.property = "IsFacing";
                         fact_msg.propertyType = "posture";
                         fact_msg.subProperty = "orientationAngle";
                         fact_msg.subjectId = 101;
                         fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
                         fact_msg.targetName = robotRd.lastConfig_[1]->getName();
                         fact_msg.targetId = 1;
-                        fact_msg.confidence = confidence * 100;
+                        fact_msg.confidence = confidence;
+                        fact_msg.observability = 1.0;
                         fact_msg.time = humanRd.lastConfig_[101]->getTime();
 
                         factList_msg.factList.push_back(fact_msg);
@@ -203,14 +205,15 @@ int main(int argc, char** argv) {
                 // We will compute here facts that are relevant when human is in danger zone
 
                 //Fact
-                fact_msg.property = "isInArea";
+                fact_msg.property = "IsInArea";
                 fact_msg.propertyType = "position";
                 fact_msg.subProperty = "Danger";
                 fact_msg.subjectId = 101;
                 fact_msg.targetId = 1;
                 fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
                 fact_msg.targetName = robotRd.lastConfig_[1]->getName();
-                fact_msg.confidence = 100;
+                fact_msg.confidence = 1;
+                fact_msg.observability = 1.0;
                 fact_msg.time = humanRd.lastConfig_[101]->getTime();
 
                 factList_msg.factList.push_back(fact_msg);
@@ -231,14 +234,15 @@ int main(int argc, char** argv) {
                 roomName = mapArea[objectRd.lastConfig_[it->first]->getRoomId()]->getName();
 
               //Fact room
-              fact_msg.property = "isInArea";
+              fact_msg.property = "IsInArea";
               fact_msg.propertyType = "position";
               fact_msg.subProperty = "room";
               fact_msg.subjectId = it->first;
               fact_msg.subjectName =  objectRd.lastConfig_[it->first]->getName();
               fact_msg.targetId = objectRd.lastConfig_[it->first]->getRoomId();
               fact_msg.targetName = roomName;
-              fact_msg.confidence = 99;
+              fact_msg.confidence = 0.99;
+              fact_msg.observability = 1.0;
               fact_msg.time = objectRd.lastConfig_[it->first]->getTime();
  
             }
@@ -249,14 +253,15 @@ int main(int argc, char** argv) {
                 roomName = mapArea[humanRd.lastConfig_[101]->getRoomId()]->getName();            
  
             //Fact room
-            fact_msg.property = "isInArea";
+            fact_msg.property = "IsInArea";
             fact_msg.propertyType = "position";
             fact_msg.subProperty = "room";
             fact_msg.subjectId = 101;
             fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
             fact_msg.targetId = humanRd.lastConfig_[101]->getRoomId();
             fact_msg.targetName = roomName;
-            fact_msg.confidence = 99;
+            fact_msg.confidence = 0.99;
+            fact_msg.observability = 1.0;
             fact_msg.time = humanRd.lastConfig_[101]->getTime();
 
             factList_msg.factList.push_back(fact_msg);

@@ -18,119 +18,176 @@ static std::map<unsigned int, PDG::FactList> factListMap_;
 // Agents with monitored belief
 static std::map<std::string, unsigned int> agentsTracked_;
 
-// Fact is being updated
-static bool factUpdating_ = false;
 
 static unsigned int mainAgentId_ = 1;
 
 // When adding a fact to an agent, the confidence may decrease as 
 // the other's belief are suppositions based on observation
 
-bool RemoveFactToAgent(unsigned int myFactId, unsigned int agentId) {
+bool removeFactToAgent(unsigned int myFactId, unsigned int agentId) {
     factListMap_[agentId].factList.erase(factListMap_[agentId].factList.begin() + myFactId);
     return true;
 }
 
-bool RemoveFactToAgent(PDG::Fact myFact, unsigned int agentId) {
+bool removeFactToAgent(PDG::Fact myFact, unsigned int agentId) {
     bool removed = false;
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
-        if ((factListMap_[agentId].factList[i].subjectId == myFact.subjectId) &&
-                (factListMap_[agentId].factList[i].targetId == myFact.targetId) &&
+        if ((factListMap_[agentId].factList[i].subjectName == myFact.subjectName) &&
+                (factListMap_[agentId].factList[i].targetName == myFact.targetName) &&
                 (factListMap_[agentId].factList[i].property == myFact.property)) {
-            // as it is the same fact, we remove the previous value:
-            RemoveFactToAgent(i, agentId);
+            //we remove it:
+            removeFactToAgent(i, agentId);
             removed = true;
         }
     }
     return removed;
 }
 
-bool addFactToAgent(PDG::Fact myFact, double confidenceDecrease, unsigned int agentId) {
-    bool addFact = true;
-    //Do verify consistency
-    if (myFact.propertyType == "Position") {
-        // We need to remove other position properties if not compatible.
-        for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
-            if (factListMap_[agentId].factList[i].subjectId == myFact.subjectId) {
-                // If it is a position property, we remove it if less probable:
-                if (factListMap_[agentId].factList[i].propertyType == "position"
-                        && factListMap_[agentId].factList[i].confidence <= myFact.confidence) {
-
-                    RemoveFactToAgent(i, agentId);
-
-                    printf("[BELIEF_MANAGER][WARNING] Fact added to agent %d inconsistent with"
-                            "current fact list: \n fact %s %s %s was removed because less probable (%d)\n",
-                            agentId, factListMap_[agentId].factList[i].subjectName.c_str(),
-                            factListMap_[agentId].factList[i].property.c_str(),
-                            factListMap_[agentId].factList[i].targetName.c_str(),
-                            factListMap_[agentId].factList[i].confidence);
-
-                } else if (factListMap_[agentId].factList[i].propertyType == "Position" &&
-                        factListMap_[agentId].factList[i].confidence > myFact.confidence) {
-
-                    printf("[BELIEF_MANAGER][WARNING] Fact not added to agent %d because an"
-                            " inconsistent fact with higher probability was foung"
-                            "current fact list: \n fact %s %s %s, confidence: %d \n",
-                            agentId, factListMap_[agentId].factList[i].subjectName.c_str(),
-                            factListMap_[agentId].factList[i].property.c_str(),
-                            factListMap_[agentId].factList[i].targetName.c_str(),
-                            factListMap_[agentId].factList[i].confidence);
-
-                    addFact = false;
-                    break;
-                }
-            }
+bool removePropertyTypeToAgent(std::string propertyType, unsigned int agentId) {
+    bool removed = false;
+    for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
+        if (factListMap_[agentId].factList[i].propertyType == propertyType) {
+            //we remove it:
+            removeFactToAgent(i, agentId);
+            removed = true;
         }
-        if (addFact) {
-            myFact.confidence *= confidenceDecrease;
-            factListMap_[agentId].factList.push_back(myFact);
-        }
-        return addFact;
-    } else if (myFact.propertyType == "") {
-        printf("[BELIEF_MANAGER][WARNING] Fact added to agent %d had no propertyType\n", agentId);
-        return false;
-    } else {
-        // We verify that this fact is not already there.
-        for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
-            if ((factListMap_[agentId].factList[i].subjectId == myFact.subjectId) &&
-                    (factListMap_[agentId].factList[i].targetId == myFact.targetId) &&
-                    (factListMap_[agentId].factList[i].property == myFact.property)) {
-                // as it is the same fact, we remove the previous value:
-                RemoveFactToAgent(i, agentId);
-                printf("[BELIEF_MANAGER][WARNING] Fact added to agent %d was already in"
-                        "current fact list: \n fact %s %s %s was removed to avoid double\n",
-                        agentId, factListMap_[agentId].factList[i].subjectName.c_str(),
-                        factListMap_[agentId].factList[i].property.c_str(),
-                        factListMap_[agentId].factList[i].targetName.c_str());
-            }
-        }
-        myFact.confidence *= confidenceDecrease;
-        factListMap_[agentId].factList.push_back(myFact);
-        return true;
     }
+    return removed;
+}
+
+bool removeInternFactToAgent(unsigned int agentId) {
+    bool removed = false;
+    for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
+        if ((factListMap_[agentId].factList[i].propertyType != "state") &&
+                (factListMap_[agentId].factList[i].propertyType != "staticProperty")) {
+            //we remove it:
+            removeFactToAgent(i, agentId);
+            removed = true;
+        }
+    }
+    return removed;
+}
+
+
+// Extern fact are fact from request. They are managed by an external module.
+
+bool addExternFactToAgent(PDG::Fact myFact, double confidenceDecrease, unsigned int agentId) {
+    // We verify that this fact is not already there.
+    for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
+        if ((factListMap_[agentId].factList[i].subjectName == myFact.subjectName) &&
+                (factListMap_[agentId].factList[i].property == myFact.property)) {
+            // as it is the same fact, we remove the previous value:
+            removeFactToAgent(i, agentId);
+            printf("[BELIEF_MANAGER][WARNING] Fact added to agent %d was already in "
+                    "current fact list: \n fact %s %s %s was removed to avoid double\n",
+                    agentId, factListMap_[agentId].factList[i].subjectName.c_str(),
+                    factListMap_[agentId].factList[i].property.c_str(),
+                    factListMap_[agentId].factList[i].targetName.c_str());
+        }
+    }
+    myFact.confidence *= confidenceDecrease;
+    factListMap_[agentId].factList.push_back(myFact);
+    return true;
+}
+
+bool addFactToAgent(PDG::Fact myFact, double confidenceDecrease, unsigned int agentId) {
+    // We verify that this fact is not already there.
+    for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
+        if ((factListMap_[agentId].factList[i].subjectName == myFact.subjectName) &&
+                (factListMap_[agentId].factList[i].targetName == myFact.targetName) &&
+                (factListMap_[agentId].factList[i].property == myFact.property)) {
+            // as it is the same fact, we remove the previous value:
+            removeFactToAgent(i, agentId);
+            printf("[BELIEF_MANAGER][WARNING] Fact added to agent %d was already in "
+                    "current fact list: \n fact %s %s %s was removed to avoid double\n",
+                    agentId, factListMap_[agentId].factList[i].subjectName.c_str(),
+                    factListMap_[agentId].factList[i].property.c_str(),
+                    factListMap_[agentId].factList[i].targetName.c_str());
+        }
+    }
+    myFact.confidence *= confidenceDecrease;
+    factListMap_[agentId].factList.push_back(myFact);
+    return true;
 }
 
 bool addFact(BELIEF_MANAGER::AddFact::Request &req,
         BELIEF_MANAGER::AddFact::Response & res) {
+
+    /**************************/
+    /* World State management */
+    /**************************/
+
     // Add safely the fact to main agent
+    res.answer = addExternFactToAgent(req.fact, 1.0, mainAgentId_);
 
-    res.answer = addFactToAgent(req.fact, 1.0, mainAgentId_);
-    // If fact is observable, add it to agents model if in same room.
-    // alternative, add it only if agent has visibility => do this only for update
-    if (req.fact.factObservability > 0.0) {
-        // TODO: for each agent present and in same room
-        for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
-            // TODO: if present and in same room
 
-            // TODO: if fact subject is not visible, decrease confidence by 50%?
+    // We update an agent belief state if he is in the room, has visibility on subject
+    // and we don't care about the observability as we assess that the agent saw the action.
 
-            addFactToAgent(req.fact, req.fact.factObservability, it->second);
+    /**********************************/
+    /* Conceptual perspective taking: */
+    /**********************************/
+
+
+    // TODO: for each agent present and in same room
+    for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
+        for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
+
+
+            if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+                    // Current agent
+                    && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
+                    // has visibility
+                    && factListMap_[mainAgentId_].factList[i_visibility].targetName
+                    // On current fact subject
+                    == req.fact.subjectName) {
+
+                addExternFactToAgent(req.fact, factListMap_[mainAgentId_].factList[i_visibility].doubleValue, it->second);
+            }
         }
     }
-
     ROS_INFO("request: adding a new fact");
     ROS_INFO("sending back response: [%d]", (int) res.answer);
     return true;
+}
+
+bool removeFact(BELIEF_MANAGER::RemoveFact::Request &req,
+        BELIEF_MANAGER::RemoveFact::Response & res) {
+
+
+    /**************************/
+    /* World State management */
+    /**************************/
+
+    // Remove safely the fact to main agent
+    res.answer = removeFactToAgent(req.fact, mainAgentId_);
+
+
+    /**********************************/
+    /* Conceptual perspective taking: */
+    /**********************************/
+
+
+    // TODO: for each agent with visibility on subject
+    for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
+        for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
+
+
+            if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+                    // Current agent
+                    && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
+                    // has visibility
+                    && factListMap_[mainAgentId_].factList[i_visibility].targetName
+                    // On current fact subject
+                    == req.fact.subjectName) {
+                removeFactToAgent(req.fact, it->second);
+            }
+        }
+    }
+    ROS_INFO("request: removing a fact");
+    ROS_INFO("sending back response: [%d]", (int) res.answer);
+    return true;
+
 }
 
 int main(int argc, char** argv) {
@@ -138,8 +195,6 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "BELIEF_MANAGER");
     ros::NodeHandle node;
 
-    //Initialisation boolean
-    bool init = true;
 
     //Data reading
     PDGFactReader factRdSpark(node, "SPARK/factList");
@@ -174,93 +229,106 @@ int main(int argc, char** argv) {
     /************************/
 
     while (node.ok()) {
-        //Collect facts as 1st input and put in map
-        if (init) {
-            factUpdating_ = true;
-            // First we feed the mainAgent belief state
-            for (unsigned int i = 0; i < factRdSpar.lastMsgFact.factList.size(); i++) {
-                addFactToAgent(factRdSpar.lastMsgFact.factList[i], 1.0, mainAgentId_);
-            }
 
-            for (unsigned int i = 0; i < factRdSpark.lastMsgFact.factList.size(); i++) {
-                addFactToAgent(factRdSpark.lastMsgFact.factList[i], 1.0, mainAgentId_);
-            }
 
-            for (unsigned int i = 0; i < factRdAM.lastMsgFact.factList.size(); i++) {
-                addFactToAgent(factRdAM.lastMsgFact.factList[i], 1.0, mainAgentId_);
-            }
+        /**************************/
+        /* World State management */
+        /**************************/
 
-            // Then, if an agent is in same room, we give him the same belief
-            // This is a 1st choice, it may (should?) be thought further
-            for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
+        // We remove intern fact for main agent
+        removeInternFactToAgent(mainAgentId_);
+        // First we feed the mainAgent belief state
+        for (unsigned int i = 0; i < factRdSpar.lastMsgFact.factList.size(); i++) {
+            addFactToAgent(factRdSpar.lastMsgFact.factList[i], 1.0, mainAgentId_);
+        }
 
-                // TODO: if present and in same room
-                // TODO: if fact subject is not visible, decrease confidence by 0.3
-                // if in same room and 0.1 otherwise.
-                for (unsigned int i = 0; i < factListMap_[1].factList.size(); i++) {
-                    addFactToAgent(factListMap_[1].factList[i], factListMap_[1].factList[i].factObservability, it->second);
+        for (unsigned int i = 0; i < factRdSpark.lastMsgFact.factList.size(); i++) {
+            addFactToAgent(factRdSpark.lastMsgFact.factList[i], 1.0, mainAgentId_);
+        }
+
+        for (unsigned int i = 0; i < factRdAM.lastMsgFact.factList.size(); i++) {
+            addFactToAgent(factRdAM.lastMsgFact.factList[i], 1.0, mainAgentId_);
+        }
+
+
+        /**********************************/
+        /* Conceptual perspective taking: */
+        /**********************************/
+
+        // We remove facts that are visible before updating.
+        for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
+            for (unsigned int i = 0; i < factListMap_[it->second].factList.size(); i++) {
+                // Update if:
+                // 1) fact is observable
+                if (factListMap_[mainAgentId_].factList[i].factObservability > 0.0) {
+
+                    // 2) Agent has visibility on fact subject
+                    for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
+
+
+                        if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+                                // Current agent
+                                && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
+                                // has visibility
+                                && factListMap_[mainAgentId_].factList[i_visibility].targetName
+                                // On current fact subject
+                                == factListMap_[it->second].factList[i].subjectName) {
+
+
+                            /*printf("Agent %s has visibility on %s. We remove related fact to agent model before update"
+                                    "\n fact added to %s: %s %s %s \n",
+                                    it->first.c_str(),
+                                    factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
+                                    it->first.c_str(),
+                                    factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
+                                    factListMap_[mainAgentId_].factList[i].property.c_str(),
+                                    factListMap_[mainAgentId_].factList[i].targetName.c_str());
+
+                             */
+                            removeFactToAgent(factListMap_[it->second].factList[i], it->second);
+                        }
+                    }
                 }
             }
-            init = false;
-            factUpdating_ = false;
-        } else {
 
 
-            //compare new fact to previous state.
+            // Agent observes new facts
+            for (unsigned int i = 0; i < factListMap_[mainAgentId_].factList.size(); i++) {
+                // Update if:
+                // 1) fact is observable
+                if (factListMap_[mainAgentId_].factList[i].factObservability > 0.0) {
+
+                    // 2) Agent has visibility on fact subject
+                    for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
+                        if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+                                // Current agent
+                                && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
+                                // has visibility
+                                && factListMap_[mainAgentId_].factList[i_visibility].targetName
+                                // On current fact subject
+                                == factListMap_[mainAgentId_].factList[i].subjectName) {
 
 
-            //update facts if needed in all models
-            factUpdating_ = true;
-            for (unsigned int i = 0; i < factRdSpar.lastMsgFact.factList.size(); i++) {
-                addFactToAgent(factRdSpar.lastMsgFact.factList[i], 1.0, mainAgentId_);
-            }
+                            printf("Agent %s has visibility on %s. We add related fact to agent model "
+                                    "\n fact added to %s: %s %s %s \n",
+                                    it->first.c_str(),
+                                    factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
+                                    it->first.c_str(),
+                                    factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
+                                    factListMap_[mainAgentId_].factList[i].property.c_str(),
+                                    factListMap_[mainAgentId_].factList[i].targetName.c_str());
 
-            for (unsigned int i = 0; i < factRdSpark.lastMsgFact.factList.size(); i++) {
-                addFactToAgent(factRdSpark.lastMsgFact.factList[i], 1.0, mainAgentId_);
-            }
-
-            for (unsigned int i = 0; i < factRdAM.lastMsgFact.factList.size(); i++) {
-                addFactToAgent(factRdAM.lastMsgFact.factList[i], 1.0, mainAgentId_);
-            }
-
-            // TODO: multi agent:
-
-            for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
-                for (unsigned int i = 0; i < factListMap_[mainAgentId_].factList.size(); i++) {
-
-                    // Update if:
-                    // 1) fact is observable
-                    if (factListMap_[mainAgentId_].factList[i].factObservability > 0.0) {
-
-                        // 2) Agent has visibility on fact subject
-                        for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
-                            if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
-                                    && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
-                                    && factListMap_[mainAgentId_].factList[i_visibility].targetName
-                                    == factListMap_[mainAgentId_].factList[i].subjectName) {
-                                
-                                
-                                printf("Agent %s has visibility on %s. We add related fact to agent model "
-                                        "\n fact added to %s: %s %s %s \n",
-                                        it->first.c_str(), 
-                                        factListMap_[mainAgentId_].factList[i].subjectName.c_str(), 
-                                        it->first.c_str(),
-                                        factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
-                                        factListMap_[mainAgentId_].factList[i].property.c_str(),
-                                        factListMap_[mainAgentId_].factList[i].targetName.c_str());
-
-                                
-                                addFactToAgent(factRdAM.lastMsgFact.factList[i], 1.0, mainAgentId_);
-                            }
+                            if ((factListMap_[it->second].factList[i].propertyType != "state") &&
+                                    (factListMap_[it->second].factList[i].propertyType != "staticProperty"))
+                                addFactToAgent(factListMap_[mainAgentId_].factList[i], factListMap_[mainAgentId_].factList[i_visibility].doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, it->second);
+                            else
+                                addExternFactToAgent(factListMap_[mainAgentId_].factList[i], factListMap_[mainAgentId_].factList[i_visibility].doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, it->second);
                         }
                     }
                 }
 
-                // If fact is not observable, the supervisor will have to add manually
-                // the fact to the agent. (If the robot tell something to human).           
-
             }
-            factUpdating_ = false;
+
         }
 
         //TODO: publish for each agent:

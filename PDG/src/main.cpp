@@ -85,9 +85,11 @@ int main(int argc, char** argv) {
                 //if (sparkObjectRd.isPresent(sparkObjectRd.objectIdOffset_ + i)) {
                     
                     //Fact
-                    fact_msg.property = "isPresent";
+                    fact_msg.property = "IsPresent";
+                    fact_msg.propertyType = "position";
                     fact_msg.subjectId = sparkObjectRd.objectIdOffset_ + i;
-                    fact_msg.confidence = 90;
+                    fact_msg.confidence = 0.90;
+                    fact_msg.factObservability = 1.0;
                     fact_msg.time = sparkObjectRd.lastConfig_[sparkObjectRd.objectIdOffset_ + i]->getTime();
                     fact_msg.subjectName = sparkObjectRd.lastConfig_[sparkObjectRd.objectIdOffset_ + i]->getName();
                     fact_msg.valueType = 0;
@@ -131,8 +133,10 @@ int main(int argc, char** argv) {
                 
                 //Fact
                 fact_msg.property = "isPresent";
+                    fact_msg.propertyType = "position";
                 fact_msg.subjectId = pr2RobotRd.robotIdOffset_ + i;
-                fact_msg.confidence = 100;
+                fact_msg.confidence = 1.0;
+                fact_msg.factObservability = 1.0;
                     
                 factList_msg.factList.push_back(fact_msg);
                 
