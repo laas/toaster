@@ -309,17 +309,18 @@ int main(int argc, char** argv) {
                                 == factListMap_[mainAgentId_].factList[i].subjectName) {
 
 
-                            printf("Agent %s has visibility on %s. We add related fact to agent model "
-                                    "\n fact added to %s: %s %s %s \n",
-                                    it->first.c_str(),
-                                    factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
-                                    it->first.c_str(),
-                                    factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
-                                    factListMap_[mainAgentId_].factList[i].property.c_str(),
-                                    factListMap_[mainAgentId_].factList[i].targetName.c_str());
+                            //printf("Agent %s has visibility on %s. We add related fact to agent model "
+                            //        "\n fact added to %s: %s %s %s \n",
+                            //        it->first.c_str(),
+                            //        factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
+                            //        it->first.c_str(),
+                            //        factListMap_[mainAgentId_].factList[i].subjectName.c_str(),
+                            //        factListMap_[mainAgentId_].factList[i].property.c_str(),
+                            //        factListMap_[mainAgentId_].factList[i].targetName.c_str());
 
-                            if ((factListMap_[it->second].factList[i].propertyType != "state") &&
-                                    (factListMap_[it->second].factList[i].propertyType != "staticProperty"))
+                            
+                             if ((factListMap_[mainAgentId_].factList[i].propertyType != "State") &&
+                                    (factListMap_[mainAgentId_].factList[i].propertyType != "StaticProperty"))
                                 addFactToAgent(factListMap_[mainAgentId_].factList[i], factListMap_[mainAgentId_].factList[i_visibility].doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, it->second);
                             else
                                 addExternFactToAgent(factListMap_[mainAgentId_].factList[i], factListMap_[mainAgentId_].factList[i_visibility].doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, it->second);
