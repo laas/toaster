@@ -25,8 +25,6 @@ class RobotReader{
         bool fullRobot_;
         static const unsigned int robotIdOffset_ = 1;
 
-        virtual void init() = 0;     // This function will depend on the robot
-
         bool isPresent(unsigned int id);
 };
 
