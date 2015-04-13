@@ -1,0 +1,5 @@
+pdg/Fact fact
+string agentName
+int32 agentId
+---
+bool answer
