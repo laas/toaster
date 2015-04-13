@@ -88,12 +88,16 @@ catkin_package(
 ## Build ##
 ###########
 
+set(BOOST_ROOT $ENV{HOME}/devel/boost_1_56_0/)
+set(Boost_NO_SYSTEM_PATHS ON)
+
+find_package(Boost REQUIRED COMPONENTS)# system)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
-  /home/sdevin/devel/include /home/sdevin/openrobots/include/ /home/sdevin/catkin_ws/src/toaster/spar/include/ /home/sdevin/catkin_ws/devel/include
+${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/ $ENV{HOME}/work/catkin_ws/src/toaster/spar/include/ $ENV{HOME}/work/catkin_ws/devel/include
 )
 
 ## Declare a cpp library
@@ -112,7 +116,7 @@ include_directories(
 # target_link_libraries(agent_monitor_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(spar /home/sdevin/devel/lib/libtoaster.so)
+target_link_libraries(spar $ENV{HOME}/devel/lib/libtoaster.so)
 target_link_libraries(spar ${catkin_LIBRARIES})
 
 #############
