@@ -1,6 +1,6 @@
 #include "pdg/MorseHumanReader.h"
 #include "pdg/Pr2RobotReader.h"
-//#include "pdg/VimanObjectReader.h"
+#include "pdg/VimanObjectReader.h"
 #include "pdg/SparkObjectReader.h"
 
 // Message generated class
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
 //    MorseHumanReader morseHumanRd(node, AGENT_FULL_CONFIG);
     Pr2RobotReader pr2RobotRd(AGENT_FULL_CONFIG);
     SparkObjectReader sparkObjectRd("sparkEnvironment");
-//    VimanObjectReader vimanObjectRd("morseViman");
+    VimanObjectReader vimanObjectRd("morseViman");
     
 
     //Data writing
@@ -69,8 +69,10 @@ int main(int argc, char** argv) {
 
         //update data
 
-        if (object_present)
+        if (object_present){
             sparkObjectRd.updateObjects();
+            vimanObjectRd.updateObjects();
+        }
         //morseHumanRd.updateHumans(listener);
         pr2RobotRd.updateRobot(listener);
 
@@ -107,6 +109,31 @@ int main(int argc, char** argv) {
                     //printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
                 //}
             }
+
+
+
+        // To compute which object are seen by the robot, we use Viman:
+        if (object_present)
+            for (unsigned int i = 0; i < vimanObjectRd.nbObjects_; i++) {
+
+                    //Fact
+                    fact_msg.property = "IsSeen";
+                    fact_msg.propertyType = "affordance";
+                    fact_msg.subjectId = vimanObjectRd.objectIdOffset_ + i;
+                    fact_msg.confidence = 0.90;
+                    fact_msg.factObservability = 0.5;
+                    fact_msg.time = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime();
+                    fact_msg.subjectName = vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName();
+                    fact_msg.valueType = 0;
+                    fact_msg.stringValue = "true";
+
+                    factList_msg.factList.push_back(fact_msg);
+
+                    //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
+                    //printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
+                //}
+            }
+
 
         //Humans
         /*for (unsigned int i = 0; i < morseHumanRd.lastConfig_.size(); i++) {
