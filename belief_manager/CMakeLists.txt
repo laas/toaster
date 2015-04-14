@@ -101,7 +101,7 @@ find_package(Boost REQUIRED COMPONENTS)# system)
 include_directories(
   ${catkin_INCLUDE_DIRS}
 ${Boost_INCLUDE_DIRS}
-  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/ $ENV{HOME}/work/catkin_ws/src/toaster/belief_manager/include/ $ENV{HOME}/work/catkin_ws/devel/include $ENV{HOME}/work/catkin_ws/src/toaster/spar/include/
+  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/ $ENV{HOME}/work/catkin_ws/src/toaster/belief_manager/include/ $ENV{HOME}/work/catkin_ws/devel/include $ENV{HOME}/work/catkin_ws/src/toaster/area_manager/include/
 )
 
 ## Declare a cpp library
@@ -110,7 +110,7 @@ ${Boost_INCLUDE_DIRS}
 # )
 
 ## Declare a cpp executable
- add_executable(belief_manager ../spar/src/PDGObjectReader.cpp ../spar/src/PDGFactReader.cpp src/main.cpp)
+ add_executable(belief_manager ../area_manager/src/PDGObjectReader.cpp ../area_manager/src/PDGFactReader.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

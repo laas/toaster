@@ -1,15 +1,15 @@
-#include "spar/PDGHumanReader.h"
+#include "area_manager/PDGHumanReader.h"
 
 PDGHumanReader::PDGHumanReader(ros::NodeHandle& node, bool fullHuman) {
     fullHuman_ = fullHuman;
-    std::cout << "[SPAR] Initializing PDGHumanReader" << std::endl;
+    std::cout << "[area_manager] Initializing PDGHumanReader" << std::endl;
 
     // Starts listening to the topic
     sub_ = node.subscribe("/pdg/humanList", 1, &PDGHumanReader::humanJointStateCallBack, this);
 }
 
 void PDGHumanReader::humanJointStateCallBack(const pdg::HumanList::ConstPtr& msg) {
-    //std::cout << "[SPAR][DEBUG] new data for human received with time " << msg->humanList[0].meAgent.meEntity.time  << std::endl;
+    //std::cout << "[area_manager][DEBUG] new data for human received with time " << msg->humanList[0].meAgent.meEntity.time  << std::endl;
     Human * curHuman;
     for (unsigned int i = 0; i < msg->humanList.size(); i++) {
         

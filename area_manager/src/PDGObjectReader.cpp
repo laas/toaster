@@ -5,17 +5,17 @@
  * Created on December 12, 2014, 2:23 PM
  */
 
-#include "spar/PDGObjectReader.h"
+#include "area_manager/PDGObjectReader.h"
 
 PDGObjectReader::PDGObjectReader(ros::NodeHandle& node) {
-    std::cout << "[SPAR] Initializing PDGObjectReader" << std::endl;
+    std::cout << "[area_manager] Initializing PDGObjectReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/PDG/objectList", 1, &PDGObjectReader::objectStateCallBack, this);
+    sub_ = node.subscribe("/pdg/objectList", 1, &PDGObjectReader::objectStateCallBack, this);
 }
 
-void PDGObjectReader::objectStateCallBack(const PDG::ObjectList::ConstPtr& msg) {
-    //std::cout << "[SPAR][DEBUG] new data for object received" << std::endl;
+void PDGObjectReader::objectStateCallBack(const pdg::ObjectList::ConstPtr& msg) {
+    //std::cout << "[area_manager][DEBUG] new data for object received" << std::endl;
 
     Object* curObject;
     for (unsigned int i = 0; i < msg->objectList.size(); i++) {

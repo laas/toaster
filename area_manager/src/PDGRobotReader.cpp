@@ -1,15 +1,15 @@
-#include "spar/PDGRobotReader.h"
+#include "area_manager/PDGRobotReader.h"
 
 PDGRobotReader::PDGRobotReader(ros::NodeHandle& node, bool fullRobot) {
     fullRobot_ = fullRobot;
-    std::cout << "[SPAR] Initializing PDGRobotReader" << std::endl;
+    std::cout << "[area_manager] Initializing PDGRobotReader" << std::endl;
 
     // Starts listening to the topic
     sub_ = node.subscribe("/pdg/robotList", 1, &PDGRobotReader::robotJointStateCallBack, this);
 }
 
 void PDGRobotReader::robotJointStateCallBack(const pdg::RobotList::ConstPtr& msg) {
-    //std::cout << "[SPAR][DEBUG] new data for robot received" << std::endl;
+    //std::cout << "[area_manager][DEBUG] new data for robot received" << std::endl;
 
     Robot* curRobot;
     for (unsigned int i = 0; i < msg->robotList.size(); i++) {

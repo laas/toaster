@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(pdg)
+project(area_manager)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -7,9 +7,6 @@ project(pdg)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  std_msgs
-  genmsg
-  tf
 )
 
 ## System dependencies are found with CMake's conventions
@@ -51,10 +48,6 @@ find_package(catkin REQUIRED COMPONENTS
 #   Message1.msg
 #   Message2.msg
 # )
-add_message_files(DIRECTORY msg FILES Agent.msg     HumanList.msg	     niut_HUMAN_LIST.msg    niut_TIME_STR.msg	  Object.msg
-Entity.msg    Human.msg		     niut_JOINT.msg	    niut_TRACK_STATE.msg  RobotList.msg
-FactList.msg  Joint.msg		     niut_JOINT_STR.msg     niut_USER_STR.msg	  Robot.msg
-Fact.msg      niut_GEN_POINT_3D.msg  niut_SKELETON_STR.msg  ObjectList.msg)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -71,10 +64,10 @@ Fact.msg      niut_GEN_POINT_3D.msg  niut_SKELETON_STR.msg  ObjectList.msg)
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-    std_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+#    std_msgs
+# )
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -86,7 +79,7 @@ Fact.msg      niut_GEN_POINT_3D.msg  niut_SKELETON_STR.msg  ObjectList.msg)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES pdg
+  LIBRARIES area_manager
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
@@ -95,8 +88,7 @@ catkin_package(
 ## Build ##
 ###########
 
-
-set(BOOST_ROOT /home/gmilliez/devel/boost_1_56_0/)
+set(BOOST_ROOT $ENV{HOME}/devel/boost_1_56_0/)
 set(Boost_NO_SYSTEM_PATHS ON)
 
 find_package(Boost REQUIRED COMPONENTS)# system)
@@ -105,28 +97,27 @@ find_package(Boost REQUIRED COMPONENTS)# system)
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
-${Boost_INCLUDE_DIRS}  $HOME/devel/include /home/gmilliez/openrobots/include/ /home/gmilliez/work/catkin_ws/src/toaster/pdg/include/ /home/gmilliez/work/catkin_ws/devel/include
+${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/ $ENV{HOME}/work/catkin_ws/src/toaster/area_manager/include/ $ENV{HOME}/work/catkin_ws/devel/include
 )
 
 ## Declare a cpp library
-# add_library(pdg
-#   src/${PROJECT_NAME}/pdg.cpp
+# add_library(area_manager
+#   src/${PROJECT_NAME}/area_manager.cpp
 # )
 
 ## Declare a cpp executable
- add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/ObjectReader.cpp src/VimanObjectReader.cpp src/SparkObjectReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
+ add_executable(area_manager src/PDGHumanReader.cpp src/PDGRobotReader.cpp src/PDGObjectReader.cpp src/PDGFactReader.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(pdg_node pdg_generate_messages_cpp)
+# add_dependencies(area_manager_node area_manager_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(pdg_node
+# target_link_libraries(agent_monitor_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(pdg $ENV{ROBOTPKG_BASE}/lib/libposterLib.so)
-target_link_libraries(pdg /home/gmilliez/devel/lib/libtoaster.so)
-target_link_libraries(pdg ${catkin_LIBRARIES})
+target_link_libraries(area_manager $ENV{HOME}/devel/lib/libtoaster.so)
+target_link_libraries(area_manager ${catkin_LIBRARIES})
 
 #############
 ## Install ##
@@ -143,7 +134,7 @@ target_link_libraries(pdg ${catkin_LIBRARIES})
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS pdg pdg_node
+# install(TARGETS area_manager area_manager_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -168,7 +159,7 @@ target_link_libraries(pdg ${catkin_LIBRARIES})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_pdg.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_area_manager.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

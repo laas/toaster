@@ -5,8 +5,8 @@
  * Created on February 5, 2015, 2:49 PM
  */
 
-#include "spar/PDGFactReader.h"
-#include "spar/PDGObjectReader.h"
+#include "area_manager/PDGFactReader.h"
+#include "area_manager/PDGObjectReader.h"
 #include "pdg/FactList.h"
 #include "pdg/Fact.h"
 #include "belief_manager/AddFact.h"
@@ -198,12 +198,12 @@ int main(int argc, char** argv) {
 
     //Data reading
     PDGFactReader factRdSpark(node, "SPARK/factList");
-    PDGFactReader factRdSpar(node, "spar/factList");
+    PDGFactReader factRdSpar(node, "area_manager/factList");
     PDGFactReader factRdAM(node, "agent_monitor/factList");
     //PDGObjectReader objectRd(node);
 
     //Services
-    ros::ServiceServer service = node.advertiseService("add_fact", addFact);
+    ros::ServiceServer service = node.advertiseService("belief_manager/add_fact", addFact);
     ROS_INFO("Ready to add fact.");
 
     // Agent with monitored belief

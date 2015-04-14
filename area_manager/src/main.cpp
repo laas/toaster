@@ -1,8 +1,8 @@
 //This file will compute the spatial facts concerning agents present in the interaction.
 
-#include "spar/PDGHumanReader.h"
-#include "spar/PDGRobotReader.h"
-#include "spar/PDGObjectReader.h"
+#include "area_manager/PDGHumanReader.h"
+#include "area_manager/PDGRobotReader.h"
+#include "area_manager/PDGObjectReader.h"
 #include "toaster-lib/CircleArea.h"
 #include "toaster-lib/PolygonArea.h"
 #include "toaster-lib/MathFunctions.h"
@@ -29,7 +29,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
             if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition())))
                 continue;
             else {
-                printf("[SPAR] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
+                printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                 ent->removeInArea(it->second->getId());
                 it->second->removeEntity(ent->getId());
             if (it->second->getIsRoom()) 
@@ -37,7 +37,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
             }// Same if entity is not in Area
         else
             if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition()))) {
-            printf("[SPAR] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
+            printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
             ent->inArea_.push_back(it->second->getId());
             it->second->insideEntities_.push_back(ent->getId());
 
@@ -45,7 +45,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
             if (it->second->getIsRoom())
                 ent->setRoomId(it->second->getId());
         } else {
-            //printf("[SPAR][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
+            //printf("[area_manager][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
             continue;
         }
     }
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
     // Set this in a ros service
     const bool AGENT_FULL_CONFIG = false; //If false we will use only position and orientation
 
-    ros::init(argc, argv, "spar");
+    ros::init(argc, argv, "area_manager");
     ros::NodeHandle node;
 
     //Data reading
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
     PDGObjectReader objectRd(node);
 
 
-    ros::Publisher fact_pub = node.advertise<pdg::FactList>("spar/factList", 1000);
+    ros::Publisher fact_pub = node.advertise<pdg::FactList>("area_manager/factList", 1000);
 
     pdg::FactList factList_msg;
     pdg::Fact fact_msg;
@@ -183,7 +183,7 @@ int main(int argc, char** argv) {
                     double confidence = 0.0;
                     confidence = isFacing(humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5);
                     if (confidence > 0.0) {
-                        printf("[SPAR][DEGUG] %s is facing %s with confidence %f\n",
+                        printf("[area_manager][DEGUG] %s is facing %s with confidence %f\n",
                                 humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str(), confidence);
 
                         //Fact
@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
             // TODO: For each entities
             for(std::map<unsigned int, Object*>::const_iterator it=objectRd.lastConfig_.begin() ; it!=objectRd.lastConfig_.end() ; ++it)
             {
-              printf("[SPAR][DEBUG] object %s is in room %d\n", objectRd.lastConfig_[it->first]->getName().c_str(), objectRd.lastConfig_[it->first]->getRoomId());
+              printf("[area_manager][DEBUG] object %s is in room %d\n", objectRd.lastConfig_[it->first]->getName().c_str(), objectRd.lastConfig_[it->first]->getRoomId());
 
               if(objectRd.lastConfig_[it->first]->getRoomId() == 0)
                 roomName = "global";

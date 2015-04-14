@@ -1,8 +1,8 @@
 // This main will compute the facts for the requested agent.
 
-#include "spar/PDGHumanReader.h"
-#include "spar/PDGRobotReader.h"
-#include "spar/PDGObjectReader.h"
+#include "area_manager/PDGHumanReader.h"
+#include "area_manager/PDGRobotReader.h"
+#include "area_manager/PDGObjectReader.h"
 #include "pdg/FactList.h"
 #include "pdg/Fact.h"
 #include "toaster-lib/TRBuffer.h"
