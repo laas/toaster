@@ -21,10 +21,9 @@
 class RobotReader{
 
     public:
-    	  RobotReader();
-        std::map<unsigned int, Robot*> lastConfig_;
+    	std::map<unsigned int, Robot*> lastConfig_;
         bool fullRobot_;
-        unsigned int robotIdOffset_;
+        static const unsigned int robotIdOffset_ = 1;
 
         bool isPresent(unsigned int id);
 };

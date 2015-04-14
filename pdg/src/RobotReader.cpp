@@ -1,9 +1,5 @@
 #include "pdg/RobotReader.h"
 
-RobotReader::RobotReader(){
-  robotIdOffset_ = 1;
-}
-
 bool RobotReader::isPresent(unsigned int id){
   timeval curTime;
   gettimeofday(&curTime, NULL);
