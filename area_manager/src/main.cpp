@@ -3,6 +3,9 @@
 #include "area_manager/PDGHumanReader.h"
 #include "area_manager/PDGRobotReader.h"
 #include "area_manager/PDGObjectReader.h"
+#include "area_manager/AddArea.h"
+#include "area_manager/RemoveArea.h"
+#include "area_manager/Area.h"
 #include "toaster-lib/CircleArea.h"
 #include "toaster-lib/PolygonArea.h"
 #include "toaster-lib/MathFunctions.h"
@@ -14,11 +17,16 @@
 // Entity should be a vector or a map with all entities
 // This function update all the area that depends on an entity position.
 
+
+
+// Vector of Area
+// It should be possible to add an area on the fly with a ros service.
+std::map<unsigned int, Area*> mapArea_;
+
 void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity) {
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
-        if (it->second->getMyOwner() == entity->getId())
-            // Dangerous casting? Only CircleArea has Owner...
-            ((CircleArea*) it->second)->setCenter(MathFunctions::convert3dTo2d(entity->getPosition()));
+        if (it->second->getMyOwner() == entity->getId() && it->second->getIsCircle())
+            ( (CircleArea*) it->second)->setCenter( MathFunctions::convert3dTo2d(entity->getPosition()) );
     }
 }
 
@@ -57,6 +65,55 @@ double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold) {
     return MathFunctions::isInAngle(entFacing, entSubject, entFacing->getOrientation()[2], angleThreshold);
 }
 
+bool addArea(area_manager::AddArea::Request &req,
+        area_manager::AddArea::Response & res) {
+
+  Area* curArea;
+
+  //If it is a circle area
+  if(req.myArea.isCircle){
+    bg::model::point<double, 2, bg::cs::cartesian> center(req.myArea.center.x, req.myArea.center.y);
+
+    CircleArea* myCircle = new CircleArea(req.myArea.id, center, req.myArea.ray);
+    curArea = myCircle;
+  }else{
+    //If it is a polygon
+    double pointsPoly[req.myArea.poly.points.size()][2];
+    for(int i=0; i<req.myArea.poly.points.size(); i++){
+        pointsPoly[i][0] = req.myArea.poly.points[i].x;
+        pointsPoly[i][1] = req.myArea.poly.points[i].y;
+    }
+
+    PolygonArea* myPoly = new PolygonArea(req.myArea.id, pointsPoly, req.myArea.poly.points.size());
+    curArea = myPoly;
+  }
+
+  curArea->setIsCircle(req.myArea.isCircle);
+  curArea->setEntityType(req.myArea.entityType);
+  curArea->setFactType(req.myArea.factType);
+  curArea->setMyOwner(req.myArea.myOwner);
+  curArea->setName(req.myArea.name);
+  curArea->setIsRoom(req.myArea.isRoom);
+
+  mapArea_[curArea->getId()] = curArea;
+
+ res.answer = true;
+ ROS_INFO("request: added Area: id %d, name %s", req.myArea.id, req.myArea.name.c_str());
+ ROS_INFO("sending back response: [%d]", (int) res.answer);
+ return true;
+}
+
+bool removeArea(area_manager::RemoveArea::Request &req,
+        area_manager::RemoveArea::Response & res) {
+
+  ROS_INFO("request: removed Area: id %d", req.id);
+  mapArea_.erase(req.id);
+
+ res.answer = true;
+ ROS_INFO("sending back response: [%d]", (int) res.answer);
+ return true;
+}
+
 int main(int argc, char** argv) {
     // Set this in a ros service
     const bool AGENT_FULL_CONFIG = false; //If false we will use only position and orientation
@@ -69,7 +126,15 @@ int main(int argc, char** argv) {
     PDGRobotReader robotRd(node, AGENT_FULL_CONFIG);
     PDGObjectReader objectRd(node);
 
+    //Services
+    ros::ServiceServer serviceAdd = node.advertiseService("area_manager/add_area", addArea);
+    ROS_INFO("Ready to add Area.");
 
+
+    ros::ServiceServer serviceRemove = node.advertiseService("area_manager/remove_area", removeArea);
+    ROS_INFO("Ready to remove Area.");
+
+    // Publishing
     ros::Publisher fact_pub = node.advertise<pdg::FactList>("area_manager/factList", 1000);
 
     pdg::FactList factList_msg;
@@ -78,202 +143,329 @@ int main(int argc, char** argv) {
     // Set this in a ros service?
     ros::Rate loop_rate(30);
 
-    // Vector of Area
-    // It should be possible to add an area on the fly with a ros service.
-    std::map<unsigned int, Area*> mapArea;
 
-    // Origin point
-    bg::model::point<double, 2, bg::cs::cartesian> origin(0.0, 0.0);
-
-    // AreaRays:
-    double interDist = 5.0;
-    double dangerDist = 1.5;
-
-    // TODO: put this in a service with parameters
-    // We create 2 Area for the robot:
-    // Interacting
-    CircleArea* interacting = new CircleArea(0, origin, interDist);
-    interacting->setMyOwner(1);
-    interacting->setName("pr2_interacting");
-    interacting->setIsRoom(false);
-    // Danger
-    CircleArea* danger = new CircleArea(1, origin, dangerDist);
-    danger->setMyOwner(1);
-    danger->setName("pr2_danger");
-    danger->setIsRoom(false);
-
-    // We define here some room (Adream)
-    double pointsBed[5][2] = {
-        {1.9, 13.1},
-        {6.0, 13.1},
-        {6.0, 9.0},
-        {1.9, 9.0},
-        {1.9, 13.1}
-    };
-    double pointsKitch[5][2] = {
-        {6.0, 13.1},
-        {9.0, 13.1},
-        {9.0, 9.0},
-        {6.0, 9.0},
-        {6.0, 13.1}
-    };
-    double pointsLiving[5][2] = {
-        {1.9, 9.0},
-        {9.0, 9.0},
-        {9.0, 5.0},
-        {1.9, 5.0},
-        {1.9, 9.0}
-    };
-    PolygonArea* bedroom = new PolygonArea(2, pointsBed, 5);
-    bedroom->setName("bedroom");
-    bedroom->setIsRoom(true);
-
-    PolygonArea* kitchen = new PolygonArea(3, pointsKitch, 5);
-    kitchen->setName("kitchen");
-    kitchen->setIsRoom(true);
-
-    PolygonArea* livingroom = new PolygonArea(4, pointsLiving, 5);
-    livingroom->setName("livingroom");
-    livingroom->setIsRoom(true);
-
-    mapArea[0] = interacting;
-    mapArea[1] = danger;
-    mapArea[2] = bedroom;
-    mapArea[3] = kitchen;
-    mapArea[4] = livingroom;
 
     /************************/
     /* Start of the Ros loop*/
     /************************/
 
+    //TODO: remove human / robot id and do it for all
     while (node.ok()) {
-        if ((humanRd.lastConfig_[101] != NULL)  && (robotRd.lastConfig_[1] != NULL)) {
-	    // We update area with robot center
-            //TODO: Update this only if they are in same room?
-            if (robotRd.lastConfig_[1] != NULL)
-                updateEntityArea(mapArea, robotRd.lastConfig_[1]);
 
-            // We update entities vector inArea
-            // TODO: actually do this for every entities!
-            updateInArea(humanRd.lastConfig_[101], mapArea);
-            updateInArea(robotRd.lastConfig_[1], mapArea);
-            for(std::map<unsigned int, Object*>::const_iterator it=objectRd.lastConfig_.begin() ; it!=objectRd.lastConfig_.end() ; ++it)
-            {
-              updateInArea(objectRd.lastConfig_[it->first], mapArea);
-            }
+      ////////////////////////////////
+      // Updating situational Areas //
+      ////////////////////////////////
 
-            if (humanRd.lastConfig_[101]->isInArea(0)) {
+      // Humans
+      for (std::map<unsigned int, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
+	// We update area with human center
+        updateEntityArea(mapArea_, it->second);
+      }
 
-                //Fact Area
-                fact_msg.property = "IsInArea";
-                fact_msg.propertyType = "position";
-                fact_msg.subProperty = "interacting";
-                fact_msg.subjectId = 101;
-                fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
-                fact_msg.targetName = robotRd.lastConfig_[1]->getName();
-                fact_msg.targetId = 1;
-                fact_msg.confidence = 1.0;
-                fact_msg.factObservability = 1.0;
-                fact_msg.time = humanRd.lastConfig_[101]->getTime();
+      // Robots
+      for (std::map<unsigned int, Robot*>::iterator it = robotRd.lastConfig_.begin(); it != robotRd.lastConfig_.end(); ++it) {
+	// We update area with robot center
+        updateEntityArea(mapArea_, it->second);
+      }
 
-                factList_msg.factList.push_back(fact_msg);
+      // Objects
+      for(std::map<unsigned int, Object*>::const_iterator it=objectRd.lastConfig_.begin() ; it!=objectRd.lastConfig_.end() ; ++it){
+	// We update area with object center
+        updateEntityArea(mapArea_, it->second);
+      }
 
-                // We will compute here facts that are relevant for interacting
-                if (robotRd.lastConfig_[1] != NULL) {
-                    double confidence = 0.0;
-                    confidence = isFacing(humanRd.lastConfig_[101], robotRd.lastConfig_[1], 0.5);
-                    if (confidence > 0.0) {
-                        printf("[area_manager][DEGUG] %s is facing %s with confidence %f\n",
-                                humanRd.lastConfig_[101]->getName().c_str(), robotRd.lastConfig_[1]->getName().c_str(), confidence);
 
-                        //Fact
-                        fact_msg.property = "IsFacing";
-                        fact_msg.propertyType = "posture";
-                        fact_msg.subProperty = "orientationAngle";
-                        fact_msg.subjectId = 101;
-                        fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
-                        fact_msg.targetName = robotRd.lastConfig_[1]->getName();
-                        fact_msg.targetId = 1;
-                        fact_msg.confidence = confidence;
-                        fact_msg.factObservability = 1.0;
-                        fact_msg.time = humanRd.lastConfig_[101]->getTime();
+      /////////////////////////////////
+      // Updating in Area properties //
+      /////////////////////////////////
 
-                        factList_msg.factList.push_back(fact_msg);
-                    }
+
+      // Humans
+      for (std::map<unsigned int, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
+	// We update area with human center
+        updateInArea(it->second, mapArea_);
+      }
+
+      // Robots
+      for (std::map<unsigned int, Robot*>::iterator it = robotRd.lastConfig_.begin(); it != robotRd.lastConfig_.end(); ++it) {
+	// We update area with robot center
+        updateInArea(it->second, mapArea_);
+      }
+
+      // Objects
+      for(std::map<unsigned int, Object*>::const_iterator it=objectRd.lastConfig_.begin() ; it!=objectRd.lastConfig_.end() ; ++it){
+	// We update area with object center
+        updateInArea(it->second, mapArea_);
+      }
+
+
+
+      ///////////////////////////////////////
+      // Computing facts for each entities //
+      ///////////////////////////////////////
+
+
+
+      // Humans
+      for (std::map<unsigned int, Human*>::iterator itHuman = humanRd.lastConfig_.begin(); itHuman != humanRd.lastConfig_.end(); ++itHuman) {
+        for(std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea) {
+
+          if(itArea->second->getEntityType() == "entities" || itArea->second->getEntityType() == "agents" || itArea->second->getEntityType() == "humans"){
+
+            Entity* ownerEnt;
+
+            // Let's find back the area owner:
+            if (robotRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+              ownerEnt = robotRd.lastConfig_[itArea->second->getMyOwner()];
+            else if(humanRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+              ownerEnt = humanRd.lastConfig_[itArea->second->getMyOwner()];
+            else if(objectRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+              ownerEnt = objectRd.lastConfig_[itArea->second->getMyOwner()];
+
+            // compute facts according to factType
+            // TODO: instead of calling it interaction, make a list of facts to compute?
+            if(itArea->second->getFactType() == "interaction"){
+
+              if(ownerEnt!= NULL){
+
+                // Now let's compute isFacing
+                //////////////////////////////
+
+                double confidence = 0.0;
+                confidence = isFacing(itHuman->second, ownerEnt, 0.5);
+                if (confidence > 0.0) {
+                  printf("[area_manager][DEGUG] %s is facing %s with confidence %f\n",
+                           itHuman->second->getName().c_str(), ownerEnt->getName().c_str(), confidence);
+
+                  //Fact Facing
+                  fact_msg.property = "IsFacing";
+                  fact_msg.propertyType = "posture";
+                  fact_msg.subProperty = "orientationAngle";
+                  fact_msg.subjectId = itHuman->first;
+                  fact_msg.subjectName = itHuman->second->getName();
+                  fact_msg.targetName = ownerEnt->getName();
+                  fact_msg.targetId = ownerEnt->getId();
+                  fact_msg.confidence = confidence;
+                  fact_msg.factObservability = 0.5;
+                  fact_msg.time = itHuman->second->getTime();
+
+                  factList_msg.factList.push_back(fact_msg);
                 }
-            } else if (humanRd.lastConfig_[101]->isInArea(1)) {
-                // We will compute here facts that are relevant when human is in danger zone
 
-                //Fact
-                fact_msg.property = "IsInArea";
-                fact_msg.propertyType = "position";
-                fact_msg.subProperty = "Danger";
-                fact_msg.subjectId = 101;
-                fact_msg.targetId = 1;
-                fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
-                fact_msg.targetName = robotRd.lastConfig_[1]->getName();
-                fact_msg.confidence = 1;
-                fact_msg.factObservability = 1.0;
-                fact_msg.time = humanRd.lastConfig_[101]->getTime();
 
-                factList_msg.factList.push_back(fact_msg);
-            } else {
-                // We will compute here facts that are relevant for human out of interacting zone
+                // Compute here other facts linked to interaction
+                //////////////////////////////////////////////////
+
+                // TODO
+
+
+              } // ownerEnt!= NULL
+
+            }else if(itArea->second->getFactType() == ""){
+
+            }else{
+              printf("[area_manager][WARNING] Area %s has factType %s, which is not available\n", itArea->second->getName().c_str(), itArea->second->getFactType().c_str());
             }
 
-            std::string roomName;
-
-            // TODO: For each entities
-            for(std::map<unsigned int, Object*>::const_iterator it=objectRd.lastConfig_.begin() ; it!=objectRd.lastConfig_.end() ; ++it)
-            {
-              printf("[area_manager][DEBUG] object %s is in room %d\n", objectRd.lastConfig_[it->first]->getName().c_str(), objectRd.lastConfig_[it->first]->getRoomId());
-
-              if(objectRd.lastConfig_[it->first]->getRoomId() == 0)
-                roomName = "global";
-              else
-                roomName = mapArea[objectRd.lastConfig_[it->first]->getRoomId()]->getName();
-
-              //Fact room
-              fact_msg.property = "IsInArea";
-              fact_msg.propertyType = "position";
-              fact_msg.subProperty = "room";
-              fact_msg.subjectId = it->first;
-              fact_msg.subjectName =  objectRd.lastConfig_[it->first]->getName();
-              fact_msg.targetId = objectRd.lastConfig_[it->first]->getRoomId();
-              fact_msg.targetName = roomName;
-              fact_msg.confidence = 0.99;
-              fact_msg.factObservability = 1.0;
-              fact_msg.time = objectRd.lastConfig_[it->first]->getTime();
- 
-            }
-
-            if(humanRd.lastConfig_[101]->getRoomId() == 0)
-                roomName = "global";
-              else
-                roomName = mapArea[humanRd.lastConfig_[101]->getRoomId()]->getName();            
- 
-            //Fact room
+            //Fact in Area
             fact_msg.property = "IsInArea";
             fact_msg.propertyType = "position";
-            fact_msg.subProperty = "room";
-            fact_msg.subjectId = 101;
-            fact_msg.subjectName =  humanRd.lastConfig_[101]->getName();
-            fact_msg.targetId = humanRd.lastConfig_[101]->getRoomId();
-            fact_msg.targetName = roomName;
-            fact_msg.confidence = 0.99;
-            fact_msg.factObservability = 1.0;
-            fact_msg.time = humanRd.lastConfig_[101]->getTime();
+
+            if(itArea->second->getIsRoom())
+              fact_msg.subProperty = "room";
+            else
+              fact_msg.subProperty = ownerEnt->getName();
+
+            fact_msg.subjectId = itHuman->first;
+            fact_msg.subjectName = itHuman->second->getName();
+            fact_msg.targetName = itArea->second->getName();
+            fact_msg.targetId = itArea->second->getId();
+            fact_msg.confidence = 1;
+            fact_msg.factObservability = 0.8;
+            fact_msg.time = itHuman->second->getTime();
 
             factList_msg.factList.push_back(fact_msg);
 
+          }
         }
-        fact_pub.publish(factList_msg);
+      }
 
-        ros::spinOnce();
+      // Robots
+      for (std::map<unsigned int, Robot*>::iterator itRobot = robotRd.lastConfig_.begin(); itRobot != robotRd.lastConfig_.end(); ++itRobot) {
+        for(std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea) {
 
-        factList_msg.factList.clear();
+          if(itArea->second->getEntityType() == "entities" || itArea->second->getEntityType() == "agents" || itArea->second->getEntityType() == "robots"){
+            Entity* ownerEnt;
 
-        loop_rate.sleep();
+            // Let's find back the area owner:
+            if (robotRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+              ownerEnt = robotRd.lastConfig_[itArea->second->getMyOwner()];
+            else if(humanRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+              ownerEnt = humanRd.lastConfig_[itArea->second->getMyOwner()];
+            else if(objectRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+              ownerEnt = objectRd.lastConfig_[itArea->second->getMyOwner()];
+            // compute facts according to factType
+            // TODO: instead of calling it interaction, make a list of facts to compute?
+            if(itArea->second->getFactType() == "interaction"){
+
+              if(ownerEnt!= NULL){
+
+                // Now let's compute isFacing
+                //////////////////////////////
+
+                double confidence = 0.0;
+                confidence = isFacing(itRobot->second, ownerEnt, 0.5);
+                if (confidence > 0.0) {
+                  printf("[area_manager][DEGUG] %s is facing %s with confidence %f\n",
+                           itRobot->second->getName().c_str(), ownerEnt->getName().c_str(), confidence);
+
+                  //Fact Facing
+                  fact_msg.property = "IsFacing";
+                  fact_msg.propertyType = "posture";
+                  fact_msg.subProperty = "orientationAngle";
+                  fact_msg.subjectId = itRobot->first;
+                  fact_msg.subjectName = itRobot->second->getName();
+                  fact_msg.targetName = ownerEnt->getName();
+                  fact_msg.targetId = ownerEnt->getId();
+                  fact_msg.confidence = confidence;
+                  fact_msg.factObservability = 0.5;
+                  fact_msg.time = itRobot->second->getTime();
+
+                  factList_msg.factList.push_back(fact_msg);
+                }
+
+
+
+                // Compute here other facts linked to interaction
+                //////////////////////////////////////////////////
+
+                // TODO
+
+
+              } // ownerEnt!= NULL
+
+            }else if(itArea->second->getFactType() == ""){
+
+            }else{
+              printf("[area_manager][WARNING] Area %s has factType %s, which is not available\n", itArea->second->getName().c_str(), itArea->second->getFactType().c_str());
+            }
+
+            //Fact in Area
+            fact_msg.property = "IsInArea";
+            fact_msg.propertyType = "position";
+
+            if(itArea->second->getIsRoom())
+              fact_msg.subProperty = "room";
+            else
+              fact_msg.subProperty = ownerEnt->getName();
+
+            fact_msg.subjectId = itRobot->first;
+            fact_msg.subjectName = itRobot->second->getName();
+            fact_msg.targetName = itArea->second->getName();
+            fact_msg.targetId = itArea->second->getId();
+            fact_msg.confidence = 1;
+            fact_msg.factObservability = 0.8;
+            fact_msg.time = itRobot->second->getTime();
+
+            factList_msg.factList.push_back(fact_msg);
+
+          }
+        }
+      }
+
+
+      // Objects
+      for (std::map<unsigned int, Object*>::iterator itObject = objectRd.lastConfig_.begin(); itObject != objectRd.lastConfig_.end(); ++itObject) {
+        for(std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea) {
+
+          if(itArea->second->getEntityType() == "entities" || itArea->second->getEntityType() == "objects"){
+
+            Entity* ownerEnt;
+
+            // Let's find back the area owner:
+            if (robotRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+              ownerEnt = robotRd.lastConfig_[itArea->second->getMyOwner()];
+            else if(humanRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+              ownerEnt = humanRd.lastConfig_[itArea->second->getMyOwner()];
+            else if(objectRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+              ownerEnt = objectRd.lastConfig_[itArea->second->getMyOwner()];
+
+            // compute facts according to factType
+            // TODO: instead of calling it interaction, make a list of facts to compute?
+            if(itArea->second->getFactType() == "interaction"){
+
+              if(ownerEnt!= NULL){
+
+                // Now let's compute isFacing
+                //////////////////////////////
+
+                double confidence = 0.0;
+                confidence = isFacing(itObject->second, ownerEnt, 0.5);
+                if (confidence > 0.0) {
+                  printf("[area_manager][DEGUG] %s is facing %s with confidence %f\n",
+                           itObject->second->getName().c_str(), ownerEnt->getName().c_str(), confidence);
+
+                  //Fact Facing
+                  fact_msg.property = "IsFacing";
+                  fact_msg.propertyType = "posture";
+                  fact_msg.subProperty = "orientationAngle";
+                  fact_msg.subjectId = itObject->first;
+                  fact_msg.subjectName = itObject->second->getName();
+                  fact_msg.targetName = ownerEnt->getName();
+                  fact_msg.targetId = ownerEnt->getId();
+                  fact_msg.confidence = confidence;
+                  fact_msg.factObservability = 0.5;
+                  fact_msg.time = itObject->second->getTime();
+
+                  factList_msg.factList.push_back(fact_msg);
+                }
+
+
+
+                // Compute here other facts linked to interaction
+                //////////////////////////////////////////////////
+
+                // TODO
+
+
+              } // ownerEnt!= NULL
+
+            }else if(itArea->second->getFactType() == ""){
+
+            }else{
+              printf("[area_manager][WARNING] Area %s has factType %s, which is not available\n", itArea->second->getName().c_str(), itArea->second->getFactType().c_str());
+            }
+
+            //Fact in Area
+            fact_msg.property = "IsInArea";
+            fact_msg.propertyType = "position";
+
+            if(itArea->second->getIsRoom())
+              fact_msg.subProperty = "room";
+            else
+              fact_msg.subProperty = ownerEnt->getName();
+
+            fact_msg.subjectId = itObject->first;
+            fact_msg.subjectName = itObject->second->getName();
+            fact_msg.targetName = itArea->second->getName();
+            fact_msg.targetId = itArea->second->getId();
+            fact_msg.confidence = 1;
+            fact_msg.factObservability = 0.8;
+            fact_msg.time = itObject->second->getTime();
+
+            factList_msg.factList.push_back(fact_msg);
+
+          }
+        }
+      }
+
+      fact_pub.publish(factList_msg);
+
+      ros::spinOnce();
+
+      factList_msg.factList.clear();
+
+      loop_rate.sleep();
     }
     return 0;
 }

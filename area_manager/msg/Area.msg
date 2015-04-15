@@ -1,0 +1,11 @@
+uint32 id
+string name
+uint32 myOwner
+bool isRoom
+string factType
+string entityType
+bool isCircle
+geometry_msgs/Point center
+float64 ray
+geometry_msgs/Polygon poly
+uint32[] insideEntities
