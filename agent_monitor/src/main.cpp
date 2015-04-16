@@ -3,10 +3,21 @@
 #include "area_manager/PDGHumanReader.h"
 #include "area_manager/PDGRobotReader.h"
 #include "area_manager/PDGObjectReader.h"
+#include "agent_monitor/AddAgent.h"
+#include "agent_monitor/AddJointToAgent.h"
+#include "agent_monitor/RemoveAgent.h"
+#include "agent_monitor/RemoveJointToAgent.h"
+#include "agent_monitor/RemoveAgents.h"
+#include "agent_monitor/RemoveJointsToAgent.h"
+#include "agent_monitor/PrintAgents.h"
 #include "pdg/FactList.h"
 #include "pdg/Fact.h"
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
+
+std::vector<unsigned int> agentsMonitored_;
+std::map<unsigned int, std::vector<std::string> > mapJointMonitoredName_;
+std::map<std::string, unsigned int> mapNameToAgentId_; 
 
 // Move this to a library?
 // create a fact
@@ -129,12 +140,292 @@ std::map<unsigned int, double> computeDeltaDist(std::map<unsigned int, TRBuffer 
     return deltaDistMap;
 }
 
-void initTRBuffer(unsigned int agentMonitored, TRBuffer<Entity*>& TRBEntity, unsigned int historyLength) {
-    //We need to initiate the ringbuffer
+/*void initTRBuffer(unsigned int agentMonitored, TRBuffer<Entity*>& TRBEntity, unsigned int historyLength) {
+    //We need to initiate the ringbuffer... or not
 
     TRBuffer<Entity*> mybuffer(historyLength);
     TRBEntity = mybuffer;
+}*/
+
+
+unsigned int getAgentId(std::string name){
+  if( mapNameToAgentId_.find(name) != mapNameToAgentId_.end())
+    return mapNameToAgentId_[name];
+  else
+    return 0;
 }
+
+
+
+    ///////////////////////////
+    //   Service functions   //
+    ///////////////////////////
+
+
+
+bool addAgent(agent_monitor::AddAgent::Request &req,
+        agent_monitor::AddAgent::Response & res) {
+  if(req.id != 0)
+    if( std::find(agentsMonitored_.begin(), agentsMonitored_.end(), req.id) == agentsMonitored_.end() ){
+      ROS_INFO("[agent_monitor][INFO] Agent with id %d now monitored, sending back response: true", req.id);
+      agentsMonitored_.push_back(req.id);
+      res.answer = true;
+    }else{
+      ROS_INFO("[agent_monitor][INFO] Agent with id %d is already monitored, sending back response: false", req.id);
+      res.answer = false;
+    }
+  else if(req.name != ""){
+    unsigned int id = getAgentId(req.name);
+    // If we found the agent and his id
+    if( id != 0)
+      if( std::find(agentsMonitored_.begin(), agentsMonitored_.end(), id) == agentsMonitored_.end() ){
+        ROS_INFO("[agent_monitor][INFO] Agent with id %d now monitored, sending back response: true", id);
+        agentsMonitored_.push_back(id);
+        res.answer = true;
+      }else{
+        ROS_INFO("[agent_monitor][INFO] Agent with id %d, named %s is already monitored, sending back response: false", id, req.name.c_str());
+        res.answer = false;
+      }
+    // If id == 0, agent is not present
+    else{
+      ROS_INFO("[agent_monitor][WARNING] Agent named %s not found, sending back response: false", req.name.c_str());
+      res.answer = false;
+    }
+  }else{
+    ROS_INFO("[agent_monitor][WARNING] request to add agent with no id and no name specified, sending back response: false");
+    res.answer = false;
+  }
+  return true;
+}
+
+bool removeAgent(agent_monitor::RemoveAgent::Request &req,
+        agent_monitor::RemoveAgent::Response & res) {
+  if(req.id != 0)
+    if( std::find(agentsMonitored_.begin(), agentsMonitored_.end(), req.id) != agentsMonitored_.end() ){
+      ROS_INFO("[agent_monitor][INFO] Agent with id %d not monitored anymore, sending back response: true", req.id);
+      agentsMonitored_.erase(std::remove(agentsMonitored_.begin(), agentsMonitored_.end(), req.id), agentsMonitored_.end());
+      res.answer = true;
+    }else{
+      ROS_INFO("[agent_monitor][INFO] Agent with id %d is already not monitored, sending back response: false", req.id);
+      res.answer = false;
+    }
+  else if(req.name != ""){
+    unsigned int id = getAgentId(req.name);
+    // If we found the agent and his id
+    if( id != 0)
+      if( std::find(agentsMonitored_.begin(), agentsMonitored_.end(), id) != agentsMonitored_.end() ){
+        ROS_INFO("[agent_monitor][INFO] Agent with id %d not monitored anymore, sending back response: true", id);
+        agentsMonitored_.erase(std::remove(agentsMonitored_.begin(), agentsMonitored_.end(), id), agentsMonitored_.end());
+        res.answer = true;
+      }else{
+        ROS_INFO("[agent_monitor][INFO] Agent with id %d, named %s is already not monitored, sending back response: false", id, req.name.c_str());
+        res.answer = false;
+      }
+    // If id == 0, agent is not present
+    else{
+      ROS_INFO("[agent_monitor][WARNING] Agent named %s not found, sending back response: false", req.name.c_str());
+      res.answer = false;
+    }
+  }else{
+    ROS_INFO("[agent_monitor][WARNING] request to remove agent with no id and no name specified, sending back response: false");
+    res.answer = false;
+  }
+  return true;
+}
+
+bool removeAgents(agent_monitor::RemoveAgents::Request &req,
+        agent_monitor::RemoveAgents::Response & res) {
+
+  agentsMonitored_.clear();
+  ROS_INFO("[agent_monitor][WARNING] request to remove all agents");
+  return true;
+}
+
+
+bool addJointToAgent(agent_monitor::AddJointToAgent::Request &req,
+        agent_monitor::AddJointToAgent::Response & res) {
+
+  if(req.agentId != 0)
+    if( std::find(agentsMonitored_.begin(), agentsMonitored_.end(), req.agentId) != agentsMonitored_.end() )
+      if(req.jointName != "")
+        if(mapJointMonitoredName_.find(req.agentId) != mapJointMonitoredName_.end())
+          // Joint was not monitored
+          if( std::find(mapJointMonitoredName_[req.agentId].begin(), mapJointMonitoredName_[req.agentId].end(), req.jointName) == mapJointMonitoredName_[req.agentId].end() ){
+            ROS_INFO("[agent_monitor][INFO] Now monitoring joint %s of agent with id %d , sending back response: true", req.jointName.c_str(), req.agentId);
+            res.answer = true;
+            mapJointMonitoredName_[req.agentId].push_back(req.jointName);
+          // Joint is already monitored
+          }else{
+            ROS_INFO("[agent_monitor][INFO] Joint %s of agent with id %d already monitored, sending back response: false", req.jointName.c_str(), req.agentId);
+            res.answer = false;
+          }
+        else{
+            std::vector<std::string> tmpVec(1, req.jointName);
+            mapJointMonitoredName_[req.agentId] = tmpVec;
+        }
+      // No jointName specified
+      else{
+        ROS_INFO("[agent_monitor][WARNING] request to add joint to agent with id %d with no name specified, sending back response: false", req.agentId);
+        res.answer = false;
+      }
+    else{
+      ROS_INFO("[agent_monitor][WARNING] Agent with id %d is not monitored, can't monitor his joint. Sending back response: false", req.agentId);
+      res.answer = false;
+    }
+  else if(req.agentName != ""){
+    unsigned int id = getAgentId(req.agentName);
+    // If we found the agent and his id
+    if( id != 0){
+      if(req.jointName != ""){
+        if(mapJointMonitoredName_.find(id) != mapJointMonitoredName_.end())
+          // Joint was not monitored
+          if( std::find(mapJointMonitoredName_[id].begin(), mapJointMonitoredName_[id].end(), req.jointName) == mapJointMonitoredName_[id].end() ){
+            ROS_INFO("[agent_monitor][INFO] Now monitoring joint %s of agent with id %d , sending back response: true", req.jointName.c_str(), id);
+            res.answer = true;
+            mapJointMonitoredName_[id].push_back(req.jointName);
+          // Joint is already monitored
+          }else{
+            ROS_INFO("[agent_monitor][INFO] Joint %s of agent with id %d already monitored, sending back response: false", req.jointName.c_str(), id);
+            res.answer = false;
+          }
+        else{
+            std::vector<std::string> tmpVec(1, req.jointName);
+            mapJointMonitoredName_[id] = tmpVec;
+        }
+      // No jointName specified
+      }else{
+        ROS_INFO("[agent_monitor][WARNING] request to add joint to agent with id %d with no name specified, sending back response: false", id);
+        res.answer = false;
+      }
+    // If id == 0, agent is not present
+    }else{
+      ROS_INFO("[agent_monitor][WARNING] Agent named %s not found, sending back response: false", req.agentName.c_str());
+      res.answer = false;
+    }
+  }else{
+    ROS_INFO("[agent_monitor][WARNING] request to remove agent with no id and no name specified, sending back response: false");
+    res.answer = false;
+  }
+  return true;
+}
+
+bool removeJointToAgent(agent_monitor::RemoveJointToAgent::Request &req,
+        agent_monitor::RemoveJointToAgent::Response & res) {
+
+  if(req.agentId != 0)
+    if( std::find(agentsMonitored_.begin(), agentsMonitored_.end(), req.agentId) != agentsMonitored_.end() )
+      if(req.jointName != "")
+        // Joint was monitored
+        if( std::find(mapJointMonitoredName_[req.agentId].begin(), mapJointMonitoredName_[req.agentId].end(), req.jointName) != mapJointMonitoredName_[req.agentId].end() ){
+          ROS_INFO("[agent_monitor][INFO] Joint %s of agent with id %d not monitored anymore, sending back response: true", req.jointName.c_str(), req.agentId);
+          res.answer = true;
+          mapJointMonitoredName_[req.agentId].erase(std::remove(mapJointMonitoredName_[req.agentId].begin(), 
+              mapJointMonitoredName_[req.agentId].end(), req.jointName), mapJointMonitoredName_[req.agentId].end());
+        // Joint is not monitored
+        }else{
+          ROS_INFO("[agent_monitor][INFO] Joint %s of agent with id %d already not monitored, sending back response: false", req.jointName.c_str(), req.agentId);
+          res.answer = false;
+        }
+      // No jointName specified
+      else{
+        ROS_INFO("[agent_monitor][WARNING] request to remove joint to agent with id %d with no name specified, sending back response: false", req.agentId);
+        res.answer = false;
+      }
+    else{
+      ROS_INFO("[agent_monitor][WARNING] Agent with id %d is not monitored, can't unmonitor his joint. Sending back response: false", req.agentId);
+      res.answer = false;
+    }
+  else if(req.agentName != ""){
+    unsigned int id = getAgentId(req.agentName);
+    // If we found the agent and his id
+    if( id != 0){
+      if(req.jointName != ""){
+        // Joint was not monitored
+        if( std::find(mapJointMonitoredName_[id].begin(), mapJointMonitoredName_[id].end(), req.jointName) != mapJointMonitoredName_[id].end() ){
+          ROS_INFO("[agent_monitor][INFO] Joint %s of agent with id %d and named %s no more monitored, sending back response: true", req.jointName.c_str(), id, req.agentName.c_str());
+          res.answer = true;
+          mapJointMonitoredName_[id].erase(std::remove(mapJointMonitoredName_[id].begin(), 
+              mapJointMonitoredName_[id].end(), req.jointName), mapJointMonitoredName_[id].end());
+        // Joint is already monitored
+        }else{
+          ROS_INFO("[agent_monitor][INFO] Joint %s of agent with id %d and named %s already monitored, sending back response: false", req.jointName.c_str(), id, req.agentName.c_str());
+          res.answer = false;
+        }
+      // No jointName specified
+      }else{
+        ROS_INFO("[agent_monitor][WARNING] request to add joint to agent with id %d with no name specified, sending back response: false", id);
+        res.answer = false;
+      }
+    // If id == 0, agent is not present
+    }else{
+      ROS_INFO("[agent_monitor][WARNING] Agent named %s not found, sending back response: false", req.agentName.c_str());
+      res.answer = false;
+    }
+  }else{
+    ROS_INFO("[agent_monitor][WARNING] request to remove agent with no id and no name specified, sending back response: false");
+    res.answer = false;
+  }
+  return true;
+}
+
+bool removeJointsToAgent(agent_monitor::RemoveJointsToAgent::Request &req,
+        agent_monitor::RemoveJointsToAgent::Response & res) {
+
+  if(req.agentId != 0)
+    if( std::find(agentsMonitored_.begin(), agentsMonitored_.end(), req.agentId) != agentsMonitored_.end() ){
+      ROS_INFO("[agent_monitor][INFO] Agent with id %d joint's not monitored anymore, sending back response: true", req.agentId);
+      mapJointMonitoredName_[req.agentId].clear();
+      res.answer = true;
+    }else{
+      ROS_INFO("[agent_monitor][INFO] Agent with id %d is already not monitored, sending back response: false", req.agentId);
+      res.answer = false;
+    }
+  else if(req.agentName != ""){
+    unsigned int id = getAgentId(req.agentName);
+    // If we found the agent and his id
+    if( id != 0)
+      if( std::find(agentsMonitored_.begin(), agentsMonitored_.end(), id) != agentsMonitored_.end() ){
+        ROS_INFO("[agent_monitor][INFO] Agent with id %d joints' not monitored anymore, sending back response: true", id);
+        mapJointMonitoredName_[req.agentId].clear();
+        res.answer = true;
+      }else{
+        ROS_INFO("[agent_monitor][INFO] Agent with id %d, named %s is already not monitored, sending back response: false", id, req.agentName.c_str());
+        res.answer = false;
+      }
+    // If id == 0, agent is not present
+    else{
+      ROS_INFO("[agent_monitor][WARNING] Agent named %s not found, sending back response: false", req.agentName.c_str());
+      res.answer = false;
+    }
+  }else{
+    ROS_INFO("[agent_monitor][WARNING] request to remove agent joints' with no id and no name specified, sending back response: false");
+    res.answer = false;
+  }
+  return true;
+}
+
+
+bool printAgents(agent_monitor::PrintAgents::Request &req,
+        agent_monitor::PrintAgents::Response & res) {
+
+  std::string name;
+  ROS_INFO("[agent_monitor][PRINT] ****** Agents Monitored *******");
+  for( std::vector<unsigned int>::iterator it = agentsMonitored_.begin(); it != agentsMonitored_.end(); ++it ) {
+    name = "";
+    //Finding the name
+    for(std::map<std::string, unsigned int>::iterator itMap = mapNameToAgentId_.begin(); itMap != mapNameToAgentId_.end(); ++itMap )
+      if(itMap->second == *it){
+        name = itMap->first;
+        break;
+      }
+    ROS_INFO("[agent_monitor][PRINT] Agent id: %d, name: %s", *it, name.c_str());
+    for(std::vector<std::string>::iterator itJoint = mapJointMonitoredName_[*it].begin(); itJoint != mapJointMonitoredName_[*it].end(); ++itJoint ){
+      ROS_INFO("[agent_monitor][PRINT] Joint Monitored name: %s", (*itJoint).c_str());
+    }
+  }
+  return true;
+}
+
 
 int main(int argc, char** argv) {
     // Set this in a ros service
@@ -142,7 +433,6 @@ int main(int argc, char** argv) {
     const bool ROBOT_FULL_CONFIG = false;
 
     // Make this a vector? Not really relevant if several monitored agents...
-    // => Make a class agent monitor and instanciate it for each agent?
     unsigned int roomOfInterest = 0;
 
     // Set this in a ros service
@@ -159,11 +449,37 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "agent_monitor");
     ros::NodeHandle node;
 
-    // TODO: add SPAR data reading to get the room of entities.
+    // TODO: add area_manager data reading to get the room of entities.
     //Data reading
     PDGHumanReader humanRd(node, HUMAN_FULL_CONFIG);
     PDGRobotReader robotRd(node, ROBOT_FULL_CONFIG);
     PDGObjectReader objectRd(node);
+
+
+
+    //Services
+    ros::ServiceServer serviceAdd = node.advertiseService("agent_monitor/add_agent", addAgent);
+    ROS_INFO("Ready to add agent to monitor.");
+
+    ros::ServiceServer serviceRemove = node.advertiseService("agent_monitor/remove_agent", removeAgent);
+    ROS_INFO("Ready to remove monitored agent.");
+
+    ros::ServiceServer serviceRemoves = node.advertiseService("agent_monitor/remove_agents", removeAgents);
+    ROS_INFO("Ready to remove monitored agents.");
+
+    ros::ServiceServer serviceAddJoint = node.advertiseService("agent_monitor/add_joint_to_agent", addJointToAgent);
+    ROS_INFO("Ready to add joint to monitor for agent.");
+
+    ros::ServiceServer serviceRemoveJt = node.advertiseService("agent_monitor/remove_joint_to_agent", removeJointToAgent);
+    ROS_INFO("Ready to remove monitored joint to agent.");
+
+    ros::ServiceServer serviceRemoveJts = node.advertiseService("agent_monitor/remove_joints_to_agent", removeJointsToAgent);
+    ROS_INFO("Ready to remove monitored joints to agent.");
+
+    ros::ServiceServer servicePrint = node.advertiseService("agent_monitor/print_agents", printAgents);
+    ROS_INFO("Ready to print monitored agents.");
+
+
 
     ros::Publisher fact_pub = node.advertise<pdg::FactList>("agent_monitor/factList", 1000);
 
@@ -275,11 +591,13 @@ int main(int argc, char** argv) {
             //Put the following in a function?
 
 
-
-
-
             // For humans
             for (std::map<unsigned int, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
+
+                //Update mapNameToAgentId_ if needed:
+                if( mapNameToAgentId_.find(it->second->getName()) == mapNameToAgentId_.end())
+                  mapNameToAgentId_[ it->second->getName() ] = it->first;
+
                 // if in same room as monitored agent and not monitored agent
                 if (roomOfInterest == it->second->getRoomId() && it->first != agentMonitored) {
                     itTRB = mapTRBEntity.find(it->first);
@@ -310,6 +628,11 @@ int main(int argc, char** argv) {
             // For robots
 
             for (std::map<unsigned int, Robot*>::iterator it = robotRd.lastConfig_.begin(); it != robotRd.lastConfig_.end(); ++it) {
+
+                //Update mapNameToAgentId_ if needed:
+                if( mapNameToAgentId_.find(it->second->getName()) == mapNameToAgentId_.end())
+                  mapNameToAgentId_[ it->second->getName() ] = it->first;
+
                 // if in same room as monitored agent and not monitored agent
                 if ((roomOfInterest == it->second->getRoomId()) && (it->first != agentMonitored)) {
                     itTRB = mapTRBEntity.find(it->first);
