@@ -53,6 +53,8 @@ add_message_files(DIRECTORY msg FILES
 add_service_files(FILES
   AddArea.srv
   RemoveArea.srv
+  PrintArea.srv
+  PrintAreas.srv
 )
 
 ## Generate actions in the 'action' folder

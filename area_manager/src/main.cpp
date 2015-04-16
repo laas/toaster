@@ -5,6 +5,8 @@
 #include "area_manager/PDGObjectReader.h"
 #include "area_manager/AddArea.h"
 #include "area_manager/RemoveArea.h"
+#include "area_manager/PrintArea.h"
+#include "area_manager/PrintAreas.h"
 #include "area_manager/Area.h"
 #include "toaster-lib/CircleArea.h"
 #include "toaster-lib/PolygonArea.h"
@@ -106,12 +108,45 @@ bool addArea(area_manager::AddArea::Request &req,
 bool removeArea(area_manager::RemoveArea::Request &req,
         area_manager::RemoveArea::Response & res) {
 
-  ROS_INFO("request: removed Area: id %d", req.id);
+  ROS_INFO("request: removed Area: id %d, named: %s", req.id, mapArea_[req.id]->getName().c_str());
   mapArea_.erase(req.id);
 
  res.answer = true;
  ROS_INFO("sending back response: [%d]", (int) res.answer);
  return true;
+}
+
+void printMyArea(unsigned int id){
+  if(mapArea_[id]->getIsCircle())
+    printf("Area name: %s, id: %d, owner id: %d, isRoom %d, factType: %s \n"
+       "entityType: %s, isCircle: true, center: %f, %f, ray: %f\n", mapArea_[id]->getName().c_str(),
+       id, mapArea_[id]->getMyOwner(), mapArea_[id]->getIsRoom(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str(),
+       ((CircleArea*) mapArea_[id])->getCenter().get<0>(), ((CircleArea*) mapArea_[id])->getCenter().get<1>(), ((CircleArea*) mapArea_[id])->getRay());
+  else
+    printf("Area name: %s, id: %d, owner id: %d, isRoom %d, factType: %s \n"
+       "entityType: %s, isCircle: false\n", mapArea_[id]->getName().c_str(),
+       id, mapArea_[id]->getMyOwner(), mapArea_[id]->getIsRoom(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str());
+
+    printf("inside entities: ");
+    for(int i=0; i<mapArea_[id]->insideEntities_.size(); i++)
+      printf(" %d,", mapArea_[id]->insideEntities_[i]);
+
+    printf("\n--------------------------\n");
+}
+
+bool printArea(area_manager::PrintArea::Request &req,
+        area_manager::RemoveArea::Response & res) {
+
+  printMyArea(req.id);
+  res.answer = true;
+  return true;
+}
+
+bool printAreas(area_manager::PrintAreas::Request &req,
+        area_manager::PrintAreas::Response & res) {
+  for(std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea)
+    printMyArea(itArea->first);
+  return true;
 }
 
 int main(int argc, char** argv) {
@@ -130,9 +165,14 @@ int main(int argc, char** argv) {
     ros::ServiceServer serviceAdd = node.advertiseService("area_manager/add_area", addArea);
     ROS_INFO("Ready to add Area.");
 
-
     ros::ServiceServer serviceRemove = node.advertiseService("area_manager/remove_area", removeArea);
     ROS_INFO("Ready to remove Area.");
+
+    ros::ServiceServer servicePrint = node.advertiseService("area_manager/print_area", printArea);
+    ROS_INFO("Ready to print Area.");
+
+    ros::ServiceServer servicePrints = node.advertiseService("area_manager/print_areas", printAreas);
+    ROS_INFO("Ready to print Areas.");
 
     // Publishing
     ros::Publisher fact_pub = node.advertise<pdg::FactList>("area_manager/factList", 1000);
