@@ -5,10 +5,6 @@ project(agent_monitor)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  message_generation
-  pdg
   area_manager
 )
 
@@ -71,7 +67,6 @@ add_service_files(FILES
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
    DEPENDENCIES
-    pdg
     area_manager
 )
 ###################################
@@ -86,7 +81,7 @@ generate_messages(
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES agent_monitor
-  CATKIN_DEPENDS roscpp rospy pdg area_manager
+  CATKIN_DEPENDS area_manager
 #  DEPENDS system_lib
 )
 

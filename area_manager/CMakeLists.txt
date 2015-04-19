@@ -5,9 +5,6 @@ project(area_manager)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  message_generation
   geometry_msgs
   pdg
 )
@@ -82,7 +79,7 @@ generate_messages(DEPENDENCIES
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES area_manager
-  CATKIN_DEPENDS roscpp rospy message_generation geometry_msgs pdg
+  CATKIN_DEPENDS geometry_msgs pdg
 #  DEPENDS system_lib
 )
 
