@@ -25,9 +25,6 @@
 // It should be possible to add an area on the fly with a ros service.
 std::map<unsigned int, Area*> mapArea_;
 
-
-
-
 void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity) {
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
         if (it->second->getMyOwner() == entity->getId() && it->second->getIsCircle())
@@ -72,11 +69,9 @@ double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold) {
 
 
 
-    ///////////////////////////
-    //   Service functions   //
-    ///////////////////////////
-
-
+///////////////////////////
+//   Service functions   //
+///////////////////////////
 
 bool addArea(area_manager::AddArea::Request &req,
         area_manager::AddArea::Response & res) {
@@ -206,6 +201,12 @@ int main(int argc, char** argv) {
         ////////////////////////////////
         // Updating situational Areas //
         ////////////////////////////////
+
+        //TODO: for more optimal computing, go through area and if it is a circle, update area.
+        // for each area
+        //   if current area is circle
+        //     get area owner
+        //     update area with owner position
 
         // Humans
         for (std::map<unsigned int, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {

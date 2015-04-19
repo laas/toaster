@@ -15,17 +15,16 @@ void PDGRobotReader::robotJointStateCallBack(const pdg::RobotList::ConstPtr& msg
     for (unsigned int i = 0; i < msg->robotList.size(); i++) {
 
         // If this robot is not assigned we have to allocate data.
-        if (lastConfig_[msg->robotList[i].meAgent.meEntity.id] == NULL){
+        if (lastConfig_[msg->robotList[i].meAgent.meEntity.id] == NULL) {
             curRobot = new Robot(msg->robotList[i].meAgent.meEntity.id);
-            curRobot->setName(msg->robotList[i].meAgent.meEntity.name);
-        }
-        else
+        } else
             curRobot = lastConfig_[msg->robotList[i].meAgent.meEntity.id];
 
         std::vector<double> robOrientation;
         bg::model::point<double, 3, bg::cs::cartesian> robPosition;
 
         Mobility curRobMobility = FULL;
+        curRobot->setName(msg->robotList[i].meAgent.meEntity.name);
 
         curRobot->setMobility(curRobMobility);
         curRobot->setTime(msg->robotList[i].meAgent.meEntity.time);
@@ -44,6 +43,34 @@ void PDGRobotReader::robotJointStateCallBack(const pdg::RobotList::ConstPtr& msg
 
         //TODO: fullRobot case
         if (fullRobot_) {
+            Joint * curJnt;
+            for (unsigned int i_jnt = 0; i_jnt < msg->robotList[i].meAgent.skeletonNames.size(); i_jnt++) {
+
+                // If this joint is not assigned we have to allocate data.
+                if (lastConfig_[curRobot->getId()]->skeleton_[msg->robotList[i].meAgent.skeletonNames[i_jnt] ] == NULL) {
+                    curJnt = new Joint(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.id, msg->robotList[i].meAgent.meEntity.id);
+                } else
+                    curJnt = lastConfig_[curRobot->getId()]->skeleton_[msg->robotList[i].meAgent.skeletonNames[i_jnt] ];
+
+                std::vector<double> jointOrientation;
+                bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
+
+                curJnt->setName(msg->robotList[i].meAgent.skeletonNames[i_jnt]);
+                curJnt->setAgentId(curRobot->getId());
+                curJnt->setTime(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.time);
+
+                jointPosition.set<0>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.positionX);
+                jointPosition.set<1>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.positionY);
+                jointPosition.set<2>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.positionZ);
+                curJnt->setPosition(jointPosition);
+
+                jointOrientation.push_back(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationRoll);
+                jointOrientation.push_back(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationPitch);
+                jointOrientation.push_back(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationYaw);
+                curJnt->setOrientation(jointOrientation);
+
+                lastConfig_[curRobot->getId()]->skeleton_[curJnt->getName()] = curJnt;
+            }
         }
     }
 }
@@ -53,7 +80,7 @@ bool PDGRobotReader::isPresent(unsigned int id) {
     gettimeofday(&curTime, NULL);
     unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;
     unsigned long timeThreshold = pow(10, 9);
-    //std::cout << "current time: " << now <<  "  human time: " << m_LastTime << std::endl;
+    //std::cout << "current time: " << now <<  "  robot time: " << m_LastTime << std::endl;
     long timeDif = lastConfig_[id]->getTime() - now;
     //std::cout << "time dif: " << timeDif << std::endl;
 
