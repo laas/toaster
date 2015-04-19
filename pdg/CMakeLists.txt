@@ -8,7 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  genmsg
+  message_generation
   tf
 )
 
@@ -51,7 +51,7 @@ find_package(catkin REQUIRED COMPONENTS
 #   Message1.msg
 #   Message2.msg
 # )
-add_message_files(DIRECTORY msg FILES Agent.msg     HumanList.msg	     niut_HUMAN_LIST.msg    niut_TIME_STR.msg	  Object.msg
+add_message_files(FILES Agent.msg     HumanList.msg	     niut_HUMAN_LIST.msg    niut_TIME_STR.msg	  Object.msg
 Entity.msg    Human.msg		     niut_JOINT.msg	    niut_TRACK_STATE.msg  RobotList.msg
 FactList.msg  Joint.msg		     niut_JOINT_STR.msg     niut_USER_STR.msg	  Robot.msg
 Fact.msg      niut_GEN_POINT_3D.msg  niut_SKELETON_STR.msg  ObjectList.msg)
@@ -86,8 +86,8 @@ Fact.msg      niut_GEN_POINT_3D.msg  niut_SKELETON_STR.msg  ObjectList.msg)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES pdg
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+#  LIBRARIES pdg
+  CATKIN_DEPENDS roscpp rospy std_msgs message_generation message_runtime tf
 #  DEPENDS system_lib
 )
 
@@ -96,16 +96,15 @@ catkin_package(
 ###########
 
 
-set(BOOST_ROOT $ENV{HOME}/devel/boost_1_56_0/)
-set(Boost_NO_SYSTEM_PATHS ON)
 
 find_package(Boost REQUIRED COMPONENTS)# system)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
-${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/ $ENV{HOME}/work/catkin_ws/src/toaster/pdg/include/ $ENV{HOME}/work/catkin_ws/devel/include
+${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/ 
 )
 
 ## Declare a cpp library
@@ -114,11 +113,11 @@ ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/ $
 # )
 
 ## Declare a cpp executable
- add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/ObjectReader.cpp src/VimanObjectReader.cpp src/SparkObjectReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
+ add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/ObjectReader.cpp src/SparkObjectReader.cpp src/VimanObjectReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(pdg_node pdg_generate_messages_cpp)
+ add_dependencies(pdg pdg_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(pdg_node

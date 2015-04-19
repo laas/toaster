@@ -7,8 +7,9 @@ project(agent_monitor)
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
-  std_msgs
-  genmsg
+  message_generation
+  pdg
+  area_manager
 )
 
 ## System dependencies are found with CMake's conventions
@@ -70,7 +71,8 @@ add_service_files(FILES
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
    DEPENDENCIES
-    std_msgs
+    pdg
+    area_manager
 )
 ###################################
 ## catkin specific configuration ##
@@ -83,8 +85,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES agent_monitor
-#  CATKIN_DEPENDS roscpp rospy std_msgs
+#  LIBRARIES agent_monitor
+  CATKIN_DEPENDS roscpp rospy pdg area_manager
 #  DEPENDS system_lib
 )
 
@@ -92,16 +94,14 @@ catkin_package(
 ## Build ##
 ###########
 
-set(BOOST_ROOT $ENV{HOME}/devel/boost_1_56_0/)
-set(Boost_NO_SYSTEM_PATHS ON)
-
 find_package(Boost REQUIRED COMPONENTS)# system)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
-${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/ $ENV{HOME}/work/catkin_ws/src/toaster/agent_monitor/include/ $ENV{HOME}/work/catkin_ws/devel/include $ENV{HOME}/work/catkin_ws/src/toaster/area_manager/include/
+${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 )
 
 ## Declare a cpp library
