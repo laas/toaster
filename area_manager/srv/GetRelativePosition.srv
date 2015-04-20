@@ -1,0 +1,5 @@
+uint32 subjectId
+uint32 targetId
+---
+string direction
+bool answer

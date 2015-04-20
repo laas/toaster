@@ -53,6 +53,7 @@ add_service_files(FILES
   RemoveArea.srv
   PrintArea.srv
   PrintAreas.srv
+  GetRelativePosition.srv
 )
 
 ## Generate actions in the 'action' folder

@@ -600,20 +600,20 @@ int main(int argc, char** argv) {
             // Let's find back the monitored agent:
             if (robotRd.lastConfig_[(*itAgnt)] != NULL) {
                 agentMonitored = robotRd.lastConfig_[(*itAgnt)];
+                isHuman = false;
 
                 //Update mapNameToAgentId_ if needed:
                 if (mapNameToAgentId_.find(robotRd.lastConfig_[(*itAgnt)]->getName()) == mapNameToAgentId_.end())
                     mapNameToAgentId_[ robotRd.lastConfig_[(*itAgnt)]->getName() ] = (*itAgnt);
 
-                isHuman = false;
             } else if (humanRd.lastConfig_[(*itAgnt)] != NULL) {
+                agentMonitored = humanRd.lastConfig_[(*itAgnt)];
+                isHuman = true;
 
                 //Update mapNameToAgentId_ if needed:
                 if (mapNameToAgentId_.find(humanRd.lastConfig_[(*itAgnt)]->getName()) == mapNameToAgentId_.end())
                     mapNameToAgentId_[ humanRd.lastConfig_[(*itAgnt)]->getName() ] = (*itAgnt);
 
-                agentMonitored = humanRd.lastConfig_[(*itAgnt)];
-                isHuman = true;
             }
 
 
