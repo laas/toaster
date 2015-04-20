@@ -30,8 +30,6 @@ std::map<unsigned int, Area*> mapArea_;
 std::map<unsigned int, Entity*> mapEntities_;
 
 
-// TODO: verify the math for the offset!
-
 // Entity should be a vector or a map with all entities
 // This function update all the area that depends on an entity position.
 
@@ -49,7 +47,7 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity) {
             if (it->second->getIsCircle()) {
 
                 point_type newCenter;
-                rotateTranslate.apply(((CircleArea*) it->second)->getOffsetFromOwner(), newCenter);
+                rotateTranslate.apply(((CircleArea*) it->second)->getCenterRelative(), newCenter);
                 ((CircleArea*) it->second)->setCenter(newCenter);
 
             } else {
@@ -153,10 +151,8 @@ bool addArea(area_manager::AddArea::Request &req,
     //If it is a circle area
     if (req.myArea.isCircle) {
         bg::model::point<double, 2, bg::cs::cartesian> center(req.myArea.center.x, req.myArea.center.y);
-        bg::model::point<double, 2, bg::cs::cartesian> offset(req.myArea.offsetFromOwner.x, req.myArea.offsetFromOwner.y);
 
         CircleArea* myCircle = new CircleArea(req.myArea.id, center, req.myArea.ray);
-        myCircle->setOffsetFromOwner(offset);
         curArea = myCircle;
     } else {
         //If it is a polygon
