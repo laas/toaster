@@ -14,14 +14,13 @@
 #include <math.h>
 #include <ostream>
 
-class MocapHumanReader : public HumanReader{
-
+class MocapHumanReader : public HumanReader {
 public:
-        MocapHumanReader(ros::NodeHandle& node, string topic);     // This function will fill the m_LastConfig map.
+    MocapHumanReader(ros::NodeHandle& node, std::string topic); // This function will fill the m_LastConfig map.
 
 private:
-        ros::Subscriber sub;
-        void optitrackCallback(const spencer_tracking_msgs::TrackedPersons::ConstPtr& msg);
-        void getHumanJointLocation(tf::TransformListener &listener, int joint, std::string personId);
-        tf::TransformListener listene_;
+    ros::Subscriber sub_;
+    void optitrackCallback(const spencer_tracking_msgs::TrackedPersons::ConstPtr& msg);
+    void getHumanJointLocation(tf::TransformListener &listener, int joint, std::string personId);
+    tf::TransformListener listener_;
 };
