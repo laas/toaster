@@ -6,7 +6,6 @@ string factType
 string entityType
 bool isCircle
 geometry_msgs/Point center
-geometry_msgs/Point offsetFromOwner
 float64 ray
 geometry_msgs/Polygon poly
 uint32[] insideEntities
