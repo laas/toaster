@@ -149,7 +149,7 @@ int main(int argc, char** argv) {
                 
                 
                 //Human
-                feelEntity(morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i], human_msg.meAgent.meEntity);
+                feelEntity(morseHumanRd.lastConfig_[morseHumanRd.humanIdOffset_ + i], human_msg.meAgent.meEntity);F
                 humanList_msg.humanList.push_back(human_msg);
             }
         }*/
