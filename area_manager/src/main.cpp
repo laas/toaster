@@ -63,8 +63,8 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
 
 // Return confidence: 0.0 if not facing 1.0 if facing
 
-double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold) {
-    return MathFunctions::isInAngle(entFacing, entSubject, entFacing->getOrientation()[2], angleThreshold);
+double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold, double& angleResult) {
+    return MathFunctions::isInAngle(entFacing, entSubject, entFacing->getOrientation()[2], angleThreshold, angleResult);
 }
 
 
@@ -256,7 +256,7 @@ int main(int argc, char** argv) {
         // Computing facts for each entities //
         ///////////////////////////////////////
 
-
+        // TODO: replace code duplication by a function for each fact computation
 
         // Humans
         for (std::map<unsigned int, Human*>::iterator itHuman = humanRd.lastConfig_.begin(); itHuman != humanRd.lastConfig_.end(); ++itHuman) {
@@ -284,10 +284,14 @@ int main(int argc, char** argv) {
                             //////////////////////////////
 
                             double confidence = 0.0;
-                            confidence = isFacing(itHuman->second, ownerEnt, 0.5);
+                            // This is the actual angle between subject orientation
+                            // and target. It gives left / right relation
+                            // If positive, target is at right!
+                            double angleResult = 0.0;
+                            confidence = isFacing(itHuman->second, ownerEnt, 0.5, angleResult);
                             if (confidence > 0.0) {
-                                printf("[area_manager][DEGUG] %s is facing %s with confidence %f\n",
-                                        itHuman->second->getName().c_str(), ownerEnt->getName().c_str(), confidence);
+                                printf("[area_manager][DEBUG] %s is facing %s with confidence %f, angleResult %f\n",
+                                        itHuman->second->getName().c_str(), ownerEnt->getName().c_str(), confidence, angleResult);
 
                                 //Fact Facing
                                 fact_msg.property = "IsFacing";
@@ -298,6 +302,8 @@ int main(int argc, char** argv) {
                                 fact_msg.targetName = ownerEnt->getName();
                                 fact_msg.targetId = ownerEnt->getId();
                                 fact_msg.confidence = confidence;
+                                fact_msg.doubleValue = angleResult;
+                                fact_msg.valueType = 1;
                                 fact_msg.factObservability = 0.5;
                                 fact_msg.time = itHuman->second->getTime();
 
@@ -366,7 +372,11 @@ int main(int argc, char** argv) {
                             //////////////////////////////
 
                             double confidence = 0.0;
-                            confidence = isFacing(itRobot->second, ownerEnt, 0.5);
+                            // This is the actual angle between subject orientation
+                            // and target. It gives left / right relation
+                            // If positive, target is at right!
+                            double angleResult = 0.0;
+                            confidence = isFacing(itRobot->second, ownerEnt, 0.5, angleResult);
                             if (confidence > 0.0) {
                                 printf("[area_manager][DEGUG] %s is facing %s with confidence %f\n",
                                         itRobot->second->getName().c_str(), ownerEnt->getName().c_str(), confidence);
@@ -381,6 +391,8 @@ int main(int argc, char** argv) {
                                 fact_msg.targetId = ownerEnt->getId();
                                 fact_msg.confidence = confidence;
                                 fact_msg.factObservability = 0.5;
+                                fact_msg.valueType = 1;
+                                fact_msg.doubleValue = angleResult;
                                 fact_msg.time = itRobot->second->getTime();
 
                                 factList_msg.factList.push_back(fact_msg);
@@ -444,43 +456,19 @@ int main(int argc, char** argv) {
 
                     // compute facts according to factType
                     // TODO: instead of calling it interaction, make a list of facts to compute?
-                    if (itArea->second->getFactType() == "interaction") {
-
-                        if (ownerEnt != NULL) {
-
-                            // Now let's compute isFacing
-                            //////////////////////////////
-
-                            double confidence = 0.0;
-                            confidence = isFacing(itObject->second, ownerEnt, 0.5);
-                            if (confidence > 0.0) {
-                                printf("[area_manager][DEGUG] %s is facing %s with confidence %f\n",
-                                        itObject->second->getName().c_str(), ownerEnt->getName().c_str(), confidence);
-
-                                //Fact Facing
-                                fact_msg.property = "IsFacing";
-                                fact_msg.propertyType = "posture";
-                                fact_msg.subProperty = "orientationAngle";
-                                fact_msg.subjectId = itObject->first;
-                                fact_msg.subjectName = itObject->second->getName();
-                                fact_msg.targetName = ownerEnt->getName();
-                                fact_msg.targetId = ownerEnt->getId();
-                                fact_msg.confidence = confidence;
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = itObject->second->getTime();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
+                    if (itArea->second->getFactType() == "support") {
 
 
 
-                            // Compute here other facts linked to interaction
-                            //////////////////////////////////////////////////
-
-                            // TODO
 
 
-                        } // ownerEnt!= NULL
+                        // Compute here other facts linked to interaction
+                        //////////////////////////////////////////////////
+
+                        // TODO
+
+
+
 
                     } else if (itArea->second->getFactType() == "") {
 

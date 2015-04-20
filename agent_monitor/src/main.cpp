@@ -70,7 +70,7 @@ bool computeJointMotion2D(TRBuffer< Entity* > confBuffer, std::string jointName,
     long actualTimelapse = 0;
     long timeNew = confBuffer.getTimeFromIndex(confBuffer.size() - 1);
     long timeOld = timeNew - timelapse;
-    Entity* entNew = ( (Agent*) confBuffer.getDataFromIndex(confBuffer.size() - 1) )->skeleton_[jointName];
+    Entity* entNew = ((Agent*) confBuffer.getDataFromIndex(confBuffer.size() - 1))->skeleton_[jointName];
 
     index = confBuffer.getIndexAfter(timeOld);
     // In case we don't have the index, we will just put isMoving to false
@@ -92,7 +92,6 @@ bool computeJointMotion2D(TRBuffer< Entity* > confBuffer, std::string jointName,
         return true;
     }
 }
-
 
 double computeMotion2DDirection(TRBuffer< Entity* > confBuffer, unsigned long timelapse) {
     double towardAngle;
@@ -147,10 +146,13 @@ std::map<unsigned int, double> computeMotion2DToward(std::map<unsigned int, TRBu
 
     std::map<unsigned int, double> towardConfidence;
 
+    // This parameter won't be used here...
+    double angleResult = 0.0;
+
     //For each entities in the same room
     for (std::map<unsigned int, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) {
         if (it->first != agentMonitored)
-            towardConfidence[it->first] = MathFunctions::isInAngle(mapEnts[agentMonitored].back(), it->second.back(), towardAngle, angleThreshold);
+            towardConfidence[it->first] = MathFunctions::isInAngle(mapEnts[agentMonitored].back(), it->second.back(), towardAngle, angleThreshold, angleResult);
     }
     return towardConfidence;
 }
@@ -160,14 +162,16 @@ std::map<unsigned int, double> computeJointMotion2DToward(std::map<unsigned int,
 
     std::map<unsigned int, double> towardConfidence;
 
+    // This parameter won't be used here...
+    double angleResult = 0.0;
+
     //For each entities in the same room
     for (std::map<unsigned int, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) {
         if (it->first != agentMonitored)
-            towardConfidence[it->first] = MathFunctions::isInAngle(((Agent*) mapEnts[agentMonitored].back())->skeleton_[jointName], it->second.back(), towardAngle, angleThreshold);
+            towardConfidence[it->first] = MathFunctions::isInAngle(((Agent*) mapEnts[agentMonitored].back())->skeleton_[jointName], it->second.back(), towardAngle, angleThreshold, angleResult);
     }
     return towardConfidence;
 }
-
 
 std::map<unsigned int, double> computeDeltaDist(std::map<unsigned int, TRBuffer < Entity* > > mapEnts, unsigned int agentMonitored, unsigned long timelapse) {
     std::map<unsigned int, double> deltaDistMap;
@@ -819,28 +823,28 @@ int main(int argc, char** argv) {
             for (std::map<unsigned int, Object*>::iterator it = objectRd.lastConfig_.begin(); it != objectRd.lastConfig_.end(); ++it) {
                 // if in same room as monitored agent and not monitored agent
                 //if (roomOfInterest == it->second->getRoomId()) {
-                    itTRB = mapTRBEntity.find(it->first);
-                    if (itTRB == mapTRBEntity.end()) {
-                        TRBuffer<Entity*> buffObj;
+                itTRB = mapTRBEntity.find(it->first);
+                if (itTRB == mapTRBEntity.end()) {
+                    TRBuffer<Entity*> buffObj;
 
-                        Object* obj = objectRd.lastConfig_[it->first];
-                        objectRd.lastConfig_[it->first] = new Object(it->first);
-                        //Object* obj = new Object(it->first);
-                        //memcpy(obj, objectRd.lastConfig_[it->first], sizeof (Object));
+                    Object* obj = objectRd.lastConfig_[it->first];
+                    objectRd.lastConfig_[it->first] = new Object(it->first);
+                    //Object* obj = new Object(it->first);
+                    //memcpy(obj, objectRd.lastConfig_[it->first], sizeof (Object));
 
-                        buffObj.push_back(obj->getTime(), obj);
+                    buffObj.push_back(obj->getTime(), obj);
 
-                        mapTRBEntity[it->first] = buffObj;
-                        //printf("adding object name: reader %s, tmp %s, in buffer: %s\n", objectRd.lastConfig_[it->first]->getName().c_str(), obj->getName().c_str(), mapTRBEntity[it->first].back()->getName().c_str());
+                    mapTRBEntity[it->first] = buffObj;
+                    //printf("adding object name: reader %s, tmp %s, in buffer: %s\n", objectRd.lastConfig_[it->first]->getName().c_str(), obj->getName().c_str(), mapTRBEntity[it->first].back()->getName().c_str());
 
-                        // If this is a new data we add it
-                    } else if (mapTRBEntity[it->first].back()->getTime() < it->second->getTime()) {
-                        Object* obj = objectRd.lastConfig_[it->first];
-                        objectRd.lastConfig_[it->first] = new Object(it->first);
-                        //Object* obj = new Object(it->first);
-                        //memcpy(obj, objectRd.lastConfig_[it->first], sizeof (Object));
-                        //printf("adding object name: reader %s, tmp %s, in buffer: %s\n", objectRd.lastConfig_[it->first]->getName().c_str(), obj->getName().c_str(), mapTRBEntity[it->first].back()->getName().c_str());
-                    }
+                    // If this is a new data we add it
+                } else if (mapTRBEntity[it->first].back()->getTime() < it->second->getTime()) {
+                    Object* obj = objectRd.lastConfig_[it->first];
+                    objectRd.lastConfig_[it->first] = new Object(it->first);
+                    //Object* obj = new Object(it->first);
+                    //memcpy(obj, objectRd.lastConfig_[it->first], sizeof (Object));
+                    //printf("adding object name: reader %s, tmp %s, in buffer: %s\n", objectRd.lastConfig_[it->first]->getName().c_str(), obj->getName().c_str(), mapTRBEntity[it->first].back()->getName().c_str());
+                }
                 //} // TODO: else remove
 
             }
