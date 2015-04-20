@@ -10,6 +10,7 @@
 #include "agent_monitor/RemoveAgents.h"
 #include "agent_monitor/RemoveJointsToAgent.h"
 #include "agent_monitor/PrintAgents.h"
+#include "agent_monitor/MonitorAll.h"
 #include "pdg/FactList.h"
 #include "pdg/Fact.h"
 #include "toaster-lib/TRBuffer.h"
@@ -18,6 +19,8 @@
 std::vector<unsigned int> agentsMonitored_;
 std::map<unsigned int, std::vector<std::string> > mapJointMonitoredName_;
 std::map<std::string, unsigned int> mapNameToAgentId_;
+bool monitorAllHumans_ = false;
+bool monitorAllRobots_ = false;
 
 // Move this to a library?
 // create a fact
@@ -287,6 +290,8 @@ bool removeMonitoredAgent(unsigned int id, std::string name = "") {
 }
 
 
+
+
 ///////////////////////////
 //   Service functions   //
 ///////////////////////////
@@ -515,6 +520,40 @@ bool printAgents(agent_monitor::PrintAgents::Request &req,
     return true;
 }
 
+bool monitorAllAgents(agent_monitor::MonitorAll::Request &req,
+        agent_monitor::MonitorAll::Response & res) {
+
+    monitorAllHumans_ = req.monitorAll;
+    monitorAllRobots_ = req.monitorAll;
+    if (req.monitorAll)
+        ROS_INFO("[agent_monitor][REQUEST] Start monitoring all agents");
+    else
+        ROS_INFO("[agent_monitor][REQUEST] Stop monitoring all agents");
+    return true;
+}
+
+bool monitorAllHumans(agent_monitor::MonitorAll::Request &req,
+        agent_monitor::MonitorAll::Response & res) {
+
+    monitorAllHumans_ = req.monitorAll;
+    if (req.monitorAll)
+        ROS_INFO("[agent_monitor][REQUEST] Start monitoring all humans");
+    else
+        ROS_INFO("[agent_monitor][REQUEST] Stop monitoring all humans");
+    return true;
+}
+
+bool monitorAllRobots(agent_monitor::MonitorAll::Request &req,
+        agent_monitor::MonitorAll::Response & res) {
+
+    monitorAllRobots_ = req.monitorAll;
+    if (req.monitorAll)
+        ROS_INFO("[agent_monitor][REQUEST] Start monitoring all robots");
+    else
+        ROS_INFO("[agent_monitor][REQUEST] Stop monitoring all robots");
+    return true;
+}
+
 int main(int argc, char** argv) {
     // Set this in a ros service
     const bool HUMAN_FULL_CONFIG = true; //If false we will use only position and orientation
@@ -567,6 +606,15 @@ int main(int argc, char** argv) {
     ros::ServiceServer servicePrint = node.advertiseService("agent_monitor/print_agents", printAgents);
     ROS_INFO("Ready to print monitored agents.");
 
+    ros::ServiceServer serviceMonitorAllAgents = node.advertiseService("agent_monitor/monitor_all_agents", monitorAllAgents);
+    ROS_INFO("Ready to print monitor all agents.");
+
+    ros::ServiceServer serviceMonitorAllHumans = node.advertiseService("agent_monitor/monitor_all_humans", monitorAllHumans);
+    ROS_INFO("Ready to print monitor all humans.");
+
+    ros::ServiceServer serviceMonitorAllRobots = node.advertiseService("agent_monitor/monitor_all_robots", monitorAllRobots);
+    ROS_INFO("Ready to print monitor all robots.");
+
 
 
     ros::Publisher fact_pub = node.advertise<pdg::FactList>("agent_monitor/factList", 1000);
@@ -591,6 +639,22 @@ int main(int argc, char** argv) {
         //////////////////////////////////////
         //           Updating data          //
         //////////////////////////////////////
+
+        // If we monitor all humans, we add them to the agentsMonitored vector
+        if (monitorAllHumans_)
+            for (std::map<unsigned int, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
+
+                agentsMonitored_.push_back(it->first);
+                mapNameToAgentId_[it->second->getName()] = it->first;
+            }
+
+        // If we monitor all robots, we add them to the agentsMonitored vector
+        if (monitorAllRobots_)
+            for (std::map<unsigned int, Robot*>::iterator it = robotRd.lastConfig_.begin(); it != robotRd.lastConfig_.end(); ++it) {
+
+                agentsMonitored_.push_back(it->first);
+                mapNameToAgentId_[it->second->getName()] = it->first;
+            }
 
 
         for (std::vector<unsigned int>::iterator itAgnt = agentsMonitored_.begin(); itAgnt != agentsMonitored_.end(); ++itAgnt) {

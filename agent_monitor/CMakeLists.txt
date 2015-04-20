@@ -55,6 +55,7 @@ add_service_files(FILES
   RemoveAgents.srv
   RemoveJointsToAgent.srv
   PrintAgents.srv
+  MonitorAll.srv
 )
 
 ## Generate actions in the 'action' folder
