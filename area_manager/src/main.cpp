@@ -16,21 +16,51 @@
 #include <pdg/Fact.h>
 #include <pdg/FactList.h>
 #include <iterator>
+#include <boost/numeric/ublas/matrix.hpp>
+#include <boost/numeric/ublas/io.hpp>
 
-// Entity should be a vector or a map with all entities
-// This function update all the area that depends on an entity position.
 
-
+namespace trans = bg::strategy::transform;
+typedef bg::model::point<double, 2, bg::cs::cartesian> point_type;
+namespace bn = boost::numeric;
 
 // Vector of Area
 // It should be possible to add an area on the fly with a ros service.
 std::map<unsigned int, Area*> mapArea_;
 std::map<unsigned int, Entity*> mapEntities_;
 
+
+// TODO: verify the math for the offset!
+
+// Entity should be a vector or a map with all entities
+// This function update all the area that depends on an entity position.
+
 void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity) {
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
-        if (it->second->getMyOwner() == entity->getId() && it->second->getIsCircle())
-            ((CircleArea*) it->second)->setCenter(MathFunctions::convert3dTo2d(entity->getPosition()));
+        if (it->second->getMyOwner() == entity->getId()) {
+
+            // Owner 2D frame
+            trans::translate_transformer<double, 2, 2> translate(entity->getPosition().get<0>(), entity->getPosition().get<1>());
+            trans::rotate_transformer<bg::radian, double, 2, 2> rotate(entity->getOrientation()[2]);
+
+            // Rotate, then translate
+            trans::ublas_transformer<double, 2, 2> rotateTranslate(bn::ublas::prod(translate.matrix(), rotate.matrix()));
+
+            if (it->second->getIsCircle()) {
+
+                point_type newCenter;
+                rotateTranslate.apply(((CircleArea*) it->second)->getOffsetFromOwner(), newCenter);
+                ((CircleArea*) it->second)->setCenter(newCenter);
+
+            } else {
+
+                bg::model::polygon<bg::model::d2::point_xy<double> > newPoly;
+                //rotateTranslate.apply(((PolygonArea*) it->second)->getPolyRelative(), newPoly);
+                bg::transform(((PolygonArea*) it->second)->getPolyRelative(), newPoly, rotateTranslate);
+                ((PolygonArea*) it->second)->poly_ = newPoly;
+
+            }
+        }
     }
 }
 
@@ -123,8 +153,10 @@ bool addArea(area_manager::AddArea::Request &req,
     //If it is a circle area
     if (req.myArea.isCircle) {
         bg::model::point<double, 2, bg::cs::cartesian> center(req.myArea.center.x, req.myArea.center.y);
+        bg::model::point<double, 2, bg::cs::cartesian> offset(req.myArea.offsetFromOwner.x, req.myArea.offsetFromOwner.y);
 
         CircleArea* myCircle = new CircleArea(req.myArea.id, center, req.myArea.ray);
+        myCircle->setOffsetFromOwner(offset);
         curArea = myCircle;
     } else {
         //If it is a polygon
@@ -214,7 +246,7 @@ bool getRelativePosition(area_manager::GetRelativePosition::Request &req,
         return true;
     } else
         ROS_INFO("Requested entity is not in the list.");
-        res.answer = false;
+    res.answer = false;
     return false;
 }
 
