@@ -107,7 +107,7 @@ ${Boost_INCLUDE_DIRS}
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(belief_manager_node belief_manager_generate_messages_cpp)
+add_dependencies(belief_manager belief_manager_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(agent_monitor_node

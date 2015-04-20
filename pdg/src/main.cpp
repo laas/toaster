@@ -1,5 +1,6 @@
 #include "pdg/MorseHumanReader.h"
 #include "pdg/Pr2RobotReader.h"
+#include "pdg/SpencerRobotReader.h"
 #include "pdg/VimanObjectReader.h"
 #include "pdg/SparkObjectReader.h"
 
