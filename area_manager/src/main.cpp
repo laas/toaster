@@ -213,6 +213,7 @@ bool getRelativePosition(area_manager::GetRelativePosition::Request &req,
         res.answer = true;
         return true;
     } else
+        ROS_INFO("Requested entity is not in the list.");
         res.answer = false;
     return false;
 }
@@ -242,7 +243,7 @@ int main(int argc, char** argv) {
     ros::ServiceServer servicePrints = node.advertiseService("area_manager/print_areas", printAreas);
     ROS_INFO("Ready to print Areas.");
 
-    ros::ServiceServer serviceRelativePose = node.advertiseService("area_manager/get_relative_ position", getRelativePosition);
+    ros::ServiceServer serviceRelativePose = node.advertiseService("area_manager/get_relative_position", getRelativePosition);
     ROS_INFO("Ready to print get relative position.");
 
     // Publishing
