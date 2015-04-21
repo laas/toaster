@@ -13,7 +13,7 @@ NiutHumanReader::NiutHumanReader(ros::NodeHandle& node, double * kinectPos,
     sub_ = node_.subscribe("/niut/Human", 1, &NiutHumanReader::humanJointCallBack, this);
 }
 
-void NiutHumanReader::humanJointCallBack(const pdg::niut_HUMAN_LIST::ConstPtr& msg) {
+void NiutHumanReader::humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg) {
     Joint curJoint(10000, 100);
     std::vector<int> trackedJoints;
     trackedJoints.push_back(0);
@@ -75,7 +75,7 @@ void NiutHumanReader::humanJointCallBack(const pdg::niut_HUMAN_LIST::ConstPtr& m
     }
 }
 
-void NiutHumanReader::updateJoint(int i, int j, Joint& curJoint, int toasterId, std::vector<int>& trackedJoints, const pdg::niut_HUMAN_LIST::ConstPtr& msg) {
+void NiutHumanReader::updateJoint(int i, int j, Joint& curJoint, int toasterId, std::vector<int>& trackedJoints, const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg) {
 
     std::map<int, std::string> niutToString;
     niutToString[0] = "HEAD";

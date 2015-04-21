@@ -39,18 +39,20 @@
   <!--   <run_depend>message_runtime</run_depend> -->
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
-  <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>roscpp</build_depend>
-  <build_depend>rospy</build_depend>
-  <build_depend>std_msgs</build_depend>
-  <build_depend>spencer_tracking_msgs</build_depend>
+  <buildtool_depend> catkin </buildtool_depend>
+  <build_depend> roscpp </build_depend>
+  <build_depend> rospy </build_depend>
+  <build_depend> std_msgs </build_depend>
+  <build_depend> spencer_tracking_msgs </build_depend>
+  <build_depend> niut_msgs </build_depend>
   <build_depend> message_generation </build_depend>
   <build_depend> tf </build_depend>
-  <run_depend>roscpp</run_depend>
-  <run_depend>rospy</run_depend>
-  <run_depend>std_msgs</run_depend>
-  <run_depend>spencer_tracking_msgs</run_depend>
+  <run_depend> roscpp </run_depend>
+  <run_depend> rospy </run_depend>
+  <run_depend> std_msgs </run_depend>
+  <run_depend> spencer_tracking_msgs </run_depend>
   <run_depend> message_generation </run_depend>
+  <run_depend> niut_msgs </run_depend>
   <run_depend> message_runtime </run_depend>
   <run_depend> tf </run_depend>
 

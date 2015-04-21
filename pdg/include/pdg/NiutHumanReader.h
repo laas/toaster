@@ -13,25 +13,24 @@
 #define	NIUTHUMANREADER_H
 
 #include <ros/ros.h>
-#include "pdg/niut_HUMAN_LIST.h"
+#include "niut_msgs/niut_HUMAN_LIST.h"
 #include "toaster-lib/Human.h"
 #include "HumanReader.h"
 
-class NiutHumanReader : public HumanReader{
+class NiutHumanReader : public HumanReader {
+public:
+    NiutHumanReader(ros::NodeHandle& node, double * kinectPos, bool fullHuman);
 
-    public:
-        NiutHumanReader(ros::NodeHandle& node, double * kinectPos, bool fullHuman);
+private:
+    static const unsigned short NB_MAX_NIUT = 16;
+    double* kinectPos_;
+    ros::Subscriber sub_;
 
-    private:
-        static const unsigned short NB_MAX_NIUT = 16;
-        double* kinectPos_;
-        ros::Subscriber sub_;
-        
-        //Functions
-        void humanJointCallBack(const pdg::niut_HUMAN_LIST::ConstPtr& msg);
-        void projectJoint(Joint& joint, double* kinectPos);
-        void updateJoint(int i, int j, Joint& curJoint, int toasterId, std::vector<int>& trackedJoints,
-             const pdg::niut_HUMAN_LIST::ConstPtr& msg);
+    //Functions
+    void humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg);
+    void projectJoint(Joint& joint, double* kinectPos);
+    void updateJoint(int i, int j, Joint& curJoint, int toasterId, std::vector<int>& trackedJoints,
+            const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg);
 
 };
 
