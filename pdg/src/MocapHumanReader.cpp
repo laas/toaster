@@ -7,6 +7,7 @@ MocapHumanReader::MocapHumanReader(ros::NodeHandle& node, std::string topic) {
     std::cout << "Initializing MocapHumanReader" << std::endl;
     // ******************************************
     // Starts listening to the joint_states
+    fullHuman_ = false;
     sub_ = node.subscribe(topic, 1, &MocapHumanReader::optitrackCallback, this);
     std::cout << "Done\n";
 }

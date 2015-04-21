@@ -74,6 +74,7 @@ Fact.msg      niut_GEN_POINT_3D.msg  niut_SKELETON_STR.msg  ObjectList.msg)
  generate_messages(
    DEPENDENCIES
     std_msgs
+    spencer_tracking_msgs
  )
 ###################################
 ## catkin specific configuration ##
@@ -87,7 +88,7 @@ Fact.msg      niut_GEN_POINT_3D.msg  niut_SKELETON_STR.msg  ObjectList.msg)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES pdg
-  CATKIN_DEPENDS roscpp rospy std_msgs message_generation message_runtime tf
+  CATKIN_DEPENDS roscpp rospy std_msgs spencer_tracking_msgs message_generation message_runtime tf
 #  DEPENDS system_lib
 )
 
@@ -113,7 +114,7 @@ ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 # )
 
 ## Declare a cpp executable
- add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ObjectReader.cpp src/SparkObjectReader.cpp src/VimanObjectReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
+ add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/GroupHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ObjectReader.cpp src/SparkObjectReader.cpp src/VimanObjectReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

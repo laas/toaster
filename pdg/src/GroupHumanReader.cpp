@@ -5,13 +5,14 @@
  * Created on April 21, 2015, 12:51 AM
  */
 
-#include "GroupHumanReader.h"
+#include "pdg/GroupHumanReader.h"
 
 GroupHumanReader::GroupHumanReader(ros::NodeHandle& node, std::string topic) {
     std::cout << "Initializing GroupHumanReader" << std::endl;
     // ******************************************
     // Starts listening to the joint_states
     sub_ = node.subscribe(topic, 1, &GroupHumanReader::groupTrackCallback, this);
+    fullHuman_ = false;
     std::cout << "Done\n";
 }
 
@@ -35,7 +36,7 @@ void GroupHumanReader::groupTrackCallback(const spencer_tracking_msgs::TrackedGr
                 msg->header.stamp, transform);
 
         //for every group present in the tracking message
-        for (int i = 0; i < msg->TrackedGroup.size(); i++) {
+        for (int i = 0; i < msg->groups.size(); i++) {
             spencer_tracking_msgs::TrackedGroup group = msg->groups[i];
             int humId = group.group_id;
             //create a new human with the same id as the message
@@ -69,7 +70,6 @@ void GroupHumanReader::groupTrackCallback(const spencer_tracking_msgs::TrackedGr
             curHuman->setOrientation(humanOrientation);
             curHuman->setPosition(humanPosition);
             curHuman->setTime(now.toNSec());
-            curHuman->setAge(group.age);
 
             lastConfig_[humId] = curHuman;
         }
