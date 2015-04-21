@@ -57,6 +57,7 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity) {
                 bg::transform(((PolygonArea*) it->second)->getPolyRelative(), newPoly, rotateTranslate);
                 ((PolygonArea*) it->second)->poly_ = newPoly;
 
+
             }
         }
     }
@@ -136,7 +137,15 @@ void printMyArea(unsigned int id) {
     printf("\n--------------------------\n");
 }
 
-
+unsigned int getFreeId(std::map<unsigned int, Area*>& map) {
+    unsigned int i = 1;
+    for (std::map<unsigned int, Area*>::iterator it = map.begin(); it != map.end(); ++it)
+        if (i == it->first)
+            i++;
+        else
+            break;
+    return i;
+}
 
 
 ///////////////////////////
@@ -148,11 +157,19 @@ bool addArea(toaster_msgs::AddArea::Request &req,
 
     Area* curArea;
 
+    unsigned int id;
+    // If no id, get one
+    if (req.myArea.id == 0)
+        id = getFreeId(mapArea_);
+    else
+        id = req.myArea.id;
+
+
     //If it is a circle area
     if (req.myArea.isCircle) {
         bg::model::point<double, 2, bg::cs::cartesian> center(req.myArea.center.x, req.myArea.center.y);
 
-        CircleArea* myCircle = new CircleArea(req.myArea.id, center, req.myArea.ray);
+        CircleArea* myCircle = new CircleArea(id, center, req.myArea.ray);
         curArea = myCircle;
     } else {
         //If it is a polygon
@@ -162,7 +179,7 @@ bool addArea(toaster_msgs::AddArea::Request &req,
             pointsPoly[i][1] = req.myArea.poly.points[i].y;
         }
 
-        PolygonArea* myPoly = new PolygonArea(req.myArea.id, pointsPoly, req.myArea.poly.points.size());
+        PolygonArea* myPoly = new PolygonArea(id, pointsPoly, req.myArea.poly.points.size());
         curArea = myPoly;
     }
 

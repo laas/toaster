@@ -95,7 +95,6 @@ find_package(Boost REQUIRED COMPONENTS)# system)
 # include_directories(include)
 include_directories(
   include
-  ../toaster_msgs/include
   ${catkin_INCLUDE_DIRS}
 ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 )
