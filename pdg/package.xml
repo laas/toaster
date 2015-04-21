@@ -2,12 +2,12 @@
 <package>
   <name>pdg</name>
   <version>0.0.0</version>
-  <description>The pdg package</description>
+  <description>The pdg package deal with toaster inputs. PDG stands for perceived data gathering</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="sdevin@todo.todo">sdevin</maintainer>
+  <maintainer email="gregoire@milliez.fr">Gregoire Milliez</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -25,7 +25,7 @@
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
   <!-- Authors do not have to be maintianers, but could be -->
   <!-- Example: -->
-  <!-- <author email="jane.doe@example.com">Jane Doe</author> -->
+  <author email="gregoire@milliez.fr">Gregoire Milliez</author>
 
 
   <!-- The *_depend tags are used to specify dependencies -->
@@ -45,6 +45,7 @@
   <build_depend> std_msgs </build_depend>
   <build_depend> spencer_tracking_msgs </build_depend>
   <build_depend> niut_msgs </build_depend>
+  <build_depend> toaster_msgs </build_depend>
   <build_depend> message_generation </build_depend>
   <build_depend> tf </build_depend>
   <run_depend> roscpp </run_depend>
@@ -53,6 +54,7 @@
   <run_depend> spencer_tracking_msgs </run_depend>
   <run_depend> message_generation </run_depend>
   <run_depend> niut_msgs </run_depend>
+  <run_depend> toaster_msgs </run_depend>
   <run_depend> message_runtime </run_depend>
   <run_depend> tf </run_depend>
 

@@ -1,18 +1,18 @@
 // This main will compute the facts for the requested agent.
 
-#include "area_manager/PDGHumanReader.h"
-#include "area_manager/PDGRobotReader.h"
-#include "area_manager/PDGObjectReader.h"
-#include "agent_monitor/AddAgent.h"
-#include "agent_monitor/AddJointToAgent.h"
-#include "agent_monitor/RemoveAgent.h"
-#include "agent_monitor/RemoveJointToAgent.h"
-#include "agent_monitor/RemoveAgents.h"
-#include "agent_monitor/RemoveJointsToAgent.h"
-#include "agent_monitor/PrintAgents.h"
-#include "agent_monitor/MonitorAll.h"
-#include "pdg/FactList.h"
-#include "pdg/Fact.h"
+#include "toaster_msgs/ToasterHumanReader.h"
+#include "toaster_msgs/ToasterRobotReader.h"
+#include "toaster_msgs/ToasterObjectReader.h"
+#include "toaster_msgs/AddAgent.h"
+#include "toaster_msgs/AddJointToAgent.h"
+#include "toaster_msgs/RemoveAgent.h"
+#include "toaster_msgs/RemoveJointToAgent.h"
+#include "toaster_msgs/RemoveAgents.h"
+#include "toaster_msgs/RemoveJointsToAgent.h"
+#include "toaster_msgs/PrintAgents.h"
+#include "toaster_msgs/MonitorAll.h"
+#include "toaster_msgs/FactList.h"
+#include "toaster_msgs/Fact.h"
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
 
@@ -25,8 +25,8 @@ bool monitorAllRobots_ = false;
 // Move this to a library?
 // create a fact
 
-/*pdg::Fact createFact(std::string property, std::string propertyType, std::string subProperty, ) {
-    pdg::Fact fact_msg;
+/*toaster_msgs::Fact createFact(std::string property, std::string propertyType, std::string subProperty, ) {
+    toaster_msgs::Fact fact_msg;
     fact_msg.property = property;
     fact_msg.subProperty = subProperty;
     fact_msg.subjectId = subjectId;
@@ -296,8 +296,8 @@ bool removeMonitoredAgent(unsigned int id, std::string name = "") {
 //   Service functions   //
 ///////////////////////////
 
-bool addAgent(agent_monitor::AddAgent::Request &req,
-        agent_monitor::AddAgent::Response & res) {
+bool addAgent(toaster_msgs::AddAgent::Request &req,
+        toaster_msgs::AddAgent::Response & res) {
     if (req.id != 0)
         res.answer = addMonitoredAgent(req.id);
     else if (req.name != "") {
@@ -318,8 +318,8 @@ bool addAgent(agent_monitor::AddAgent::Request &req,
     return true;
 }
 
-bool removeAgent(agent_monitor::RemoveAgent::Request &req,
-        agent_monitor::RemoveAgent::Response & res) {
+bool removeAgent(toaster_msgs::RemoveAgent::Request &req,
+        toaster_msgs::RemoveAgent::Response & res) {
     if (req.id != 0)
         res.answer = removeMonitoredAgent(req.id);
     else if (req.name != "") {
@@ -339,16 +339,16 @@ bool removeAgent(agent_monitor::RemoveAgent::Request &req,
     return true;
 }
 
-bool removeAgents(agent_monitor::RemoveAgents::Request &req,
-        agent_monitor::RemoveAgents::Response & res) {
+bool removeAgents(toaster_msgs::RemoveAgents::Request &req,
+        toaster_msgs::RemoveAgents::Response & res) {
 
     agentsMonitored_.clear();
     ROS_INFO("[agent_monitor][WARNING] request to remove all agents");
     return true;
 }
 
-bool addJointToAgent(agent_monitor::AddJointToAgent::Request &req,
-        agent_monitor::AddJointToAgent::Response & res) {
+bool addJointToAgent(toaster_msgs::AddJointToAgent::Request &req,
+        toaster_msgs::AddJointToAgent::Response & res) {
 
     if (req.agentId != 0)
         if (std::find(agentsMonitored_.begin(), agentsMonitored_.end(), req.agentId) != agentsMonitored_.end())
@@ -409,8 +409,8 @@ bool addJointToAgent(agent_monitor::AddJointToAgent::Request &req,
     return true;
 }
 
-bool removeJointToAgent(agent_monitor::RemoveJointToAgent::Request &req,
-        agent_monitor::RemoveJointToAgent::Response & res) {
+bool removeJointToAgent(toaster_msgs::RemoveJointToAgent::Request &req,
+        toaster_msgs::RemoveJointToAgent::Response & res) {
 
     if (req.agentId != 0)
         if (std::find(agentsMonitored_.begin(), agentsMonitored_.end(), req.agentId) != agentsMonitored_.end())
@@ -465,8 +465,8 @@ bool removeJointToAgent(agent_monitor::RemoveJointToAgent::Request &req,
     return true;
 }
 
-bool removeJointsToAgent(agent_monitor::RemoveJointsToAgent::Request &req,
-        agent_monitor::RemoveJointsToAgent::Response & res) {
+bool removeJointsToAgent(toaster_msgs::RemoveJointsToAgent::Request &req,
+        toaster_msgs::RemoveJointsToAgent::Response & res) {
 
     if (req.agentId != 0)
         if (std::find(agentsMonitored_.begin(), agentsMonitored_.end(), req.agentId) != agentsMonitored_.end()) {
@@ -499,8 +499,8 @@ bool removeJointsToAgent(agent_monitor::RemoveJointsToAgent::Request &req,
     return true;
 }
 
-bool printAgents(agent_monitor::PrintAgents::Request &req,
-        agent_monitor::PrintAgents::Response & res) {
+bool printAgents(toaster_msgs::PrintAgents::Request &req,
+        toaster_msgs::PrintAgents::Response & res) {
 
     std::string name;
     ROS_INFO("[agent_monitor][PRINT] ****** Agents Monitored *******");
@@ -520,8 +520,8 @@ bool printAgents(agent_monitor::PrintAgents::Request &req,
     return true;
 }
 
-bool monitorAllAgents(agent_monitor::MonitorAll::Request &req,
-        agent_monitor::MonitorAll::Response & res) {
+bool monitorAllAgents(toaster_msgs::MonitorAll::Request &req,
+        toaster_msgs::MonitorAll::Response & res) {
 
     monitorAllHumans_ = req.monitorAll;
     monitorAllRobots_ = req.monitorAll;
@@ -532,8 +532,8 @@ bool monitorAllAgents(agent_monitor::MonitorAll::Request &req,
     return true;
 }
 
-bool monitorAllHumans(agent_monitor::MonitorAll::Request &req,
-        agent_monitor::MonitorAll::Response & res) {
+bool monitorAllHumans(toaster_msgs::MonitorAll::Request &req,
+        toaster_msgs::MonitorAll::Response & res) {
 
     monitorAllHumans_ = req.monitorAll;
     if (req.monitorAll)
@@ -543,8 +543,8 @@ bool monitorAllHumans(agent_monitor::MonitorAll::Request &req,
     return true;
 }
 
-bool monitorAllRobots(agent_monitor::MonitorAll::Request &req,
-        agent_monitor::MonitorAll::Response & res) {
+bool monitorAllRobots(toaster_msgs::MonitorAll::Request &req,
+        toaster_msgs::MonitorAll::Response & res) {
 
     monitorAllRobots_ = req.monitorAll;
     if (req.monitorAll)
@@ -578,9 +578,9 @@ int main(int argc, char** argv) {
 
     // TODO: add area_manager data reading to get the room of entities.
     //Data reading
-    PDGHumanReader humanRd(node, HUMAN_FULL_CONFIG);
-    PDGRobotReader robotRd(node, ROBOT_FULL_CONFIG);
-    PDGObjectReader objectRd(node);
+    ToasterHumanReader humanRd(node, HUMAN_FULL_CONFIG);
+    ToasterRobotReader robotRd(node, ROBOT_FULL_CONFIG);
+    ToasterObjectReader objectRd(node);
 
 
 
@@ -617,10 +617,10 @@ int main(int argc, char** argv) {
 
 
 
-    ros::Publisher fact_pub = node.advertise<pdg::FactList>("agent_monitor/factList", 1000);
+    ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("agent_monitor/factList", 1000);
 
-    pdg::FactList factList_msg;
-    pdg::Fact fact_msg;
+    toaster_msgs::FactList factList_msg;
+    toaster_msgs::Fact fact_msg;
 
 
     // Set this in a ros service?

@@ -5,7 +5,7 @@ project(belief_manager)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  area_manager
+  toaster_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -49,11 +49,11 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
- add_service_files(
- DIRECTORY srv
-   FILES
-AddFact.srv  AddFactToAgent.srv  RemoveFact.srv  RemoveFactToAgent.srv
- )
+# add_service_files(
+# DIRECTORY srv
+#   FILES
+#AddFact.srv  AddFactToAgent.srv  RemoveFact.srv  RemoveFactToAgent.srv
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -63,10 +63,10 @@ AddFact.srv  AddFactToAgent.srv  RemoveFact.srv  RemoveFactToAgent.srv
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-  area_manager
- )
+# generate_messages(
+#   DEPENDENCIES
+#   toaster_msgs
+ #)
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -79,7 +79,7 @@ AddFact.srv  AddFactToAgent.srv  RemoveFact.srv  RemoveFactToAgent.srv
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES belief_manager
-  CATKIN_DEPENDS area_manager
+  CATKIN_DEPENDS toaster_msgs
 #  DEPENDS system_lib
 )
 
@@ -92,6 +92,7 @@ find_package(Boost REQUIRED COMPONENTS)# system)
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  ../toaster_msgs/include
   ${catkin_INCLUDE_DIRS}
 ${Boost_INCLUDE_DIRS}
   $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
@@ -103,7 +104,7 @@ ${Boost_INCLUDE_DIRS}
 # )
 
 ## Declare a cpp executable
- add_executable(belief_manager ../area_manager/src/PDGObjectReader.cpp ../area_manager/src/PDGFactReader.cpp src/main.cpp)
+ add_executable(belief_manager ../toaster_msgs/src/ToasterObjectReader.cpp ../toaster_msgs/src/ToasterFactReader.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

@@ -1,20 +1,20 @@
 //This file will compute the spatial facts concerning agents present in the interaction.
 
-#include "area_manager/PDGHumanReader.h"
-#include "area_manager/PDGRobotReader.h"
-#include "area_manager/PDGObjectReader.h"
-#include "area_manager/AddArea.h"
-#include "area_manager/RemoveArea.h"
-#include "area_manager/PrintArea.h"
-#include "area_manager/PrintAreas.h"
-#include "area_manager/GetRelativePosition.h"
-#include "area_manager/Area.h"
+#include "toaster_msgs/ToasterHumanReader.h"
+#include "toaster_msgs/ToasterRobotReader.h"
+#include "toaster_msgs/ToasterObjectReader.h"
+#include "toaster_msgs/AddArea.h"
+#include "toaster_msgs/RemoveArea.h"
+#include "toaster_msgs/PrintArea.h"
+#include "toaster_msgs/PrintAreas.h"
+#include "toaster_msgs/GetRelativePosition.h"
+#include "toaster_msgs/Area.h"
 #include "toaster-lib/CircleArea.h"
 #include "toaster-lib/PolygonArea.h"
 #include "toaster-lib/MathFunctions.h"
 #include "toaster-lib/Object.h"
-#include <pdg/Fact.h>
-#include <pdg/FactList.h>
+#include <toaster_msgs/Fact.h>
+#include <toaster_msgs/FactList.h>
 #include <iterator>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
@@ -143,8 +143,8 @@ void printMyArea(unsigned int id) {
 //   Service functions   //
 ///////////////////////////
 
-bool addArea(area_manager::AddArea::Request &req,
-        area_manager::AddArea::Response & res) {
+bool addArea(toaster_msgs::AddArea::Request &req,
+        toaster_msgs::AddArea::Response & res) {
 
     Area* curArea;
 
@@ -181,8 +181,8 @@ bool addArea(area_manager::AddArea::Request &req,
     return true;
 }
 
-bool removeArea(area_manager::RemoveArea::Request &req,
-        area_manager::RemoveArea::Response & res) {
+bool removeArea(toaster_msgs::RemoveArea::Request &req,
+        toaster_msgs::RemoveArea::Response & res) {
 
     ROS_INFO("request: removed Area: id %d, named: %s", req.id, mapArea_[req.id]->getName().c_str());
     mapArea_.erase(req.id);
@@ -192,23 +192,23 @@ bool removeArea(area_manager::RemoveArea::Request &req,
     return true;
 }
 
-bool printArea(area_manager::PrintArea::Request &req,
-        area_manager::RemoveArea::Response & res) {
+bool printArea(toaster_msgs::PrintArea::Request &req,
+        toaster_msgs::RemoveArea::Response & res) {
 
     printMyArea(req.id);
     res.answer = true;
     return true;
 }
 
-bool printAreas(area_manager::PrintAreas::Request &req,
-        area_manager::PrintAreas::Response & res) {
+bool printAreas(toaster_msgs::PrintAreas::Request &req,
+        toaster_msgs::PrintAreas::Response & res) {
     for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea)
         printMyArea(itArea->first);
     return true;
 }
 
-bool getRelativePosition(area_manager::GetRelativePosition::Request &req,
-        area_manager::GetRelativePosition::Response & res) {
+bool getRelativePosition(toaster_msgs::GetRelativePosition::Request &req,
+        toaster_msgs::GetRelativePosition::Response & res) {
     double pi = 3.1416;
 
     if (mapEntities_[req.subjectId] != NULL && mapEntities_[req.targetId] != NULL) {
@@ -254,9 +254,9 @@ int main(int argc, char** argv) {
     ros::NodeHandle node;
 
     //Data reading
-    PDGHumanReader humanRd(node, AGENT_FULL_CONFIG);
-    PDGRobotReader robotRd(node, AGENT_FULL_CONFIG);
-    PDGObjectReader objectRd(node);
+    ToasterHumanReader humanRd(node, AGENT_FULL_CONFIG);
+    ToasterRobotReader robotRd(node, AGENT_FULL_CONFIG);
+    ToasterObjectReader objectRd(node);
 
     //Services
     ros::ServiceServer serviceAdd = node.advertiseService("area_manager/add_area", addArea);
@@ -275,10 +275,10 @@ int main(int argc, char** argv) {
     ROS_INFO("Ready to print get relative position.");
 
     // Publishing
-    ros::Publisher fact_pub = node.advertise<pdg::FactList>("area_manager/factList", 1000);
+    ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("area_manager/factList", 1000);
 
-    pdg::FactList factList_msg;
-    pdg::Fact fact_msg;
+    toaster_msgs::FactList factList_msg;
+    toaster_msgs::Fact fact_msg;
 
     // Set this in a ros service?
     ros::Rate loop_rate(30);

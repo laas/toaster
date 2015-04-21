@@ -1,14 +1,14 @@
-#include "area_manager/PDGRobotReader.h"
+#include "toaster_msgs/ToasterRobotReader.h"
 
-PDGRobotReader::PDGRobotReader(ros::NodeHandle& node, bool fullRobot) {
+ToasterRobotReader::ToasterRobotReader(ros::NodeHandle& node, bool fullRobot) {
     fullRobot_ = fullRobot;
-    std::cout << "[area_manager] Initializing PDGRobotReader" << std::endl;
+    std::cout << "[area_manager] Initializing ToasterRobotReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/pdg/robotList", 1, &PDGRobotReader::robotJointStateCallBack, this);
+    sub_ = node.subscribe("/pdg/robotList", 1, &ToasterRobotReader::robotJointStateCallBack, this);
 }
 
-void PDGRobotReader::robotJointStateCallBack(const pdg::RobotList::ConstPtr& msg) {
+void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for robot received" << std::endl;
 
     Robot* curRobot;
@@ -75,7 +75,7 @@ void PDGRobotReader::robotJointStateCallBack(const pdg::RobotList::ConstPtr& msg
     }
 }
 
-bool PDGRobotReader::isPresent(unsigned int id) {
+bool ToasterRobotReader::isPresent(unsigned int id) {
     timeval curTime;
     gettimeofday(&curTime, NULL);
     unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;

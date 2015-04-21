@@ -1,14 +1,14 @@
-#include "area_manager/PDGHumanReader.h"
+#include "toaster_msgs/ToasterHumanReader.h"
 
-PDGHumanReader::PDGHumanReader(ros::NodeHandle& node, bool fullHuman) {
+ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman) {
     fullHuman_ = fullHuman;
-    std::cout << "[area_manager] Initializing PDGHumanReader" << std::endl;
+    std::cout << "[area_manager] Initializing ToasterHumanReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/pdg/humanList", 1, &PDGHumanReader::humanJointStateCallBack, this);
+    sub_ = node.subscribe("/pdg/humanList", 1, &ToasterHumanReader::humanJointStateCallBack, this);
 }
 
-void PDGHumanReader::humanJointStateCallBack(const pdg::HumanList::ConstPtr& msg) {
+void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for human received with time " << msg->humanList[0].meAgent.meEntity.time  << std::endl;
     Human * curHuman;
     for (unsigned int i = 0; i < msg->humanList.size(); i++) {
@@ -74,7 +74,7 @@ void PDGHumanReader::humanJointStateCallBack(const pdg::HumanList::ConstPtr& msg
     }
 }
 
-bool PDGHumanReader::isPresent(unsigned int id) {
+bool ToasterHumanReader::isPresent(unsigned int id) {
     timeval curTime;
     gettimeofday(&curTime, NULL);
     unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;

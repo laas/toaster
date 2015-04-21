@@ -1,31 +1,31 @@
 /* 
- * File:   PDGObjectReader.cpp
+ * File:   ToasterObjectReader.cpp
  * Author: gmilliez
  * 
  * Created on December 12, 2014, 2:23 PM
  */
 
-#include "area_manager/PDGObjectReader.h"
+#include "toaster_msgs/ToasterObjectReader.h"
 
-PDGObjectReader::PDGObjectReader(ros::NodeHandle& node) {
-    std::cout << "[area_manager] Initializing PDGObjectReader" << std::endl;
+ToasterObjectReader::ToasterObjectReader(ros::NodeHandle& node) {
+    std::cout << "[area_manager] Initializing ToasterObjectReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/pdg/objectList", 1, &PDGObjectReader::objectStateCallBack, this);
+    sub_ = node.subscribe("/pdg/objectList", 1, &ToasterObjectReader::objectStateCallBack, this);
 }
 
-void PDGObjectReader::objectStateCallBack(const pdg::ObjectList::ConstPtr& msg) {
+void ToasterObjectReader::objectStateCallBack(const toaster_msgs::ObjectList::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for object received" << std::endl;
 
     Object* curObject;
     for (unsigned int i = 0; i < msg->objectList.size(); i++) {
 
         // If this human is not assigned we have to allocate data.
-        if (lastConfig_[msg->objectList[i].meEntity.id] == NULL){
+        if (lastConfig_[msg->objectList[i].meEntity.id] == NULL) {
             curObject = new Object(msg->objectList[i].meEntity.id);
             curObject->setRoomId(0);
             curObject->setName(msg->objectList[i].meEntity.name);
-        }else
+        } else
             curObject = lastConfig_[msg->objectList[i].meEntity.id];
 
         std::vector<double> objOrientation;
@@ -48,7 +48,7 @@ void PDGObjectReader::objectStateCallBack(const pdg::ObjectList::ConstPtr& msg) 
     }
 }
 
-bool PDGObjectReader::isPresent(unsigned int id) {
+bool ToasterObjectReader::isPresent(unsigned int id) {
     timeval curTime;
     gettimeofday(&curTime, NULL);
     unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;

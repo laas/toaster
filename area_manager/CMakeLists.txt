@@ -5,8 +5,7 @@ project(area_manager)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  geometry_msgs
-  pdg
+  toaster_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -43,18 +42,18 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-add_message_files(DIRECTORY msg FILES
-  Area.msg
-)
+#add_message_files(DIRECTORY msg FILES
+#  Area.msg
+#)
 
 ## Generate services in the 'srv' folder
-add_service_files(FILES
-  AddArea.srv
-  RemoveArea.srv
-  PrintArea.srv
-  PrintAreas.srv
-  GetRelativePosition.srv
-)
+#add_service_files(FILES
+#  AddArea.srv
+#  RemoveArea.srv
+#  PrintArea.srv
+#  PrintAreas.srv
+#  GetRelativePosition.srv
+#)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -64,10 +63,9 @@ add_service_files(FILES
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(DEPENDENCIES
-  geometry_msgs
-  pdg
-)
+#generate_messages(DEPENDENCIES
+#  toaster_msgs
+#)
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -80,7 +78,7 @@ generate_messages(DEPENDENCIES
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES area_manager
-  CATKIN_DEPENDS geometry_msgs pdg
+  CATKIN_DEPENDS toaster_msgs
 #  DEPENDS system_lib
 )
 
@@ -97,6 +95,7 @@ find_package(Boost REQUIRED COMPONENTS)# system)
 # include_directories(include)
 include_directories(
   include
+  ../toaster_msgs/include
   ${catkin_INCLUDE_DIRS}
 ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 )
@@ -107,7 +106,7 @@ ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 # )
 
 ## Declare a cpp executable
- add_executable(area_manager src/PDGHumanReader.cpp src/PDGRobotReader.cpp src/PDGObjectReader.cpp src/PDGFactReader.cpp src/main.cpp)
+ add_executable(area_manager ../toaster_msgs/src/ToasterHumanReader.cpp ../toaster_msgs/src/ToasterRobotReader.cpp ../toaster_msgs/src/ToasterObjectReader.cpp ../toaster_msgs/src/ToasterFactReader.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

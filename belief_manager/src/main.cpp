@@ -5,15 +5,15 @@
  * Created on February 5, 2015, 2:49 PM
  */
 
-#include "area_manager/PDGFactReader.h"
-#include "area_manager/PDGObjectReader.h"
-#include "pdg/FactList.h"
-#include "pdg/Fact.h"
-#include "belief_manager/AddFact.h"
-#include "belief_manager/RemoveFact.h"
+#include "toaster_msgs/ToasterFactReader.h"
+#include "toaster_msgs/ToasterObjectReader.h"
+#include "toaster_msgs/FactList.h"
+#include "toaster_msgs/Fact.h"
+#include "toaster_msgs/AddFact.h"
+#include "toaster_msgs/RemoveFact.h"
 
 // factList for each monitored agent
-static std::map<unsigned int, pdg::FactList> factListMap_;
+static std::map<unsigned int, toaster_msgs::FactList> factListMap_;
 
 // Agents with monitored belief
 static std::map<std::string, unsigned int> agentsTracked_;
@@ -29,7 +29,7 @@ bool removeFactToAgent(unsigned int myFactId, unsigned int agentId) {
     return true;
 }
 
-bool removeFactToAgent(pdg::Fact myFact, unsigned int agentId) {
+bool removeFactToAgent(toaster_msgs::Fact myFact, unsigned int agentId) {
     bool removed = false;
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].subjectName == myFact.subjectName) &&
@@ -71,7 +71,7 @@ bool removeInternFactToAgent(unsigned int agentId) {
 
 // Extern fact are fact from request. They are managed by an external module.
 
-bool addExternFactToAgent(pdg::Fact myFact, double confidenceDecrease, unsigned int agentId) {
+bool addExternFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, unsigned int agentId) {
     // We verify that this fact is not already there.
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].subjectName == myFact.subjectName) &&
@@ -90,7 +90,7 @@ bool addExternFactToAgent(pdg::Fact myFact, double confidenceDecrease, unsigned 
     return true;
 }
 
-bool addFactToAgent(pdg::Fact myFact, double confidenceDecrease, unsigned int agentId) {
+bool addFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, unsigned int agentId) {
     // We verify that this fact is not already there.
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].subjectName == myFact.subjectName) &&
@@ -110,8 +110,8 @@ bool addFactToAgent(pdg::Fact myFact, double confidenceDecrease, unsigned int ag
     return true;
 }
 
-bool addFact(belief_manager::AddFact::Request &req,
-        belief_manager::AddFact::Response & res) {
+bool addFact(toaster_msgs::AddFact::Request &req,
+        toaster_msgs::AddFact::Response & res) {
 
     /**************************/
     /* World State management */
@@ -151,8 +151,8 @@ bool addFact(belief_manager::AddFact::Request &req,
     return true;
 }
 
-bool removeFact(belief_manager::RemoveFact::Request &req,
-        belief_manager::RemoveFact::Response & res) {
+bool removeFact(toaster_msgs::RemoveFact::Request &req,
+        toaster_msgs::RemoveFact::Response & res) {
 
 
     /**************************/
@@ -197,10 +197,10 @@ int main(int argc, char** argv) {
 
 
     //Data reading
-    PDGFactReader factRdSpark(node, "SPARK/factList");
-    PDGFactReader factRdSpar(node, "area_manager/factList");
-    PDGFactReader factRdAM(node, "agent_monitor/factList");
-    //PDGObjectReader objectRd(node);
+    ToasterFactReader factRdSpark(node, "SPARK/factList");
+    ToasterFactReader factRdSpar(node, "area_manager/factList");
+    ToasterFactReader factRdAM(node, "agent_monitor/factList");
+    //ToasterObjectReader objectRd(node);
 
     //Services
     ros::ServiceServer service = node.advertiseService("belief_manager/add_fact", addFact);
@@ -211,11 +211,11 @@ int main(int argc, char** argv) {
     agentsTracked_["HERAKLES_HUMAN1"] = 101;
     agentsTracked_["HERAKLES_HUMAN2"] = 102;
 
-    static ros::Publisher fact_pub_main = node.advertise<pdg::FactList>("belief_manager/PR2_ROBOT/factList", 1000);
-    static ros::Publisher fact_pub_human1 = node.advertise<pdg::FactList>("belief_manager/HERAKLES_HUMAN1/factList", 1000);
-    static ros::Publisher fact_pub_human2 = node.advertise<pdg::FactList>("belief_manager/HERAKLES_HUMAN2/factList", 1000);
+    static ros::Publisher fact_pub_main = node.advertise<toaster_msgs::FactList>("belief_manager/PR2_ROBOT/factList", 1000);
+    static ros::Publisher fact_pub_human1 = node.advertise<toaster_msgs::FactList>("belief_manager/HERAKLES_HUMAN1/factList", 1000);
+    static ros::Publisher fact_pub_human2 = node.advertise<toaster_msgs::FactList>("belief_manager/HERAKLES_HUMAN2/factList", 1000);
 
-    pdg::FactList factList_msg;
+    toaster_msgs::FactList factList_msg;
 
     // Set this in a ros service?
     ros::Rate loop_rate(30);

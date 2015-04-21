@@ -1,0 +1,3 @@
+toaster_msgs/Fact fact
+---
+bool answer

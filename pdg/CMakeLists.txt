@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   spencer_tracking_msgs
   niut_msgs
+  toaster_msgs
   tf
 )
 
@@ -53,10 +54,10 @@ find_package(catkin REQUIRED COMPONENTS
 #   Message1.msg
 #   Message2.msg
 # )
-add_message_files(FILES Agent.msg     HumanList.msg
-Entity.msg    Human.msg		      RobotList.msg
-FactList.msg  Joint.msg		      Robot.msg
-Fact.msg      ObjectList.msg          Object.msg)
+#add_message_files(FILES Agent.msg     HumanList.msg
+#Entity.msg    Human.msg		      RobotList.msg
+#FactList.msg  Joint.msg		      Robot.msg
+#Fact.msg      ObjectList.msg          Object.msg)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -73,12 +74,13 @@ Fact.msg      ObjectList.msg          Object.msg)
 # )
 
 ## Generate added messages and services with any dependencies listed here
- generate_messages(
-   DEPENDENCIES
-    std_msgs
-    spencer_tracking_msgs
-    niut_msgs
- )
+# generate_messages(
+#   DEPENDENCIES
+#    std_msgs
+#    spencer_tracking_msgs
+#    niut_msgs
+#    toaster_msgs
+# )
 ###################################
 ## catkin specific configuration ##
 ###################################
@@ -91,7 +93,7 @@ Fact.msg      ObjectList.msg          Object.msg)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES pdg
-  CATKIN_DEPENDS roscpp rospy std_msgs spencer_tracking_msgs niut_msgs message_generation message_runtime tf
+  CATKIN_DEPENDS roscpp rospy std_msgs spencer_tracking_msgs niut_msgs toaster_msgs message_generation message_runtime tf
 #  DEPENDS system_lib
 )
 
