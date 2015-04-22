@@ -367,17 +367,21 @@ int main(int argc, char** argv) {
         for (std::map<unsigned int, Entity*>::iterator itEntity = mapEntities_.begin(); itEntity != mapEntities_.end(); ++itEntity) {
             for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea) {
 
-                if (areaCompatible(itArea->second->getEntityType(), itEntity->second->getEntityType())) {
+                if (itEntity->second->isInArea(itArea->first)) {
 
-                    Entity* ownerEnt;
+                    Entity* ownerEnt = NULL;
 
-                    // Let's find back the area owner:
-                    if (robotRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
-                        ownerEnt = robotRd.lastConfig_[itArea->second->getMyOwner()];
-                    else if (humanRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
-                        ownerEnt = humanRd.lastConfig_[itArea->second->getMyOwner()];
-                    else if (objectRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
-                        ownerEnt = objectRd.lastConfig_[itArea->second->getMyOwner()];
+                    // Computation depending on owner
+                    if (itArea->second->getMyOwner() != 0) {
+
+                        // Let's find back the area owner:
+                        if (robotRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+                            ownerEnt = robotRd.lastConfig_[itArea->second->getMyOwner()];
+                        else if (humanRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+                            ownerEnt = humanRd.lastConfig_[itArea->second->getMyOwner()];
+                        else if (objectRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+                            ownerEnt = objectRd.lastConfig_[itArea->second->getMyOwner()];
+                    }
 
                     // compute facts according to factType
                     // TODO: instead of calling it interaction, make a list of facts to compute?
@@ -436,8 +440,9 @@ int main(int argc, char** argv) {
 
                     if (itArea->second->getIsRoom())
                         fact_msg.subProperty = "room";
-                    else
+                    else if (ownerEnt != NULL)
                         fact_msg.subProperty = ownerEnt->getName();
+
 
                     fact_msg.subjectId = itEntity->first;
                     fact_msg.subjectName = itEntity->second->getName();
