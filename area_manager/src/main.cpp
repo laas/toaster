@@ -29,6 +29,26 @@ namespace bn = boost::numeric;
 std::map<unsigned int, Area*> mapArea_;
 std::map<unsigned int, Entity*> mapEntities_;
 
+bool areaCompatible(std::string areaEntType, EntityType entType) {
+    if (entType == ROBOT) {
+        if (areaEntType == "robots" || areaEntType == "agents" || areaEntType == "entities")
+            return true;
+        else
+            return false;
+
+    } else if (entType == HUMAN) {
+        if (areaEntType == "humans" || areaEntType == "agents" || areaEntType == "entities")
+            return true;
+        else
+            return false;
+
+    } else if (entType == OBJECT) {
+        if (areaEntType == "objects" || areaEntType == "entities")
+            return true;
+        else
+            return false;
+    }
+}
 
 // Entity should be a vector or a map with all entities
 // This function update all the area that depends on an entity position.
@@ -39,7 +59,7 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity) {
 
             // Owner 2D frame
             trans::translate_transformer<double, 2, 2> translate(entity->getPosition().get<0>(), entity->getPosition().get<1>());
-            trans::rotate_transformer<bg::radian, double, 2, 2> rotate(entity->getOrientation()[2]);
+            trans::rotate_transformer<bg::radian, double, 2, 2> rotate(-entity->getOrientation()[2]);
 
             // Rotate, then translate
             trans::ublas_transformer<double, 2, 2> rotateTranslate(bn::ublas::prod(translate.matrix(), rotate.matrix()));
@@ -65,28 +85,34 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity) {
 
 void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
-        // If we already know that entity is in Area, we update if needed.
-        if (ent->isInArea(it->second->getId()))
-            if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition())))
-                continue;
-            else {
-                printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
-                ent->removeInArea(it->second->getId());
-                it->second->removeEntity(ent->getId());
-                if (it->second->getIsRoom())
-                    ent->setRoomId(0);
-            }// Same if entity is not in Area
-        else
-            if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition()))) {
-            printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
-            ent->inArea_.push_back(it->second->getId());
-            it->second->insideEntities_.push_back(ent->getId());
+        // if the entity is actually concerned
+        if (areaCompatible(it->second->getEntityType(), ent->getEntityType())) {
 
-            //User has to be in a room. May it be a "global room".
-            if (it->second->getIsRoom())
-                ent->setRoomId(it->second->getId());
+            // If we already know that entity is in Area, we update if needed.
+            if (ent->isInArea(it->second->getId()))
+                if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition())))
+                    continue;
+                else {
+                    printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
+                    ent->removeInArea(it->second->getId());
+                    it->second->removeEntity(ent->getId());
+                    if (it->second->getIsRoom())
+                        ent->setRoomId(0);
+                }// Same if entity is not in Area
+            else
+                if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition()))) {
+                printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
+                ent->inArea_.push_back(it->second->getId());
+                it->second->insideEntities_.push_back(ent->getId());
+
+                //User has to be in a room. May it be a "global room".
+                if (it->second->getIsRoom())
+                    ent->setRoomId(it->second->getId());
+            } else {
+                //printf("[area_manager][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
+                continue;
+            }
         } else {
-            //printf("[area_manager][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
             continue;
         }
     }
@@ -96,27 +122,6 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
 
 double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold, double& angleResult) {
     return MathFunctions::isInAngle(entFacing, entSubject, entFacing->getOrientation()[2], angleThreshold, angleResult);
-}
-
-bool areaCompatible(std::string areaEntType, EntityType entType) {
-    if (entType == ROBOT) {
-        if (areaEntType == "robots" || areaEntType == "agents" || areaEntType == "entities")
-            return true;
-        else
-            return false;
-
-    } else if (entType == HUMAN) {
-        if (areaEntType == "humans" || areaEntType == "agents" || areaEntType == "entities")
-            return true;
-        else
-            return false;
-
-    } else if (entType == OBJECT) {
-        if (areaEntType == "objects" || areaEntType == "entities")
-            return true;
-        else
-            return false;
-    }
 }
 
 void printMyArea(unsigned int id) {
@@ -349,9 +354,7 @@ int main(int argc, char** argv) {
 
         for (std::map<unsigned int, Entity*>::iterator it = mapEntities_.begin(); it != mapEntities_.end(); ++it) {
             // We update area with owners
-            if (areaCompatible(itArea->second->getEntityType(), itEntity->second->getEntityType())) {
-                updateInArea(it->second, mapArea_);
-            }
+            updateInArea(it->second, mapArea_);
         }
 
         ///////////////////////////////////////
