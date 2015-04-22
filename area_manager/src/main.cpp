@@ -202,7 +202,8 @@ bool removeArea(toaster_msgs::RemoveArea::Request &req,
         toaster_msgs::RemoveArea::Response & res) {
 
     ROS_INFO("request: removed Area: id %d, named: %s", req.id, mapArea_[req.id]->getName().c_str());
-    mapArea_.erase(req.id);
+    if (mapArea_.find(req.id) != mapArea_.end())
+        mapArea_.erase(req.id);
 
     res.answer = true;
     ROS_INFO("sending back response: [%d]", (int) res.answer);
@@ -347,10 +348,11 @@ int main(int argc, char** argv) {
 
 
         for (std::map<unsigned int, Entity*>::iterator it = mapEntities_.begin(); it != mapEntities_.end(); ++it) {
-            // We update area with human center
-            updateInArea(it->second, mapArea_);
+            // We update area with owners
+            if (areaCompatible(itArea->second->getEntityType(), itEntity->second->getEntityType())) {
+                updateInArea(it->second, mapArea_);
+            }
         }
-
 
         ///////////////////////////////////////
         // Computing facts for each entities //
