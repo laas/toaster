@@ -85,8 +85,8 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity) {
 
 void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
-        // if the entity is actually concerned
-        if (areaCompatible(it->second->getEntityType(), ent->getEntityType())) {
+        // if the entity is actually concerned, and is not the owner
+        if (areaCompatible(it->second->getEntityType(), ent->getEntityType()) && it->second->getMyOwner() != ent->getId()) {
 
             // If we already know that entity is in Area, we update if needed.
             if (ent->isInArea(it->second->getId()))
@@ -387,6 +387,7 @@ int main(int argc, char** argv) {
                     // TODO: instead of calling it interaction, make a list of facts to compute?
                     if (itArea->second->getFactType() == "interaction") {
 
+                        // If it is an interacting area, we need the owner!
                         if (ownerEnt != NULL) {
 
                             // Now let's compute isFacing
