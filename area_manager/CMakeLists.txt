@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -76,7 +76,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+  #INCLUDE_DIRS include
 #  LIBRARIES area_manager
   CATKIN_DEPENDS toaster_msgs
 #  DEPENDS system_lib
@@ -89,14 +89,14 @@ catkin_package(
 #set(BOOST_ROOT $ENV{HOME}/devel/boost_1_56_0/)
 #set(Boost_NO_SYSTEM_PATHS ON)
 
-find_package(Boost REQUIRED COMPONENTS)# system)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
+  ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
+  
 )
 
 ## Declare a cpp library
@@ -105,18 +105,17 @@ ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 # )
 
 ## Declare a cpp executable
- add_executable(area_manager ../toaster_msgs/src/ToasterHumanReader.cpp ../toaster_msgs/src/ToasterRobotReader.cpp ../toaster_msgs/src/ToasterObjectReader.cpp ../toaster_msgs/src/ToasterFactReader.cpp src/main.cpp)
+ add_executable(area_manager src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
- add_dependencies(area_manager area_manager_generate_messages_cpp)
+# add_dependencies(area_manager area_manager_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(agent_monitor_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(area_manager $ENV{HOME}/devel/lib/libtoaster.so)
-target_link_libraries(area_manager ${catkin_LIBRARIES})
+target_link_libraries(area_manager $ENV{HOME}/devel/lib/libtoaster.so ${catkin_LIBRARIES}) 
 
 #############
 ## Install ##

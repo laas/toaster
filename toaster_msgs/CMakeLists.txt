@@ -7,7 +7,6 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   message_generation
-  message_runtime
 )
 
 ################################################
@@ -61,12 +60,6 @@ generate_messages(
    std_msgs
 )
 
-###################################
-## catkin specific configuration ##
-###################################
-catkin_package(
-  CATKIN_DEPENDS roscpp rospy std_msgs geometry_msgs
-)
 
 ###################################
 ## catkin specific configuration ##
@@ -79,9 +72,17 @@ catkin_package(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
    INCLUDE_DIRS include
-#  LIBRARIES toaster_msgs
+   LIBRARIES toaster_msgs_lib
    CATKIN_DEPENDS roscpp rospy geometry_msgs std_msgs message_generation message_runtime
 #  DEPENDS system_lib
 )
 
+include_directories(
+  include
+${catkin_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
+)
+
+add_library(toaster_msgs_lib ./src/ToasterFactReader.cpp ./src/ToasterHumanReader.cpp ./src/ToasterObjectReader.cpp ./src/ToasterRobotReader.cpp)
+  add_dependencies(toaster_msgs_lib toaster_msgs_generate_messages_cpp)
 

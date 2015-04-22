@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -80,7 +80,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
+ # INCLUDE_DIRS include
 #  LIBRARIES agent_monitor
   CATKIN_DEPENDS toaster_msgs
 #  DEPENDS system_lib
@@ -90,14 +90,13 @@ catkin_package(
 ## Build ##
 ###########
 
-find_package(Boost REQUIRED COMPONENTS)# system)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
-  include
   ${catkin_INCLUDE_DIRS}
-${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
+  ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
+  
 )
 
 ## Declare a cpp library
@@ -106,7 +105,7 @@ ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 # )
 
 ## Declare a cpp executable
- add_executable(agent_monitor ../toaster_msgs/src/ToasterHumanReader.cpp ../toaster_msgs/src/ToasterRobotReader.cpp ../toaster_msgs/src/ToasterObjectReader.cpp src/main.cpp)
+add_executable(agent_monitor src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -116,8 +115,7 @@ add_dependencies(agent_monitor agent_monitor_generate_messages_cpp)
 # target_link_libraries(agent_monitor_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(agent_monitor $ENV{HOME}/devel/lib/libtoaster.so)
-target_link_libraries(agent_monitor ${catkin_LIBRARIES})
+target_link_libraries(agent_monitor ${catkin_LIBRARIES} $ENV{HOME}/devel/lib/libtoaster.so)
 
 #############
 ## Install ##

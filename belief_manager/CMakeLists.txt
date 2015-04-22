@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -87,14 +87,14 @@ catkin_package(
 ## Build ##
 ###########
 
-find_package(Boost REQUIRED COMPONENTS)# system)
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
   ${catkin_INCLUDE_DIRS}
-${Boost_INCLUDE_DIRS}
+  ${Boost_INCLUDE_DIRS}
   $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
+  
 )
 
 ## Declare a cpp library
@@ -103,18 +103,17 @@ ${Boost_INCLUDE_DIRS}
 # )
 
 ## Declare a cpp executable
- add_executable(belief_manager ../toaster_msgs/src/ToasterObjectReader.cpp ../toaster_msgs/src/ToasterFactReader.cpp src/main.cpp)
+ add_executable(belief_manager src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(belief_manager belief_manager_generate_messages_cpp)
+#add_dependencies(belief_manager belief_manager_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(agent_monitor_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(belief_manager $ENV{HOME}/devel/lib/libtoaster.so)
-target_link_libraries(belief_manager ${catkin_LIBRARIES})
+target_link_libraries(belief_manager ${catkin_LIBRARIES} $ENV{HOME}/devel/lib/libtoaster.so)
 
 #############
 ## Install ##

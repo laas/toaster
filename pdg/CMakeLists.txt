@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -110,7 +110,7 @@ find_package(Boost REQUIRED COMPONENTS)# system)
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/ 
+${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 )
 
 ## Declare a cpp library
@@ -123,15 +123,16 @@ ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
- add_dependencies(pdg pdg_generate_messages_cpp)
+# add_dependencies(pdg pdg_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(pdg_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(pdg $ENV{ROBOTPKG_BASE}/lib/libposterLib.so)
-target_link_libraries(pdg $ENV{HOME}/devel/lib/libtoaster.so)
-target_link_libraries(pdg ${catkin_LIBRARIES})
+target_link_libraries(pdg $ENV{ROBOTPKG_BASE}/lib/libposterLib.so
+                          $ENV{HOME}/devel/lib/libtoaster.so
+                          ${catkin_LIBRARIES})
+
 
 #############
 ## Install ##
