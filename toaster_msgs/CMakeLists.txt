@@ -40,15 +40,12 @@ add_service_files(
   AddFact.srv
   AddJointToAgent.srv
   MonitorAll.srv
-  PrintAgents.srv 
-  PrintAreas.srv  
-  RemoveAgents.srv  
+  Empty.srv
   RemoveFact.srv 
-  RemoveJointsToAgent.srv
+  RemoveAllJointsToAgent.srv
   AddArea.srv
   AddFactToAgent.srv 
   GetRelativePosition.srv
-  PrintAgentJoints.srv
   PrintArea.srv
   RemoveAgent.srv
   RemoveArea.srv

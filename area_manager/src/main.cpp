@@ -6,7 +6,7 @@
 #include "toaster_msgs/AddArea.h"
 #include "toaster_msgs/RemoveArea.h"
 #include "toaster_msgs/PrintArea.h"
-#include "toaster_msgs/PrintAreas.h"
+#include "toaster_msgs/Empty.h"
 #include "toaster_msgs/GetRelativePosition.h"
 #include "toaster_msgs/Area.h"
 #include "toaster-lib/CircleArea.h"
@@ -215,6 +215,14 @@ bool removeArea(toaster_msgs::RemoveArea::Request &req,
     return true;
 }
 
+bool removeAllAreas(toaster_msgs::Empty::Request &req,
+        toaster_msgs::Empty::Response & res) {
+
+    ROS_INFO("request: remove all areas");
+    mapArea_.clear();
+    return true;
+}
+
 bool printArea(toaster_msgs::PrintArea::Request &req,
         toaster_msgs::RemoveArea::Response & res) {
 
@@ -223,8 +231,8 @@ bool printArea(toaster_msgs::PrintArea::Request &req,
     return true;
 }
 
-bool printAreas(toaster_msgs::PrintAreas::Request &req,
-        toaster_msgs::PrintAreas::Response & res) {
+bool printAllAreas(toaster_msgs::Empty::Request &req,
+        toaster_msgs::Empty::Response & res) {
     for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea)
         printMyArea(itArea->first);
     return true;
@@ -288,10 +296,13 @@ int main(int argc, char** argv) {
     ros::ServiceServer serviceRemove = node.advertiseService("area_manager/remove_area", removeArea);
     ROS_INFO("Ready to remove Area.");
 
+    ros::ServiceServer serviceRemoveAll = node.advertiseService("area_manager/remove_all_areas", removeAllAreas);
+    ROS_INFO("Ready to remove Area.");
+
     ros::ServiceServer servicePrint = node.advertiseService("area_manager/print_area", printArea);
     ROS_INFO("Ready to print Area.");
 
-    ros::ServiceServer servicePrints = node.advertiseService("area_manager/print_areas", printAreas);
+    ros::ServiceServer servicePrintAll = node.advertiseService("area_manager/print_all_areas", printAllAreas);
     ROS_INFO("Ready to print Areas.");
 
     ros::ServiceServer serviceRelativePose = node.advertiseService("area_manager/get_relative_position", getRelativePosition);
