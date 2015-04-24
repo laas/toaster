@@ -266,13 +266,15 @@ int main(int argc, char** argv) {
                     for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
 
 
-                        if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+                        if ((factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
                                 // Current agent
                                 && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
                                 // has visibility
                                 && factListMap_[mainAgentId_].factList[i_visibility].targetName
                                 // On current fact subject
-                                == factListMap_[it->second].factList[i].subjectName) {
+                                == factListMap_[it->second].factList[i].subjectName)
+                                // Or is himself the current fact subject
+                                || factListMap_[it->second].factList[i].subjectName == it->first) {
 
 
                             /*printf("Agent %s has visibility on %s. We remove related fact to agent model before update"
@@ -300,13 +302,15 @@ int main(int argc, char** argv) {
 
                     // 2) Agent has visibility on fact subject
                     for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
-                        if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+                        if ((factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
                                 // Current agent
                                 && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
                                 // has visibility
                                 && factListMap_[mainAgentId_].factList[i_visibility].targetName
                                 // On current fact subject
-                                == factListMap_[mainAgentId_].factList[i].subjectName) {
+                                == factListMap_[it->second].factList[i].subjectName)
+                                // Or is himself the current fact subject
+                                || factListMap_[it->second].factList[i].subjectName == it->first) {
 
 
                             //printf("Agent %s has visibility on %s. We add related fact to agent model "
@@ -318,8 +322,8 @@ int main(int argc, char** argv) {
                             //        factListMap_[mainAgentId_].factList[i].property.c_str(),
                             //        factListMap_[mainAgentId_].factList[i].targetName.c_str());
 
-                            
-                             if ((factListMap_[mainAgentId_].factList[i].propertyType != "State") &&
+
+                            if ((factListMap_[mainAgentId_].factList[i].propertyType != "State") &&
                                     (factListMap_[mainAgentId_].factList[i].propertyType != "StaticProperty"))
                                 addFactToAgent(factListMap_[mainAgentId_].factList[i], factListMap_[mainAgentId_].factList[i_visibility].doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, it->second);
                             else

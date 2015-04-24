@@ -46,8 +46,11 @@ void SparkObjectReader::updateObjects() {
     if (sparkPoster_->getUpdatedStatus()) {
         nbObjects_ = sparkPosterStruct_.freeflyerNb;
         // Add objects if needed
-        while (lastConfig_.size() < nbObjects_) {
-            initObject(lastConfig_.size());
+        while (lastConfig_.size() != nbObjects_) {
+            if(lastConfig_.size() < nbObjects_)
+                initObject(lastConfig_.size());
+            else
+                lastConfig_.erase(lastConfig_.end());
         }
 
 

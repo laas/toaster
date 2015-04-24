@@ -51,6 +51,7 @@ add_service_files(
   RemoveArea.srv
   RemoveFactToAgent.srv
   RemoveJointToAgent.srv
+  AddStream.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
