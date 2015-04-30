@@ -52,6 +52,8 @@ add_service_files(
   RemoveFactToAgent.srv
   RemoveJointToAgent.srv
   AddStream.srv
+  PointingTime.srv
+  Pointing.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

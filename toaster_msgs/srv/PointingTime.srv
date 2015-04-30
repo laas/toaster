@@ -1,0 +1,11 @@
+uint32 pointingAgentId
+string pointingAgentName
+uint64 timePointing
+string pointingJoint
+float64 pointingJointDistThreshold
+float64 angleThreshold
+---
+bool answer
+uint32[] pointedId
+float64[] confidence
+string[] pointedName

@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
 
 
     //Services
-    ros::ServiceServer addStreamServ = node.advertiseService("agent_monitor/manage_stream", addStream);
+    ros::ServiceServer addStreamServ = node.advertiseService("pdg/manage_stream", addStream);
     ROS_INFO("Ready to manage stream.");
 
     //Data writing
