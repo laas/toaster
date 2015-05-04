@@ -11,16 +11,15 @@
 #include <ros/ros.h>
 #include "toaster_msgs/FactList.h"
 
-class ToasterFactReader{
+class ToasterFactReader {
+public:
+    toaster_msgs::FactList lastMsgFact;
 
-    public:
-       toaster_msgs::FactList lastMsgFact;
-       
-       ToasterFactReader(ros::NodeHandle& node, std::string subTopic);
+    ToasterFactReader(ros::NodeHandle& node, std::string subTopic);
 
-    private:
-       void factCallBack(const toaster_msgs::FactList::ConstPtr& msg);
-       ros::Subscriber sub_;
+private:
+    void factCallBack(const toaster_msgs::FactList::ConstPtr& msg);
+    ros::Subscriber sub_;
 
 };
 

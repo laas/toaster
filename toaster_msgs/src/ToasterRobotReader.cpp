@@ -15,7 +15,7 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::
     for (unsigned int i = 0; i < msg->robotList.size(); i++) {
 
         // If this robot is not assigned we have to allocate data.
-        if (lastConfig_[msg->robotList[i].meAgent.meEntity.id] == NULL) {
+        if (lastConfig_.find(msg->robotList[i].meAgent.meEntity.id) == lastConfig_.end()) {
             curRobot = new Robot(msg->robotList[i].meAgent.meEntity.id);
         } else
             curRobot = lastConfig_[msg->robotList[i].meAgent.meEntity.id];
@@ -24,6 +24,7 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::
         bg::model::point<double, 3, bg::cs::cartesian> robPosition;
 
         Mobility curRobMobility = FULL;
+        curRobot->setId(msg->robotList[i].meAgent.meEntity.id);
         curRobot->setName(msg->robotList[i].meAgent.meEntity.name);
 
         curRobot->setMobility(curRobMobility);

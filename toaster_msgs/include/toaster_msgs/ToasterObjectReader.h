@@ -13,18 +13,17 @@
 #include "toaster_msgs/ObjectList.h"
 #include <map>
 
-class ToasterObjectReader{
+class ToasterObjectReader {
+public:
+    std::map<unsigned int, Object*> lastConfig_;
 
-    public:
-       std::map<unsigned int, Object*> lastConfig_;
+    bool isPresent(unsigned int id);
 
-       bool isPresent(unsigned int id);
+    ToasterObjectReader(ros::NodeHandle& node);
 
-       ToasterObjectReader(ros::NodeHandle& node);
-
-    private:
-       void objectStateCallBack(const toaster_msgs::ObjectList::ConstPtr& msg);
-       ros::Subscriber sub_;
+private:
+    void objectStateCallBack(const toaster_msgs::ObjectList::ConstPtr& msg);
+    ros::Subscriber sub_;
 
 };
 

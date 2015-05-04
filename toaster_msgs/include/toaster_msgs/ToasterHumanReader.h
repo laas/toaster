@@ -16,19 +16,18 @@
 #include "toaster_msgs/HumanList.h"
 #include <map>
 
-class ToasterHumanReader{
+class ToasterHumanReader {
+public:
+    std::map<unsigned int, Human*> lastConfig_;
+    bool fullHuman_;
 
-    public:
-       std::map<unsigned int, Human*> lastConfig_;
-       bool fullHuman_;
+    bool isPresent(unsigned int id);
 
-       bool isPresent(unsigned int id);
+    ToasterHumanReader(ros::NodeHandle& node, bool fullHuman);
 
-       ToasterHumanReader(ros::NodeHandle& node, bool fullHuman);
-
-    private:
-       void humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg);
-       ros::Subscriber sub_;
+private:
+    void humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg);
+    ros::Subscriber sub_;
 
 };
 

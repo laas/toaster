@@ -14,7 +14,7 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::
     for (unsigned int i = 0; i < msg->humanList.size(); i++) {
 
         // If this human is not assigned we have to allocate data.
-        if (lastConfig_[msg->humanList[i].meAgent.meEntity.id] == NULL) {
+        if (lastConfig_.find(msg->humanList[i].meAgent.meEntity.id) == lastConfig_.end()) {
             curHuman = new Human(msg->humanList[i].meAgent.meEntity.id);
         } else
             curHuman = lastConfig_[msg->humanList[i].meAgent.meEntity.id];
@@ -23,6 +23,7 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::
         bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
 
         Mobility curHumanMobility = FULL;
+        curHuman->setId(msg->humanList[i].meAgent.meEntity.id);
         curHuman->setName(msg->humanList[i].meAgent.meEntity.name);
 
         curHuman->setMobility(curHumanMobility);

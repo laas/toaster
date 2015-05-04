@@ -21,7 +21,7 @@ void ToasterObjectReader::objectStateCallBack(const toaster_msgs::ObjectList::Co
     for (unsigned int i = 0; i < msg->objectList.size(); i++) {
 
         // If this human is not assigned we have to allocate data.
-        if (lastConfig_[msg->objectList[i].meEntity.id] == NULL) {
+        if (lastConfig_.find(msg->objectList[i].meEntity.id) == lastConfig_.end()) {
             curObject = new Object(msg->objectList[i].meEntity.id);
             curObject->setRoomId(0);
             curObject->setName(msg->objectList[i].meEntity.name);
@@ -30,6 +30,8 @@ void ToasterObjectReader::objectStateCallBack(const toaster_msgs::ObjectList::Co
 
         std::vector<double> objOrientation;
         bg::model::point<double, 3, bg::cs::cartesian> objPosition;
+
+        curObject->setId(msg->objectList[i].meEntity.id);
 
         curObject->setTime(msg->objectList[i].meEntity.time);
 
