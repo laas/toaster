@@ -11,6 +11,7 @@
 #include "toaster_msgs/Fact.h"
 #include "toaster_msgs/AddFact.h"
 #include "toaster_msgs/RemoveFact.h"
+#include "toaster_msgs/GetFactValue.h"
 
 // factList for each monitored agent
 static std::map<unsigned int, toaster_msgs::FactList> factListMap_;
@@ -18,7 +19,7 @@ static std::map<unsigned int, toaster_msgs::FactList> factListMap_;
 // Agents with monitored belief
 static std::map<std::string, unsigned int> agentsTracked_;
 
-
+static std::string mainAgentName_ = "pr2";
 static unsigned int mainAgentId_ = 1;
 
 bool removeFactToAgent(unsigned int myFactId, unsigned int agentId) {
@@ -110,11 +111,50 @@ bool addFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, unsign
     return true;
 }
 
+bool getFactValueFromAgent(toaster_msgs::Fact fact, unsigned int id, std::string& stringValue, double& doubleValue) {
+    // Find fact:
+    for (std::vector<toaster_msgs::Fact>::iterator itFact = factListMap_[id].factList.begin(); itFact != factListMap_[id].factList.end(); ++itFact) {
+        if ((*itFact).property == fact.property
+                && (*itFact).subjectName == fact.subjectName
+                && (*itFact).targetName == fact.targetName) {
+            stringValue = fact.stringValue;
+            doubleValue = fact.doubleValue;
+            return true;
+        } else {
+            continue;
+        }
+    }
+    ROS_INFO("[agent_monitor][gatFactValue][WARNING] Fact requested was not found in agent %d model\n", id);
+    return false;
+}
 
 
 //////////////
 // Services //
 //////////////
+
+bool getFactValue(toaster_msgs::GetFactValue::Request &req,
+        toaster_msgs::GetFactValue::Response & res) {
+
+    unsigned int id = 0;
+
+    if (req.agentId != 0)
+        id = req.agentId;
+    else if (req.agentName != "")
+        if (req.agentName == mainAgentName_)
+            id = mainAgentId_;
+        else if (agentsTracked_.find(req.agentName) != agentsTracked_.end())
+            id = agentsTracked_[req.agentName];
+        else
+            ROS_INFO("[agent_monitor][request][WARNING] Request to get fact value in %s model who is untracked agent\n", req.agentName.c_str());
+    else
+        ROS_INFO("[agent_monitor][request][WARNING] Request to get fact value in without agent model specified\n");
+    if (id != 0) {
+        res.boolAnswer = getFactValueFromAgent(req.fact, id, res.stringValue, res.doubleValue);
+        return true;
+    } else
+        return false;
+}
 
 bool addFact(toaster_msgs::AddFact::Request &req,
         toaster_msgs::AddFact::Response & res) {
@@ -214,6 +254,10 @@ int main(int argc, char** argv) {
 
     ros::ServiceServer serviceRemove = node.advertiseService("belief_manager/remove_fact", removeFact);
     ROS_INFO("Ready to remove fact.");
+
+    ros::ServiceServer serviceGetFactValue = node.advertiseService("belief_manager/get_fact_value", getFactValue);
+    ROS_INFO("Ready to get fact value.");
+
 
     // Agent with monitored belief
     // TODO make a ros service

@@ -1,0 +1,7 @@
+toaster_msgs/Fact fact
+uint32 agentId
+string agentName
+---
+bool boolAnswer
+string stringValue
+float64 doubleValue

@@ -54,6 +54,7 @@ add_service_files(
   AddStream.srv
   PointingTime.srv
   Pointing.srv
+  GetFactValue.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
