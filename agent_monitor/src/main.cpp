@@ -598,7 +598,7 @@ bool removeAllJointsToAgent(toaster_msgs::RemoveAllJointsToAgent::Request &req,
     return true;
 }
 
-bool printAllAgents(toaster_msgs::Empty::Request &req,
+bool printAllMonitoredAgents(toaster_msgs::Empty::Request &req,
         toaster_msgs::Empty::Response & res) {
 
     std::string name;
@@ -616,6 +616,16 @@ bool printAllAgents(toaster_msgs::Empty::Request &req,
             ROS_INFO("[agent_monitor][Request][PRINT] Joint Monitored name: %s", (*itJoint).c_str());
         }
     }
+    return true;
+}
+
+bool printAllAgents(toaster_msgs::Empty::Request &req,
+        toaster_msgs::Empty::Response & res) {
+
+    ROS_INFO("[agent_monitor][Request][PRINT] ****** Agents *******");
+    for (std::map<std::string, unsigned int>::iterator itMap = mapNameToAgentId_.begin(); itMap != mapNameToAgentId_.end(); ++itMap)
+        ROS_INFO("[agent_monitor][Request][PRINT] Agent id: %d, name: %s", itMap->second, itMap->first.c_str());
+
     return true;
 }
 
@@ -779,8 +789,11 @@ int main(int argc, char** argv) {
     ros::ServiceServer serviceRemoveJts = node.advertiseService("agent_monitor/remove_all_joints_to_agent", removeAllJointsToAgent);
     ROS_INFO("[Request] Ready to remove monitored joints to agent.");
 
-    ros::ServiceServer servicePrint = node.advertiseService("agent_monitor/print_all_agents", printAllAgents);
+    ros::ServiceServer servicePrintMonitored = node.advertiseService("agent_monitor/print_all_monitored_agents", printAllMonitoredAgents);
     ROS_INFO("[Request] Ready to print monitored agents.");
+
+    ros::ServiceServer servicePrint = node.advertiseService("agent_monitor/print_all_agents", printAllAgents);
+    ROS_INFO("[Request] Ready to print agents.");
 
     ros::ServiceServer serviceMonitorAllAgents = node.advertiseService("agent_monitor/monitor_all_agents", monitorAllAgents);
     ROS_INFO("[Request] Ready to print monitor all agents.");

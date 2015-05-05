@@ -21,9 +21,6 @@ static std::map<std::string, unsigned int> agentsTracked_;
 
 static unsigned int mainAgentId_ = 1;
 
-// When adding a fact to an agent, the confidence may decrease as 
-// the other's belief are suppositions based on observation
-
 bool removeFactToAgent(unsigned int myFactId, unsigned int agentId) {
     factListMap_[agentId].factList.erase(factListMap_[agentId].factList.begin() + myFactId);
     return true;
@@ -90,6 +87,9 @@ bool addExternFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, 
     return true;
 }
 
+// When adding a fact to an agent, the confidence may decrease as
+// the other's belief are suppositions based on observation
+
 bool addFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, unsigned int agentId) {
     // We verify that this fact is not already there.
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
@@ -110,6 +110,12 @@ bool addFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, unsign
     return true;
 }
 
+
+
+//////////////
+// Services //
+//////////////
+
 bool addFact(toaster_msgs::AddFact::Request &req,
         toaster_msgs::AddFact::Response & res) {
 
@@ -121,8 +127,8 @@ bool addFact(toaster_msgs::AddFact::Request &req,
     res.answer = addExternFactToAgent(req.fact, 1.0, mainAgentId_);
 
 
-    // We update an agent belief state if he is in the room, has visibility on subject
-    // and we don't care about the observability as we assess that the agent saw the action.
+    // We update an agent belief state if he is in same room, has visibility on subject
+    // and we don't care here about the observability as we assess that the agent saw the action.
 
     /**********************************/
     /* Conceptual perspective taking: */
@@ -203,8 +209,11 @@ int main(int argc, char** argv) {
     //ToasterObjectReader objectRd(node);
 
     //Services
-    ros::ServiceServer service = node.advertiseService("belief_manager/add_fact", addFact);
+    ros::ServiceServer serviceAdd = node.advertiseService("belief_manager/add_fact", addFact);
     ROS_INFO("Ready to add fact.");
+
+    ros::ServiceServer serviceRemove = node.advertiseService("belief_manager/remove_fact", removeFact);
+    ROS_INFO("Ready to remove fact.");
 
     // Agent with monitored belief
     // TODO make a ros service

@@ -15,7 +15,7 @@
 
 // Message generated class
 #include <toaster_msgs/Entity.h>
-#include <toaster_msgs/Agent.h>
+#include <toaster_msgs/Agent.h>f
 #include <toaster_msgs/Joint.h>
 #include <toaster_msgs/Robot.h>
 #include <toaster_msgs/Human.h>
@@ -42,7 +42,7 @@ bool spencerRobot_ = false;
 bool vimanObject_ = false;
 bool sparkObject_ = false;
 
-void feelEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
+void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
     msgEntity.time = srcEntity->getTime();
     msgEntity.name = srcEntity->getName();
@@ -168,7 +168,7 @@ int main(int argc, char** argv) {
 
 
                 //Message for object
-                feelEntity(it->second, object_msg.meEntity);
+                fillEntity(it->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
 
                 //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
@@ -196,7 +196,7 @@ int main(int argc, char** argv) {
 
                 // We don't use Viman to publish object if spark is on...
                 if (!sparkObject_) {
-                    feelEntity(it->second, object_msg.meEntity);
+                    fillEntity(it->second, object_msg.meEntity);
                     objectList_msg.objectList.push_back(object_msg);
                 }
 
@@ -227,7 +227,7 @@ int main(int argc, char** argv) {
 
 
                     //Human
-                    feelEntity(it->second, human_msg.meAgent.meEntity);
+                    fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
                 }
             }
@@ -250,7 +250,7 @@ int main(int argc, char** argv) {
 
 
                     //Human
-                    feelEntity(it->second, human_msg.meAgent.meEntity);
+                    fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
                 }
             }
@@ -273,7 +273,7 @@ int main(int argc, char** argv) {
 
 
                     //Human
-                    feelEntity(it->second, human_msg.meAgent.meEntity);
+                    fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
                 }
             }
@@ -300,13 +300,13 @@ int main(int argc, char** argv) {
 
                     //Robot
                     robot_msg.meAgent.mobility = 0;
-                    feelEntity(pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
+                    fillEntity(pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
 
                     if (robotFullConfig_) {
                         unsigned int i = 0;
                         for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.end(); ++it) {
                             robot_msg.meAgent.skeletonNames[i] = it->first;
-                            feelEntity((it->second), joint_msg.meEntity);
+                            fillEntity((it->second), joint_msg.meEntity);
 
                             joint_msg.jointOwner = 1;
 
@@ -340,13 +340,13 @@ int main(int argc, char** argv) {
 
                     //Robot
                     robot_msg.meAgent.mobility = 0;
-                    feelEntity(pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
+                    fillEntity(pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
 
                     /*if (robotFullConfig_) {
                         unsigned int i = 0;
                         for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.end(); ++it) {
                             robot_msg.meAgent.skeletonNames[i] = it->first;
-                            feelEntity((it->second), joint_msg.meEntity);
+                            fillEntity((it->second), joint_msg.meEntity);
 
                             joint_msg.jointOwner = 1;
 
