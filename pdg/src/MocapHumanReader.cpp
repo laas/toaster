@@ -66,7 +66,6 @@ void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPer
             curHuman->setTime(now.toNSec());
 
             lastConfig_[humId] = curHuman;
-            printf("we goat human %d\n", humId);
         }
     } catch (tf::TransformException ex) {
         ROS_ERROR("%s", ex.what());
