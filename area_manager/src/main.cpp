@@ -374,9 +374,11 @@ int main(int argc, char** argv) {
 
         // TODO: replace code by a function for each fact computation
 
+        for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea) {
+            double areaDensity = 0.0;
+            unsigned long densityTime =0;
 
-        for (std::map<unsigned int, Entity*>::iterator itEntity = mapEntities_.begin(); itEntity != mapEntities_.end(); ++itEntity) {
-            for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea) {
+            for (std::map<unsigned int, Entity*>::iterator itEntity = mapEntities_.begin(); itEntity != mapEntities_.end(); ++itEntity) {
 
                 if (itEntity->second->isInArea(itArea->first)) {
 
@@ -440,6 +442,9 @@ int main(int argc, char** argv) {
 
                         } // ownerEnt!= NULL
 
+                    } else if (itArea->second->getFactType() == "density") {
+                        areaDensity += 1.0;
+                        densityTime = itEntity->second->getTime();
                     } else if (itArea->second->getFactType() == "") {
 
                     } else {
@@ -467,8 +472,44 @@ int main(int argc, char** argv) {
                     factList_msg.factList.push_back(fact_msg);
 
                 }
-            }
-        }
+            }// For all Entities
+
+            // We compute here the density
+            if (itArea->second->getFactType() == "density") {
+                int fullPopulation = 1;
+                if (itArea->second->getEntityType() == "humans" || itArea->second->getEntityType() == "agents"
+                        || itArea->second->getEntityType() == "entities")
+
+                    fullPopulation += humanRd.lastConfig_.size();
+
+                if (itArea->second->getEntityType() == "robots" || itArea->second->getEntityType() == "agents"
+                        || itArea->second->getEntityType() == "entities")
+
+                    fullPopulation += robotRd.lastConfig_.size();
+
+                if (itArea->second->getEntityType() == "objects" || itArea->second->getEntityType() == "entities")
+                    fullPopulation += objectRd.lastConfig_.size();
+
+                areaDensity /= fullPopulation;
+
+                //Fact Density
+                fact_msg.property = "AreaDensity";
+                fact_msg.propertyType = "density";
+                fact_msg.subProperty = "ratio";
+                fact_msg.subjectId = itArea->first;
+                fact_msg.subjectName = itArea->second->getName();
+                fact_msg.targetName = itArea->second->getEntityType();
+                fact_msg.targetId = 0;
+                fact_msg.confidence = 1.0;
+                fact_msg.doubleValue = areaDensity;
+                fact_msg.valueType = 1;
+                fact_msg.factObservability = 0.0;
+                fact_msg.time = densityTime;
+
+                factList_msg.factList.push_back(fact_msg);
+            }// Density
+
+        }// for all area
 
 
         fact_pub.publish(factList_msg);
