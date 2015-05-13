@@ -66,7 +66,7 @@ bool removeInternFactToAgent(unsigned int agentId) {
     return removed;
 }
 
-
+// TODO: check if this is really different to addFact
 // Extern fact are fact from request. They are managed by an external module.
 
 bool addExternFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, unsigned int agentId) {
@@ -177,18 +177,17 @@ bool addFact(toaster_msgs::AddFact::Request &req,
 
     // TODO: for each agent present and in same room
     for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
-        for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
+        for (std::vector<toaster_msgs::Fact>::iterator itFactVisibility = factListMap_[mainAgentId_].factList.begin(); itFactVisibility != factListMap_[mainAgentId_].factList.end(); ++itFactVisibility) {
 
-
-            if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+            if ((*itFactVisibility).property == "IsVisible"
                     // Current agent
-                    && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
+                    && (*itFactVisibility).subjectName == it->first
                     // has visibility
-                    && factListMap_[mainAgentId_].factList[i_visibility].targetName
+                    && (*itFactVisibility).targetName
                     // On current fact subject
                     == req.fact.subjectName) {
 
-                addExternFactToAgent(req.fact, factListMap_[mainAgentId_].factList[i_visibility].doubleValue, it->second);
+                addExternFactToAgent(req.fact, (*itFactVisibility).doubleValue, it->second);
             }
         }
     }
@@ -216,14 +215,13 @@ bool removeFact(toaster_msgs::RemoveFact::Request &req,
 
     // TODO: for each agent with visibility on subject
     for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
-        for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
+        for (std::vector<toaster_msgs::Fact>::iterator itFactVisibility = factListMap_[mainAgentId_].factList.begin(); itFactVisibility != factListMap_[mainAgentId_].factList.end(); ++itFactVisibility) {
 
-
-            if (factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+            if ((*itFactVisibility).property == "IsVisible"
                     // Current agent
-                    && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
+                    && (*itFactVisibility).subjectName == it->first
                     // has visibility
-                    && factListMap_[mainAgentId_].factList[i_visibility].targetName
+                    && (*itFactVisibility).targetName
                     // On current fact subject
                     == req.fact.subjectName) {
                 removeFactToAgent(req.fact, it->second);
@@ -309,25 +307,25 @@ int main(int argc, char** argv) {
         /**********************************/
 
         // We remove facts that are visible before updating.
-        for (std::map<std::string, unsigned int>::iterator it = agentsTracked_.begin(); it != agentsTracked_.end(); ++it) {
-            for (unsigned int i = 0; i < factListMap_[it->second].factList.size(); i++) {
+        for (std::map<std::string, unsigned int>::iterator itAgent = agentsTracked_.begin(); itAgent != agentsTracked_.end(); ++itAgent) {
+            for (std::vector<toaster_msgs::Fact>::iterator itFactAgent = factListMap_[itAgent->second].factList.begin(); itFactAgent != factListMap_[itAgent->second].factList.end(); ++itFactAgent) {
                 // Update if:
                 // 1) fact is observable
-                if (factListMap_[mainAgentId_].factList[i].factObservability > 0.0) {
+                if ((*itFactAgent).factObservability > 0.0) {
 
                     // 2) Agent has visibility on fact subject
-                    for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
+                    for (std::vector<toaster_msgs::Fact>::iterator itFactVisibility = factListMap_[mainAgentId_].factList.begin(); itFactVisibility != factListMap_[mainAgentId_].factList.end(); ++itFactVisibility) {
 
 
-                        if ((factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+                        if (((*itFactVisibility).property == "IsVisible"
                                 // Current agent
-                                && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
+                                && (*itFactVisibility).subjectName == itAgent->first
                                 // has visibility
-                                && factListMap_[mainAgentId_].factList[i_visibility].targetName
+                                && (*itFactVisibility).targetName
                                 // On current fact subject
-                                == factListMap_[it->second].factList[i].subjectName)
+                                == (*itFactAgent).subjectName)
                                 // Or is himself the current fact subject
-                                || factListMap_[it->second].factList[i].subjectName == it->first) {
+                                || ((*itFactAgent).subjectName == itAgent->first)) {
 
 
                             /*printf("Agent %s has visibility on %s. We remove related fact to agent model before update"
@@ -340,7 +338,7 @@ int main(int argc, char** argv) {
                                     factListMap_[mainAgentId_].factList[i].targetName.c_str());
 
                              */
-                            removeFactToAgent(factListMap_[it->second].factList[i], it->second);
+                            removeFactToAgent((*itFactAgent), itAgent->second);
                         }
                     }
                 }
@@ -354,16 +352,16 @@ int main(int argc, char** argv) {
                 if (factListMap_[mainAgentId_].factList[i].factObservability > 0.0) {
 
                     // 2) Agent has visibility on fact subject
-                    for (unsigned int i_visibility = 0; i_visibility < factListMap_[mainAgentId_].factList.size(); i_visibility++) {
-                        if ((factListMap_[mainAgentId_].factList[i_visibility].property == "IsVisible"
+                    for (std::vector<toaster_msgs::Fact>::iterator itFactVisibility = factListMap_[mainAgentId_].factList.begin(); itFactVisibility != factListMap_[mainAgentId_].factList.end(); ++itFactVisibility) {
+                        if (((*itFactVisibility).property == "IsVisible"
                                 // Current agent
-                                && factListMap_[mainAgentId_].factList[i_visibility].subjectName == it->first
+                                && (*itFactVisibility).subjectName == itAgent->first
                                 // has visibility
-                                && factListMap_[mainAgentId_].factList[i_visibility].targetName
+                                && (*itFactVisibility).targetName
                                 // On current fact subject
-                                == factListMap_[it->second].factList[i].subjectName)
+                                == factListMap_[mainAgentId_].factList[i].subjectName)
                                 // Or is himself the current fact subject
-                                || factListMap_[it->second].factList[i].subjectName == it->first) {
+                                || (factListMap_[mainAgentId_].factList[i].subjectName == itAgent->first)) {
 
 
                             //printf("Agent %s has visibility on %s. We add related fact to agent model "
@@ -378,15 +376,13 @@ int main(int argc, char** argv) {
 
                             if ((factListMap_[mainAgentId_].factList[i].propertyType != "State") &&
                                     (factListMap_[mainAgentId_].factList[i].propertyType != "StaticProperty"))
-                                addFactToAgent(factListMap_[mainAgentId_].factList[i], factListMap_[mainAgentId_].factList[i_visibility].doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, it->second);
+                                addFactToAgent(factListMap_[mainAgentId_].factList[i], (*itFactVisibility).doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, itAgent->second);
                             else
-                                addExternFactToAgent(factListMap_[mainAgentId_].factList[i], factListMap_[mainAgentId_].factList[i_visibility].doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, it->second);
+                                addExternFactToAgent(factListMap_[mainAgentId_].factList[i], (*itFactVisibility).doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, itAgent->second);
                         }
                     }
                 }
-
             }
-
         }
 
         //TODO: publish for each agent:
