@@ -376,7 +376,7 @@ int main(int argc, char** argv) {
 
         for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea) {
             double areaDensity = 0.0;
-            unsigned long densityTime =0;
+            unsigned long densityTime = 0;
 
             for (std::map<unsigned int, Entity*>::iterator itEntity = mapEntities_.begin(); itEntity != mapEntities_.end(); ++itEntity) {
 
@@ -476,21 +476,22 @@ int main(int argc, char** argv) {
 
             // We compute here the density
             if (itArea->second->getFactType() == "density") {
-                int fullPopulation = 1;
+                int fullPopulation = 0;
                 if (itArea->second->getEntityType() == "humans" || itArea->second->getEntityType() == "agents"
                         || itArea->second->getEntityType() == "entities")
-
                     fullPopulation += humanRd.lastConfig_.size();
 
                 if (itArea->second->getEntityType() == "robots" || itArea->second->getEntityType() == "agents"
                         || itArea->second->getEntityType() == "entities")
-
                     fullPopulation += robotRd.lastConfig_.size();
 
                 if (itArea->second->getEntityType() == "objects" || itArea->second->getEntityType() == "entities")
                     fullPopulation += objectRd.lastConfig_.size();
 
-                areaDensity /= fullPopulation;
+                if (fullPopulation == 0)
+                    areaDensity = 0;
+                else
+                    areaDensity /= fullPopulation;
 
                 //Fact Density
                 fact_msg.property = "AreaDensity";

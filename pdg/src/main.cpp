@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
     GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
     MorseHumanReader morseHumanRd(node, humanFullConfig_);
     //NiutHumanReader niutHumanRd()
-    MocapHumanReader mocapHumanRd(node, "/spencer/perception/tracked_persons");
+    MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
 
     Pr2RobotReader pr2RobotRd(robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);

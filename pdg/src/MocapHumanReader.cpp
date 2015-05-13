@@ -34,7 +34,7 @@ void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPer
         //for every agent present in the tracking message
         for (int i = 0; i < msg->tracks.size(); i++) {
             spencer_tracking_msgs::TrackedPerson person = msg->tracks[i];
-            int humId = person.track_id;
+            int humId = person.track_id + humanIdOffset_;
             //create a new human with the same id as the message
             Human* curHuman = new Human(humId);
 
@@ -66,6 +66,7 @@ void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPer
             curHuman->setTime(now.toNSec());
 
             lastConfig_[humId] = curHuman;
+            printf("we goat human %d\n", humId);
         }
     } catch (tf::TransformException ex) {
         ROS_ERROR("%s", ex.what());
