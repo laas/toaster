@@ -111,14 +111,13 @@ bool addFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, unsign
     return true;
 }
 
-bool getFactValueFromAgent(toaster_msgs::Fact fact, unsigned int id, std::string& stringValue, double& doubleValue) {
+bool getFactValueFromAgent(toaster_msgs::Fact reqFact, unsigned int id, toaster_msgs::Fact& resFact) {
     // Find fact:
     for (std::vector<toaster_msgs::Fact>::iterator itFact = factListMap_[id].factList.begin(); itFact != factListMap_[id].factList.end(); ++itFact) {
-        if ((*itFact).property == fact.property
-                && (*itFact).subjectName == fact.subjectName
-                && (*itFact).targetName == fact.targetName) {
-            stringValue = fact.stringValue;
-            doubleValue = fact.doubleValue;
+        if ((*itFact).property == reqFact.property
+                && (*itFact).subjectName == reqFact.subjectName
+                && (*itFact).targetName == reqFact.targetName) {
+            resFact = (*itFact);
             return true;
         } else {
             continue;
@@ -150,7 +149,7 @@ bool getFactValue(toaster_msgs::GetFactValue::Request &req,
     else
         ROS_INFO("[agent_monitor][request][WARNING] Request to get fact value in without agent model specified\n");
     if (id != 0) {
-        res.boolAnswer = getFactValueFromAgent(req.fact, id, res.stringValue, res.doubleValue);
+        res.boolAnswer = getFactValueFromAgent(req.reqFact, id, res.resFact);
         return true;
     } else
         return false;
