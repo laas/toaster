@@ -311,9 +311,6 @@ int main(int argc, char** argv) {
     // Publishing
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("area_manager/factList", 1000);
 
-    toaster_msgs::FactList factList_msg;
-    toaster_msgs::Fact fact_msg;
-
     // Set this in a ros service?
     ros::Rate loop_rate(30);
 
@@ -325,6 +322,8 @@ int main(int argc, char** argv) {
 
     //TODO: remove human / robot id and do it for all
     while (node.ok()) {
+        toaster_msgs::FactList factList_msg;
+        toaster_msgs::Fact fact_msg;
 
         ////////////////////////////////
         // Updating situational Areas //
@@ -556,8 +555,6 @@ int main(int argc, char** argv) {
         fact_pub.publish(factList_msg);
 
         ros::spinOnce();
-
-        factList_msg.factList.clear();
 
         loop_rate.sleep();
     }

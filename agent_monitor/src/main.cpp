@@ -813,9 +813,6 @@ int main(int argc, char** argv) {
 
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("agent_monitor/factList", 1000);
 
-    toaster_msgs::FactList factList_msg;
-    toaster_msgs::Fact fact_msg;
-
 
     // Set this in a ros service?
     ros::Rate loop_rate(30);
@@ -826,6 +823,8 @@ int main(int argc, char** argv) {
     /************************/
 
     while (node.ok()) {
+        toaster_msgs::FactList factList_msg;
+        toaster_msgs::Fact fact_msg;
         // We received agentMonitored
 
         Agent* agntCur;
@@ -1132,9 +1131,15 @@ int main(int argc, char** argv) {
 
             //printf("[agent_monitor] updating TRBuffer for objects done\n");
 
+
+
+
+
             //////////////////////////////////////////////
             // Compute facts concerning monitored agent //
             //////////////////////////////////////////////
+
+
 
 
             //printf("[agent_monitor] computing facts for agent %d\n", (*itAgnt));
@@ -1147,6 +1152,41 @@ int main(int argc, char** argv) {
             //}else{
             //printf("[AGENT_MONITOR][DEBUG] agent from buffer %s is null? %d \n [AGENT_MONITOR][DEBUG] agent from reader %s is null? %d \n", mapTRBEntity_[(*itAgnt)].back()->getName().c_str(),  mapTRBEntity_[(*itAgnt)].back() == NULL, humanRd.lastConfig_[(*itAgnt)]->getName().c_str(), humanRd.lastConfig_[(*itAgnt)] == NULL);  
             //printf("[AGENT_MONITOR][WARNING] agent monitored buffer size %d, max_size %d, full %d, back is null? %d\n", mapTRBEntity_[(*itAgnt)].size(), mapTRBEntity_[(*itAgnt)].max_size(), mapTRBEntity_[(*itAgnt)].full(), mapTRBEntity_[(*itAgnt)].back() == NULL);
+
+
+
+            double angleDirection = 0.0;
+            std::map<unsigned int, double> mapIdValue;
+
+            // We compute /_\distance toward entities
+            mapIdValue = computeDeltaDist(mapTRBEntity_, (*itAgnt), oneSecond / 4);
+            for (std::map<unsigned int, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
+                printf("[AGENT_MONITOR][DEBUG] agent %s has a deltadist toward  %s of %f\n",
+                        mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
+
+
+
+                //filter to get a minimal motion
+                double value = 0.0;
+                if (it->second > 0.01)
+                    value = it->second;
+
+                //Fact moving toward
+                fact_msg.property = "IsMovingToward";
+                fact_msg.propertyType = "motion";
+                fact_msg.subProperty = "distance";
+                fact_msg.subjectId = (*itAgnt);
+                fact_msg.subjectName = mapTRBEntity_[(*itAgnt)].back()->getName().c_str();
+                fact_msg.targetId = it->first;
+                fact_msg.targetName = mapTRBEntity_[it->first].back()->getName().c_str();
+                fact_msg.confidence = value;
+                fact_msg.doubleValue = value;
+                fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
+
+                factList_msg.factList.push_back(fact_msg);
+            }
+
+
 
             // If the agent is moving
             if (computeMotion2D(mapTRBEntity_[(*itAgnt)], oneSecond / 4, 0.03)) {
@@ -1163,10 +1203,6 @@ int main(int argc, char** argv) {
                 fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
 
                 factList_msg.factList.push_back(fact_msg);
-
-
-                double angleDirection = 0.0;
-                std::map<unsigned int, double> mapIdValue;
 
                 // We compute the direction toward fact:
                 angleDirection = computeMotion2DDirection(mapTRBEntity_[(*itAgnt)], oneSecond);
@@ -1187,25 +1223,6 @@ int main(int argc, char** argv) {
                     fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
 
                     factList_msg.factList.push_back(fact_msg);
-                }
-
-                // Then we compute /_\distance
-                mapIdValue = computeDeltaDist(mapTRBEntity_, (*itAgnt), oneSecond / 4);
-                for (std::map<unsigned int, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
-                    printf("[AGENT_MONITOR][DEBUG] agent %s has a deltadist toward  %s of %f\n",
-                            mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
-
-                    //Fact moving toward
-                    fact_msg.property = "IsMovingToward";
-                    fact_msg.propertyType = "motion";
-                    fact_msg.subProperty = "distance";
-                    fact_msg.subjectId = (*itAgnt);
-                    fact_msg.subjectName = mapTRBEntity_[(*itAgnt)].back()->getName().c_str();
-                    fact_msg.targetId = it->first;
-                    fact_msg.targetName = mapTRBEntity_[it->first].back()->getName().c_str();
-                    fact_msg.confidence = it->second;
-                    fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
-
                 }
 
                 // If agent is not moving, we compute his joint motion
@@ -1318,12 +1335,11 @@ int main(int argc, char** argv) {
             } // Joints or full agent?
 
         } // each monitored agents
-
-        fact_pub.publish(factList_msg);
+        //publish only if we have something
+        if (!factList_msg.factList.empty())
+            fact_pub.publish(factList_msg);
 
         ros::spinOnce();
-
-        factList_msg.factList.clear();
 
         loop_rate.sleep();
 
