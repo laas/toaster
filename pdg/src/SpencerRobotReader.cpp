@@ -40,6 +40,8 @@ void SpencerRobotReader::updateRobot(tf::TransformListener &listener) {
     curRobot->setPosition(curJoint->getPosition());
     curRobot->setTime(curJoint->getTime());
 
+    //printf("spencer robot: %f, %f, %f\n", curRobot->getPosition().get<0>(), curRobot->getPosition().get<1>(), curRobot->getPosition().get<2>());
+
     delete curJoint;
 
 

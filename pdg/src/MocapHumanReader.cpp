@@ -19,7 +19,7 @@ MocapHumanReader::MocapHumanReader(ros::NodeHandle& node, std::string topic) {
 void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPersons::ConstPtr& msg) {
     tf::StampedTransform transform;
     ros::Time now = ros::Time::now();
-
+    Human* curHuman;
 
     try {
         std::string frame;
@@ -33,10 +33,17 @@ void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPer
 
         //for every agent present in the tracking message
         for (int i = 0; i < msg->tracks.size(); i++) {
+    std::string humanName = "human";
             spencer_tracking_msgs::TrackedPerson person = msg->tracks[i];
             int humId = person.track_id + humanIdOffset_;
             //create a new human with the same id as the message
-            Human* curHuman = new Human(humId);
+            if(lastConfig_[humId] == NULL){
+            curHuman = new Human(humId);
+            humanName.append(boost::to_string(humId));
+            curHuman->setName(humanName);
+            }else{
+                curHuman = lastConfig_[humId];
+            }
 
             //get the pose of the agent in the optitrack frame and transform it to the map frame
             geometry_msgs::PoseStamped optitrackPose, mapPose;
