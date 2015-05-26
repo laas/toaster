@@ -57,7 +57,8 @@ bool removeInternFactToAgent(unsigned int agentId) {
     bool removed = false;
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].propertyType != "state") &&
-                (factListMap_[agentId].factList[i].propertyType != "staticProperty")) {
+                (factListMap_[agentId].factList[i].propertyType != "staticProperty") &&
+                (factListMap_[agentId].factList[i].propertyType != "knowledge")) {
             //we remove it:
             removeFactToAgent(i, agentId);
             removed = true;
@@ -373,8 +374,9 @@ int main(int argc, char** argv) {
                             //        factListMap_[mainAgentId_].factList[i].targetName.c_str());
 
 
-                            if ((factListMap_[mainAgentId_].factList[i].propertyType != "State") &&
-                                    (factListMap_[mainAgentId_].factList[i].propertyType != "StaticProperty"))
+                            if ((factListMap_[mainAgentId_].factList[i].propertyType != "state") &&
+                                    (factListMap_[mainAgentId_].factList[i].propertyType != "staticProperty") &&
+                                    (factListMap_[mainAgentId_].factList[i].propertyType != "knowledge"))
                                 addFactToAgent(factListMap_[mainAgentId_].factList[i], (*itFactVisibility).doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, itAgent->second);
                             else
                                 addExternFactToAgent(factListMap_[mainAgentId_].factList[i], (*itFactVisibility).doubleValue * factListMap_[mainAgentId_].factList[i].factObservability, itAgent->second);
