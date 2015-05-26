@@ -124,11 +124,11 @@ int main(int argc, char** argv) {
 
 
     while (node.ok()) {
-    // Human centroid
-    double centroidOrientation;
-    std::vector<double> centroidPossibleOrientations;
-    std::map<unsigned int, unsigned int> centroidOrientationsRepartition;
-    bg::model::point<double, 3, bg::cs::cartesian> centroid(0.0, 0.0, 0.0);
+        // Human centroid
+        double centroidOrientation;
+        std::vector<double> centroidPossibleOrientations;
+        std::map<unsigned int, unsigned int> centroidOrientationsRepartition;
+        bg::model::point<double, 3, bg::cs::cartesian> centroid(0.0, 0.0, 0.0);
         //update data
 
         if (vimanObject_)
@@ -187,20 +187,23 @@ int main(int argc, char** argv) {
         // To compute which object are seen by the robot, we use Viman:
         if (vimanObject_)
             for (std::map<unsigned int, MovableObject*>::iterator it = vimanObjectRd.lastConfig_.begin(); it != vimanObjectRd.lastConfig_.end(); ++it) {
+                if (vimanObjectRd.isPresent(it->first)) {
 
 
-                //Fact is seen from viman
-                fact_msg.property = "IsSeen";
-                fact_msg.propertyType = "affordance";
-                fact_msg.subjectId = it->first;
-                fact_msg.confidence = 0.90;
-                fact_msg.factObservability = 0.5;
-                fact_msg.time = it->second->getTime();
-                fact_msg.subjectName = it->second->getName();
-                fact_msg.valueType = 0;
-                fact_msg.stringValue = "true";
+                    //Fact is seen from viman
+                    fact_msg.property = "IsSeen";
+                    fact_msg.propertyType = "affordance";
+                    fact_msg.subjectId = it->first;
+                    fact_msg.confidence = 0.90;
+                    fact_msg.factObservability = 0.5;
+                    fact_msg.time = it->second->getTime();
+                    fact_msg.subjectName = it->second->getName();
+                    fact_msg.valueType = 0;
+                    fact_msg.stringValue = "true";
 
-                factList_msg.factList.push_back(fact_msg);
+                    factList_msg.factList.push_back(fact_msg);
+
+                }
 
                 // We don't use Viman to publish object if spark is on...
                 if (!sparkObject_) {
@@ -364,41 +367,41 @@ int main(int argc, char** argv) {
             }
 
 
-        if (spencerRobot_){
+        if (spencerRobot_) {
             for (std::map<unsigned int, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
                 //if (spencerRobotRd.isPresent(it->first)) {
 
-                    //Fact
-                    fact_msg.property = "isPresent";
-                    fact_msg.subjectId = it->first;
-                    fact_msg.subjectName = it->second->getName();
-                    fact_msg.stringValue = true;
-                    fact_msg.confidence = 0.90;
-                    fact_msg.factObservability = 1.0;
-                    fact_msg.time = it->second->getTime();
-                    fact_msg.valueType = 0;
+                //Fact
+                fact_msg.property = "isPresent";
+                fact_msg.subjectId = it->first;
+                fact_msg.subjectName = it->second->getName();
+                fact_msg.stringValue = true;
+                fact_msg.confidence = 0.90;
+                fact_msg.factObservability = 1.0;
+                fact_msg.time = it->second->getTime();
+                fact_msg.valueType = 0;
 
 
-                    factList_msg.factList.push_back(fact_msg);
+                factList_msg.factList.push_back(fact_msg);
 
-                    //Robot
-                    robot_msg.meAgent.mobility = 0;
-                    fillEntity(spencerRobotRd.lastConfig_[spencerRobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
+                //Robot
+                robot_msg.meAgent.mobility = 0;
+                fillEntity(spencerRobotRd.lastConfig_[spencerRobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
 
-                    /*if (robotFullConfig_) {
-                        unsigned int i = 0;
-                        for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.end(); ++it) {
-                            robot_msg.meAgent.skeletonNames[i] = it->first;
-                            fillEntity((it->second), joint_msg.meEntity);
+                /*if (robotFullConfig_) {
+                    unsigned int i = 0;
+                    for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.end(); ++it) {
+                        robot_msg.meAgent.skeletonNames[i] = it->first;
+                        fillEntity((it->second), joint_msg.meEntity);
 
-                            joint_msg.jointOwner = 1;
+                        joint_msg.jointOwner = 1;
 
-                            robot_msg.meAgent.skeletonJoint.push_back(joint_msg);
-                            i++;
-                        }
-                    }*/
-                    robotList_msg.robotList.push_back(robot_msg);
-               //}
+                        robot_msg.meAgent.skeletonJoint.push_back(joint_msg);
+                        i++;
+                    }
+                }*/
+                robotList_msg.robotList.push_back(robot_msg);
+                //}
             }
         }
 
