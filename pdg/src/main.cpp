@@ -202,7 +202,6 @@ int main(int argc, char** argv) {
                     fact_msg.stringValue = "true";
 
                     factList_msg.factList.push_back(fact_msg);
-
                 }
 
                 // We don't use Viman to publish object if spark is on...

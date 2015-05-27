@@ -12,6 +12,7 @@
 #include "toaster_msgs/AddFact.h"
 #include "toaster_msgs/RemoveFact.h"
 #include "toaster_msgs/GetFactValue.h"
+#include "toaster_msgs/GetFacts.h"
 
 // factList for each monitored agent
 static std::map<unsigned int, toaster_msgs::FactList> factListMap_;
@@ -128,6 +129,32 @@ bool getFactValueFromAgent(toaster_msgs::Fact reqFact, unsigned int id, toaster_
     return false;
 }
 
+bool getFactsFromAgent(toaster_msgs::Fact reqFact, unsigned int id, toaster_msgs::FactList& resFactList) {
+    // Find fact:
+    for (std::vector<toaster_msgs::Fact>::iterator itFact = factListMap_[id].factList.begin(); itFact != factListMap_[id].factList.end(); ++itFact) {
+
+        // We verify first the property:
+        if (reqFact.property == "" || (*itFact).property == reqFact.property)
+            if (reqFact.targetName == "" || (*itFact).targetName == reqFact.targetName)
+                if (reqFact.subjectName == "" || (*itFact).subjectName == reqFact.subjectName)
+                    if (reqFact.subjectId == 0 || (*itFact).subjectId == reqFact.subjectId)
+                        if (reqFact.targetId == 0 || (*itFact).targetId == reqFact.targetId)
+                            if (reqFact.propertyType == "" || (*itFact).propertyType == reqFact.propertyType)
+                                if (reqFact.subProperty == "" || (*itFact).subProperty == reqFact.subProperty)
+                                    if (reqFact.stringValue == "" || (*itFact).stringValue == reqFact.stringValue)
+                                        if (reqFact.doubleValue == 0.0 || (*itFact).doubleValue == reqFact.doubleValue)
+                                            if (reqFact.confidence == 0.0 || (*itFact).confidence == reqFact.confidence)
+                                                resFactList.factList.push_back((*itFact));
+
+    }
+    if (resFactList.factList.size() == 0) {
+        ROS_INFO("[agent_monitor][gatFacts][WARNING] Fact requested was not found in agent %d model\n", id);
+        return false;
+    } else {
+        return true;
+    }
+}
+
 
 //////////////
 // Services //
@@ -147,10 +174,37 @@ bool getFactValue(toaster_msgs::GetFactValue::Request &req,
             id = agentsTracked_[req.agentName];
         else
             ROS_INFO("[agent_monitor][request][WARNING] Request to get fact value in %s model who is untracked agent\n", req.agentName.c_str());
-    else
-        ROS_INFO("[agent_monitor][request][WARNING] Request to get fact value in without agent model specified\n");
+    else {
+        ROS_INFO("[agent_monitor][request][WARNING] Request to get fact value in without agent model specified. We will look in main agent belief state\n");
+        id = mainAgentId_;
+    }
     if (id != 0) {
         res.boolAnswer = getFactValueFromAgent(req.reqFact, id, res.resFact);
+        return true;
+    } else
+        return false;
+}
+
+bool getFacts(toaster_msgs::GetFacts::Request &req,
+        toaster_msgs::GetFacts::Response & res) {
+
+    unsigned int id = 0;
+
+    if (req.agentId != 0)
+        id = req.agentId;
+    else if (req.agentName != "")
+        if (req.agentName == mainAgentName_)
+            id = mainAgentId_;
+        else if (agentsTracked_.find(req.agentName) != agentsTracked_.end())
+            id = agentsTracked_[req.agentName];
+        else
+            ROS_INFO("[agent_monitor][request][WARNING] Request to get fact value in %s model who is untracked agent\n", req.agentName.c_str());
+    else {
+        ROS_INFO("[agent_monitor][request][WARNING] Request to get fact value in without agent model specified. We will look in main agent belief state\n");
+        id = mainAgentId_;
+    }
+    if (id != 0) {
+        res.boolAnswer = getFactsFromAgent(req.reqFact, id, res.resFactList);
         return true;
     } else
         return false;
@@ -256,6 +310,8 @@ int main(int argc, char** argv) {
     ros::ServiceServer serviceGetFactValue = node.advertiseService("belief_manager/get_fact_value", getFactValue);
     ROS_INFO("Ready to get fact value.");
 
+    ros::ServiceServer serviceGetFacts = node.advertiseService("belief_manager/get_facts", getFacts);
+    ROS_INFO("Ready to get facts.");
 
     // Agent with monitored belief
     // TODO make a ros service

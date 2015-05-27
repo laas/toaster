@@ -5,6 +5,8 @@ uint32 subjectId
 uint32 targetId
 string subjectName
 string targetName
+string ownerId
+string ownerName
 bool valueType
 float64 factObservability
 float64 doubleValue

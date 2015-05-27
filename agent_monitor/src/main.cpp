@@ -1260,7 +1260,10 @@ int main(int argc, char** argv) {
                         fact_msg.subjectId = curMonitoredJnt->getId();
                         fact_msg.subjectName = (*itJnt).c_str();
                         fact_msg.targetId = itEnt->first;
-                        fact_msg.targetName = mapTRBEntity_[itEnt->first].back()->getName().c_str();
+                        fact_msg.targetName = mapTRBEntity_[itEnt->first].back()->getName();
+                        fact_msg.ownerName = mapTRBEntity_[curMonitoredJnt->getAgentId()].back()->getName();
+                        fact_msg.ownerId = curMonitoredJnt->getAgentId();
+
                         fact_msg.valueType = 0;
                         fact_msg.stringValue = dist3DString;
                         fact_msg.doubleValue = dist3D;
@@ -1282,6 +1285,8 @@ int main(int argc, char** argv) {
                         fact_msg.subProperty = "joint";
                         fact_msg.subjectId = curMonitoredJnt->getId();
                         fact_msg.subjectName = (*itJnt).c_str();
+                        fact_msg.ownerName = mapTRBEntity_[curMonitoredJnt->getAgentId()].back()->getName();
+                        fact_msg.ownerId = curMonitoredJnt->getAgentId();
                         fact_msg.valueType = 0;
                         fact_msg.stringValue = "true";
                         fact_msg.confidence = 0.90;
@@ -1306,7 +1311,9 @@ int main(int argc, char** argv) {
                             fact_msg.subjectId = curMonitoredJnt->getId();
                             fact_msg.subjectName = (*itJnt).c_str();
                             fact_msg.targetId = it->first;
-                            fact_msg.targetName = mapTRBEntity_[it->first].back()->getName().c_str();
+                            fact_msg.targetName = mapTRBEntity_[it->first].back()->getName();
+                            fact_msg.ownerName = mapTRBEntity_[curMonitoredJnt->getAgentId()].back()->getName();
+                            fact_msg.ownerId = curMonitoredJnt->getAgentId();
                             fact_msg.confidence = it->second;
                             fact_msg.time = curMonitoredJnt->getTime();
 
@@ -1327,6 +1334,8 @@ int main(int argc, char** argv) {
                             fact_msg.subjectName = (*itJnt).c_str();
                             fact_msg.targetId = it->first;
                             fact_msg.targetName = mapTRBEntity_[it->first].back()->getName().c_str();
+                            fact_msg.ownerName = mapTRBEntity_[curMonitoredJnt->getAgentId()].back()->getName();
+                            fact_msg.ownerId = curMonitoredJnt->getAgentId();
                             fact_msg.confidence = it->second;
                             fact_msg.time = curMonitoredJnt->getTime();
                         }

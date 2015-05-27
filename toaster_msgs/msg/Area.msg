@@ -1,7 +1,7 @@
 uint32 id
 string name
 uint32 myOwner
-bool isRoom
+string areaType
 string factType
 string entityType
 bool isCircle

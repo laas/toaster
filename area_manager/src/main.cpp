@@ -96,7 +96,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
                     printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                     ent->removeInArea(it->second->getId());
                     it->second->removeEntity(ent->getId());
-                    if (it->second->getIsRoom())
+                    if (it->second->getAreaType() == "room")
                         ent->setRoomId(0);
                 }// Same if entity is not in Area
             else
@@ -106,7 +106,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
                 it->second->insideEntities_.push_back(ent->getId());
 
                 //User has to be in a room. May it be a "global room".
-                if (it->second->getIsRoom())
+                if (it->second->getAreaType() == "room")
                     ent->setRoomId(it->second->getId());
             } else {
                 //printf("[area_manager][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
@@ -126,14 +126,14 @@ double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold, do
 
 void printMyArea(unsigned int id) {
     if (mapArea_[id]->getIsCircle())
-        printf("Area name: %s, id: %d, owner id: %d, isRoom %d, factType: %s \n"
+        printf("Area name: %s, id: %d, owner id: %d, type %s, factType: %s \n"
             "entityType: %s, isCircle: true, center: %f, %f, ray: %f\n", mapArea_[id]->getName().c_str(),
-            id, mapArea_[id]->getMyOwner(), mapArea_[id]->getIsRoom(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str(),
+            id, mapArea_[id]->getMyOwner(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str(),
             ((CircleArea*) mapArea_[id])->getCenter().get<0>(), ((CircleArea*) mapArea_[id])->getCenter().get<1>(), ((CircleArea*) mapArea_[id])->getRay());
     else
-        printf("Area name: %s, id: %d, owner id: %d, isRoom %d, factType: %s \n"
+        printf("Area name: %s, id: %d, owner id: %d, type %s, factType: %s \n"
             "entityType: %s, isCircle: false\n", mapArea_[id]->getName().c_str(),
-            id, mapArea_[id]->getMyOwner(), mapArea_[id]->getIsRoom(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str());
+            id, mapArea_[id]->getMyOwner(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str());
 
     printf("inside entities: ");
     for (int i = 0; i < mapArea_[id]->insideEntities_.size(); i++)
@@ -193,7 +193,7 @@ bool addArea(toaster_msgs::AddArea::Request &req,
     curArea->setFactType(req.myArea.factType);
     curArea->setMyOwner(req.myArea.myOwner);
     curArea->setName(req.myArea.name);
-    curArea->setIsRoom(req.myArea.isRoom);
+    curArea->setAreaType(req.myArea.areaType);
 
     mapArea_[curArea->getId()] = curArea;
 
@@ -377,23 +377,24 @@ int main(int argc, char** argv) {
             double areaDensity = 0.0;
             unsigned long densityTime = 0;
 
+            Entity* ownerEnt = NULL;
+
+            // Computation depending on owner
+            if (itArea->second->getMyOwner() != 0) {
+
+                // Let's find back the area owner:
+                if (robotRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+                    ownerEnt = robotRd.lastConfig_[itArea->second->getMyOwner()];
+                else if (humanRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+                    ownerEnt = humanRd.lastConfig_[itArea->second->getMyOwner()];
+                else if (objectRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+                    ownerEnt = objectRd.lastConfig_[itArea->second->getMyOwner()];
+            }
+
             for (std::map<unsigned int, Entity*>::iterator itEntity = mapEntities_.begin(); itEntity != mapEntities_.end(); ++itEntity) {
 
                 if (itEntity->second->isInArea(itArea->first)) {
 
-                    Entity* ownerEnt = NULL;
-
-                    // Computation depending on owner
-                    if (itArea->second->getMyOwner() != 0) {
-
-                        // Let's find back the area owner:
-                        if (robotRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
-                            ownerEnt = robotRd.lastConfig_[itArea->second->getMyOwner()];
-                        else if (humanRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
-                            ownerEnt = humanRd.lastConfig_[itArea->second->getMyOwner()];
-                        else if (objectRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
-                            ownerEnt = objectRd.lastConfig_[itArea->second->getMyOwner()];
-                    }
 
                     // compute facts according to factType
                     // TODO: instead of calling it interaction, make a list of facts to compute?
@@ -493,11 +494,11 @@ int main(int argc, char** argv) {
                     fact_msg.property = "IsInArea";
                     fact_msg.propertyType = "position";
 
-                    if (itArea->second->getIsRoom())
-                        fact_msg.subProperty = "room";
-                    else if (ownerEnt != NULL)
-                        fact_msg.subProperty = ownerEnt->getName();
-
+                    fact_msg.subProperty = itArea->second->getAreaType();
+                    if (ownerEnt != NULL) {
+                        fact_msg.ownerName = ownerEnt->getName();
+                        fact_msg.ownerId = ownerEnt->getId();
+                    }
 
                     fact_msg.subjectId = itEntity->first;
                     fact_msg.subjectName = itEntity->second->getName();
@@ -531,6 +532,11 @@ int main(int argc, char** argv) {
                     areaDensity = 0;
                 else
                     areaDensity /= fullPopulation;
+
+                if (ownerEnt != NULL) {
+                    fact_msg.ownerName = ownerEnt->getName();
+                    fact_msg.ownerId = ownerEnt->getId();
+                }
 
                 //Fact Density
                 fact_msg.property = "AreaDensity";
