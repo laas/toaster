@@ -57,6 +57,7 @@ add_service_files(
   GetFactValue.srv
   GetFacts.srv
   PutInHand.srv
+  RemoveFromHand.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

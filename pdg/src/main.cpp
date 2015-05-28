@@ -27,6 +27,7 @@
 #include <toaster_msgs/ObjectList.h>
 #include <toaster_msgs/AddStream.h>
 #include <toaster_msgs/PutInHand.h>
+#include <toaster_msgs/RemoveFromHand.h>
 
 bool humanFullConfig_ = false; //If false we will use only position and orientation
 bool robotFullConfig_ = false; //If false we will use only position and orientation
@@ -172,6 +173,29 @@ bool putInHand(toaster_msgs::PutInHand::Request &req,
     return true;
 }
 
+bool removeFromHand(toaster_msgs::RemoveFromHand::Request &req,
+        toaster_msgs::RemoveFromHand::Response & res) {
+
+    ROS_INFO("[pdg][Request][remove_from_hand] we got request to remove object %s with id: %d \n", req.objectName.c_str(), req.objectId);
+
+    unsigned int objectId = 0;
+
+
+    if (req.objectId != 0)
+        objectId = req.objectId;
+    else if (req.objectName != "")
+        if (entNameId_.find(req.objectName) == entNameId_.end()) {
+            ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find object %s\n", req.objectName.c_str());
+            return false;
+        } else {
+            objectId = entNameId_[req.objectName];
+        }
+
+    objectInAgent_.erase(objectId);
+    objectInHand_.erase(objectId);
+    return true;
+}
+
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "pdg");
@@ -199,6 +223,9 @@ int main(int argc, char** argv) {
     ros::ServiceServer servicePutInHand = node.advertiseService("htn_verbalizer/put_in_hand", putInHand);
     ROS_INFO("[Request] Ready to put object in hand.");
 
+    ros::ServiceServer serviceRemoveFromHand = node.advertiseService("htn_verbalizer/remove_from_hand", removeFromHand);
+    ROS_INFO("[Request] Ready to remove object from hand.");
+    
     //Data writing
     ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("pdg/objectList", 1000);
     ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("pdg/humanList", 1000);
