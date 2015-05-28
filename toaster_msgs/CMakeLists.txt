@@ -56,6 +56,7 @@ add_service_files(
   Pointing.srv
   GetFactValue.srv
   GetFacts.srv
+  PutInHand.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
