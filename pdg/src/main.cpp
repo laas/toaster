@@ -43,8 +43,6 @@ bool spencerRobot_ = false;
 bool vimanObject_ = false;
 bool sparkObject_ = false;
 
-bool humanCentroid_ = false;
-
 
 std::map<std::string, unsigned int> entNameId_;
 std::map<unsigned int, unsigned int> objectInAgent_;
@@ -130,7 +128,6 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     spencerRobot_ = req.spencerRobot;
     vimanObject_ = req.vimanObject;
     sparkObject_ = req.sparkObject;
-    humanCentroid_ = req.humanCentroid;
     ROS_INFO("[pdg] setting pdg input");
     return true;
 }
@@ -232,12 +229,6 @@ int main(int argc, char** argv) {
         toaster_msgs::Robot robot_msg;
         toaster_msgs::Joint joint_msg;
 
-
-        // Human centroid
-        double centroidOrientation;
-        std::vector<double> centroidPossibleOrientations;
-        std::map<unsigned int, unsigned int> centroidOrientationsRepartition;
-        bg::model::point<double, 3, bg::cs::cartesian> centroid(0.0, 0.0, 0.0);
         //update data
 
         if (vimanObject_)
@@ -313,44 +304,7 @@ int main(int argc, char** argv) {
 
                     entNameId_[it->second->getName()] = it->first;
 
-                    if (humanCentroid_) {
-                        centroid.set<0>(centroid.get<0>() + it->second->getPosition().get<0>());
-                        centroid.set<1>(centroid.get<1>() + it->second->getPosition().get<1>());
-                        centroid.set<2>(centroid.get<2>() + it->second->getPosition().get<2>());
-                        if (centroidPossibleOrientations.size() == 0) {
-                            centroidPossibleOrientations.push_back(it->second->getOrientation()[2]);
-                            centroidOrientationsRepartition[0] = 1;
-                        } else
-                            for (int i = 0; i < centroidPossibleOrientations.size(); ++i) {
-                                if (fabs(centroidPossibleOrientations[i] - it->second->getOrientation()[2]) < 0.53) {
-                                    centroidOrientationsRepartition[i]++;
-                                    break;
-                                } else if (i == centroidPossibleOrientations.size() - 1) {
-                                    centroidPossibleOrientations.push_back(it->second->getOrientation()[2]);
-                                    centroidOrientationsRepartition[centroidPossibleOrientations.size()] = 1;
-                                }
-                            }
-                    }
                 }
-            }
-            if (humanCentroid_) {
-                unsigned int maxValue = 0.0;
-                unsigned int maxIndice = 0;
-                human_msg.meAgent.meEntity.id = mocapHumanRd.lastConfig_.size() + 150;
-                human_msg.meAgent.meEntity.name = "Human_Centroid";
-                human_msg.meAgent.meEntity.positionX = centroid.get<0>() / mocapHumanRd.lastConfig_.size();
-                human_msg.meAgent.meEntity.positionY = centroid.get<1>() / mocapHumanRd.lastConfig_.size();
-                human_msg.meAgent.meEntity.positionZ = centroid.get<2>() / mocapHumanRd.lastConfig_.size();
-                for (std::map<unsigned int, unsigned int>::iterator it = centroidOrientationsRepartition.begin(); it != centroidOrientationsRepartition.end(); ++it) {
-                    if (it->second > maxValue) {
-                        maxValue = it->second;
-                        maxIndice = it->first;
-                    }
-                }
-                human_msg.meAgent.meEntity.orientationYaw = centroidPossibleOrientations[maxIndice];
-                humanList_msg.humanList.push_back(human_msg);
-
-                entNameId_["Human_Centroid"] = mocapHumanRd.lastConfig_.size() + 150;
             }
         }
 

@@ -443,47 +443,8 @@ int main(int argc, char** argv) {
                         } // ownerEnt!= NULL
 
                     } else if (itArea->second->getFactType() == "density") {
-                        // This is a hack for the centroid
-                        if (itEntity->second->getName() != "Human_Centroid") {
-                            areaDensity += 1.0;
-                            densityTime = itEntity->second->getTime();
-                        } else {
-
-                            // we need the owner!
-                            if (ownerEnt != NULL) {
-
-                                // Now let's compute isFacing
-                                //////////////////////////////
-
-                                double confidence = 0.0;
-                                // This is the actual angle between subject orientation
-                                // and target. It gives left / right relation
-                                // If positive, target is at right!
-                                double angleResult = 0.0;
-                                confidence = isFacing(itEntity->second, ownerEnt, 0.7, angleResult);
-                                if (confidence > 0.0) {
-                                    printf("[area_manager][DEBUG] %s is facing %s with confidence %f, angleResult %f\n",
-                                            itEntity->second->getName().c_str(), ownerEnt->getName().c_str(), confidence, angleResult);
-
-                                    //Fact Facing
-                                    fact_msg.property = "IsFacing";
-                                    fact_msg.propertyType = "posture";
-                                    fact_msg.subProperty = "orientationAngle";
-                                    fact_msg.subjectId = itEntity->first;
-                                    fact_msg.subjectName = itEntity->second->getName();
-                                    fact_msg.targetName = ownerEnt->getName();
-                                    fact_msg.targetId = ownerEnt->getId();
-                                    fact_msg.confidence = confidence;
-                                    fact_msg.doubleValue = angleResult;
-                                    fact_msg.valueType = 1;
-                                    fact_msg.factObservability = 0.5;
-                                    fact_msg.time = itEntity->second->getTime();
-
-                                    factList_msg.factList.push_back(fact_msg);
-                                }
-                            }
-                        }
-
+                        areaDensity += 1.0;
+                        densityTime = itEntity->second->getTime();
                     } else if (itArea->second->getFactType() == "") {
 
                     } else {

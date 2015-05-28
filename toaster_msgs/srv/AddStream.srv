@@ -2,7 +2,6 @@ bool morseHuman
 bool niutHuman
 bool groupHuman
 bool mocapHuman
-bool humanCentroid
 bool pr2Robot
 bool spencerRobot
 bool vimanObject
