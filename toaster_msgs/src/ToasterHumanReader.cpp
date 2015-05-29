@@ -28,6 +28,7 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::
 
         curHuman->setMobility(curHumanMobility);
         curHuman->setTime(msg->humanList[i].meAgent.meEntity.time);
+        curHuman->busyHands_ = msg->humanList[i].meAgent.busyHands;
 
         humanPosition.set<0>(msg->humanList[i].meAgent.meEntity.positionX);
         humanPosition.set<1>(msg->humanList[i].meAgent.meEntity.positionY);

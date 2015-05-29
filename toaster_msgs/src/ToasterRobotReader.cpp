@@ -29,6 +29,7 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::
 
         curRobot->setMobility(curRobMobility);
         curRobot->setTime(msg->robotList[i].meAgent.meEntity.time);
+        curRobot->busyHands_ = msg->robotList[i].meAgent.busyHands;
 
         robPosition.set<0>(msg->robotList[i].meAgent.meEntity.positionX);
         robPosition.set<1>(msg->robotList[i].meAgent.meEntity.positionY);
