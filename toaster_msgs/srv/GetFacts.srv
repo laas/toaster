@@ -1,0 +1,6 @@
+toaster_msgs/Fact reqFact
+uint32 agentId
+string agentName
+---
+bool boolAnswer
+toaster_msgs/FactList resFactList
