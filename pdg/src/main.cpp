@@ -225,7 +225,7 @@ int main(int argc, char** argv) {
 
     ros::ServiceServer serviceRemoveFromHand = node.advertiseService("htn_verbalizer/remove_from_hand", removeFromHand);
     ROS_INFO("[Request] Ready to remove object from hand.");
-    
+
     //Data writing
     ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("pdg/objectList", 1000);
     ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("pdg/humanList", 1000);
@@ -480,9 +480,39 @@ int main(int argc, char** argv) {
 
                 // If in hand, modify position:
                 if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
+                    bool addFactHand = true;
                     if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg))
-                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg))
+                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg)) {
                             ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %d \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first]);
+                            addFactHand = false;
+                        }
+
+                    if (addFactHand) {
+                        std::string agentName = "";
+                        for (std::map<std::string, unsigned int>::iterator itName = entNameId_.begin(); itName != entNameId_.end(); ++itName)
+                            if (itName->second == objectInAgent_[it->first])
+                                agentName = it->first;
+
+                        //Fact message
+                        fact_msg.property = "IsInHand";
+                        fact_msg.propertyType = "position";
+                        fact_msg.subProperty = "object";
+                        fact_msg.subjectId = it->first;
+                        fact_msg.subjectName = it->second->getName();
+                        fact_msg.targetId = 0;
+                        fact_msg.targetName = objectInHand_[it->first];
+                        fact_msg.ownerId = objectInAgent_[it->first];
+                        fact_msg.ownerName = agentName;
+                        fact_msg.confidence = 1.0;
+                        fact_msg.factObservability = 0.8;
+                        fact_msg.time = it->second->getTime();
+                        fact_msg.valueType = 0;
+                        fact_msg.stringValue = "true";
+
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
+
                 }
 
                 objectList_msg.objectList.push_back(object_msg);
@@ -518,11 +548,45 @@ int main(int argc, char** argv) {
                 if (!sparkObject_) {
                     fillEntity(it->second, object_msg.meEntity);
 
+                    //Message for object
+                    fillEntity(it->second, object_msg.meEntity);
+
                     // If in hand, modify position:
                     if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
+                        bool addFactHand = true;
                         if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg))
-                            if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg))
+                            if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg)) {
                                 ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %d \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first]);
+                                addFactHand = false;
+                            }
+
+                        if (addFactHand) {
+
+                            std::string agentName = "";
+                            for (std::map<std::string, unsigned int>::iterator itName = entNameId_.begin(); itName != entNameId_.end(); ++itName)
+                                if (itName->second == objectInAgent_[it->first])
+                                    agentName = it->first;
+
+                            //Fact message
+                            fact_msg.property = "IsInHand";
+                            fact_msg.propertyType = "position";
+                            fact_msg.subProperty = "object";
+                            fact_msg.subjectId = it->first;
+                            fact_msg.subjectName = it->second->getName();
+                            fact_msg.targetId = 0;
+                            fact_msg.targetName = objectInHand_[it->first];
+                            fact_msg.ownerId = objectInAgent_[it->first];
+                            fact_msg.ownerName = agentName;
+                            fact_msg.confidence = 1.0;
+                            fact_msg.factObservability = 0.8;
+                            fact_msg.time = it->second->getTime();
+                            fact_msg.valueType = 0;
+                            fact_msg.stringValue = "true";
+
+
+                            factList_msg.factList.push_back(fact_msg);
+                        }
+
                     }
 
                     objectList_msg.objectList.push_back(object_msg);
