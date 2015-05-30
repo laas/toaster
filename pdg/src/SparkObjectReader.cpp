@@ -22,9 +22,11 @@ void SparkObjectReader::init(std::string posterName) {
     for (unsigned int i = 0; i < nbObjects_; i++) {
         initObject(i);
     }
+
 }
 
 void SparkObjectReader::initObject(unsigned int i) {
+  std::cout<<"init object\n";
     MovableObject* myObject = new MovableObject(objectIdOffset_ + i);
     //Initialize position:
     myObject->position_.set<0>(0.0);
@@ -35,26 +37,41 @@ void SparkObjectReader::initObject(unsigned int i) {
     myObject->orientation_.push_back(0.0);
     myObject->orientation_.push_back(0.0);
     lastConfig_[objectIdOffset_ + i] = myObject;
+  std::cout<<"end init object\n";
+
 }
 
 void SparkObjectReader::updateObjects() {
-    sparkPoster_->update();
+  std::cout<<"updated objects\n";
+ 
+   sparkPoster_->update();
+   std::cout<<"poster update\n";
     sparkPoster_->getPosterStuct((char*) (&sparkPosterStruct_));
+    std::cout<<"poster struct\n";
     unsigned int i_obj = 0; /// iterator on detected object
 
     // Verify that it was indeed updated
     if (sparkPoster_->getUpdatedStatus()) {
+    std::cout<<"get updated status\n";
+
         nbObjects_ = sparkPosterStruct_.freeflyerNb;
         // Add objects if needed
         while (lastConfig_.size() != nbObjects_) {
             if(lastConfig_.size() < nbObjects_)
                 initObject(lastConfig_.size());
-            else
-                lastConfig_.erase(lastConfig_.end());
-        }
+	      else {
+         	std::map<unsigned int, MovableObject*>::iterator it=lastConfig_.end();
+		it--;
+		  lastConfig_.erase(it);
+	    }       
+ }
+    std::cout<<"suspect erase passed\n";
+
 
 
         for (i_obj = 0; i_obj < nbObjects_; i_obj++) {
+    std::cout<<"object loop\n";
+
 
             //Set position and orientation
             lastConfig_[objectIdOffset_ + i_obj]->position_.set<0>(sparkPosterStruct_.freeflyer[i_obj].q[0]);
@@ -72,7 +89,11 @@ void SparkObjectReader::updateObjects() {
 
 
         }
+    std::cout<<"out of loop\n";
+
     }
+  std::cout<<"end updated objects\n";
+
 }
 
 
