@@ -110,7 +110,9 @@ find_package(Boost REQUIRED COMPONENTS)# system)
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
+#${Boost_INCLUDE_DIRS}  
+/home/mfiore/devel/src/boost_1_56_0/
+$ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 )
 
 ## Declare a cpp library
