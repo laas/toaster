@@ -4,6 +4,8 @@
 #include "pdg/NiutHumanReader.h"
 #include "pdg/GroupHumanReader.h"
 #include "pdg/MocapHumanReader.h"
+#include "pdg/TfHumanReader.h"
+
 
 // Robots
 #include "pdg/Pr2RobotReader.h"
@@ -206,7 +208,8 @@ int main(int argc, char** argv) {
     GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
     MorseHumanReader morseHumanRd(node, humanFullConfig_);
     //NiutHumanReader niutHumanRd()
-    MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
+    //MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
+    TfHumanReader tfHumanRd(node);
 
     Pr2RobotReader pr2RobotRd(robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
@@ -308,9 +311,10 @@ int main(int argc, char** argv) {
                 }
             }
 
+        tfHumanRd.readTf();
         if (mocapHuman_) {
-            for (std::map<unsigned int, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
-                if (mocapHumanRd.isPresent(it->first)) {
+            for (std::map<unsigned int, Human*>::iterator it = tfHumanRd.lastConfig_.begin(); it != tfHumanRd.lastConfig_.end(); ++it) {
+                if (tfHumanRd.isPresent(it->first)) {
 
                     //Fact
                     fact_msg.property = "isPresent";
