@@ -295,8 +295,9 @@ int main(int argc, char** argv) {
 
 
     //Data reading
-    ToasterFactReader factRdSpark(node, "SPARK/factList");
-    ToasterFactReader factRdSpar(node, "area_manager/factList");
+    ToasterFactReader factRdSpark(node, "spark/factList");
+    ToasterFactReader factRdPdg(node, "pdg/factList");
+    ToasterFactReader factRdArea(node, "area_manager/factList");
     ToasterFactReader factRdAM(node, "agent_monitor/factList");
     //ToasterObjectReader objectRd(node);
 
@@ -345,12 +346,16 @@ int main(int argc, char** argv) {
         // We remove intern fact for main agent
         removeInternFactToAgent(mainAgentId_);
         // First we feed the mainAgent belief state
-        for (unsigned int i = 0; i < factRdSpar.lastMsgFact.factList.size(); i++) {
-            addFactToAgent(factRdSpar.lastMsgFact.factList[i], 1.0, mainAgentId_);
+        for (unsigned int i = 0; i < factRdArea.lastMsgFact.factList.size(); i++) {
+            addFactToAgent(factRdArea.lastMsgFact.factList[i], 1.0, mainAgentId_);
         }
 
         for (unsigned int i = 0; i < factRdSpark.lastMsgFact.factList.size(); i++) {
             addFactToAgent(factRdSpark.lastMsgFact.factList[i], 1.0, mainAgentId_);
+        }
+
+        for (unsigned int i = 0; i < factRdPdg.lastMsgFact.factList.size(); i++) {
+            addFactToAgent(factRdPdg.lastMsgFact.factList[i], 1.0, mainAgentId_);
         }
 
         for (unsigned int i = 0; i < factRdAM.lastMsgFact.factList.size(); i++) {
