@@ -13,6 +13,10 @@
 #include "pdg/VimanObjectReader.h"
 #include "pdg/SparkObjectReader.h"
 
+// Facts
+#include "pdg/SparkFactReader.h"
+
+
 // Message generated class
 #include <toaster_msgs/Entity.h>
 #include <toaster_msgs/Agent.h>
@@ -43,6 +47,7 @@ bool spencerRobot_ = false;
 
 bool vimanObject_ = false;
 bool sparkObject_ = false;
+bool sparkFact_ = false;
 
 
 std::map<std::string, unsigned int> entNameId_;
@@ -129,6 +134,7 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     spencerRobot_ = req.spencerRobot;
     vimanObject_ = req.vimanObject;
     sparkObject_ = req.sparkObject;
+    sparkFact_ = req.sparkFact;
     ROS_INFO("[pdg] setting pdg input");
     return true;
 }
@@ -199,8 +205,13 @@ bool removeFromHand(toaster_msgs::RemoveFromHand::Request &req,
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "pdg");
-
     ros::NodeHandle node;
+
+    // For genom init
+    bool initSparkObject = false;
+    bool initVimanObject = false;
+    bool initSparkFact = false;
+
 
     //Data reading
     GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
@@ -212,8 +223,9 @@ int main(int argc, char** argv) {
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
 
     // These 2 use special genom library!
-    SparkObjectReader sparkObjectRd("sparkEnvironment");
-    VimanObjectReader vimanObjectRd("morseViman");
+    SparkObjectReader sparkObjectRd;
+    VimanObjectReader vimanObjectRd;
+    SparkFactReader sparkFactRd;
 
 
     //Services
@@ -231,6 +243,7 @@ int main(int argc, char** argv) {
     ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("pdg/humanList", 1000);
     ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotList>("pdg/robotList", 1000);
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("pdg/factList", 1000);
+    ros::Publisher fact_pub_spark = node.advertise<toaster_msgs::FactList>("spark/factList", 1000);
 
 
 
@@ -256,6 +269,22 @@ int main(int argc, char** argv) {
         toaster_msgs::Robot robot_msg;
         toaster_msgs::Joint joint_msg;
 
+        //init if needed
+        // These 2 use special genom library!
+
+        if (sparkObject_ && !initSparkObject) {
+            sparkObjectRd.init("sparkEnvironment");
+            initSparkObject = true;
+        }
+        if (vimanObject_ && !initVimanObject) {
+            vimanObjectRd.init("morseViman");
+            initVimanObject = true;
+        }
+        if (sparkFact_ && !initSparkFact) {
+            sparkFactRd.init("sparkFactList");
+            initSparkFact = true;
+        }
+
         //update data
 
         if (vimanObject_)
@@ -272,6 +301,9 @@ int main(int argc, char** argv) {
 
         if (spencerRobot_)
             spencerRobotRd.updateRobot(listener);
+
+        if (sparkFact_)
+            sparkFactRd.updateFacts();
 
         ///////////////////////////////////////////////////////////////////////
 
@@ -609,6 +641,7 @@ int main(int argc, char** argv) {
         human_pub.publish(humanList_msg);
         robot_pub.publish(robotList_msg);
         fact_pub.publish(factList_msg);
+        fact_pub_spark.publish(sparkFactRd.currentFactList_);
 
         ros::spinOnce();
 

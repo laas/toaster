@@ -12,23 +12,21 @@
 #include "middleware/GenomPoster.h"
 #include "spark/sparkStruct.h"
 
-
-class SparkObjectReader : public ObjectReader 
-{
-
-  public:
+class SparkObjectReader : public ObjectReader {
+public:
     //Constructor
-    SparkObjectReader(std::string posterName);
+    SparkObjectReader();
     //Destructor
     ~SparkObjectReader();
     void updateObjects();
-    
-  private:
+
+    void init(std::string posterName);
+
+private:
     GenomPoster* sparkPoster_;
     STRUCT_SPARK_CURRENT_ENVIRONMENT sparkPosterStruct_;
-    
+
     //init functions    
-    void init(std::string posterName);
     void initObject(unsigned int i);
 };
 

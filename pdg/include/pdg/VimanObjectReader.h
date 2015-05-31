@@ -19,17 +19,17 @@ class VimanObjectReader : public ObjectReader
 
   public:
     //Constructor
-    VimanObjectReader(std::string posterName);
+    VimanObjectReader();
     //Destructor
     ~VimanObjectReader();
     void updateObjects();
+    void init(std::string posterName);
     
   private:
     GenomPoster* vimanPoster_;
     VimanObjectPublicArray vimanPosterStruct_;
     
     //init functions    
-    void init(std::string posterName);
     void initObject(unsigned int i);
 };
 

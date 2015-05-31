@@ -2,9 +2,8 @@
 
 //Constructor
 
-VimanObjectReader::VimanObjectReader(std::string posterName) {
+VimanObjectReader::VimanObjectReader() {
     std::cout << "[PDG] Initializing VimanObjectReader" << std::endl;
-    init(posterName);
 }
 
 void VimanObjectReader::init(std::string posterName) {
@@ -39,15 +38,20 @@ void VimanObjectReader::updateObjects() {
     if (vimanPoster_->getUpdatedStatus()) {
         nbObjects_ = vimanPosterStruct_.nbObjects;
         // Add objects if needed
-        while (lastConfig_.size() < nbObjects_){
-            initObject(lastConfig_.size());
+        while (lastConfig_.size() != nbObjects_) {
+            if (lastConfig_.size() < nbObjects_)
+                initObject(lastConfig_.size());
+            else {
+                std::map<unsigned int, MovableObject*>::iterator it = lastConfig_.end();
+                it--;
+                lastConfig_.erase(it);
+            }
         }
-        
-        
+
         for (i_obj = 0; i_obj < nbObjects_; i_obj++) {
 
             if (vimanPosterStruct_.objects[i_obj].found_Stereo || vimanPosterStruct_.objects[i_obj].found_Left || vimanPosterStruct_.objects[i_obj].found_Right) {
-                
+
                 //Set position and orientation
                 lastConfig_[objectIdOffset_ + i_obj]->position_.set<0>(vimanPosterStruct_.objects[i_obj].eulerOrigin.x);
                 lastConfig_[objectIdOffset_ + i_obj]->position_.set<1>(vimanPosterStruct_.objects[i_obj].eulerOrigin.y);
@@ -55,10 +59,10 @@ void VimanObjectReader::updateObjects() {
                 lastConfig_[objectIdOffset_ + i_obj]->orientation_[0] = vimanPosterStruct_.objects[i_obj].eulerOrigin.roll;
                 lastConfig_[objectIdOffset_ + i_obj]->orientation_[1] = vimanPosterStruct_.objects[i_obj].eulerOrigin.pitch;
                 lastConfig_[objectIdOffset_ + i_obj]->orientation_[2] = vimanPosterStruct_.objects[i_obj].eulerOrigin.yaw;
-                
+
                 //Set the time and name
                 lastConfig_[objectIdOffset_ + i_obj]->setName(vimanPosterStruct_.objects[i_obj].name);
-                lastConfig_[objectIdOffset_ + i_obj]->setTime(vimanPosterStruct_.objects[i_obj].tacq_usec + pow(10,9) * vimanPosterStruct_.objects[i_obj].tacq_sec);
+                lastConfig_[objectIdOffset_ + i_obj]->setTime(vimanPosterStruct_.objects[i_obj].tacq_usec + pow(10, 9) * vimanPosterStruct_.objects[i_obj].tacq_sec);
 
                 //Set confidence
                 if (vimanPosterStruct_.objects[i_obj].found_Stereo)
