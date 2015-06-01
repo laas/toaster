@@ -75,6 +75,7 @@ bool addExternFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, 
     // We verify that this fact is not already there.
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].subjectName == myFact.subjectName) &&
+                (factListMap_[agentId].factList[i].targetName == myFact.targetName)  &&
                 (factListMap_[agentId].factList[i].property == myFact.property)) {
             // as it is the same fact, we remove the previous value:
             removeFactToAgent(i, agentId);
