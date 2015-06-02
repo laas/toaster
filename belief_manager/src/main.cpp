@@ -75,7 +75,7 @@ bool addExternFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, 
     // We verify that this fact is not already there.
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].subjectName == myFact.subjectName) &&
-                (factListMap_[agentId].factList[i].targetName == myFact.targetName)  &&
+                (factListMap_[agentId].factList[i].targetName == myFact.targetName) &&
                 (factListMap_[agentId].factList[i].property == myFact.property)) {
             // as it is the same fact, we remove the previous value:
             removeFactToAgent(i, agentId);
@@ -378,7 +378,7 @@ int main(int argc, char** argv) {
                     // 2) Agent has visibility on fact subject
                     for (std::vector<toaster_msgs::Fact>::iterator itFactVisibility = factListMap_[mainAgentId_].factList.begin(); itFactVisibility != factListMap_[mainAgentId_].factList.end(); ++itFactVisibility) {
 
-
+                        //TODO: use function getFact
                         if (((*itFactVisibility).property == "IsVisible"
                                 // Current agent
                                 && (*itFactVisibility).subjectName == itAgent->first
@@ -403,6 +403,9 @@ int main(int argc, char** argv) {
                             removeFactToAgent((*itFactAgent), itAgent->second);
                         }
                     }
+                    //Or if fact concerns himself
+                } else if ((*itFactAgent).subjectName == itAgent->first) {
+                    removeFactToAgent((*itFactAgent), itAgent->second);
                 }
             }
 
