@@ -15,6 +15,7 @@
 #include "toaster-lib/Object.h"
 #include <toaster_msgs/Fact.h>
 #include <toaster_msgs/FactList.h>
+#include <geometry_msgs/Polygon.h>
 #include <iterator>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
@@ -28,6 +29,11 @@ namespace bn = boost::numeric;
 // It should be possible to add an area on the fly with a ros service.
 std::map<unsigned int, Area*> mapArea_;
 std::map<unsigned int, Entity*> mapEntities_;
+
+// Publisher for area
+std::map<unsigned int, ros::Publisher> areaPub_;
+
+ros::NodeHandle* node_;
 
 bool areaCompatible(std::string areaEntType, EntityType entType) {
     if (entType == ROBOT) {
@@ -152,6 +158,32 @@ unsigned int getFreeId(std::map<unsigned int, Area*>& map) {
     return i;
 }
 
+geometry_msgs::Polygon polygonToRos(unsigned int id) {
+    geometry_msgs::Polygon poly;
+    geometry_msgs::Point32 curPoint;
+    std::vector<bg::model::d2::point_xy<double> > polyPoints = ((PolygonArea*) mapArea_[id])->poly_.outer();
+    for (unsigned int i = 0; i < polyPoints.size(); ++i) {
+        curPoint.x = polyPoints[i].get<0>();
+        curPoint.y = polyPoints[i].get<1>();
+        poly.points.push_back(curPoint);
+    }
+    return poly;
+}
+
+void addPublishArea(unsigned int id) {
+    //If no publisher yet
+    if (areaPub_.find(id) == areaPub_.end()) {
+        std::stringstream ss;
+        ss << "area_manager/polygon/" << mapArea_[id]->getName();
+        if (mapArea_[id]->getIsCircle()) {
+            //Circle publisher
+        } else {
+            //Polygon publisher
+            areaPub_[id] = node_->advertise<geometry_msgs::Polygon>(ss.str(), 1000);
+        }
+    }
+}
+
 
 ///////////////////////////
 //   Service functions   //
@@ -238,6 +270,8 @@ bool printAllAreas(toaster_msgs::Empty::Request &req,
     return true;
 }
 
+// This function is used to get relative position of an entity according to another (left / right))
+
 bool getRelativePosition(toaster_msgs::GetRelativePosition::Request &req,
         toaster_msgs::GetRelativePosition::Response & res) {
     double pi = 3.1416;
@@ -277,12 +311,20 @@ bool getRelativePosition(toaster_msgs::GetRelativePosition::Request &req,
     return false;
 }
 
+bool publishAllAreas(toaster_msgs::Empty::Request &req,
+        toaster_msgs::Empty::Response & res) {
+    for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea)
+        addPublishArea(itArea->first);
+    return true;
+}
+
 int main(int argc, char** argv) {
     // Set this in a ros service
     const bool AGENT_FULL_CONFIG = false; //If false we will use only position and orientation
 
     ros::init(argc, argv, "area_manager");
     ros::NodeHandle node;
+    node_ = &node;
 
     //Data reading
     ToasterHumanReader humanRd(node, AGENT_FULL_CONFIG);
@@ -307,6 +349,9 @@ int main(int argc, char** argv) {
 
     ros::ServiceServer serviceRelativePose = node.advertiseService("area_manager/get_relative_position", getRelativePosition);
     ROS_INFO("Ready to print get relative position.");
+
+    ros::ServiceServer servicepublishAllArea = node.advertiseService("area_manager/publish_all_areas", publishAllAreas);
+    ROS_INFO("Ready to publish all areas.");
 
     // Publishing
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("area_manager/factList", 1000);
@@ -559,7 +604,11 @@ int main(int argc, char** argv) {
 
 
         fact_pub.publish(factList_msg);
-
+        for (std::map<unsigned int, ros::Publisher>::iterator it = areaPub_.begin(); it != areaPub_.end(); ++it) {
+            if (!mapArea_[it->first]->getIsCircle()) {
+                it->second.publish(polygonToRos(it->first));
+            }
+        }
         ros::spinOnce();
 
         loop_rate.sleep();
