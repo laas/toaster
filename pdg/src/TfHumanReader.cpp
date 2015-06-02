@@ -26,16 +26,16 @@ TfHumanReader::TfHumanReader(ros::NodeHandle& node) {
 void TfHumanReader::readTf() {
 	tf::StampedTransform transform;
 	ros::Time now = ros::Time::now();
-	Human* curHuman;
 
 
-
+	for (int i=0; i<nHumans; i++) {
+		Human* curHuman;
+		string humanName="person_"+to_string(i);
 		try {
-			listener_.waitForTransform("/map","person_1",ros::Time(0),ros::Duration(3.0));
-			listener_.lookupTransform("/map", "person_1",ros::Time(0), transform);
-            int humId=humanIdOffset_;
+			listener_.waitForTransform("/map",humanName,ros::Time(0),ros::Duration(3.0));
+			listener_.lookupTransform("/map", humanName,ros::Time(0), transform);
 			//set human position
-            bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
+			bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
 			humanPosition.set<0>(transform.getOrigin().getX());
 			humanPosition.set<1>(transform.getOrigin().getY());
 			humanPosition.set<2>(transform.getOrigin().getZ());
@@ -45,7 +45,9 @@ void TfHumanReader::readTf() {
 			humanOrientation.push_back(0.0);
 			humanOrientation.push_back(0.0);
 			humanOrientation.push_back(tf::getYaw(transform.getRotation()));
+
 			//put the data in the human
+			int humId=humanIdOffset_+i;
 			curHuman->setOrientation(humanOrientation);
 			curHuman->setPosition(humanPosition);
 			curHuman->setTime(now.toNSec());
@@ -53,7 +55,7 @@ void TfHumanReader::readTf() {
 
 		} catch (tf::TransformException ex) {
 			ROS_ERROR("%s", ex.what());
-
+	}
 
 
 

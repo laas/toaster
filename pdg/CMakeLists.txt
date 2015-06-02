@@ -16,7 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS)# system)
+find_package(Boost REQUIRED COMPONENTS thread)# system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -121,7 +121,7 @@ $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 # )
 
 ## Declare a cpp executable
- add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/GroupHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ObjectReader.cpp src/SparkObjectReader.cpp src/VimanObjectReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
+ add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/TfHumanReader.cpp src/GroupHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ObjectReader.cpp src/SparkObjectReader.cpp src/VimanObjectReader.cpp src/middleware/GenomPoster.cpp  src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -133,7 +133,9 @@ $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 # )
 target_link_libraries(pdg $ENV{ROBOTPKG_BASE}/lib/libposterLib.so
                           $ENV{HOME}/devel/lib/libtoaster.so
-                          ${catkin_LIBRARIES})
+                          ${catkin_LIBRARIES}
+                          boost_thread
+                          )
 
 
 #############

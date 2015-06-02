@@ -46,6 +46,9 @@ bool spencerRobot_ = false;
 bool vimanObject_ = false;
 bool sparkObject_ = false;
 
+// Number of humans to track
+int n=3;
+
 
 std::map<std::string, unsigned int> entNameId_;
 std::map<unsigned int, unsigned int> objectInAgent_;
@@ -209,7 +212,7 @@ int main(int argc, char** argv) {
     MorseHumanReader morseHumanRd(node, humanFullConfig_);
     //NiutHumanReader niutHumanRd()
     //MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
-    TfHumanReader tfHumanRd(node);
+    TfHumanReader tfHumanRd(node,3);
 
     Pr2RobotReader pr2RobotRd(robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);

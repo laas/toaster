@@ -26,11 +26,12 @@
 
 class TfHumanReader : public HumanReader {
 public:
-    TfHumanReader(ros::NodeHandle& node);
+    TfHumanReader(ros::NodeHandle& node, int nHumans);
     void readTf();
 
 private:
     tf::TransformListener listener_;
+    int nHumans;
 };
 
 
