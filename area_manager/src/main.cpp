@@ -15,7 +15,7 @@
 #include "toaster-lib/Object.h"
 #include <toaster_msgs/Fact.h>
 #include <toaster_msgs/FactList.h>
-#include <geometry_msgs/Polygon.h>
+#include <geometry_msgs/PolygonStamped.h>
 #include <iterator>
 #include <boost/numeric/ublas/matrix.hpp>
 #include <boost/numeric/ublas/io.hpp>
@@ -158,15 +158,16 @@ unsigned int getFreeId(std::map<unsigned int, Area*>& map) {
     return i;
 }
 
-geometry_msgs::Polygon polygonToRos(unsigned int id) {
-    geometry_msgs::Polygon poly;
+geometry_msgs::PolygonStamped polygonToRos(unsigned int id) {
+    geometry_msgs::PolygonStamped poly;
     geometry_msgs::Point32 curPoint;
     std::vector<bg::model::d2::point_xy<double> > polyPoints = ((PolygonArea*) mapArea_[id])->poly_.outer();
     for (unsigned int i = 0; i < polyPoints.size(); ++i) {
         curPoint.x = polyPoints[i].get<0>();
         curPoint.y = polyPoints[i].get<1>();
-        poly.points.push_back(curPoint);
+        poly.polygon.points.push_back(curPoint);
     }
+        poly.header.frame_id = "/map";
     return poly;
 }
 
@@ -179,7 +180,7 @@ void addPublishArea(unsigned int id) {
             //Circle publisher
         } else {
             //Polygon publisher
-            areaPub_[id] = node_->advertise<geometry_msgs::Polygon>(ss.str(), 1000);
+            areaPub_[id] = node_->advertise<geometry_msgs::PolygonStamped>(ss.str(), 1000);
         }
     }
 }
