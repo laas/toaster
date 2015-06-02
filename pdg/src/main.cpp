@@ -263,7 +263,6 @@ int main(int argc, char** argv) {
         toaster_msgs::Joint joint_msg;
 
         // Human centroid
-        double centroidOrientation;
         std::vector<double> centroidPossibleOrientations;
         std::map<unsigned int, unsigned int> centroidOrientationsRepartition;
         bg::model::point<double, 3, bg::cs::cartesian> centroid(0.0, 0.0, 0.0);
@@ -361,7 +360,7 @@ int main(int argc, char** argv) {
                     }
                 }
             }
-            if (humanCentroid_) {
+            if (humanCentroid_ && !mocapHumanRd.lastConfig_.empty()) {
                 unsigned int maxValue = 0.0;
                 unsigned int maxIndice = 0;
                 human_msg.meAgent.meEntity.id = mocapHumanRd.lastConfig_.size() + 150;
