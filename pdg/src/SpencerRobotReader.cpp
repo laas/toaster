@@ -28,7 +28,6 @@ void SpencerRobotReader::init() {
 }
 
 void SpencerRobotReader::updateRobot(tf::TransformListener &listener) {
-    tf::StampedTransform transform;
     Robot* curRobot = lastConfig_[robotIdOffset_];
     Joint* curJoint = new Joint(10001, robotIdOffset_);
     curJoint->setName(spencerJointsName_[0]);
