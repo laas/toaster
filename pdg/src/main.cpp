@@ -373,7 +373,7 @@ int main(int argc, char** argv) {
                     fact_msg.property = "isPresent";
                     fact_msg.subjectId = it->first;
                     fact_msg.subjectName = it->second->getName();
-                    fact_msg.stringValue = "true";
+                    fact_msg.stringValue = true;
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 1.0;
                     fact_msg.time = it->second->getTime();
@@ -411,6 +411,7 @@ int main(int argc, char** argv) {
                     fact_msg.time = it->second->getTime();
                     fact_msg.valueType = 0;
 
+
                     factList_msg.factList.push_back(fact_msg);
 
 
@@ -445,7 +446,7 @@ int main(int argc, char** argv) {
                 fact_msg.property = "isPresent";
                 fact_msg.subjectId = it->first;
                 fact_msg.subjectName = it->second->getName();
-                fact_msg.stringValue = "true";
+                fact_msg.stringValue = true;
                 fact_msg.confidence = 0.90;
                 fact_msg.factObservability = 1.0;
                 fact_msg.time = it->second->getTime();
@@ -641,6 +642,7 @@ int main(int argc, char** argv) {
         fact_pub_spark.publish(sparkFactRd.currentFactList_);
 
         ros::spinOnce();
+
         loop_rate.sleep();
 
     }
