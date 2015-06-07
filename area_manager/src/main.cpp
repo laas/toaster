@@ -175,7 +175,7 @@ void addPublishArea(unsigned int id) {
     //If no publisher yet
     if (areaPub_.find(id) == areaPub_.end()) {
         std::stringstream ss;
-        ss << "area_manager/polygon/" << mapArea_[id]->getName();
+        ss << "area_manager/polygon/" << id;
         if (mapArea_[id]->getIsCircle()) {
             //Circle publisher
         } else {
