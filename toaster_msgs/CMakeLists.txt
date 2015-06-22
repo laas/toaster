@@ -21,6 +21,7 @@ add_message_files(
    FILES
    Agent.msg
    Area.msg
+   AreaList.msg
    Entity.msg
    FactList.msg
    Fact.msg

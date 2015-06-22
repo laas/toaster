@@ -9,6 +9,7 @@
 #include "toaster_msgs/Empty.h"
 #include "toaster_msgs/GetRelativePosition.h"
 #include "toaster_msgs/Area.h"
+#include "toaster_msgs/AreaList.h"
 #include "toaster-lib/CircleArea.h"
 #include "toaster-lib/PolygonArea.h"
 #include "toaster-lib/MathFunctions.h"
@@ -31,9 +32,49 @@ std::map<unsigned int, Area*> mapArea_;
 std::map<unsigned int, Entity*> mapEntities_;
 
 // Publisher for area
-std::map<unsigned int, ros::Publisher> areaPub_;
+bool publishingArea_ = false;
 
 ros::NodeHandle* node_;
+
+geometry_msgs::Polygon polygonToRos(unsigned int id) {
+    geometry_msgs::Polygon poly;
+    geometry_msgs::Point32 curPoint;
+    std::vector<bg::model::d2::point_xy<double> > polyPoints = ((PolygonArea*) mapArea_[id])->poly_.outer();
+    for (unsigned int i = 0; i < polyPoints.size(); ++i) {
+        curPoint.x = polyPoints[i].get<0>();
+        curPoint.y = polyPoints[i].get<1>();
+        poly.points.push_back(curPoint);
+    }
+    return poly;
+}
+
+void setAreaMsg(toaster_msgs::AreaList& areaList_msg) {
+    toaster_msgs::Area area;
+    for (std::map<unsigned int, Area*>::iterator it = mapArea_.begin(); it != mapArea_.end(); ++it) {
+        area.id = it->second->getId();
+        area.name = it->second->getName();
+
+        //If it is a circle area
+        if (it->second->getIsCircle()) {
+            area.center.x = ((CircleArea*) it->second)->getCenter().get<0>();
+            area.center.y = ((CircleArea*) it->second)->getCenter().get<1>();
+            area.ray = ((CircleArea*) it->second)->getRay();
+
+        } else {
+            //If it is a polygon
+            area.poly = polygonToRos(it->first);
+        }
+
+        area.isCircle = it->second->getIsCircle();
+        area.entityType = it->second->getEntityType();
+        area.factType = it->second->getFactType();
+        area.myOwner = it->second->getMyOwner();
+        area.areaType = it->second->getAreaType();
+
+        areaList_msg.areaList.push_back(area);
+    }
+
+}
 
 bool areaCompatible(std::string areaEntType, EntityType entType) {
     if (entType == ROBOT) {
@@ -59,7 +100,7 @@ bool areaCompatible(std::string areaEntType, EntityType entType) {
 // Entity should be a vector or a map with all entities
 // This function update all the area that depends on an entity position.
 
-void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity* entity) {
+void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
         if (it->second->getMyOwner() == entity->getId()) {
 
@@ -156,33 +197,6 @@ unsigned int getFreeId(std::map<unsigned int, Area*>& map) {
         else
             break;
     return i;
-}
-
-geometry_msgs::PolygonStamped polygonToRos(unsigned int id) {
-    geometry_msgs::PolygonStamped poly;
-    geometry_msgs::Point32 curPoint;
-    std::vector<bg::model::d2::point_xy<double> > polyPoints = ((PolygonArea*) mapArea_[id])->poly_.outer();
-    for (unsigned int i = 0; i < polyPoints.size(); ++i) {
-        curPoint.x = polyPoints[i].get<0>();
-        curPoint.y = polyPoints[i].get<1>();
-        poly.polygon.points.push_back(curPoint);
-    }
-        poly.header.frame_id = "/map";
-    return poly;
-}
-
-void addPublishArea(unsigned int id) {
-    //If no publisher yet
-    if (areaPub_.find(id) == areaPub_.end()) {
-        std::stringstream ss;
-        ss << "area_manager/polygon/" << id;
-        if (mapArea_[id]->getIsCircle()) {
-            //Circle publisher
-        } else {
-            //Polygon publisher
-            areaPub_[id] = node_->advertise<geometry_msgs::PolygonStamped>(ss.str(), 1000);
-        }
-    }
 }
 
 
@@ -314,8 +328,9 @@ bool getRelativePosition(toaster_msgs::GetRelativePosition::Request &req,
 
 bool publishAllAreas(toaster_msgs::Empty::Request &req,
         toaster_msgs::Empty::Response & res) {
-    for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea)
-        addPublishArea(itArea->first);
+
+    publishingArea_ = !publishingArea_;
+    ROS_INFO("request: publishing area: %d", publishingArea_);
     return true;
 }
 
@@ -356,6 +371,7 @@ int main(int argc, char** argv) {
 
     // Publishing
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("area_manager/factList", 1000);
+    ros::Publisher area_pub = node_->advertise<toaster_msgs::AreaList>("area_manager/areaList", 1000);
 
     // Set this in a ros service?
     ros::Rate loop_rate(30);
@@ -370,6 +386,8 @@ int main(int argc, char** argv) {
     while (node.ok()) {
         toaster_msgs::FactList factList_msg;
         toaster_msgs::Fact fact_msg;
+
+        toaster_msgs::AreaList areaList_msg;
 
         ////////////////////////////////
         // Updating situational Areas //
@@ -564,13 +582,13 @@ int main(int argc, char** argv) {
 
         }// for all area
 
+        if (publishingArea_) {
+            setAreaMsg(areaList_msg);
+            area_pub.publish(areaList_msg);
+        }
 
         fact_pub.publish(factList_msg);
-        for (std::map<unsigned int, ros::Publisher>::iterator it = areaPub_.begin(); it != areaPub_.end(); ++it) {
-            if (!mapArea_[it->first]->getIsCircle()) {
-                it->second.publish(polygonToRos(it->first));
-            }
-        }
+
         ros::spinOnce();
 
         loop_rate.sleep();
