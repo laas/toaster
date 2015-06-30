@@ -23,12 +23,6 @@ add_executable(run src/run.cpp)
 target_link_libraries(run ${catkin_LIBRARIES} ${TinyXML_LIBRARIES} )
 add_dependencies(run beginner_tutorials_generate_messages_cpp)
 #add_dependencies(Control ${catkin_EXPORTED_TARGETS})
-
-add_executable(toaster_com src/toaster_com.cpp)
-target_link_libraries(toaster_com ${catkin_LIBRARIES})
-add_dependencies(toaster_com beginner_tutorials_generate_messages_cpp)
-#add_dependencies(toaster_com ${catkin_EXPORTED_TARGETS})
- 
  
  
  
