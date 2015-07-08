@@ -447,11 +447,13 @@ int main(int argc, char** argv) {
             if (itArea->second->getMyOwner() != 0) {
 
                 // Let's find back the area owner:
-                if (robotRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+                if (robotRd.lastConfig_.find(itArea->second->getMyOwner()) != robotRd.lastConfig_.end())
                     ownerEnt = robotRd.lastConfig_[itArea->second->getMyOwner()];
-                else if (humanRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+
+                else if (humanRd.lastConfig_.find(itArea->second->getMyOwner()) != humanRd.lastConfig_.end())
                     ownerEnt = humanRd.lastConfig_[itArea->second->getMyOwner()];
-                else if (objectRd.lastConfig_[itArea->second->getMyOwner()] != NULL)
+
+                else if (objectRd.lastConfig_.find(itArea->second->getMyOwner()) != objectRd.lastConfig_.end())
                     ownerEnt = objectRd.lastConfig_[itArea->second->getMyOwner()];
             }
 
