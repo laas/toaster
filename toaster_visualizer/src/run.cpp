@@ -47,7 +47,7 @@ class Run
 	
 
 	public:
-       
+
     /**
      * Constructor of the run class for toaster_vizualiser
      */
@@ -64,7 +64,7 @@ class Run
 		human_list = visualization_msgs::MarkerArray();
 		
 		//definition of subscribers
-		sub_objList = reception_node.subscribe("/pdg/objectList", 1000, &Run::chatterCallbackObjList, this);
+		sub_objList = reception_node.subscribe("/pdg/objList", 1000, &Run::chatterCallbackObjList, this);
 		sub_areaList = reception_node.subscribe("/area_manager/areaList", 1000, &Run::chatterCallbackAreaList, this);
 		sub_humanList = reception_node.subscribe("/pdg/humanList", 1000, &Run::chatterCallbackHumanList, this);
 		
@@ -239,8 +239,8 @@ class Run
 		//color
 		marker.color.r= 0.0f;
 		marker.color.g= 1.0f;
-		marker.color.b= 0.0f;
-		marker.color.a= 0.0;
+		marker.color.b= 1.0f;
+		marker.color.a= 1.0;
 
 		//scale
 		marker.scale.x = 1*scale;
@@ -248,7 +248,7 @@ class Run
 		marker.scale.z = 1*scale;
 		
 		//type
-		marker.type = 1; //marker by defaut
+		marker.type = visualization_msgs::Marker::CUBE; //marker by defaut
 		
 		TiXmlDocument list("src/toaster_visualizer/src/list_obj.xml"); //load xml file
 		
@@ -328,8 +328,8 @@ class Run
 		
 		//scale
 		marker.scale.z = 1.0;  
-	   
-	   
+
+
 		return nameMarker;
 		
 	}
@@ -346,6 +346,7 @@ class Run
      */
 	visualization_msgs::Marker defineHuman(int  x, int y, int z, double scale, std::string name) 
 	{
+		
 		//declarration
 		visualization_msgs::Marker marker;
 
@@ -385,7 +386,7 @@ class Run
 		
 		//type de marker
 		marker.type = visualization_msgs::Marker::MESH_RESOURCE;   
-		marker.mesh_resource = "package://toaster_visualizer/mesh/3dm-Vincent.3ds";  //using 3d human model
+		marker.mesh_resource = "package://toaster_visualizer/mesh/vincent.dae";  //using 3d human model
 		marker.mesh_use_embedded_materials = true;
 
 		marker.lifetime = ros::Duration();
@@ -472,7 +473,7 @@ class Run
      * @param z 			coordinates of marker's base in the z direction
      * @return marker 		new marker with input modifications
      */
-	visualization_msgs::Marker setPosition(visualization_msgs::Marker marker, int x, int y, int z)
+	visualization_msgs::Marker setPosition(visualization_msgs::Marker marker, float x, float y, float z)
 	{	
 		marker.pose.position.x = x;
 		marker.pose.position.y = y;
@@ -490,7 +491,7 @@ class Run
      * @param z 			size of the marker in the z direction
      * @return marker 		new marker with input modifications
      */
-	visualization_msgs::Marker setSize(visualization_msgs::Marker marker, int x, int y, int z)
+	visualization_msgs::Marker setSize(visualization_msgs::Marker marker, float x, float y, float z)
 	{	
 		marker.scale.x = 1*x;
 		marker.scale.y = 1*y;
@@ -520,18 +521,19 @@ class Run
      * @return 			void
      */
 	void chatterCallbackObjList(const toaster_msgs::ObjectList::ConstPtr& msg) //toaster object list reception
-	{	  
-           obj_list.markers.clear();		
+	{
+		obj_list.markers.clear();
+		
 		for(int i = 0; i<msg->objectList.size(); i++)
 		{
 			visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.positionX, msg->objectList[i].meEntity.positionY, msg->objectList[i].meEntity.positionZ, 
-			10, msg->objectList[i].meEntity.name);
+			1, msg->objectList[i].meEntity.name);
 				
 			m = setOrientation(m, msg->objectList[i].meEntity.orientationRoll, msg->objectList[i].meEntity.orientationPitch, msg->objectList[i].meEntity.orientationYaw);
 			
 			visualization_msgs::Marker mn = defineName(m);
 			mn = setColor(mn, 1.0, 1.0, 1.0);
-			mn = setSize(mn, 0, 0, 4);
+			mn = setSize(mn, 0, 0, 0.5);
 			
 			obj_list.markers.push_back(mn);
 			obj_list.markers.push_back(m);
@@ -548,8 +550,9 @@ class Run
      * @return 			void
      */
 	void chatterCallbackAreaList(const toaster_msgs::AreaList::ConstPtr& msg)
-	{	  
-	   area_list.markers.clear();	
+	{
+		area_list.markers.clear();
+		
 		for(int i = 0; i<msg->areaList.size(); i++)
 		{
 
@@ -561,8 +564,8 @@ class Run
 					m = setColor(m, 0.0, 1.0, 0.0);
 					
 					visualization_msgs::Marker mn = defineName(m);
-					mn = setSize(mn, 0.0, 0.0, 5.0);
-					mn = setPosition(mn, mn.pose.position.x + 10.0, mn.pose.position.y, 5.0);  //name marker is offset from circle marker to avoid colision
+					mn = setSize(mn, 0.0, 0.0, 1);
+					mn = setPosition(mn, mn.pose.position.x + 2, mn.pose.position.y, 1);  //name marker is offset from circle marker to avoid colision
 					
 					area_list.markers.push_back(m);
 					area_list.markers.push_back(mn);
@@ -571,13 +574,13 @@ class Run
 				}
 				else // polygon case
 				{
-					visualization_msgs::Marker m = definePolynome(msg->areaList[i].poly, 0.5, msg->areaList[i].name);
+					visualization_msgs::Marker m = definePolynome(msg->areaList[i].poly, 0.2, msg->areaList[i].name);
 					
 					m = setColor(m, 1.0, 0.0, 0.0);
 					
 					visualization_msgs::Marker mn = defineName(m);
-					mn = setSize(mn, 0.0, 0.0, 5.0);
-					mn = setPosition(mn, m.points[0].x, m.points[0].y, 15.0); //name marker is offset from line for a better legibility
+					mn = setSize(mn, 0.0, 0.0, 1);
+					mn = setPosition(mn, m.points[0].x, m.points[0].y, 1); //name marker is offset from line for a better legibility
 					
 					area_list.markers.push_back(m);
 					area_list.markers.push_back(mn);
@@ -585,7 +588,7 @@ class Run
 					ROS_INFO("poly %d", m.id);
 				}
 		}
-	}
+	} 
 	
 	
 	/**
@@ -596,18 +599,21 @@ class Run
      */
 	void chatterCallbackHumanList(const toaster_msgs::HumanList::ConstPtr& msg) 
 	{
-           human_list.markers.clear();
+		human_list.markers.clear();
+		
 		for(int i = 0; i<msg->humanList.size(); i++)
 		{
 				//non articulated human
 				visualization_msgs::Marker m = defineHuman(msg->humanList[i].meAgent.meEntity.positionX, msg->humanList[i].meAgent.meEntity.positionY, msg->humanList[i].meAgent.meEntity.positionZ, 
-				0.2, msg->humanList[i].meAgent.meEntity.name);
+				0.3, msg->humanList[i].meAgent.meEntity.name);
+				
+				m = setPosition(m, m.pose.position.x, m.pose.position.y, 0.1);
 				
 				m = setOrientation(m,  msg->humanList[i].meAgent.meEntity.orientationRoll, msg->humanList[i].meAgent.meEntity.orientationPitch, msg->humanList[i].meAgent.meEntity.orientationYaw);
 
 				visualization_msgs::Marker mn = defineName(m);
-				mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 20);
-				mn = setSize(mn, 0,0,5);
+				mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
+				mn = setSize(mn, 0,0,1);
 				mn = setColor(mn, 1.0, 1.0, 1.0);
 				
 				
@@ -624,7 +630,7 @@ class Run
 				std::vector<toaster_msgs::Joint> membres = msg->humanList[i].meAgent.skeletonJoint ;
 				visualization_msgs::Marker markerTempo;
 				std::string name = msg->humanList[i].meAgent.meEntity.name;
-				int scale = 3;
+				int scale = 1;
 				
 				for(int y = 0; y<membres.size(); y++)
 				{
@@ -669,33 +675,9 @@ class Run
 		}
 	}
 	
-	
-	
-	
-	
-	void removeAllMarker()
-	{
-		for(int i = 0; i<=area_list.markers.size(); i++)
-		{
-			area_list.markers[i].action = 2;
-		}
-		
-		for(int y = 0; y<=obj_list.markers.size(); y++)
-		{
-			obj_list.markers[y].action = 2;
-		}
-		
-		for(int z = 0; z<=human_list.markers.size(); z++)
-		{
-			human_list.markers[z].action = 2;
-		}
-		
-		pub_area.publish(area_list);
-		pub_obj.publish(obj_list);
-		pub_human.publish(human_list);
-		
-		ros::spinOnce();
-	}
+
+
+
 	
 	
 			
@@ -729,13 +711,12 @@ int main(int argc, char **argv)
 	Run c = Run();
 	
 	
-	ros::Rate loop_rate(1);	
+	ros::Rate loop_rate(30);	
 	
 	while(ros::ok())
 	{
 		c.send();
 		loop_rate.sleep();
-		//c.removeAllMarker();
 	}
 	
 	return 0;

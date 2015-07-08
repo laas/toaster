@@ -20,7 +20,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS})
 
 
 add_executable(run src/run.cpp)
-target_link_libraries(run ${catkin_LIBRARIES} ${TinyXML_LIBRARIES} )
+target_link_libraries(run ${catkin_LIBRARIES} ${TinyXML_LIBRARIES})
 add_dependencies(run beginner_tutorials_generate_messages_cpp)
 #add_dependencies(Control ${catkin_EXPORTED_TARGETS})
 
