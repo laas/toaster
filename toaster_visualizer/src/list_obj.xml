@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <list_obj>
 
-	<object name="basic_desk"         	mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/basic_desk.dae" />
-	<object name="Desk_1"			  	mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/Desk_1.dae" />
-	<object name="Desk_2" 			 	mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/Desk_2.dae" />
-	<object name="Desk_3" 			  	mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/Desk_3.dae" />
-	<object name="IKEA_armchair_EKTORP" mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/IKEA_armchair_EKTORP.dae" />
-	<object name="IKEA_bed_FJELLSE"     mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/IKEA_bed_FJELLSE.dae" />
-	<object name="IKEA_chair_PELLO" 	mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/IKEA_chair_PELLO.dae " />
-	<object name="IKEA_chair_STEFAN" 	mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/IKEA_chair_STEFAN.dae"/>
-	<object name="IKEA_console_HEMNES" 	mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/IKEA_console_HEMNES.dae" />
-	<object name="KEA_low_table_LACK_1" mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/IKEA_low_table_LACK_1.dae" />
-	<object name="KEA_low_table_LACK_2" mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/IKEA_low_table_LACK_2.dae" />
-	<object name="IKEA_sofa_EKTORP" 	mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/IKEA_sofa_EKTORP.dae"/>
-	<object name="IKEA_table_TORSBY" 	mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/KEA_table_TORSBY.dae" />
-	<object name="office_desk"			mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/office_desk.dae" />
-	<object name="Print_board" 			mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/Print_board.dae"/>
-	<object name="Rolling_Chair" 		mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/Rolling_Chair.dae" />
-	<object name="Self_3" 				mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/Self_3.dae" />
-	<object name="whiteboard" 			mesh_ressource="package://toaster_visualizer/mesh/objets_toaster/whiteboard.dae" />
+	<object name="basic_desk"         	mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/basic_desk.dae" />
+	<object name="Desk_1"			  	mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Desk_1.dae" />
+	<object name="Desk_2" 			 	mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Desk_2.dae" />
+	<object name="Desk_3" 			  	mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Desk_3.dae" />
+	<object name="IKEA_armchair_EKTORP" mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_armchair_EKTORP.dae" />
+	<object name="IKEA_bed_FJELLSE"     mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_bed_FJELLSE.dae" />
+	<object name="IKEA_chair_PELLO" 	mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae " />
+	<object name="IKEA_chair_STEFAN" 	mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_STEFAN.dae"/>
+	<object name="IKEA_console_HEMNES" 	mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_console_HEMNES.dae" />
+	<object name="KEA_low_table_LACK_1" mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_1.dae" />
+	<object name="KEA_low_table_LACK_2" mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_2.dae" />
+	<object name="IKEA_sofa_EKTORP" 	mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_sofa_EKTORP.dae"/>
+	<object name="IKEA_table_TORSBY" 	mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/KEA_table_TORSBY.dae" />
+	<object name="office_desk"			mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />
+	<object name="Print_board" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Print_board.dae"/>
+	<object name="Rolling_Chair" 		mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Rolling_Chair.dae" />
+	<object name="Self_3" 				mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Self_3.dae" />
+	<object name="whiteboard" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/whiteboard.dae" />
 
 	
 </list_obj>	
