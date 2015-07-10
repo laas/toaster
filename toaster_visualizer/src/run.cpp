@@ -522,7 +522,6 @@ class Run
 				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
 				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
 				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
-				ROS_INFO("yolo");
 			}
 			else if((name_list[i] == marker.ns) && !color_list[i].empty())
 			{
