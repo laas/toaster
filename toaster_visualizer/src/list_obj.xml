@@ -19,6 +19,7 @@
 	<object name="Rolling_Chair" 		mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Rolling_Chair.dae" />
 	<object name="Self_3" 				mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Self_3.dae" />
 	<object name="whiteboard" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/whiteboard.dae" />
+	<object name="LOTR_TAPE" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/White_tape.dae" />
 
 	
 </list_obj>	

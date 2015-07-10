@@ -64,7 +64,7 @@ class Run
 		human_list = visualization_msgs::MarkerArray();
 		
 		//definition of subscribers
-		sub_objList = reception_node.subscribe("/pdg/objList", 1000, &Run::chatterCallbackObjList, this);
+		sub_objList = reception_node.subscribe("/pdg/objectList", 1000, &Run::chatterCallbackObjList, this);
 		sub_areaList = reception_node.subscribe("/area_manager/areaList", 1000, &Run::chatterCallbackAreaList, this);
 		sub_humanList = reception_node.subscribe("/pdg/humanList", 1000, &Run::chatterCallbackHumanList, this);
 		

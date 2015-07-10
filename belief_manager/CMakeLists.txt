@@ -94,6 +94,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
+  $ENV{ROBOTPKG_BASE}/include/openprs
   
 )
 
@@ -113,7 +114,7 @@ include_directories(
 # target_link_libraries(agent_monitor_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(belief_manager ${catkin_LIBRARIES} $ENV{HOME}/devel/lib/libtoaster.so)
+target_link_libraries(belief_manager ${catkin_LIBRARIES} $ENV{HOME}/devel/lib/libtoaster.so  $ENV{ROBOTPKG_BASE}/lib/libExtMP.a)
 
 #############
 ## Install ##

@@ -10,8 +10,11 @@
 #include "pdg/SpencerRobotReader.h"
 
 // Objects
+#include "pdg/VimanObjectReader.h"
+#include "pdg/SparkObjectReader.h"
 
 // Facts
+#include "pdg/SparkFactReader.h"
 
 
 // Message generated class
@@ -26,7 +29,7 @@
 #include <toaster_msgs/RobotList.h>
 #include <toaster_msgs/HumanList.h>
 #include <toaster_msgs/ObjectList.h>
-#include <toaster_msgs/AddStream.h>
+#include <pdg/AddStream.h>
 #include <toaster_msgs/PutInHand.h>
 #include <toaster_msgs/RemoveFromHand.h>
 
@@ -41,6 +44,10 @@ bool mocapHuman_ = false;
 
 bool pr2Robot_ = false;
 bool spencerRobot_ = false;
+
+bool vimanObject_ = false;
+bool sparkObject_ = false;
+bool sparkFact_ = false;
 
 
 std::map<std::string, unsigned int> entNameId_;
@@ -116,8 +123,8 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::s
 // Services //
 //////////////
 
-bool addStream(toaster_msgs::AddStream::Request &req,
-        toaster_msgs::AddStream::Response & res) {
+bool addStream(pdg::AddStream::Request &req,
+        pdg::AddStream::Response & res) {
 
     morseHuman_ = req.morseHuman;
     niutHuman_ = req.niutHuman;
@@ -125,6 +132,9 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     mocapHuman_ = req.mocapHuman;
     pr2Robot_ = req.pr2Robot;
     spencerRobot_ = req.spencerRobot;
+    vimanObject_ = req.vimanObject;
+    sparkObject_ = req.sparkObject;
+    sparkFact_ = req.sparkFact;
     ROS_INFO("[pdg] setting pdg input");
     return true;
 }
@@ -197,6 +207,11 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "pdg");
     ros::NodeHandle node;
 
+    // For genom init
+    bool initSparkObject = false;
+    bool initVimanObject = false;
+    bool initSparkFact = false;
+
 
     //Data reading
     GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
@@ -206,6 +221,12 @@ int main(int argc, char** argv) {
 
     Pr2RobotReader pr2RobotRd(robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
+
+    // These 2 use special genom library!
+    SparkObjectReader sparkObjectRd;
+    VimanObjectReader vimanObjectRd;
+    SparkFactReader sparkFactRd;
+
 
     //Services
     ros::ServiceServer addStreamServ = node.advertiseService("pdg/manage_stream", addStream);
@@ -222,6 +243,7 @@ int main(int argc, char** argv) {
     ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("pdg/humanList", 1000);
     ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotList>("pdg/robotList", 1000);
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("pdg/factList", 1000);
+    ros::Publisher fact_pub_spark = node.advertise<toaster_msgs::FactList>("spark/factList", 1000);
 
 
 
@@ -245,9 +267,29 @@ int main(int argc, char** argv) {
         toaster_msgs::Robot robot_msg;
         toaster_msgs::Joint joint_msg;
 
+        //init if needed
+        // These 2 use special genom library!
 
+        if (sparkObject_ && !initSparkObject) {
+            sparkObjectRd.init("sparkEnvironment");
+            initSparkObject = true;
+        }
+        if (vimanObject_ && !initVimanObject) {
+            vimanObjectRd.init("morseViman");
+            initVimanObject = true;
+        }
+        if (sparkFact_ && !initSparkFact) {
+            sparkFactRd.init("sparkFactList");
+            initSparkFact = true;
+        }
 
         //update data
+
+        if (vimanObject_)
+            vimanObjectRd.updateObjects();
+
+        if (sparkObject_)
+            sparkObjectRd.updateObjects();
 
         if (morseHuman_)
             morseHumanRd.updateHumans(listener);
@@ -257,6 +299,9 @@ int main(int argc, char** argv) {
 
         if (spencerRobot_)
             spencerRobotRd.updateRobot(listener);
+
+        if (sparkFact_)
+            sparkFactRd.updateFacts();
 
         ///////////////////////////////////////////////////////////////////////
 
@@ -439,7 +484,150 @@ int main(int argc, char** argv) {
         // Objects //
         /////////////
 
+        //printf("[PDG][DEBUG] Nb object from SPARK: %d\n", sparkObjectRd.nbObjects_);
 
+        if (sparkObject_)
+            for (std::map<unsigned int, MovableObject*>::iterator it = sparkObjectRd.lastConfig_.begin(); it != sparkObjectRd.lastConfig_.end(); ++it) {
+                //if (sparkObjectRd.isPresent(sparkObjectRd.objectIdOffset_ + i)) {
+
+                //Fact message
+                fact_msg.property = "IsPresent";
+                fact_msg.propertyType = "position";
+                fact_msg.subjectId = it->first;
+                fact_msg.confidence = 0.90;
+                fact_msg.factObservability = 1.0;
+                fact_msg.time = it->second->getTime();
+                fact_msg.subjectName = it->second->getName();
+                fact_msg.valueType = 0;
+                fact_msg.stringValue = "true";
+
+
+                factList_msg.factList.push_back(fact_msg);
+
+
+                //Message for object
+                fillEntity(it->second, object_msg.meEntity);
+
+                // If in hand, modify position:
+                if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
+                    bool addFactHand = true;
+                    if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg))
+                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg)) {
+                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %d \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first]);
+                            addFactHand = false;
+                        }
+
+                    if (addFactHand) {
+                        std::string agentName = "";
+                        for (std::map<std::string, unsigned int>::iterator itName = entNameId_.begin(); itName != entNameId_.end(); ++itName)
+                            if (itName->second == objectInAgent_[it->first])
+                                agentName = it->first;
+
+                        //Fact message
+                        fact_msg.property = "IsInHand";
+                        fact_msg.propertyType = "position";
+                        fact_msg.subProperty = "object";
+                        fact_msg.subjectId = it->first;
+                        fact_msg.subjectName = it->second->getName();
+                        fact_msg.targetId = 0;
+                        fact_msg.targetName = objectInHand_[it->first];
+                        fact_msg.ownerId = objectInAgent_[it->first];
+                        fact_msg.ownerName = agentName;
+                        fact_msg.confidence = 1.0;
+                        fact_msg.factObservability = 0.8;
+                        fact_msg.time = it->second->getTime();
+                        fact_msg.valueType = 0;
+                        fact_msg.stringValue = "true";
+
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
+
+                }
+
+                objectList_msg.objectList.push_back(object_msg);
+
+                entNameId_[it->second->getName()] = it->first;
+
+                //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
+                //printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
+                //}
+            }
+
+        // To compute which object are seen by the robot, we use Viman:
+        if (vimanObject_)
+            for (std::map<unsigned int, MovableObject*>::iterator it = vimanObjectRd.lastConfig_.begin(); it != vimanObjectRd.lastConfig_.end(); ++it) {
+                if (vimanObjectRd.isPresent(it->first)) {
+
+
+                    //Fact is seen from viman
+                    fact_msg.property = "IsSeen";
+                    fact_msg.propertyType = "affordance";
+                    fact_msg.subjectId = it->first;
+                    fact_msg.confidence = 0.90;
+                    fact_msg.factObservability = 0.5;
+                    fact_msg.time = it->second->getTime();
+                    fact_msg.subjectName = it->second->getName();
+                    fact_msg.valueType = 0;
+                    fact_msg.stringValue = "true";
+
+                    factList_msg.factList.push_back(fact_msg);
+                }
+
+                // We don't use Viman to publish object if spark is on...
+                if (!sparkObject_) {
+                    fillEntity(it->second, object_msg.meEntity);
+
+                    //Message for object
+                    fillEntity(it->second, object_msg.meEntity);
+
+                    // If in hand, modify position:
+                    if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
+                        bool addFactHand = true;
+                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg))
+                            if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg)) {
+                                ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %d \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first]);
+                                addFactHand = false;
+                            }
+
+                        if (addFactHand) {
+
+                            std::string agentName = "";
+                            for (std::map<std::string, unsigned int>::iterator itName = entNameId_.begin(); itName != entNameId_.end(); ++itName)
+                                if (itName->second == objectInAgent_[it->first])
+                                    agentName = it->first;
+
+                            //Fact message
+                            fact_msg.property = "IsInHand";
+                            fact_msg.propertyType = "position";
+                            fact_msg.subProperty = "object";
+                            fact_msg.subjectId = it->first;
+                            fact_msg.subjectName = it->second->getName();
+                            fact_msg.targetId = 0;
+                            fact_msg.targetName = objectInHand_[it->first];
+                            fact_msg.ownerId = objectInAgent_[it->first];
+                            fact_msg.ownerName = agentName;
+                            fact_msg.confidence = 1.0;
+                            fact_msg.factObservability = 0.8;
+                            fact_msg.time = it->second->getTime();
+                            fact_msg.valueType = 0;
+                            fact_msg.stringValue = "true";
+
+
+                            factList_msg.factList.push_back(fact_msg);
+                        }
+
+                    }
+
+                    objectList_msg.objectList.push_back(object_msg);
+
+                    entNameId_[it->second->getName()] = it->first;
+                }
+
+                //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
+                //printf("[PDG] object %d named %s is seen\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
+                //}
+            }
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -451,6 +639,7 @@ int main(int argc, char** argv) {
         human_pub.publish(humanList_msg);
         robot_pub.publish(robotList_msg);
         fact_pub.publish(factList_msg);
+        fact_pub_spark.publish(sparkFactRd.currentFactList_);
 
         ros::spinOnce();
 

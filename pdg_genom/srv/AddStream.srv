@@ -1,0 +1,10 @@
+bool morseHuman
+bool niutHuman
+bool groupHuman
+bool mocapHuman
+bool pr2Robot
+bool spencerRobot
+bool vimanObject
+bool sparkObject
+bool sparkFact
+---

@@ -14,6 +14,9 @@
 #include "toaster_msgs/GetFactValue.h"
 #include "toaster_msgs/GetFacts.h"
 
+#include "openprs/opaque-pub.h"
+#include "openprs/mp-pub.h"
+
 // factList for each monitored agent
 static std::map<unsigned int, toaster_msgs::FactList> factListMap_;
 
@@ -22,6 +25,9 @@ static std::map<std::string, unsigned int> agentsTracked_;
 
 static std::string mainAgentName_ = "pr2";
 static unsigned int mainAgentId_ = 1;
+
+int mpSocket_ = -1;
+std::string oprsDest_ = "OPRS_DB";
 
 bool removeFactToAgent(unsigned int myFactId, unsigned int agentId) {
     factListMap_[agentId].factList.erase(factListMap_[agentId].factList.begin() + myFactId);
@@ -344,6 +350,8 @@ int main(int argc, char** argv) {
         /* World State management */
         /**************************/
 
+        //We save the previous state
+        toaster_msgs::FactList previousState = factListMap_[mainAgentId_];
         // We remove intern fact for main agent
         removeInternFactToAgent(mainAgentId_);
         // First we feed the mainAgent belief state
@@ -362,6 +370,69 @@ int main(int argc, char** argv) {
         for (unsigned int i = 0; i < factRdAM.lastMsgFact.factList.size(); i++) {
             addFactToAgent(factRdAM.lastMsgFact.factList[i], 1.0, mainAgentId_);
         }
+
+
+        //If update on IsIn or IsAt, inform supervisor:
+        bool newFact = true;
+        bool removedFact = true;
+
+        for (int i = 0; i < factListMap_[mainAgentId_].factList.size(); ++i) {
+            for (int j = 0; j < previousState.factList.size(); ++j) {
+                if ((previousState.factList[j].subjectName == factListMap_[mainAgentId_].factList[i].subjectName)
+                        && (previousState.factList[j].property == factListMap_[mainAgentId_].factList[i].property)
+                        && (previousState.factList[j].targetName == factListMap_[mainAgentId_].factList[i].targetName)) {
+                    newFact = false;
+                    break;
+                } else
+                    continue;
+            }
+            if (newFact) {
+                // send to supervisor new factListMap_[mainAgentId_].factList[i]
+                //send a message to oprs
+                std::stringstream ss;
+                ss << "(Database.set AGENT-STATEMENT PR2_ROBOT " << factListMap_[mainAgentId_].factList[i].subjectName
+                        << " " << factListMap_[mainAgentId_].factList[i].property << " " << factListMap_[mainAgentId_].factList[i].targetName " toaster)";
+
+                char returnMessage[50];
+                strcpy(returnMessage, ss.str().c_str());
+                send_message_string(returnMessage, oprsDest_.c_str());
+
+
+                //read the openprs message
+                int length;
+                char *sender = read_string_from_socket(mpSocket_, &length);
+                char *message = read_string_from_socket(mpSocket_, &length);
+            }
+        }
+
+        for (int j = 0; j < previousState.factList.size(); ++j) {
+            for (int i = 0; i < factListMap_[mainAgentId_].factList.size(); ++i) {
+                if ((previousState.factList[j].subjectName == factListMap_[mainAgentId_].factList[i].subjectName)
+                        && (previousState.factList[j].property == factListMap_[mainAgentId_].factList[i].property)
+                        && (previousState.factList[j].targetName == factListMap_[mainAgentId_].factList[i].targetName)) {
+                    removedFact = false;
+                    break;
+                } else
+                    continue;
+            }
+            // send to supervisor remove previousState.factList[i]
+            if (removedFact) {
+                std::stringstream ss;
+                ss << "(Database.remove (AGENT-STATEMENT PR2_ROBOT " << previousState.factList[j].subjectName
+                        << " " << previousState.factList[j].property << " " << previousState.factList[j].targetName ") toaster)";
+
+                char returnMessage[50];
+                strcpy(returnMessage, ss.str().c_str());
+                send_message_string(returnMessage, oprsDest_.c_str());
+
+
+                //read the openprs message
+                int length;
+                char *sender = read_string_from_socket(mpSocket_, &length);
+                char *message = read_string_from_socket(mpSocket_, &length);
+            }
+        }
+
 
 
         /**********************************/
