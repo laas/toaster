@@ -390,8 +390,8 @@ int main(int argc, char** argv) {
                 // send to supervisor new factListMap_[mainAgentId_].factList[i]
                 //send a message to oprs
                 std::stringstream ss;
-                ss << "(Database.set AGENT-STATEMENT PR2_ROBOT " << factListMap_[mainAgentId_].factList[i].subjectName
-                        << " " << factListMap_[mainAgentId_].factList[i].property << " " << factListMap_[mainAgentId_].factList[i].targetName " toaster)";
+                ss << "(Database.set (AGENT-STATEMENT PR2_ROBOT " << factListMap_[mainAgentId_].factList[i].subjectName
+                        << " " << factListMap_[mainAgentId_].factList[i].property << " " << factListMap_[mainAgentId_].factList[i].targetName << ") toaster)";
 
                 char returnMessage[50];
                 strcpy(returnMessage, ss.str().c_str());
@@ -419,7 +419,7 @@ int main(int argc, char** argv) {
             if (removedFact) {
                 std::stringstream ss;
                 ss << "(Database.remove (AGENT-STATEMENT PR2_ROBOT " << previousState.factList[j].subjectName
-                        << " " << previousState.factList[j].property << " " << previousState.factList[j].targetName ") toaster)";
+                        << " " << previousState.factList[j].property << " " << previousState.factList[j].targetName << ") toaster)";
 
                 char returnMessage[50];
                 strcpy(returnMessage, ss.str().c_str());
