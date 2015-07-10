@@ -21,7 +21,7 @@
 #include <map> 
 #include <geometry_msgs/Polygon.h>
 #include <tinyxml.h>
-
+#include <time.h>  
 
 
 class Run
@@ -34,7 +34,11 @@ class Run
 	std::vector<std::string> name_list;
 	int id_cpt;	
 	
-	//subscribers	
+	//a vector to store marker's color
+	std::vector<std::vector<float> > color_list;
+ 
+ 
+ 	//subscribers	
 	ros::Subscriber sub_objList;
 	ros::Subscriber sub_areaList;
 	ros::Subscriber sub_humanList;
@@ -45,15 +49,15 @@ class Run
 	ros::Publisher pub_area;
 	ros::Publisher pub_human;
 	
-
 	public:
-
+       
     /**
      * Constructor of the run class for toaster_vizualiser
      */
 	Run()
 	{		
 		name_list = std::vector<std::string>();
+		color_list = std::vector<std::vector<float> >(50);
 		id_cpt = 1;
 
 		ros::NodeHandle reception_node;
@@ -328,8 +332,8 @@ class Run
 		
 		//scale
 		marker.scale.z = 1.0;  
-
-
+	   
+	   
 		return nameMarker;
 		
 	}
@@ -499,6 +503,41 @@ class Run
 		
 		return marker;
 	}
+	
+	
+	
+	
+	/**
+     * Function to give and register a random color to input marker
+     * @param marker		name of target marker
+     * @return marker 		new marker with input modifications
+     */
+	visualization_msgs::Marker setRandomColor(visualization_msgs::Marker marker)
+	{	
+		for(int i = 0; i< name_list.size(); i++)
+		{
+			if((name_list[i] == marker.ns) && color_list[i].empty())
+			{	
+				color_list[i].push_back(1.0);
+				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+				ROS_INFO("yolo");
+			}
+			else if((name_list[i] == marker.ns) && !color_list[i].empty())
+			{
+				marker.color.r= color_list[i][1];
+				marker.color.g= color_list[i][2];
+				marker.color.b= color_list[i][3];
+			}
+		}
+		return marker;
+	}
+	
+
+	
+	
+	
 
 
 
@@ -521,7 +560,7 @@ class Run
      * @return 			void
      */
 	void chatterCallbackObjList(const toaster_msgs::ObjectList::ConstPtr& msg) //toaster object list reception
-	{
+	{	  
 		obj_list.markers.clear();
 		
 		for(int i = 0; i<msg->objectList.size(); i++)
@@ -550,7 +589,7 @@ class Run
      * @return 			void
      */
 	void chatterCallbackAreaList(const toaster_msgs::AreaList::ConstPtr& msg)
-	{
+	{	  
 		area_list.markers.clear();
 		
 		for(int i = 0; i<msg->areaList.size(); i++)
@@ -561,11 +600,11 @@ class Run
 					visualization_msgs::Marker m = defineCircle(msg->areaList[i].center, 
 					msg->areaList[i].ray, msg->areaList[i].name);
 					
-					m = setColor(m, 0.0, 1.0, 0.0);
+					m = setRandomColor(m);
 					
 					visualization_msgs::Marker mn = defineName(m);
 					mn = setSize(mn, 0.0, 0.0, 1);
-					mn = setPosition(mn, mn.pose.position.x + 2, mn.pose.position.y, 1);  //name marker is offset from circle marker to avoid colision
+					mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 1);  
 					
 					area_list.markers.push_back(m);
 					area_list.markers.push_back(mn);
@@ -576,11 +615,21 @@ class Run
 				{
 					visualization_msgs::Marker m = definePolynome(msg->areaList[i].poly, 0.2, msg->areaList[i].name);
 					
-					m = setColor(m, 1.0, 0.0, 0.0);
+					m = setRandomColor(m);
 					
 					visualization_msgs::Marker mn = defineName(m);
 					mn = setSize(mn, 0.0, 0.0, 1);
-					mn = setPosition(mn, m.points[0].x, m.points[0].y, 1); //name marker is offset from line for a better legibility
+					
+					int posx = 0;
+					int posy = 0;
+					
+					for(int i = 0; i<m.points.size(); i++)
+					{
+						posx = posx + m.points[i].x;
+						posy = posy + m.points[i].y;
+					}
+					
+					mn = setPosition(mn, posx/m.points.size() , posy/m.points.size(), 1); 
 					
 					area_list.markers.push_back(m);
 					area_list.markers.push_back(mn);
@@ -675,9 +724,9 @@ class Run
 		}
 	}
 	
-
-
-
+	
+	
+	
 	
 	
 			
