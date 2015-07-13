@@ -143,7 +143,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
                     printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                     ent->removeInArea(it->second->getId());
                     it->second->removeEntity(ent->getId());
-                    if (it->second->getAreaType() == "room")
+                    if (it->second->getAreaType() == "Room")
                         ent->setRoomId(0);
                 }// Same if entity is not in Area
             else
@@ -153,7 +153,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
                 it->second->insideEntities_.push_back(ent->getId());
 
                 //User has to be in a room. May it be a "global room".
-                if (it->second->getAreaType() == "room")
+                if (it->second->getAreaType() == "Room")
                     ent->setRoomId(it->second->getId());
             } else {
                 //printf("[area_manager][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
@@ -464,6 +464,53 @@ int main(int argc, char** argv) {
 
                     // compute facts according to factType
                     // TODO: instead of calling it interaction, make a list of facts to compute?
+
+
+                    if (itArea->second->getAreaType() == "room") {
+                      //Fact in Area
+                      fact_msg.property = "IsIn";
+                      fact_msg.propertyType = "position";
+
+                      fact_msg.subProperty = itArea->second->getAreaType();
+                      if (ownerEnt != NULL) {
+                        fact_msg.ownerName = ownerEnt->getName();
+                        fact_msg.ownerId = ownerEnt->getId();
+                      }
+
+                      fact_msg.subjectId = itEntity->first;
+                      fact_msg.subjectName = itEntity->second->getName();
+                      fact_msg.targetName = itArea->second->getName();
+                      fact_msg.targetId = itArea->second->getId();
+                      fact_msg.confidence = 1;
+                      fact_msg.factObservability = 0.8;
+                      fact_msg.time = itEntity->second->getTime();
+
+                      factList_msg.factList.push_back(fact_msg);
+                    }
+
+                    if (itArea->second->getAreaType() == "support") {
+                      //Fact in Area
+                      fact_msg.property = "IsAt";
+                      fact_msg.propertyType = "position";
+
+                      fact_msg.subProperty = "location";
+                      if (ownerEnt != NULL) {
+                        fact_msg.ownerName = ownerEnt->getName();
+                        fact_msg.ownerId = ownerEnt->getId();
+                      }
+
+                      fact_msg.subjectId = itEntity->first;
+                      fact_msg.subjectName = itEntity->second->getName();
+                      fact_msg.targetName = itArea->second->getName();
+                      fact_msg.targetId = itArea->second->getId();
+                      fact_msg.confidence = 1;
+                      fact_msg.factObservability = 0.8;
+                      fact_msg.time = itEntity->second->getTime();
+
+                      factList_msg.factList.push_back(fact_msg);
+
+                    }
+
                     if (itArea->second->getFactType() == "interaction") {
 
                         // If it is an interacting area, we need the owner!
