@@ -10,7 +10,9 @@
 #include "toaster_msgs/FactList.h"
 #include "toaster_msgs/Fact.h"
 #include "toaster_msgs/AddFact.h"
+#include "toaster_msgs/AddFactToAgent.h"
 #include "toaster_msgs/RemoveFact.h"
+#include "toaster_msgs/RemoveFactToAgent.h"
 #include "toaster_msgs/GetFactValue.h"
 #include "toaster_msgs/GetFacts.h"
 
@@ -251,6 +253,28 @@ bool addFact(toaster_msgs::AddFact::Request &req,
     return true;
 }
 
+bool addFactToAgentService(toaster_msgs::AddFactToAgent::Request &req,
+        toaster_msgs::AddFactToAgent::Response & res) {
+
+    ROS_INFO("request: adding a new fact to agent %d", req.agentId);
+
+    addExternFactToAgent(req.fact, 1.0, req.agentId);
+
+    ROS_INFO("sending back response: [%d]", (int) res.answer);
+    return true;
+}
+
+bool removeFactToAgentService(toaster_msgs::RemoveFactToAgent::Request &req,
+        toaster_msgs::RemoveFactToAgent::Response & res) {
+
+    ROS_INFO("request: adding a new fact to agent %d", req.agentId);
+
+    removeFactToAgent(req.fact, req.agentId);
+
+    ROS_INFO("sending back response: [%d]", (int) res.answer);
+    return true;
+}
+
 bool removeFact(toaster_msgs::RemoveFact::Request &req,
         toaster_msgs::RemoveFact::Response & res) {
 
@@ -308,6 +332,13 @@ int main(int argc, char** argv) {
 
     ros::ServiceServer serviceRemove = node.advertiseService("belief_manager/remove_fact", removeFact);
     ROS_INFO("Ready to remove fact.");
+
+
+    ros::ServiceServer serviceAddFactToAgent = node.advertiseService("belief_manager/add_fact_to_agent", addFactToAgentService);
+    ROS_INFO("Ready to add fact to agent.");
+
+    ros::ServiceServer serviceRemoveFact = node.advertiseService("belief_manager/remove_fact_to_agent", removeFactToAgentService);
+    ROS_INFO("Ready to remove fact to agent.");
 
     ros::ServiceServer serviceGetFactValue = node.advertiseService("belief_manager/get_fact_value", getFactValue);
     ROS_INFO("Ready to get fact value.");
