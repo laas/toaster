@@ -4,12 +4,12 @@ project(toaster_visualizer)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp rospy genmsg toaster_msgs cmake_modules)
+find_package(catkin REQUIRED COMPONENTS roscpp rospy genmsg toaster_msgs cmake_modules roslib)
 find_package(cmake_modules REQUIRED)
 find_package(TinyXML REQUIRED)
  
 catkin_package(
-  CATKIN_DEPENDS toaster_msgs 
+  CATKIN_DEPENDS toaster_msgs roslib
 )
 
 
@@ -25,7 +25,9 @@ add_dependencies(run beginner_tutorials_generate_messages_cpp)
 #add_dependencies(Control ${catkin_EXPORTED_TARGETS})
  
  
- 
+ add_executable(toaster_com src/toaster_com.cpp)
+target_link_libraries(toaster_com ${catkin_LIBRARIES} ${TinyXML_LIBRARIES})
+add_dependencies(toaster_com beginner_tutorials_generate_messages_cpp)
  
  
  

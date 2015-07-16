@@ -1,4 +1,5 @@
 #include "ros/ros.h"
+#include "ros/package.h"
 #include "std_msgs/String.h"
 #include <iostream> 
 #include <sstream>
@@ -68,7 +69,7 @@ class Run
 		human_list = visualization_msgs::MarkerArray();
 		
 		//definition of subscribers
-		sub_objList = reception_node.subscribe("/pdg/objList", 1000, &Run::chatterCallbackObjList, this);
+		sub_objList = reception_node.subscribe("/pdg/objectList", 1000, &Run::chatterCallbackObjList, this);
 		sub_areaList = reception_node.subscribe("/area_manager/areaList", 1000, &Run::chatterCallbackAreaList, this);
 		sub_humanList = reception_node.subscribe("/pdg/humanList", 1000, &Run::chatterCallbackHumanList, this);
 		
@@ -214,6 +215,7 @@ class Run
      */
 	visualization_msgs::Marker defineObj(int  x, int y, int z, double scale, std::string name) 
 	{
+                std::stringstream s;
 		//declarration 
 		visualization_msgs::Marker marker;
 
@@ -254,7 +256,9 @@ class Run
 		//type
 		marker.type = visualization_msgs::Marker::CUBE; //marker by defaut
 		
-		TiXmlDocument list("src/toaster_visualizer/src/list_obj.xml"); //load xml file
+                s << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
+
+		TiXmlDocument list(s.str()); //load xml file
 		
 		if(!list.LoadFile())  
 		{
