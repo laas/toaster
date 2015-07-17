@@ -53,9 +53,9 @@ void VimanObjectReader::updateObjects() {
             if (vimanPosterStruct_.objects[i_obj].found_Stereo || vimanPosterStruct_.objects[i_obj].found_Left || vimanPosterStruct_.objects[i_obj].found_Right) {
 
                 //Set position and orientation
-                lastConfig_[objectIdOffset_ + i_obj]->position_.set<0>(vimanPosterStruct_.objects[i_obj].eulerOrigin.x);
-                lastConfig_[objectIdOffset_ + i_obj]->position_.set<1>(vimanPosterStruct_.objects[i_obj].eulerOrigin.y);
-                lastConfig_[objectIdOffset_ + i_obj]->position_.set<2>(vimanPosterStruct_.objects[i_obj].eulerOrigin.z);
+                lastConfig_[objectIdOffset_ + i_obj]->position_.set<0>(vimanPosterStruct_.objects[i_obj].thetaMatOrigin.px);
+                lastConfig_[objectIdOffset_ + i_obj]->position_.set<1>(vimanPosterStruct_.objects[i_obj].thetaMatOrigin.py);
+                lastConfig_[objectIdOffset_ + i_obj]->position_.set<2>(vimanPosterStruct_.objects[i_obj].thetaMatOrigin.pz);
                 lastConfig_[objectIdOffset_ + i_obj]->orientation_[0] = vimanPosterStruct_.objects[i_obj].eulerOrigin.roll;
                 lastConfig_[objectIdOffset_ + i_obj]->orientation_[1] = vimanPosterStruct_.objects[i_obj].eulerOrigin.pitch;
                 lastConfig_[objectIdOffset_ + i_obj]->orientation_[2] = vimanPosterStruct_.objects[i_obj].eulerOrigin.yaw;

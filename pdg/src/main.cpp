@@ -275,7 +275,8 @@ int main(int argc, char** argv) {
             initSparkObject = true;
         }
         if (vimanObject_ && !initVimanObject) {
-            vimanObjectRd.init("vimanObjectPose");
+            //vimanObjectRd.init("vimanObjectPose");
+            vimanObjectRd.init("morseViman");
             initVimanObject = true;
         }
         if (sparkFact_ && !initSparkFact) {
@@ -559,7 +560,6 @@ int main(int argc, char** argv) {
             for (std::map<unsigned int, MovableObject*>::iterator it = vimanObjectRd.lastConfig_.begin(); it != vimanObjectRd.lastConfig_.end(); ++it) {
                 if (vimanObjectRd.isPresent(it->first)) {
 
-
                     //Fact is seen from viman
                     fact_msg.property = "IsSeen";
                     fact_msg.propertyType = "affordance";
@@ -576,7 +576,6 @@ int main(int argc, char** argv) {
 
                 // We don't use Viman to publish object if spark is on...
                 if (!sparkObject_) {
-                    fillEntity(it->second, object_msg.meEntity);
 
                     //Message for object
                     fillEntity(it->second, object_msg.meEntity);
