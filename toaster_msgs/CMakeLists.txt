@@ -47,6 +47,7 @@ add_service_files(
   AddArea.srv
   AddFactToAgent.srv 
   GetRelativePosition.srv
+  GetMultiRelativePosition.srv
   PrintArea.srv
   RemoveAgent.srv
   RemoveArea.srv

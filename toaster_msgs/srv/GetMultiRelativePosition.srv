@@ -1,4 +1,5 @@
-uint32 subjectId
+uint32 agentSubjectId
+uint32 objectSubjectId
 uint32 targetId
 ---
 string direction
