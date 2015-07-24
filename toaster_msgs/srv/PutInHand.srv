@@ -1,6 +1,4 @@
-string objectName
-uint32 objectId
-string agentName
-uint32 agentId
+string objectId
+string agentId
 string jointName
 ---

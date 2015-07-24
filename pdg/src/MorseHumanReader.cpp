@@ -17,14 +17,14 @@ void MorseHumanReader::init(){
 
 void MorseHumanReader::updateHumans(tf::TransformListener &listener) {
   //update 1st human, this should be extended for multi human
-  updateHuman(listener, humanIdOffset_, "/human_base");
+  updateHuman(listener, "morse_human1", "/human_base");
 }
 
-void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, std::string humanBase){
+void MorseHumanReader::updateHuman(tf::TransformListener &listener, std::string humId, std::string humanBase){
   tf::StampedTransform transform;
   Human* curHuman = new Human(humId);
   //TODO set name with humId
-  curHuman->setName("Human1");
+  curHuman->setName("human1");
   std::vector<double> humanOrientation;
   bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
 
@@ -81,7 +81,7 @@ void MorseHumanReader::updateHuman(tf::TransformListener &listener, int humId, s
 
 //Destructor
 MorseHumanReader::~MorseHumanReader(){
-    for(std::map<unsigned int, Human*>::iterator it = lastConfig_.begin() ; it != lastConfig_.end() ; ++it){
+    for(std::map<std::string, Human*>::iterator it = lastConfig_.begin() ; it != lastConfig_.end(); ++it){
         delete it->second;
     }
 }

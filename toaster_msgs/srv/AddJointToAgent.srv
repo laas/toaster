@@ -1,5 +1,4 @@
 string jointName
-uint32 agentId
-string agentName
+string agentId
 ---
 bool answer

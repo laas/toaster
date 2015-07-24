@@ -21,11 +21,10 @@
 class HumanReader{
 
     public:
-        std::map<unsigned int, Human*> lastConfig_;
+        std::map<std::string, Human*> lastConfig_;
         bool fullHuman_;
-        static const unsigned int humanIdOffset_ = 101;
 
-        bool isPresent(unsigned int id);
+        bool isPresent(std::string id);
 
     protected:
         ros::NodeHandle node_;

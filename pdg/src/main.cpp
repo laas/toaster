@@ -42,10 +42,8 @@ bool mocapHuman_ = false;
 bool pr2Robot_ = false;
 bool spencerRobot_ = false;
 
-
-std::map<std::string, unsigned int> entNameId_;
-std::map<unsigned int, unsigned int> objectInAgent_;
-std::map<unsigned int, std::string> objectInHand_;
+std::map<std::string, std::string> objectInAgent_;
+std::map<std::string, std::string> objectInHand_;
 
 void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
@@ -132,35 +130,23 @@ bool addStream(toaster_msgs::AddStream::Request &req,
 bool putInHand(toaster_msgs::PutInHand::Request &req,
         toaster_msgs::PutInHand::Response & res) {
 
-    ROS_INFO("[pdg][Request][put_in_hand] we got request to put object %s with id: %d in "
-            "agent %s with id: %d joint's %s\n", req.objectName.c_str(), req.objectId, req.agentName.c_str(), req.agentId, req.jointName.c_str());
+    ROS_INFO("[pdg][Request][put_in_hand] we got request to put object %s in "
+            "agent %s  joint's %s\n", req.objectId.c_str(),  req.agentId.c_str(), req.jointName.c_str());
 
-    unsigned int agentId = 0;
-    unsigned int objectId = 0;
 
-    if (req.agentId != 0)
-        agentId = req.agentId;
-    else if (req.agentName != "")
-        if (entNameId_.find(req.agentName) == entNameId_.end()) {
-            ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find agent %s\n", req.agentName.c_str());
-            return false;
-        } else {
-            agentId = entNameId_[req.agentName];
-        }
+    if (req.agentId == "") {
+        ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find agent %s\n", req.agentId.c_str());
+        return false;
+    }
 
-    if (req.objectId != 0)
-        objectId = req.objectId;
-    else if (req.objectName != "")
-        if (entNameId_.find(req.objectName) == entNameId_.end()) {
-            ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find object %s\n", req.objectName.c_str());
-            return false;
-        } else {
-            objectId = entNameId_[req.objectName];
-        }
+    if (req.objectId == "") {
+        ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find object %s\n", req.objectId.c_str());
+        return false;
+    }
 
     if (req.jointName != "") {
-        objectInAgent_[objectId] = agentId;
-        objectInHand_[objectId] = req.jointName;
+        objectInAgent_[req.objectId] = req.agentId;
+        objectInHand_[req.objectId] = req.jointName;
         return true;
     } else {
         ROS_INFO("[pdg][Request][put_in_hand][WARNING] joint name is empty %s\n", req.jointName.c_str());
@@ -172,23 +158,15 @@ bool putInHand(toaster_msgs::PutInHand::Request &req,
 bool removeFromHand(toaster_msgs::RemoveFromHand::Request &req,
         toaster_msgs::RemoveFromHand::Response & res) {
 
-    ROS_INFO("[pdg][Request][remove_from_hand] we got request to remove object %s with id: %d \n", req.objectName.c_str(), req.objectId);
+    ROS_INFO("[pdg][Request][remove_from_hand] we got request to remove object %s \n", req.objectId.c_str());
 
-    unsigned int objectId = 0;
+    if (req.objectId == "") {
+        ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find object %s\n", req.objectId.c_str());
+        return false;
+    }
 
-
-    if (req.objectId != 0)
-        objectId = req.objectId;
-    else if (req.objectName != "")
-        if (entNameId_.find(req.objectName) == entNameId_.end()) {
-            ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find object %s\n", req.objectName.c_str());
-            return false;
-        } else {
-            objectId = entNameId_[req.objectName];
-        }
-
-    objectInAgent_.erase(objectId);
-    objectInHand_.erase(objectId);
+    objectInAgent_.erase(req.objectId);
+    objectInHand_.erase(req.objectId);
     return true;
 }
 
@@ -269,13 +247,12 @@ int main(int argc, char** argv) {
         ////////////
 
         if (morseHuman_)
-            for (std::map<unsigned int, Human*>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Human*>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it) {
                 if (morseHumanRd.isPresent(it->first)) {
 
                     //Fact
                     fact_msg.property = "isPresent";
                     fact_msg.subjectId = it->first;
-                    fact_msg.subjectName = it->second->getName();
                     fact_msg.stringValue = "true";
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 1.0;
@@ -289,18 +266,16 @@ int main(int argc, char** argv) {
                     fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
 
-                    entNameId_[it->second->getName()] = it->first;
                 }
             }
 
         if (mocapHuman_) {
-            for (std::map<unsigned int, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
                 if (mocapHumanRd.isPresent(it->first)) {
 
                     //Fact
                     fact_msg.property = "isPresent";
                     fact_msg.subjectId = it->first;
-                    fact_msg.subjectName = it->second->getName();
                     fact_msg.stringValue = "true";
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 1.0;
@@ -309,25 +284,21 @@ int main(int argc, char** argv) {
 
                     factList_msg.factList.push_back(fact_msg);
 
-
                     //Human
                     fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
-
-                    entNameId_[it->second->getName()] = it->first;
 
                 }
             }
         }
 
         if (groupHuman_)
-            for (std::map<unsigned int, Human*>::iterator it = groupHumanRd.lastConfig_.begin(); it != groupHumanRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Human*>::iterator it = groupHumanRd.lastConfig_.begin(); it != groupHumanRd.lastConfig_.end(); ++it) {
                 if (groupHumanRd.isPresent(it->first)) {
 
                     //Fact
                     fact_msg.property = "isPresent";
                     fact_msg.subjectId = it->first;
-                    fact_msg.subjectName = it->second->getName();
                     fact_msg.stringValue = true;
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 1.0;
@@ -336,12 +307,9 @@ int main(int argc, char** argv) {
 
                     factList_msg.factList.push_back(fact_msg);
 
-
                     //Human
                     fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
-
-                    entNameId_[it->second->getName()] = it->first;
                 }
             }
 
@@ -352,14 +320,13 @@ int main(int argc, char** argv) {
         //////////
 
         if (pr2Robot_)
-            for (std::map<unsigned int, Robot*>::iterator it = pr2RobotRd.lastConfig_.begin(); it != pr2RobotRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Robot*>::iterator it = pr2RobotRd.lastConfig_.begin(); it != pr2RobotRd.lastConfig_.end(); ++it) {
                 if (pr2RobotRd.isPresent(it->first)) {
 
 
                     //Fact
                     fact_msg.property = "isPresent";
                     fact_msg.subjectId = it->first;
-                    fact_msg.subjectName = it->second->getName();
                     fact_msg.stringValue = "true";
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 1.0;
@@ -372,11 +339,11 @@ int main(int argc, char** argv) {
 
                     //Robot
                     robot_msg.meAgent.mobility = 0;
-                    fillEntity(pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
+                    fillEntity(pr2RobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
                     if (robotFullConfig_) {
                         unsigned int i = 0;
-                        for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.end(); ++it) {
+                        for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[it->first]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[it->first]->skeleton_.end(); ++it) {
                             robot_msg.meAgent.skeletonNames[i] = it->first;
                             fillEntity((it->second), joint_msg.meEntity);
 
@@ -388,19 +355,16 @@ int main(int argc, char** argv) {
                     }
                     robotList_msg.robotList.push_back(robot_msg);
                 }
-
-                entNameId_[it->second->getName()] = it->first;
             }
 
 
         if (spencerRobot_) {
-            for (std::map<unsigned int, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
                 //if (spencerRobotRd.isPresent(it->first)) {
 
                 //Fact
                 fact_msg.property = "isPresent";
                 fact_msg.subjectId = it->first;
-                fact_msg.subjectName = it->second->getName();
                 fact_msg.stringValue = true;
                 fact_msg.confidence = 0.90;
                 fact_msg.factObservability = 1.0;
@@ -412,7 +376,7 @@ int main(int argc, char** argv) {
 
                 //Robot
                 robot_msg.meAgent.mobility = 0;
-                fillEntity(spencerRobotRd.lastConfig_[spencerRobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
+                fillEntity(spencerRobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
                 /*if (robotFullConfig_) {
                     unsigned int i = 0;
@@ -428,8 +392,6 @@ int main(int argc, char** argv) {
                 }*/
                 robotList_msg.robotList.push_back(robot_msg);
                 //}
-
-                entNameId_[it->second->getName()] = it->first;
             }
         }
 

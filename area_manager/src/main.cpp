@@ -29,7 +29,7 @@ namespace bn = boost::numeric;
 // Vector of Area
 // It should be possible to add an area on the fly with a ros service.
 std::map<unsigned int, Area*> mapArea_;
-std::map<unsigned int, Entity*> mapEntities_;
+std::map<std::string, Entity*> mapEntities_;
 
 // Publisher for area
 bool publishingArea_ = false;
@@ -173,18 +173,18 @@ double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold, do
 
 void printMyArea(unsigned int id) {
     if (mapArea_[id]->getIsCircle())
-        printf("Area name: %s, id: %d, owner id: %d, type %s, factType: %s \n"
+        printf("Area name: %s, id: %d, owner id: %s, type %s, factType: %s \n"
             "entityType: %s, isCircle: true, center: %f, %f, ray: %f\n", mapArea_[id]->getName().c_str(),
-            id, mapArea_[id]->getMyOwner(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str(),
+            id, mapArea_[id]->getMyOwner().c_str(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str(),
             ((CircleArea*) mapArea_[id])->getCenter().get<0>(), ((CircleArea*) mapArea_[id])->getCenter().get<1>(), ((CircleArea*) mapArea_[id])->getRay());
     else
-        printf("Area name: %s, id: %d, owner id: %d, type %s, factType: %s \n"
+        printf("Area name: %s, id: %d, owner id: %s, type %s, factType: %s \n"
             "entityType: %s, isCircle: false\n", mapArea_[id]->getName().c_str(),
-            id, mapArea_[id]->getMyOwner(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str());
+            id, mapArea_[id]->getMyOwner().c_str(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str());
 
     printf("inside entities: ");
     for (int i = 0; i < mapArea_[id]->insideEntities_.size(); i++)
-        printf(" %d,", mapArea_[id]->insideEntities_[i]);
+        printf(" %s,", mapArea_[id]->insideEntities_[i].c_str());
 
     printf("\n--------------------------\n");
 }
@@ -291,7 +291,7 @@ bool getRelativePosition(toaster_msgs::GetRelativePosition::Request &req,
         toaster_msgs::GetRelativePosition::Response & res) {
     double pi = 3.1416;
 
-    if (mapEntities_[req.subjectId] != NULL && mapEntities_[req.targetId] != NULL) {
+    if (mapEntities_.find(req.subjectId) !=  mapEntities_.end() && mapEntities_.find(req.targetId) !=  mapEntities_.end() ) {
         double angleResult;
         angleResult = MathFunctions::relativeAngle(mapEntities_[req.subjectId], mapEntities_[req.targetId], mapEntities_[req.subjectId]->getOrientation()[2]);
         if (angleResult > 0) {
@@ -400,21 +400,21 @@ int main(int argc, char** argv) {
         //     update area with owner position
 
         // Humans
-        for (std::map<unsigned int, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
+        for (std::map<std::string, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
             // We update area with human center
             mapEntities_[it->first] = it->second;
             updateEntityArea(mapArea_, it->second);
         }
 
         // Robots
-        for (std::map<unsigned int, Robot*>::iterator it = robotRd.lastConfig_.begin(); it != robotRd.lastConfig_.end(); ++it) {
+        for (std::map<std::string, Robot*>::iterator it = robotRd.lastConfig_.begin(); it != robotRd.lastConfig_.end(); ++it) {
             // We update area with robot center
             mapEntities_[it->first] = it->second;
             updateEntityArea(mapArea_, it->second);
         }
 
         // Objects
-        for (std::map<unsigned int, Object*>::const_iterator it = objectRd.lastConfig_.begin(); it != objectRd.lastConfig_.end(); ++it) {
+        for (std::map<std::string, Object*>::const_iterator it = objectRd.lastConfig_.begin(); it != objectRd.lastConfig_.end(); ++it) {
             // We update area with object center
             mapEntities_[it->first] = it->second;
             updateEntityArea(mapArea_, it->second);
@@ -426,7 +426,7 @@ int main(int argc, char** argv) {
         /////////////////////////////////
 
 
-        for (std::map<unsigned int, Entity*>::iterator it = mapEntities_.begin(); it != mapEntities_.end(); ++it) {
+        for (std::map<std::string, Entity*>::iterator it = mapEntities_.begin(); it != mapEntities_.end(); ++it) {
             // We update area with owners
             updateInArea(it->second, mapArea_);
         }
@@ -444,7 +444,7 @@ int main(int argc, char** argv) {
             Entity* ownerEnt = NULL;
 
             // Computation depending on owner
-            if (itArea->second->getMyOwner() != 0) {
+            if (itArea->second->getMyOwner() != "") {
 
                 // Let's find back the area owner:
                 if (robotRd.lastConfig_.find(itArea->second->getMyOwner()) != robotRd.lastConfig_.end())
@@ -457,7 +457,7 @@ int main(int argc, char** argv) {
                     ownerEnt = objectRd.lastConfig_[itArea->second->getMyOwner()];
             }
 
-            for (std::map<unsigned int, Entity*>::iterator itEntity = mapEntities_.begin(); itEntity != mapEntities_.end(); ++itEntity) {
+            for (std::map<std::string, Entity*>::iterator itEntity = mapEntities_.begin(); itEntity != mapEntities_.end(); ++itEntity) {
 
                 if (itEntity->second->isInArea(itArea->first)) {
 
@@ -487,8 +487,6 @@ int main(int argc, char** argv) {
                                 fact_msg.propertyType = "posture";
                                 fact_msg.subProperty = "orientationAngle";
                                 fact_msg.subjectId = itEntity->first;
-                                fact_msg.subjectName = itEntity->second->getName();
-                                fact_msg.targetName = ownerEnt->getName();
                                 fact_msg.targetId = ownerEnt->getId();
                                 fact_msg.confidence = confidence;
                                 fact_msg.doubleValue = angleResult;
@@ -523,13 +521,10 @@ int main(int argc, char** argv) {
 
                     fact_msg.subProperty = itArea->second->getAreaType();
                     if (ownerEnt != NULL) {
-                        fact_msg.ownerName = ownerEnt->getName();
-                        fact_msg.ownerId = ownerEnt->getId();
+                        fact_msg.targetOwnerId = ownerEnt->getId();
                     }
 
                     fact_msg.subjectId = itEntity->first;
-                    fact_msg.subjectName = itEntity->second->getName();
-                    fact_msg.targetName = itArea->second->getName();
                     fact_msg.targetId = itArea->second->getId();
                     fact_msg.confidence = 1;
                     fact_msg.factObservability = 0.8;
@@ -561,8 +556,7 @@ int main(int argc, char** argv) {
                     areaDensity /= fullPopulation;
 
                 if (ownerEnt != NULL) {
-                    fact_msg.ownerName = ownerEnt->getName();
-                    fact_msg.ownerId = ownerEnt->getId();
+                    fact_msg.subjectOwnerId = ownerEnt->getId();
                 }
 
                 //Fact Density
@@ -570,9 +564,7 @@ int main(int argc, char** argv) {
                 fact_msg.propertyType = "density";
                 fact_msg.subProperty = "ratio";
                 fact_msg.subjectId = itArea->first;
-                fact_msg.subjectName = itArea->second->getName();
-                fact_msg.targetName = itArea->second->getEntityType();
-                fact_msg.targetId = 0;
+                fact_msg.targetId = "";
                 fact_msg.confidence = 1.0;
                 fact_msg.doubleValue = areaDensity;
                 fact_msg.valueType = 1;

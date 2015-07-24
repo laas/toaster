@@ -18,10 +18,10 @@
 
 class ToasterHumanReader {
 public:
-    std::map<unsigned int, Human*> lastConfig_;
+    std::map<std::string, Human*> lastConfig_;
     bool fullHuman_;
 
-    bool isPresent(unsigned int id);
+    bool isPresent(std::string id);
 
     ToasterHumanReader(ros::NodeHandle& node, bool fullHuman);
 

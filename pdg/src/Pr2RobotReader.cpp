@@ -34,21 +34,24 @@ void Pr2RobotReader::initJointsName() {
 }
 
 void Pr2RobotReader::init() {
-    Robot* curRobot = new Robot(robotIdOffset_);
+    Robot* curRobot = new Robot("pr2");
     //TODO: setname with id
-    curRobot->setName("pr2");
+    curRobot->setName("PR2_ROBOT");
     initJointsName();
     if (fullRobot_) {
+        std::stringstream jointId;
+        jointId << "pr2";
         for (unsigned int i = 0; i < pr2JointsName_.size(); i++) {
-            curRobot->skeleton_[pr2JointsName_[i]] = new Joint(10001 + i, robotIdOffset_);
+            jointId << pr2JointsName_[i];
+            curRobot->skeleton_[pr2JointsName_[i]] = new Joint(jointId.str(), "pr2");
         }
     }
-    lastConfig_[robotIdOffset_] = curRobot;
+    lastConfig_["pr2"] = curRobot;
 }
 
 void Pr2RobotReader::updateRobot(tf::TransformListener &listener) {
-    Robot* curRobot = lastConfig_[robotIdOffset_];
-    Joint* curJoint = new Joint(10001, robotIdOffset_);
+    Robot* curRobot = lastConfig_["pr2"];
+    Joint* curJoint = new Joint("pr2_base_link", "pr2");
     curJoint->setName(pr2JointsName_[0]);
 
     // We start with base:
@@ -107,7 +110,7 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
 //Destructor
 
 Pr2RobotReader::~Pr2RobotReader() {
-    for (std::map<unsigned int, Robot*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it) {
+    for (std::map<std::string, Robot*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it) {
         delete it->second;
     }
 }

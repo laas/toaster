@@ -1,4 +1,3 @@
-uint32 id
-string name
+string id
 ---
 bool answer

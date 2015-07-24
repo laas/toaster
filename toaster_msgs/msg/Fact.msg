@@ -1,12 +1,10 @@
 string property
 string propertyType
 string subProperty
-uint32 subjectId
-uint32 targetId
-string subjectName
-string targetName
-uint32 ownerId
-string ownerName
+string subjectId
+string targetId
+string subjectOwnerId
+string targetOwnerId
 bool valueType
 float64 factObservability
 float64 doubleValue

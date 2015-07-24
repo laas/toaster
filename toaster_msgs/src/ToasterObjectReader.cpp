@@ -50,7 +50,7 @@ void ToasterObjectReader::objectStateCallBack(const toaster_msgs::ObjectList::Co
     }
 }
 
-bool ToasterObjectReader::isPresent(unsigned int id) {
+bool ToasterObjectReader::isPresent(std::string id) {
     timeval curTime;
     gettimeofday(&curTime, NULL);
     unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;

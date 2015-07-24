@@ -77,7 +77,7 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::
     }
 }
 
-bool ToasterRobotReader::isPresent(unsigned int id) {
+bool ToasterRobotReader::isPresent(std::string id) {
     timeval curTime;
     gettimeofday(&curTime, NULL);
     unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;

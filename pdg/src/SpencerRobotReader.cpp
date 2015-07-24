@@ -20,16 +20,16 @@ void SpencerRobotReader::initJointsName() {
 }
 
 void SpencerRobotReader::init() {
-    Robot* curRobot = new Robot(robotIdOffset_);
+    Robot* curRobot = new Robot("spencer");
     //TODO: setname with id
     curRobot->setName("spencer");
     initJointsName();
-    lastConfig_[robotIdOffset_] = curRobot;
+    lastConfig_["spencer"] = curRobot;
 }
 
 void SpencerRobotReader::updateRobot(tf::TransformListener &listener) {
-    Robot* curRobot = lastConfig_[robotIdOffset_];
-    Joint* curJoint = new Joint(10001, robotIdOffset_);
+    Robot* curRobot = lastConfig_["spencer"];
+    Joint* curJoint = new Joint("spencer_base_link", "spencer");
     curJoint->setName(spencerJointsName_[0]);
 
     // We start with base:
