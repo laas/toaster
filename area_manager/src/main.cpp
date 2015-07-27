@@ -8,6 +8,7 @@
 #include "toaster_msgs/PrintArea.h"
 #include "toaster_msgs/Empty.h"
 #include "toaster_msgs/GetRelativePosition.h"
+#include "toaster_msgs/GetMultiRelativePosition.h"
 #include "toaster_msgs/Area.h"
 #include "toaster_msgs/AreaList.h"
 #include "toaster-lib/CircleArea.h"
@@ -319,6 +320,51 @@ bool getRelativePosition(toaster_msgs::GetRelativePosition::Request &req,
         }
 
         res.answer = true;
+        res.angleValue = angleResult;
+        return true;
+    } else
+        ROS_INFO("Requested entity is not in the list.");
+    res.answer = false;
+    return false;
+}
+
+// This function is used to get relative position of an entity according to another (left / right)) in an agent point of view
+
+bool getMultiRelativePosition(toaster_msgs::GetMultiRelativePosition::Request &req,
+        toaster_msgs::GetMultiRelativePosition::Response & res) {
+    double pi = 3.1416;
+
+    // [TODO] Replace with find
+    if (mapEntities_[req.agentSubjectId] != NULL && mapEntities_[req.objectSubjectId] != NULL && mapEntities_[req.targetId] != NULL) {
+        double angleSubjects, angleResult;
+        angleSubjects = MathFunctions::relativeAngle(mapEntities_[req.agentSubjectId], mapEntities_[req.objectSubjectId], 0);
+        angleResult = MathFunctions::relativeAngle(mapEntities_[req.objectSubjectId], mapEntities_[req.targetId], angleSubjects);
+        if (angleResult > 0) {
+            if (angleResult < pi / 6)
+                res.direction = "ahead";
+            else if (angleResult < pi / 4)
+                res.direction = "ahead right";
+            else if (angleResult < 3 * pi / 4)
+                res.direction = "right";
+            else if (angleResult < 5 * pi / 6)
+                res.direction = "back right";
+            else
+                res.direction = "back";
+        } else {
+            if (-angleResult < pi / 6)
+                res.direction = "ahead";
+            else if (-angleResult < pi / 4)
+                res.direction = "ahead left";
+            else if (-angleResult < 3 * pi / 4)
+                res.direction = "left";
+            else if (-angleResult < 5 * pi / 6)
+                res.direction = "back left";
+            else
+                res.direction = "back";
+        }
+
+        res.answer = true;
+        res.angleValue = angleResult;
         return true;
     } else
         ROS_INFO("Requested entity is not in the list.");
@@ -365,6 +411,9 @@ int main(int argc, char** argv) {
 
     ros::ServiceServer serviceRelativePose = node.advertiseService("area_manager/get_relative_position", getRelativePosition);
     ROS_INFO("Ready to print get relative position.");
+
+    ros::ServiceServer serviceMultiRelativePose = node.advertiseService("area_manager/get_multiple_relative_position", getMultiRelativePosition);
+    ROS_INFO("Ready to print get relative position in an agent perspective.");
 
     ros::ServiceServer servicepublishAllArea = node.advertiseService("area_manager/publish_all_areas", publishAllAreas);
     ROS_INFO("Ready to publish all areas.");

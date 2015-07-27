@@ -1,0 +1,7 @@
+string agentSubjectId
+string objectSubjectId
+string targetId
+---
+string direction
+float64 angleValue
+bool answer
