@@ -1,10 +1,8 @@
-uint32 pointingAgentId
-string pointingAgentName
+string pointingAgentId
 string pointingJoint
 float64 pointingJointDistThreshold
 float64 angleThreshold
 ---
 bool answer
-uint32[] pointedId
+string[] pointedId
 float64[] confidence
-string[] pointedName

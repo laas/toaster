@@ -25,7 +25,7 @@ class MorseHumanReader : public HumanReader
     
     void init();
     void updateHumans(tf::TransformListener &listener);
-    void updateHuman(tf::TransformListener &listener, int humId, std::string humanBase);
+    void updateHuman(tf::TransformListener &listener, std::string humId, std::string humanBase);
 
   private:
     //static void humanJointStateCallBack(const sensor_msgs::JointState::ConstPtr& msg);

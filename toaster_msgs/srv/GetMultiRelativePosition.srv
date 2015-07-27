@@ -1,6 +1,6 @@
-uint32 agentSubjectId
-uint32 objectSubjectId
-uint32 targetId
+string agentSubjectId
+string objectSubjectId
+string targetId
 ---
 string direction
 float64 angleValue

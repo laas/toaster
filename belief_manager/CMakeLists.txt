@@ -93,7 +93,6 @@ catkin_package(
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
-  $ENV{HOME}/devel/boost_1_56_0
   $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 )
 

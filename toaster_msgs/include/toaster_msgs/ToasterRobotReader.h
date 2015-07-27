@@ -17,10 +17,10 @@
 class ToasterRobotReader{
 
     public:
-       std::map<unsigned int, Robot*> lastConfig_;
+       std::map<std::string, Robot*> lastConfig_;
        bool fullRobot_;
 
-       bool isPresent(unsigned int id);
+       bool isPresent(std::string id);
 
        ToasterRobotReader(ros::NodeHandle& node, bool fullRobot);
 

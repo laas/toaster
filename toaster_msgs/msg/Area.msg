@@ -1,6 +1,6 @@
 uint32 id
 string name
-uint32 myOwner
+string myOwner
 string areaType
 string factType
 string entityType

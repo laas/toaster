@@ -1,4 +1,4 @@
-uint32 id
+string id
 string name
 uint64 time
 float64 positionX

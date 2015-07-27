@@ -42,11 +42,8 @@ void SparkFactReader::updateFacts() {
             fact_msg.propertyType = sparkFactPosterStruct_.factList[i].propertyType.name;
             fact_msg.subProperty = sparkFactPosterStruct_.factList[i].subProperty.name;
             fact_msg.subjectId = sparkFactPosterStruct_.factList[i].subjectId;
-            fact_msg.subjectName = sparkFactPosterStruct_.factList[i].subjectName.name;
             fact_msg.targetId = sparkFactPosterStruct_.factList[i].targetId;
-            fact_msg.targetName = sparkFactPosterStruct_.factList[i].targetName.name;
-            fact_msg.ownerName = sparkFactPosterStruct_.factList[i].ownerName.name;
-            fact_msg.ownerId = sparkFactPosterStruct_.factList[i].ownerId;
+            fact_msg.subjectOwnerId = sparkFactPosterStruct_.factList[i].ownerName.name;
             fact_msg.stringValue = sparkFactPosterStruct_.factList[i].stringValue.name;
             fact_msg.doubleValue = sparkFactPosterStruct_.factList[i].doubleValue;
             fact_msg.valueType = sparkFactPosterStruct_.factList[i].valueType;

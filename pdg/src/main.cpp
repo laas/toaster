@@ -50,9 +50,8 @@ bool sparkObject_ = false;
 bool sparkFact_ = false;
 
 
-std::map<std::string, unsigned int> entNameId_;
-std::map<unsigned int, unsigned int> objectInAgent_;
-std::map<unsigned int, std::string> objectInHand_;
+std::map<std::string, std::string> objectInAgent_;
+std::map<std::string, std::string> objectInHand_;
 
 void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
@@ -66,14 +65,20 @@ void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.orientationYaw = srcEntity->getOrientation()[2];
 }
 
-bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::string joint,
+bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string id, std::string joint,
         toaster_msgs::HumanList& humanList_msg) {
 
     toaster_msgs::Entity jointEntity;
 
-    std::vector<std::string>::iterator it = std::find(humanList_msg.humanList[id].meAgent.skeletonNames.begin(), humanList_msg.humanList[id].meAgent.skeletonNames.end(), joint);
-    if (it != humanList_msg.humanList[id].meAgent.skeletonNames.end()) {
-        jointEntity = humanList_msg.humanList[id].meAgent.skeletonJoint[std::distance(humanList_msg.humanList[id].meAgent.skeletonNames.begin(), it)].meEntity;
+   //  find back the agent:
+    unsigned int i_agent=0;
+    while(humanList_msg.humanList[i_agent].meAgent.meEntity.id != id)
+      i_agent++;
+
+
+    std::vector<std::string>::iterator it = std::find(humanList_msg.humanList[i_agent].meAgent.skeletonNames.begin(), humanList_msg.humanList[i_agent].meAgent.skeletonNames.end(), joint);
+    if (it != humanList_msg.humanList[i_agent].meAgent.skeletonNames.end()) {
+        jointEntity = humanList_msg.humanList[i_agent].meAgent.skeletonJoint[std::distance(humanList_msg.humanList[i_agent].meAgent.skeletonNames.begin(), it)].meEntity;
 
         msgEntity.positionX = jointEntity.positionX;
         msgEntity.positionX = jointEntity.positionY;
@@ -82,8 +87,8 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::s
         msgEntity.orientationPitch = jointEntity.orientationPitch;
         msgEntity.orientationYaw = jointEntity.orientationYaw;
 
-        humanList_msg.humanList[id].meAgent.hasObjects.push_back(msgEntity.name);
-        humanList_msg.humanList[id].meAgent.busyHands.push_back(jointEntity.name);
+        humanList_msg.humanList[i_agent].meAgent.hasObjects.push_back(msgEntity.name);
+        humanList_msg.humanList[i_agent].meAgent.busyHands.push_back(jointEntity.name);
 
         return true;
     } else
@@ -92,14 +97,19 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::s
     return true;
 }
 
-bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::string joint,
+bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string id, std::string joint,
         toaster_msgs::RobotList robotList_msg) {
 
     toaster_msgs::Entity jointEntity;
 
-    std::vector<std::string>::iterator it = std::find(robotList_msg.robotList[id].meAgent.skeletonNames.begin(), robotList_msg.robotList[id].meAgent.skeletonNames.end(), joint);
-    if (it != robotList_msg.robotList[id].meAgent.skeletonNames.end()) {
-        jointEntity = robotList_msg.robotList[id].meAgent.skeletonJoint[std::distance(robotList_msg.robotList[id].meAgent.skeletonNames.begin(), it)].meEntity;
+    //  find back the agent:
+    unsigned int i_agent=0;
+    while(robotList_msg.robotList[i_agent].meAgent.meEntity.id != id)
+      i_agent++;
+
+    std::vector<std::string>::iterator it = std::find(robotList_msg.robotList[i_agent].meAgent.skeletonNames.begin(), robotList_msg.robotList[i_agent].meAgent.skeletonNames.end(), joint);
+    if (it != robotList_msg.robotList[i_agent].meAgent.skeletonNames.end()) {
+        jointEntity = robotList_msg.robotList[i_agent].meAgent.skeletonJoint[std::distance(robotList_msg.robotList[i_agent].meAgent.skeletonNames.begin(), it)].meEntity;
 
         msgEntity.positionX = jointEntity.positionX;
         msgEntity.positionX = jointEntity.positionY;
@@ -108,8 +118,8 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::s
         msgEntity.orientationPitch = jointEntity.orientationPitch;
         msgEntity.orientationYaw = jointEntity.orientationYaw;
 
-        robotList_msg.robotList[id].meAgent.hasObjects.push_back(msgEntity.name);
-        robotList_msg.robotList[id].meAgent.busyHands.push_back(msgEntity.name);
+        robotList_msg.robotList[i_agent].meAgent.hasObjects.push_back(msgEntity.name);
+        robotList_msg.robotList[i_agent].meAgent.busyHands.push_back(msgEntity.name);
 
         return true;
     } else
@@ -142,35 +152,23 @@ bool addStream(toaster_msgs::AddStream::Request &req,
 bool putInHand(toaster_msgs::PutInHand::Request &req,
         toaster_msgs::PutInHand::Response & res) {
 
-    ROS_INFO("[pdg][Request][put_in_hand] we got request to put object %s with id: %d in "
-            "agent %s with id: %d joint's %s\n", req.objectName.c_str(), req.objectId, req.agentName.c_str(), req.agentId, req.jointName.c_str());
+    ROS_INFO("[pdg][Request][put_in_hand] we got request to put object %s in "
+            "agent %s  joint's %s\n", req.objectId.c_str(),  req.agentId.c_str(), req.jointName.c_str());
 
-    unsigned int agentId = 0;
-    unsigned int objectId = 0;
 
-    if (req.agentId != 0)
-        agentId = req.agentId;
-    else if (req.agentName != "")
-        if (entNameId_.find(req.agentName) == entNameId_.end()) {
-            ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find agent %s\n", req.agentName.c_str());
-            return false;
-        } else {
-            agentId = entNameId_[req.agentName];
-        }
+    if (req.agentId == "") {
+        ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find agent %s\n", req.agentId.c_str());
+        return false;
+    }
 
-    if (req.objectId != 0)
-        objectId = req.objectId;
-    else if (req.objectName != "")
-        if (entNameId_.find(req.objectName) == entNameId_.end()) {
-            ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find object %s\n", req.objectName.c_str());
-            return false;
-        } else {
-            objectId = entNameId_[req.objectName];
-        }
+    if (req.objectId == "") {
+        ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find object %s\n", req.objectId.c_str());
+        return false;
+    }
 
     if (req.jointName != "") {
-        objectInAgent_[objectId] = agentId;
-        objectInHand_[objectId] = req.jointName;
+        objectInAgent_[req.objectId] = req.agentId;
+        objectInHand_[req.objectId] = req.jointName;
         return true;
     } else {
         ROS_INFO("[pdg][Request][put_in_hand][WARNING] joint name is empty %s\n", req.jointName.c_str());
@@ -182,23 +180,15 @@ bool putInHand(toaster_msgs::PutInHand::Request &req,
 bool removeFromHand(toaster_msgs::RemoveFromHand::Request &req,
         toaster_msgs::RemoveFromHand::Response & res) {
 
-    ROS_INFO("[pdg][Request][remove_from_hand] we got request to remove object %s with id: %d \n", req.objectName.c_str(), req.objectId);
+    ROS_INFO("[pdg][Request][remove_from_hand] we got request to remove object %s \n", req.objectId.c_str());
 
-    unsigned int objectId = 0;
+    if (req.objectId == "") {
+        ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find object %s\n", req.objectId.c_str());
+        return false;
+    }
 
-
-    if (req.objectId != 0)
-        objectId = req.objectId;
-    else if (req.objectName != "")
-        if (entNameId_.find(req.objectName) == entNameId_.end()) {
-            ROS_INFO("[pdg][Request][put_in_hand][WARNING] we didn't find object %s\n", req.objectName.c_str());
-            return false;
-        } else {
-            objectId = entNameId_[req.objectName];
-        }
-
-    objectInAgent_.erase(objectId);
-    objectInHand_.erase(objectId);
+    objectInAgent_.erase(req.objectId);
+    objectInHand_.erase(req.objectId);
     return true;
 }
 
@@ -315,13 +305,12 @@ int main(int argc, char** argv) {
         ////////////
 
         if (morseHuman_)
-            for (std::map<unsigned int, Human*>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Human*>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it) {
                 if (morseHumanRd.isPresent(it->first)) {
 
                     //Fact
                     fact_msg.property = "isPresent";
                     fact_msg.subjectId = it->first;
-                    fact_msg.subjectName = it->second->getName();
                     fact_msg.stringValue = "true";
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 1.0;
@@ -335,18 +324,16 @@ int main(int argc, char** argv) {
                     fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
 
-                    entNameId_[it->second->getName()] = it->first;
                 }
             }
 
         if (mocapHuman_) {
-            for (std::map<unsigned int, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
                 if (mocapHumanRd.isPresent(it->first)) {
 
                     //Fact
                     fact_msg.property = "isPresent";
                     fact_msg.subjectId = it->first;
-                    fact_msg.subjectName = it->second->getName();
                     fact_msg.stringValue = "true";
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 1.0;
@@ -355,25 +342,21 @@ int main(int argc, char** argv) {
 
                     factList_msg.factList.push_back(fact_msg);
 
-
                     //Human
                     fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
-
-                    entNameId_[it->second->getName()] = it->first;
 
                 }
             }
         }
 
         if (groupHuman_)
-            for (std::map<unsigned int, Human*>::iterator it = groupHumanRd.lastConfig_.begin(); it != groupHumanRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Human*>::iterator it = groupHumanRd.lastConfig_.begin(); it != groupHumanRd.lastConfig_.end(); ++it) {
                 if (groupHumanRd.isPresent(it->first)) {
 
                     //Fact
                     fact_msg.property = "isPresent";
                     fact_msg.subjectId = it->first;
-                    fact_msg.subjectName = it->second->getName();
                     fact_msg.stringValue = true;
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 1.0;
@@ -382,12 +365,9 @@ int main(int argc, char** argv) {
 
                     factList_msg.factList.push_back(fact_msg);
 
-
                     //Human
                     fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
-
-                    entNameId_[it->second->getName()] = it->first;
                 }
             }
 
@@ -398,14 +378,13 @@ int main(int argc, char** argv) {
         //////////
 
         if (pr2Robot_)
-            for (std::map<unsigned int, Robot*>::iterator it = pr2RobotRd.lastConfig_.begin(); it != pr2RobotRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Robot*>::iterator it = pr2RobotRd.lastConfig_.begin(); it != pr2RobotRd.lastConfig_.end(); ++it) {
                 if (pr2RobotRd.isPresent(it->first)) {
 
 
                     //Fact
                     fact_msg.property = "isPresent";
                     fact_msg.subjectId = it->first;
-                    fact_msg.subjectName = it->second->getName();
                     fact_msg.stringValue = "true";
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 1.0;
@@ -418,11 +397,11 @@ int main(int argc, char** argv) {
 
                     //Robot
                     robot_msg.meAgent.mobility = 0;
-                    fillEntity(pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
+                    fillEntity(pr2RobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
                     if (robotFullConfig_) {
                         unsigned int i = 0;
-                        for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.end(); ++it) {
+                        for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[it->first]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[it->first]->skeleton_.end(); ++it) {
                             robot_msg.meAgent.skeletonNames[i] = it->first;
                             fillEntity((it->second), joint_msg.meEntity);
 
@@ -434,19 +413,16 @@ int main(int argc, char** argv) {
                     }
                     robotList_msg.robotList.push_back(robot_msg);
                 }
-
-                entNameId_[it->second->getName()] = it->first;
             }
 
 
         if (spencerRobot_) {
-            for (std::map<unsigned int, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
                 //if (spencerRobotRd.isPresent(it->first)) {
 
                 //Fact
                 fact_msg.property = "isPresent";
                 fact_msg.subjectId = it->first;
-                fact_msg.subjectName = it->second->getName();
                 fact_msg.stringValue = true;
                 fact_msg.confidence = 0.90;
                 fact_msg.factObservability = 1.0;
@@ -458,7 +434,7 @@ int main(int argc, char** argv) {
 
                 //Robot
                 robot_msg.meAgent.mobility = 0;
-                fillEntity(spencerRobotRd.lastConfig_[spencerRobotRd.robotIdOffset_], robot_msg.meAgent.meEntity);
+                fillEntity(spencerRobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
                 /*if (robotFullConfig_) {
                     unsigned int i = 0;
@@ -474,8 +450,6 @@ int main(int argc, char** argv) {
                 }*/
                 robotList_msg.robotList.push_back(robot_msg);
                 //}
-
-                entNameId_[it->second->getName()] = it->first;
             }
         }
 
@@ -488,7 +462,7 @@ int main(int argc, char** argv) {
         //printf("[PDG][DEBUG] Nb object from SPARK: %d\n", sparkObjectRd.nbObjects_);
 
         if (sparkObject_)
-            for (std::map<unsigned int, MovableObject*>::iterator it = sparkObjectRd.lastConfig_.begin(); it != sparkObjectRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, MovableObject*>::iterator it = sparkObjectRd.lastConfig_.begin(); it != sparkObjectRd.lastConfig_.end(); ++it) {
                 //if (sparkObjectRd.isPresent(sparkObjectRd.objectIdOffset_ + i)) {
 
                 //Fact message
@@ -498,7 +472,6 @@ int main(int argc, char** argv) {
                 fact_msg.confidence = 0.90;
                 fact_msg.factObservability = 1.0;
                 fact_msg.time = it->second->getTime();
-                fact_msg.subjectName = it->second->getName();
                 fact_msg.valueType = 0;
                 fact_msg.stringValue = "true";
 
@@ -514,26 +487,19 @@ int main(int argc, char** argv) {
                     bool addFactHand = true;
                     if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg))
                         if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg)) {
-                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %d \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first]);
+                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
                             addFactHand = false;
                         }
 
                     if (addFactHand) {
-                        std::string agentName = "";
-                        for (std::map<std::string, unsigned int>::iterator itName = entNameId_.begin(); itName != entNameId_.end(); ++itName)
-                            if (itName->second == objectInAgent_[it->first])
-                                agentName = it->first;
 
                         //Fact message
                         fact_msg.property = "IsInHand";
                         fact_msg.propertyType = "position";
                         fact_msg.subProperty = "object";
                         fact_msg.subjectId = it->first;
-                        fact_msg.subjectName = it->second->getName();
-                        fact_msg.targetId = 0;
-                        fact_msg.targetName = objectInHand_[it->first];
-                        fact_msg.ownerId = objectInAgent_[it->first];
-                        fact_msg.ownerName = agentName;
+                        fact_msg.targetId = objectInAgent_[it->first];
+                        fact_msg.targetOwnerId = objectInAgent_[it->first];
                         fact_msg.confidence = 1.0;
                         fact_msg.factObservability = 0.8;
                         fact_msg.time = it->second->getTime();
@@ -548,16 +514,14 @@ int main(int argc, char** argv) {
 
                 objectList_msg.objectList.push_back(object_msg);
 
-                entNameId_[it->second->getName()] = it->first;
-
                 //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());
                 //printf("[PDG] object %d named %s is present\n", vimanObjectRd.objectIdOffset_ + i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getName().c_str());
                 //}
             }
 
-        // To compute which object are seen by the robot, we use Viman:
+        // To compute which objects are seen by the robot, we use Viman:
         if (vimanObject_)
-            for (std::map<unsigned int, MovableObject*>::iterator it = vimanObjectRd.lastConfig_.begin(); it != vimanObjectRd.lastConfig_.end(); ++it) {
+            for (std::map<std::string, MovableObject*>::iterator it = vimanObjectRd.lastConfig_.begin(); it != vimanObjectRd.lastConfig_.end(); ++it) {
                 if (vimanObjectRd.isPresent(it->first)) {
 
                     //Fact is seen from viman
@@ -567,7 +531,6 @@ int main(int argc, char** argv) {
                     fact_msg.confidence = 0.90;
                     fact_msg.factObservability = 0.5;
                     fact_msg.time = it->second->getTime();
-                    fact_msg.subjectName = it->second->getName();
                     fact_msg.valueType = 0;
                     fact_msg.stringValue = "true";
 
@@ -585,27 +548,19 @@ int main(int argc, char** argv) {
                         bool addFactHand = true;
                         if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg))
                             if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg)) {
-                                ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %d \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first]);
+                                ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
                                 addFactHand = false;
                             }
 
                         if (addFactHand) {
-
-                            std::string agentName = "";
-                            for (std::map<std::string, unsigned int>::iterator itName = entNameId_.begin(); itName != entNameId_.end(); ++itName)
-                                if (itName->second == objectInAgent_[it->first])
-                                    agentName = it->first;
 
                             //Fact message
                             fact_msg.property = "IsInHand";
                             fact_msg.propertyType = "position";
                             fact_msg.subProperty = "object";
                             fact_msg.subjectId = it->first;
-                            fact_msg.subjectName = it->second->getName();
-                            fact_msg.targetId = 0;
-                            fact_msg.targetName = objectInHand_[it->first];
-                            fact_msg.ownerId = objectInAgent_[it->first];
-                            fact_msg.ownerName = agentName;
+                            fact_msg.targetId = objectInAgent_[it->first];
+                            fact_msg.targetOwnerId = objectInAgent_[it->first];
                             fact_msg.confidence = 1.0;
                             fact_msg.factObservability = 0.8;
                             fact_msg.time = it->second->getTime();
@@ -619,8 +574,6 @@ int main(int argc, char** argv) {
                     }
 
                     objectList_msg.objectList.push_back(object_msg);
-
-                    entNameId_[it->second->getName()] = it->first;
                 }
 
                 //printf("[PDG] Last time object %d: %lu\n", i, vimanObjectRd.lastConfig_[vimanObjectRd.objectIdOffset_ + i]->getTime());

@@ -1,5 +1,5 @@
-uint32 subjectId
-uint32 targetId
+string subjectId
+string targetId
 ---
 string direction
 float64 angleValue

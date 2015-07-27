@@ -1,6 +1,5 @@
 toaster_msgs/Fact reqFact
-uint32 agentId
-string agentName
+string agentId
 ---
 bool boolAnswer
 toaster_msgs/Fact resFact

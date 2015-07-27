@@ -20,6 +20,7 @@ void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPer
     tf::StampedTransform transform;
     ros::Time now = ros::Time::now();
     Human* curHuman;
+    std::stringstream humId;
 
     try {
         std::string frame;
@@ -33,16 +34,16 @@ void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPer
 
         //for every agent present in the tracking message
         for (int i = 0; i < msg->tracks.size(); i++) {
-    std::string humanName = "human";
+            std::string humanName = "human";
             spencer_tracking_msgs::TrackedPerson person = msg->tracks[i];
-            int humId = person.track_id + humanIdOffset_;
+            humId << "mocap_human" << person.track_id;
             //create a new human with the same id as the message
-            if(lastConfig_[humId] == NULL){
-            curHuman = new Human(humId);
-            humanName.append(boost::to_string(humId));
-            curHuman->setName(humanName);
-            }else{
-                curHuman = lastConfig_[humId];
+            if (lastConfig_.find(humId.str()) == lastConfig_.end()) {
+                curHuman = new Human(humId.str());
+                humanName.append(boost::to_string(humId.str()));
+                curHuman->setName(humanName);
+            } else {
+                curHuman = lastConfig_[humId.str()];
             }
 
             //get the pose of the agent in the optitrack frame and transform it to the map frame
@@ -72,7 +73,7 @@ void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPer
             curHuman->setPosition(humanPosition);
             curHuman->setTime(now.toNSec());
 
-            lastConfig_[humId] = curHuman;
+            lastConfig_[humId.str()] = curHuman;
         }
     } catch (tf::TransformException ex) {
         ROS_ERROR("%s", ex.what());

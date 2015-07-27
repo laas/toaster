@@ -19,11 +19,10 @@
 
 class ObjectReader {
 public:
-    static const unsigned int objectIdOffset_ = 1001;
-    std::map<unsigned int, MovableObject*> lastConfig_;
+    std::map<std::string, MovableObject*> lastConfig_;
     unsigned int nbObjects_; /// total object number
 
-    bool isPresent(unsigned int id);
+    bool isPresent(std::string id);
 
 };
 

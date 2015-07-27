@@ -2,7 +2,7 @@
 #include <pdg/NiutHumanReader.h>
 #include "toaster-lib/MathFunctions.h"
 
-NiutHumanReader::NiutHumanReader(ros::NodeHandle& node, double * kinectPos, 
+NiutHumanReader::NiutHumanReader(ros::NodeHandle& node, double * kinectPos,
         bool fullHuman) : kinectPos_(kinectPos) {
     node_ = node;
     fullHuman_ = fullHuman;
@@ -14,7 +14,8 @@ NiutHumanReader::NiutHumanReader(ros::NodeHandle& node, double * kinectPos,
 }
 
 void NiutHumanReader::humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg) {
-    Joint curJoint(10000, 100);
+    std::stringstream id;
+    Joint curJoint("", "");
     std::vector<int> trackedJoints;
     trackedJoints.push_back(0);
     trackedJoints.push_back(3);
@@ -26,31 +27,31 @@ void NiutHumanReader::humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::Const
     for (int i = 0; i < NB_MAX_NIUT; i++) {
         if (msg->filtered_users[i].trackedId > -1 && msg->filtered_users[i].date.t_sec != 0) {
 
-            unsigned int toasterId = humanIdOffset_ + msg->filtered_users[i].trackedId;
+            id << "niut_human" << msg->filtered_users[i].trackedId;
             //If this human was not assigned yet, we create it.
-            if (lastConfig_[toasterId] == NULL) {
-                Human* tmpHuman = new Human(toasterId);
-                lastConfig_[toasterId] = tmpHuman;
+            if (lastConfig_.find(id.str()) == lastConfig_.end()) {
+                Human* tmpHuman = new Human(id.str());
+                lastConfig_[id.str()] = tmpHuman;
             }
 
 
             if (fullHuman_) {
                 for (unsigned int j = 0; j < trackedJoints.size(); j++) {
-                    updateJoint(i, j, curJoint, toasterId, trackedJoints, msg);
+                    updateJoint(i, j, curJoint, id.str(), trackedJoints, msg);
 
-                    lastConfig_[toasterId]->skeleton_[curJoint.getName()]->position_.set<0>(curJoint.position_.get<0>());
-                    lastConfig_[toasterId]->skeleton_[curJoint.getName()]->position_.set<1>(curJoint.position_.get<1>());
-                    lastConfig_[toasterId]->skeleton_[curJoint.getName()]->position_.set<2>(curJoint.position_.get<2>());
-                    lastConfig_[toasterId]->skeleton_[curJoint.getName()]->setTime(msg->filtered_users[i].date.t_sec * pow(10, 9) +
+                    lastConfig_[id.str()]->skeleton_[curJoint.getName()]->position_.set<0>(curJoint.position_.get<0>());
+                    lastConfig_[id.str()]->skeleton_[curJoint.getName()]->position_.set<1>(curJoint.position_.get<1>());
+                    lastConfig_[id.str()]->skeleton_[curJoint.getName()]->position_.set<2>(curJoint.position_.get<2>());
+                    lastConfig_[id.str()]->skeleton_[curJoint.getName()]->setTime(msg->filtered_users[i].date.t_sec * pow(10, 9) +
                             msg->filtered_users[i].date.t_usec);
 
 
                     // We update the human position with the torso (joint 3)
                     if (j == 3) {
-                        lastConfig_[toasterId]->position_.set<0>(curJoint.position_.get<0>());
-                        lastConfig_[toasterId]->position_.set<1>(curJoint.position_.get<1>());
-                        lastConfig_[toasterId]->position_.set<2>(curJoint.position_.get<2>());
-                        lastConfig_[toasterId]->setTime(msg->filtered_users[i].date.t_sec * pow(10, 9) +
+                        lastConfig_[id.str()]->position_.set<0>(curJoint.position_.get<0>());
+                        lastConfig_[id.str()]->position_.set<1>(curJoint.position_.get<1>());
+                        lastConfig_[id.str()]->position_.set<2>(curJoint.position_.get<2>());
+                        lastConfig_[id.str()]->setTime(msg->filtered_users[i].date.t_sec * pow(10, 9) +
                                 msg->filtered_users[i].date.t_usec);
 
                         // TODO; Compute the human orientation
@@ -59,11 +60,11 @@ void NiutHumanReader::humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::Const
                 }
             } else {// not fullHuman_
                 // We update the human position with the torso (joint 3)
-                updateJoint(i, 3, curJoint, toasterId, trackedJoints, msg);
-                lastConfig_[toasterId]->position_.set<0>(curJoint.position_.get<0>());
-                lastConfig_[toasterId]->position_.set<1>(curJoint.position_.get<1>());
-                lastConfig_[toasterId]->position_.set<2>(curJoint.position_.get<2>());
-                lastConfig_[toasterId]->setTime(msg->filtered_users[i].date.t_sec * pow(10, 9) +
+                updateJoint(i, 3, curJoint, id.str(), trackedJoints, msg);
+                lastConfig_[id.str()]->position_.set<0>(curJoint.position_.get<0>());
+                lastConfig_[id.str()]->position_.set<1>(curJoint.position_.get<1>());
+                lastConfig_[id.str()]->position_.set<2>(curJoint.position_.get<2>());
+                lastConfig_[id.str()]->setTime(msg->filtered_users[i].date.t_sec * pow(10, 9) +
                         msg->filtered_users[i].date.t_usec);
 
                 // TODO: compute the human orientation
@@ -75,8 +76,8 @@ void NiutHumanReader::humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::Const
     }
 }
 
-void NiutHumanReader::updateJoint(int i, int j, Joint& curJoint, int toasterId, std::vector<int>& trackedJoints, const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg) {
-
+void NiutHumanReader::updateJoint(int i, int j, Joint& curJoint, std::string toasterId, std::vector<int>& trackedJoints, const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg) {
+    std::stringstream jointId;
     std::map<int, std::string> niutToString;
     niutToString[0] = "HEAD";
     niutToString[3] = "TORSO";
@@ -89,8 +90,10 @@ void NiutHumanReader::updateJoint(int i, int j, Joint& curJoint, int toasterId, 
     std::string jointString = niutToString[niutJoint];
 
     //Allocate Joint if needed
-    if (lastConfig_[toasterId]->skeleton_[jointString] == NULL) {
-        Joint* tmpJoint = new Joint(10001 + j, toasterId);
+    jointId << toasterId << "_" << jointString;
+
+    if (lastConfig_[toasterId]->skeleton_.find(jointString) == lastConfig_[toasterId]->skeleton_.end()) {
+        Joint * tmpJoint = new Joint(jointId.str(), toasterId);
         tmpJoint->setName(jointString);
         tmpJoint->setAgentId(toasterId);
         lastConfig_[toasterId]->skeleton_[jointString] = tmpJoint;

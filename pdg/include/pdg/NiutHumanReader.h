@@ -29,7 +29,7 @@ private:
     //Functions
     void humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg);
     void projectJoint(Joint& joint, double* kinectPos);
-    void updateJoint(int i, int j, Joint& curJoint, int toasterId, std::vector<int>& trackedJoints,
+    void updateJoint(int i, int j, Joint& curJoint, std::string toasterId, std::vector<int>& trackedJoints,
             const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg);
 
 };

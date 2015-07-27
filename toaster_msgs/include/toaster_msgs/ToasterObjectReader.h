@@ -15,9 +15,9 @@
 
 class ToasterObjectReader {
 public:
-    std::map<unsigned int, Object*> lastConfig_;
+    std::map<std::string, Object*> lastConfig_;
 
-    bool isPresent(unsigned int id);
+    bool isPresent(std::string id);
 
     ToasterObjectReader(ros::NodeHandle& node);
 

@@ -76,7 +76,7 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::
     }
 }
 
-bool ToasterHumanReader::isPresent(unsigned int id) {
+bool ToasterHumanReader::isPresent(std::string id) {
     timeval curTime;
     gettimeofday(&curTime, NULL);
     unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;

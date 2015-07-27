@@ -23,7 +23,7 @@ GroupHumanReader::GroupHumanReader(ros::NodeHandle& node, std::string topic) {
 void GroupHumanReader::groupTrackCallback(const spencer_tracking_msgs::TrackedGroups::ConstPtr& msg) {
     tf::StampedTransform transform;
     ros::Time now = ros::Time::now();
-
+    std::stringstream humId;
 
     try {
         std::string frame;
@@ -38,9 +38,9 @@ void GroupHumanReader::groupTrackCallback(const spencer_tracking_msgs::TrackedGr
         //for every group present in the tracking message
         for (int i = 0; i < msg->groups.size(); i++) {
             spencer_tracking_msgs::TrackedGroup group = msg->groups[i];
-            int humId = group.group_id;
+            humId << " group" << group.group_id;
             //create a new human with the same id as the message
-            Human* curHuman = new Human(10000 + humId);
+            Human* curHuman = new Human(humId.str());
 
             //get the pose of the agent in the groupTrack frame and transform it to the map frame
             geometry_msgs::PoseStamped groupTrackPose, mapPose;
@@ -71,7 +71,7 @@ void GroupHumanReader::groupTrackCallback(const spencer_tracking_msgs::TrackedGr
             curHuman->setPosition(humanPosition);
             curHuman->setTime(now.toNSec());
 
-            lastConfig_[humId] = curHuman;
+            lastConfig_[humId.str()] = curHuman;
         }
     } catch (tf::TransformException ex) {
         ROS_ERROR("%s", ex.what());
