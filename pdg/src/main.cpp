@@ -189,10 +189,10 @@ int main(int argc, char** argv) {
     ros::ServiceServer addStreamServ = node.advertiseService("pdg/manage_stream", addStream);
     ROS_INFO("Ready to manage stream.");
 
-    ros::ServiceServer servicePutInHand = node.advertiseService("htn_verbalizer/put_in_hand", putInHand);
+    ros::ServiceServer servicePutInHand = node.advertiseService("pdg/put_in_hand", putInHand);
     ROS_INFO("[Request] Ready to put object in hand.");
 
-    ros::ServiceServer serviceRemoveFromHand = node.advertiseService("htn_verbalizer/remove_from_hand", removeFromHand);
+    ros::ServiceServer serviceRemoveFromHand = node.advertiseService("pdg/remove_from_hand", removeFromHand);
     ROS_INFO("[Request] Ready to remove object from hand.");
 
     //Data writing
