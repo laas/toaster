@@ -18,26 +18,6 @@ void SparkObjectReader::init(std::string posterName) {
     sparkPoster_ = new GenomPoster(posterName, (char*) (&sparkPosterStruct_), sizeof (sparkPosterStruct_), 10);
     sparkPoster_->getPosterStuct((char*) (&sparkPosterStruct_));
     nbObjects_ = sparkPosterStruct_.freeflyerNb;
-    for (unsigned int i = 0; i < nbObjects_; i++) {
-        initObject(i);
-    }
-
-}
-
-void SparkObjectReader::initObject(unsigned int i) {
-    std::stringstream s;
-    s << "spark_object" << i;
-    MovableObject* myObject = new MovableObject(s.str());
-    //Initialize position:
-    myObject->position_.set<0>(0.0);
-    myObject->position_.set<1>(0.0);
-    myObject->position_.set<2>(0.0);
-
-    myObject->orientation_.push_back(0.0);
-    myObject->orientation_.push_back(0.0);
-    myObject->orientation_.push_back(0.0);
-    lastConfig_[s.str()] = myObject;
-
 }
 
 void SparkObjectReader::updateObjects() {
@@ -50,24 +30,18 @@ void SparkObjectReader::updateObjects() {
     if (sparkPoster_->getUpdatedStatus()) {
 
         nbObjects_ = sparkPosterStruct_.freeflyerNb;
-        // Add objects if needed
-        while (lastConfig_.size() != nbObjects_) {
-            if (lastConfig_.size() < nbObjects_)
-                initObject(lastConfig_.size());
-            else {
-                std::map<std::string, MovableObject*>::iterator it = lastConfig_.end();
-                it--;
-                lastConfig_.erase(it);
-            }
-        }
-
-
 
         for (i_obj = 0; i_obj < nbObjects_; i_obj++) {
-            //TODO: remove init in pdg main and replace by creation on the fly
-            //with id linked to name
+
             std::stringstream s;
-            s << "spark_object" << i_obj;
+            s << "viman_object_" << sparkPosterStruct_.freeflyer[i_obj].name.name;
+
+            //If object is not in lastConfig_
+            if (lastConfig_.find(s.str()) == lastConfig_.end()) {
+                MovableObject* myObject = new MovableObject(s.str());
+                lastConfig_[s.str()] = myObject;
+            }
+
             //Set position and orientation
             lastConfig_[s.str()]->position_.set<0>(sparkPosterStruct_.freeflyer[i_obj].q[0]);
             lastConfig_[s.str()]->position_.set<1>(sparkPosterStruct_.freeflyer[i_obj].q[1]);
@@ -84,7 +58,6 @@ void SparkObjectReader::updateObjects() {
         }
     }
 }
-
 
 //Destructor
 

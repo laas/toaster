@@ -11,24 +11,6 @@ void VimanObjectReader::init(std::string posterName) {
     vimanPoster_ = new GenomPoster(posterName, (char*) (&vimanPosterStruct_), sizeof (vimanPosterStruct_), 10);
     vimanPoster_->getPosterStuct((char*) (&vimanPosterStruct_));
     nbObjects_ = vimanPosterStruct_.nbObjects;
-    for (unsigned int i = 0; i < nbObjects_; i++) {
-        initObject(i);
-    }
-}
-
-void VimanObjectReader::initObject(unsigned int i) {
-    std::stringstream s;
-    s << "viman_object" << i;
-    MovableObject* myObject = new MovableObject(s.str());
-    //Initialize position:
-    myObject->position_.set<0>(0.0);
-    myObject->position_.set<1>(0.0);
-    myObject->position_.set<2>(0.0);
-
-    myObject->orientation_.push_back(0.0);
-    myObject->orientation_.push_back(0.0);
-    myObject->orientation_.push_back(0.0);
-    lastConfig_[s.str()] = myObject;
 }
 
 void VimanObjectReader::updateObjects() {
@@ -39,23 +21,20 @@ void VimanObjectReader::updateObjects() {
     // Verify that it was indeed updated
     if (vimanPoster_->getUpdatedStatus()) {
         nbObjects_ = vimanPosterStruct_.nbObjects;
-        // Add objects if needed
-        while (lastConfig_.size() != nbObjects_) {
-            if (lastConfig_.size() < nbObjects_)
-                initObject(lastConfig_.size());
-            else {
-                std::map<std::string, MovableObject*>::iterator it = lastConfig_.end();
-                it--;
-                lastConfig_.erase(it);
-            }
-        }
 
         for (i_obj = 0; i_obj < nbObjects_; i_obj++) {
 
             if (vimanPosterStruct_.objects[i_obj].found_Stereo || vimanPosterStruct_.objects[i_obj].found_Left || vimanPosterStruct_.objects[i_obj].found_Right) {
 
                 std::stringstream s;
-                s << "viman_object" << i_obj;
+                s << "viman_object_" << vimanPosterStruct_.objects[i_obj].name;
+
+                //If object is not in lastConfig_
+                if (lastConfig_.find(s.str()) == lastConfig_.end()) {
+                    MovableObject* myObject = new MovableObject(s.str());
+                    lastConfig_[s.str()] = myObject;
+                }
+
                 //Set position and orientation
                 lastConfig_[s.str()]->position_.set<0>(vimanPosterStruct_.objects[i_obj].thetaMatOrigin.px);
                 lastConfig_[s.str()]->position_.set<1>(vimanPosterStruct_.objects[i_obj].thetaMatOrigin.py);
