@@ -5,7 +5,7 @@ project(database_manager)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS roscpp turtlesim rospy genmsg  message_generation toaster_msgs cmake_modules roslib)
-find_package(cmake_modules REQUIRED)
+find_package(cmake_modules REQUIRED COMPONENTS TinyXML)
 find_package(TinyXML REQUIRED)
 
 catkin_package(
@@ -15,7 +15,7 @@ catkin_package(
   )
 
 
-include_directories(include ${catkin_INCLUDE_DIRS}  ${TinyXML_INCLUDE_DIRS}  $ENV{HOME}/devel/include)
+include_directories(include ${catkin_INCLUDE_DIRS}  ${TinyXML_INCLUDE_DIRS}  $ENV{TOASTERLIB_DIR}/include)
 
 
 
@@ -25,7 +25,7 @@ add_dependencies(client database_manager)
 
 
 add_executable(run_server src/run_server.cpp)
-target_link_libraries(run_server ${catkin_LIBRARIES} ${TinyXML_LIBRARIES} /$ENV{HOME}/devel/lib/libsqlite3.so $ENV{HOME}/devel/lib/libtoaster.so)
+target_link_libraries(run_server ${catkin_LIBRARIES} ${TinyXML_LIBRARIES} libsqlite3.so $ENV{TOASTERLIB_DIR}/lib/libtoaster.so)
 add_dependencies(run_server database_manager)
 
 

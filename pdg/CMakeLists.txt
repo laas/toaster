@@ -110,7 +110,7 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
-  $ENV{HOME}/devel/include
+  $ENV{TOASTERLIB_DIR}/include
   #$ENV{HOME}/openrobots/include/
 )
 
@@ -130,7 +130,7 @@ include_directories(
 # target_link_libraries(pdg_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(pdg $ENV{HOME}/devel/lib/libtoaster.so
+target_link_libraries(pdg $ENV{TOASTERLIB_DIR}/lib/libtoaster.so
                           ${catkin_LIBRARIES})
 
 

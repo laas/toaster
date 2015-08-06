@@ -109,7 +109,7 @@ catkin_package(
 include_directories(
   include
 ${catkin_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
+  ${Boost_INCLUDE_DIRS}  $ENV{TOASTERLIB_DIR}/include
 )
 
 add_library(toaster_msgs_lib ./src/ToasterFactReader.cpp ./src/ToasterHumanReader.cpp ./src/ToasterObjectReader.cpp ./src/ToasterRobotReader.cpp)
