@@ -25,6 +25,10 @@
 #include <time.h>  
 
 
+
+//nameMarker rpoportionnal scale
+
+
 class Run
 {
 	visualization_msgs::MarkerArray area_list;
@@ -110,7 +114,7 @@ class Run
 		marker.action = visualization_msgs::Marker::ADD;
 
 		//position
-		marker.pose.position.x = p.x;
+ 		marker.pose.position.x = p.x;
 		marker.pose.position.y = p.y;
 		marker.pose.position.z = p.z;
 		
@@ -215,7 +219,6 @@ class Run
      */
 	visualization_msgs::Marker defineObj(int  x, int y, int z, double scale, std::string name) 
 	{
-                std::stringstream s;
 		//declarration 
 		visualization_msgs::Marker marker;
 
@@ -249,16 +252,15 @@ class Run
 		marker.color.a= 1.0;
 
 		//scale
-		marker.scale.x = 1*scale;
-		marker.scale.y = 1*scale;
-		marker.scale.z = 1*scale;
+		marker.scale.x = 0.2;
+		marker.scale.y = 0.2;
+		marker.scale.z = 0.2;
 		
 		//type
 		marker.type = visualization_msgs::Marker::CUBE; //marker by defaut
 		
-                s << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
-
-		TiXmlDocument list(s.str()); //load xml file
+		TiXmlDocument list("src/toaster_visualizer/src/list_obj.xml"); //load xml file
+		//TiXmlDocument list(ros::package::getPath("toaster_vizualiser") + (std::string)"/src/list_obj.xml"); //load xml file
 		
 		if(!list.LoadFile())  
 		{
@@ -282,7 +284,11 @@ class Run
 				 elem = elem->NextSiblingElement();
 				 
 				 if(name_obj.compare(name) == 0)   //if there is a 3d model relativ to this object  
-				 {					 
+				 {			
+					marker.scale.x = 1*scale;
+					marker.scale.y = 1*scale;
+					marker.scale.z = 1*scale;
+					 		 
 					marker.color.r= 0.0f;
 					marker.color.g= 0.0f;
 					marker.color.b= 0.0f;
@@ -335,9 +341,8 @@ class Run
 		nameMarker.text = marker.ns;
 		
 		//scale
-		marker.scale.z = 1.0;  
-	   
-	   
+		nameMarker.scale.z = 1.0*marker.scale.x;  
+	   	   
 		return nameMarker;
 		
 	}
@@ -526,6 +531,7 @@ class Run
 				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
 				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
 				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
+				ROS_INFO("yolo");
 			}
 			else if((name_list[i] == marker.ns) && !color_list[i].empty())
 			{
@@ -575,7 +581,7 @@ class Run
 			
 			visualization_msgs::Marker mn = defineName(m);
 			mn = setColor(mn, 1.0, 1.0, 1.0);
-			mn = setSize(mn, 0, 0, 0.5);
+			//mn = setSize(mn, 0, 0, 0.5);
 			
 			obj_list.markers.push_back(mn);
 			obj_list.markers.push_back(m);
@@ -681,12 +687,15 @@ class Run
 			{
 				std::vector<toaster_msgs::Joint> membres = msg->humanList[i].meAgent.skeletonJoint ;
 				visualization_msgs::Marker markerTempo;
-				std::string name = msg->humanList[i].meAgent.meEntity.name;
+				
 				int scale = 1;
 				
 				for(int y = 0; y<membres.size(); y++)
 				{
 					ROS_INFO("Membre");
+
+					std::string name = msg->humanList[i].meAgent.skeletonJoint[y].meEntity.name;
+					
 					//frame id
 					markerTempo.header.frame_id = "map";
 					
@@ -718,6 +727,52 @@ class Run
 					
 					//type de marker
 					markerTempo.type = 3;
+					
+					
+					TiXmlDocument list("src/toaster_visualizer/src/list_members.xml"); //load xml file
+					//TiXmlDocument list(ros::package::getPath("toaster_vizualiser") + (std::string)"/src/list_obj.xml"); //load xml file
+		
+					if(!list.LoadFile())  
+					{
+						ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
+						ROS_WARN_ONCE("error # %d",list.ErrorId() );
+						ROS_WARN_ONCE("%s",list.ErrorDesc() );
+					}
+					else
+					{
+						TiXmlHandle hdl(&list);
+						TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
+						
+						std::string name_obj;
+						std::string mesh_r;
+						
+						while(elem)   //for each element of the xml file
+						{
+							
+							 name_obj = elem->Attribute("name");
+							 mesh_r = elem->Attribute("mesh_ressource");
+							 elem = elem->NextSiblingElement();
+							 
+							 if(name_obj.compare(name) == 0)   //if there is a 3d model relativ to this object  
+							 {		
+								ROS_INFO("YOLOOOOOO");	
+								markerTempo.scale.x = 1*scale;
+								markerTempo.scale.y = 1*scale;
+								markerTempo.scale.z = 1*scale;
+										 
+								markerTempo.color.r= 0.0f;
+								markerTempo.color.g= 0.0f;
+								markerTempo.color.b= 0.0f;
+								markerTempo.color.a= 0.0;
+								 
+								markerTempo.type = visualization_msgs::Marker::MESH_RESOURCE;    //use it as mesh
+								markerTempo.mesh_resource = mesh_r;
+								markerTempo.mesh_use_embedded_materials = true;
+								
+								elem = NULL;
+							}
+						}
+					}
 
 					markerTempo.lifetime = ros::Duration();
 					

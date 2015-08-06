@@ -1,0 +1,4 @@
+string groupe
+---
+bool boolAnswer
+toaster_msgs/Ontology[] resOntology

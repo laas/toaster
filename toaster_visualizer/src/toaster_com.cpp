@@ -1,4 +1,5 @@
 #include "ros/ros.h"
+#include "ros/package.h"
 #include "std_msgs/String.h"
 #include <iostream> 
 #include <sstream>
@@ -53,7 +54,7 @@ int main(int argc, char **argv)
 	
 	//object 1
 	msg2.meEntity.id = 1;
-	msg2.meEntity.name = "Desk_1";
+	msg2.meEntity.name = "BlackVideotape";
 	msg2.meEntity.positionX = 20.0;
 	msg2.meEntity.positionY = 20.0;
 	msg2.meEntity.positionZ = 0.0;
@@ -63,7 +64,7 @@ int main(int argc, char **argv)
 	
 	//object 2
 	msg3.meEntity.id = 2;
-	msg3.meEntity.name = "IKEA_bed_FJryELLSE";
+	msg3.meEntity.name = "YELLOW_CUBE";
 	msg3.meEntity.positionX = -10.0;
 	msg3.meEntity.positionY = -5.0;
 	msg3.meEntity.positionZ = 0.0;
@@ -166,7 +167,7 @@ int main(int argc, char **argv)
 	toaster_msgs::Joint j;
 	
 	
-	j.meEntity.name = "tete";
+	j.meEntity.name = "rHumerus-polyhedre1";
 	j.meEntity.id = 4;
 	j.meEntity.positionX = -30.0;
 	j.meEntity.positionY = -20.0;
