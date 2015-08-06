@@ -54,6 +54,9 @@ class Run
 	ros::Publisher pub_area;
 	ros::Publisher pub_human;
 	
+	TiXmlDocument listObj;
+	TiXmlDocument listMemb;
+	
 	public:
        
     /**
@@ -81,6 +84,33 @@ class Run
 		pub_obj = emission_node.advertise<visualization_msgs::MarkerArray>("visualisation_obj", 1000);
 		pub_area = emission_node.advertise<visualization_msgs::MarkerArray>("visualisation_area", 1000);
 		pub_human = emission_node.advertise<visualization_msgs::MarkerArray>("visualisation_human", 1000);	
+		
+		
+		//open xml files
+		std::stringstream s;
+		s << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
+		listObj = TiXmlDocument(s.str()); 
+		
+		if(!listObj.LoadFile())  
+		{
+			ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
+			ROS_WARN_ONCE("error # %d",listObj.ErrorId() );
+			ROS_WARN_ONCE("%s",listObj.ErrorDesc() );	
+		}
+		
+		std::stringstream a;
+		a << ros::package::getPath("toaster_visualizer") << "/src/list_members.xml";
+		listMemb = TiXmlDocument(a.str()); 
+		
+		if(!listMemb.LoadFile())  
+		{
+			ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
+			ROS_WARN_ONCE("error # %d",listMemb.ErrorId() );
+			ROS_WARN_ONCE("%s",listMemb.ErrorDesc() );	
+		}
+
+					
+	
 	}
 	
 
@@ -259,50 +289,42 @@ class Run
 		//type
 		marker.type = visualization_msgs::Marker::CUBE; //marker by defaut
 		
-		TiXmlDocument list("src/toaster_visualizer/src/list_obj.xml"); //load xml file
-		//TiXmlDocument list(ros::package::getPath("toaster_vizualiser") + (std::string)"/src/list_obj.xml"); //load xml file
+		//std::stringstream s;
+		//s << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
+		//TiXmlDocument list(s.str()); //load xml file
 		
-		if(!list.LoadFile())  
+		//TiXmlDocument list("src/toaster/toaster_visualizer/src/list_obj.xml"); //load xml file
+		
+		
+		TiXmlHandle hdl(&listObj);
+		TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
+			
+		std::string name_obj;
+		std::string mesh_r;
+			
+		while(elem)   //for each element of the xml file
 		{
-			ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
-			ROS_WARN_ONCE("error # %d",list.ErrorId() );
-			ROS_WARN_ONCE("%s",list.ErrorDesc() );
-			
-		}
-		else
-		{
-			TiXmlHandle hdl(&list);
-			TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
-			
-			std::string name_obj;
-			std::string mesh_r;
-			
-			while(elem)   //for each element of the xml file
-			{
-				 name_obj = elem->Attribute("name");
-				 mesh_r = elem->Attribute("mesh_ressource");
-				 elem = elem->NextSiblingElement();
-				 
-				 if(name_obj.compare(name) == 0)   //if there is a 3d model relativ to this object  
-				 {			
-					marker.scale.x = 1*scale;
-					marker.scale.y = 1*scale;
-					marker.scale.z = 1*scale;
+			 name_obj = elem->Attribute("name");
+			 mesh_r = elem->Attribute("mesh_ressource");
+			 elem = elem->NextSiblingElement();
+			 				 
+			 if(name_obj.compare(name) == 0)   //if there is a 3d model relativ to this object  
+			 {			
+				marker.scale.x = 1*scale;
+				marker.scale.y = 1*scale;
+				marker.scale.z = 1*scale;
 					 		 
-					marker.color.r= 0.0f;
-					marker.color.g= 0.0f;
-					marker.color.b= 0.0f;
-					marker.color.a= 0.0;
+				marker.color.r= 0.0f;
+				marker.color.g= 0.0f;
+				marker.color.b= 0.0f;
+				marker.color.a= 0.0;
 					 
-					marker.type = visualization_msgs::Marker::MESH_RESOURCE;    //use it as mesh
-					marker.mesh_resource = mesh_r;
-					marker.mesh_use_embedded_materials = true;
+				marker.type = visualization_msgs::Marker::MESH_RESOURCE;    //use it as mesh
+				marker.mesh_resource = mesh_r;
+				marker.mesh_use_embedded_materials = true;
 					
-					elem = NULL;
-				}
+				elem = NULL;
 			}
-			
-
 		}
 		
 		marker.lifetime = ros::Duration();
@@ -531,7 +553,6 @@ class Run
 				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
 				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
 				color_list[i].push_back(static_cast <float> (rand()) / static_cast <float> (RAND_MAX));
-				ROS_INFO("yolo");
 			}
 			else if((name_list[i] == marker.ns) && !color_list[i].empty())
 			{
@@ -728,52 +749,37 @@ class Run
 					//type de marker
 					markerTempo.type = 3;
 					
+					TiXmlHandle hdl(&listMemb);
+					TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
 					
-					TiXmlDocument list("src/toaster_visualizer/src/list_members.xml"); //load xml file
-					//TiXmlDocument list(ros::package::getPath("toaster_vizualiser") + (std::string)"/src/list_obj.xml"); //load xml file
-		
-					if(!list.LoadFile())  
-					{
-						ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
-						ROS_WARN_ONCE("error # %d",list.ErrorId() );
-						ROS_WARN_ONCE("%s",list.ErrorDesc() );
-					}
-					else
-					{
-						TiXmlHandle hdl(&list);
-						TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
+					std::string name_obj;
+					std::string mesh_r;
 						
-						std::string name_obj;
-						std::string mesh_r;
-						
-						while(elem)   //for each element of the xml file
-						{
-							
-							 name_obj = elem->Attribute("name");
-							 mesh_r = elem->Attribute("mesh_ressource");
-							 elem = elem->NextSiblingElement();
-							 
-							 if(name_obj.compare(name) == 0)   //if there is a 3d model relativ to this object  
-							 {		
-								ROS_INFO("YOLOOOOOO");	
-								markerTempo.scale.x = 1*scale;
-								markerTempo.scale.y = 1*scale;
-								markerTempo.scale.z = 1*scale;
-										 
-								markerTempo.color.r= 0.0f;
-								markerTempo.color.g= 0.0f;
-								markerTempo.color.b= 0.0f;
-								markerTempo.color.a= 0.0;
+					while(elem)   //for each element of the xml file
+					{
+						 name_obj = elem->Attribute("name");
+						 mesh_r = elem->Attribute("mesh_ressource");
+						 elem = elem->NextSiblingElement();
+						 
+						 if(name_obj.compare(name) == 0)   //if there is a 3d model relativ to this object  
+						 {
+							markerTempo.scale.x = 1*scale;
+							markerTempo.scale.y = 1*scale;
+							markerTempo.scale.z = 1*scale;
+									 
+							markerTempo.color.r= 0.0f;
+							markerTempo.color.g= 0.0f;
+							markerTempo.color.b= 0.0f;
+							markerTempo.color.a= 0.0;
 								 
-								markerTempo.type = visualization_msgs::Marker::MESH_RESOURCE;    //use it as mesh
-								markerTempo.mesh_resource = mesh_r;
-								markerTempo.mesh_use_embedded_materials = true;
+							markerTempo.type = visualization_msgs::Marker::MESH_RESOURCE;    //use it as mesh
+							markerTempo.mesh_resource = mesh_r;
+							markerTempo.mesh_use_embedded_materials = true;
 								
-								elem = NULL;
-							}
+							elem = NULL;
 						}
 					}
-
+				
 					markerTempo.lifetime = ros::Duration();
 					
 					human_list.markers.push_back(markerTempo);
@@ -781,11 +787,6 @@ class Run
 			}
 		}
 	}
-	
-	
-	
-	
-	
 	
 			
 			

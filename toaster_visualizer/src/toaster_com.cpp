@@ -167,7 +167,7 @@ int main(int argc, char **argv)
 	toaster_msgs::Joint j;
 	
 	
-	j.meEntity.name = "rHumerus-polyhedre1";
+	j.meEntity.name = "head-polyhedre1";
 	j.meEntity.id = 4;
 	j.meEntity.positionX = -30.0;
 	j.meEntity.positionY = -20.0;
