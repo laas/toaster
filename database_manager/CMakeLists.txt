@@ -1,47 +1,41 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(toaster_visualizer)
+project(database_manager)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED COMPONENTS roscpp rospy genmsg toaster_msgs cmake_modules)
+find_package(catkin REQUIRED COMPONENTS roscpp turtlesim rospy genmsg  message_generation toaster_msgs cmake_modules roslib)
 find_package(cmake_modules REQUIRED)
 find_package(TinyXML REQUIRED)
- 
+
 catkin_package(
+  CATKIN_DEPENDS message_runtime 
   CATKIN_DEPENDS toaster_msgs 
-)
+  CATKIN_DEPENDS roslib
+  )
+
+
+include_directories(include ${catkin_INCLUDE_DIRS}  ${TinyXML_INCLUDE_DIRS}  $ENV{HOME}/devel/include)
+
+
+
+add_executable(client src/client.cpp)
+target_link_libraries(client ${catkin_LIBRARIES})
+add_dependencies(client database_manager)
+
+
+add_executable(run_server src/run_server.cpp)
+target_link_libraries(run_server ${catkin_LIBRARIES} ${TinyXML_LIBRARIES} /$ENV{HOME}/devel/lib/libsqlite3.so $ENV{HOME}/devel/lib/libtoaster.so)
+add_dependencies(run_server database_manager)
+
+
+
 
 
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-include_directories(include ${catkin_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS})
 
-
-add_executable(run src/run.cpp)
-target_link_libraries(run ${catkin_LIBRARIES} ${TinyXML_LIBRARIES})
-add_dependencies(run beginner_tutorials_generate_messages_cpp)
-#add_dependencies(Control ${catkin_EXPORTED_TARGETS})
-
-add_executable(toaster_com src/toaster_com.cpp)
-target_link_libraries(toaster_com ${catkin_LIBRARIES})
-add_dependencies(toaster_com beginner_tutorials_generate_messages_cpp)
-#add_dependencies(toaster_com ${catkin_EXPORTED_TARGETS})
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -72,19 +66,9 @@ add_dependencies(toaster_com beginner_tutorials_generate_messages_cpp)
 ##   * uncomment the generate_messages entry below
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
-## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -94,10 +78,6 @@ add_dependencies(toaster_com beginner_tutorials_generate_messages_cpp)
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
 
 ###################################
 ## catkin specific configuration ##
@@ -110,7 +90,7 @@ add_dependencies(toaster_com beginner_tutorials_generate_messages_cpp)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES lol
+#  LIBRARIES clientsrv
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
 )
@@ -124,19 +104,19 @@ catkin_package(
 # include_directories(include)
 
 ## Declare a cpp library
-# add_library(lol
-#   src/${PROJECT_NAME}/lol.cpp
+# add_library(clientsrv
+#   src/${PROJECT_NAME}/clientsrv.cpp
 # )
 
 ## Declare a cpp executable
-# add_executable(lol_node src/lol_node.cpp)
+# add_executable(clientsrv_node src/clientsrv_node.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(lol_node lol_generate_messages_cpp)
+# add_dependencies(clientsrv_node clientsrv_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(lol_node
+# target_link_libraries(clientsrv_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -155,7 +135,7 @@ catkin_package(
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS lol lol_node
+# install(TARGETS clientsrv clientsrv_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -180,7 +160,7 @@ catkin_package(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_lol.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_clientsrv.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

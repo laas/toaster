@@ -1,25 +1,58 @@
 <?xml version="1.0"?>
 <package>
-  <name>toaster_visualizer</name>
+  <name>database_manager</name>
   <version>0.0.0</version>
-  <description>The plug package</description>
+  <description>The package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="glacroix@laas.fr">glacroix</maintainer>
+  <maintainer email="glacroix@todo.todo">glacroix</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
   <license>TODO</license>
+	<build_depend>turtlesim</build_depend>
+	<run_depend>turtlesim</run_depend>
+	
+	
+	<buildtool_depend>catkin</buildtool_depend>
+	<build_depend>geometry_msgs</build_depend>
+	
+	<run_depend>geometry_msgs</run_depend>
+	<build_depend>turtlesim </build_depend>
+	
+	<run_depend>turtlesim </run_depend>
+	
+	<build_depend>message_generation</build_depend>
+	<run_depend>message_runtime</run_depend>
+	
 
+  
+  <build_depend>std_msgs</build_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <build_depend>toaster_msgs</build_depend>
+  <run_depend>toaster_msgs</run_depend>
+
+ <build_depend>roslib</build_depend>
+  <run_depend>roslib</run_depend>
+
+  <build_depend>tinyxml</build_depend>
+
+
+
+<run_depend>tinyxml</run_depend>
+<build_depend>cmake_modules</build_depend>
+
+	
 
   <!-- Url tags are optional, but mutiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/lol</url> -->
+  <!-- <url type="website">http://wiki.ros.org/clientsrv</url> -->
 
 
   <!-- Author tags are optional, mutiple are allowed, one per tag -->
@@ -39,31 +72,8 @@
   <!--   <run_depend>message_runtime</run_depend> -->
   <!-- Use test_depend for packages you need only for testing: -->
   <!--   <test_depend>gtest</test_depend> -->
-
-  
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>geometry_msgs</build_depend>
-  <run_depend>geometry_msgs</run_depend>
-  
-  <build_depend>std_msgs</build_depend>
-  <run_depend>std_msgs</run_depend>
 
-  <build_depend>toaster_msgs</build_depend>
-  <run_depend>toaster_msgs</run_depend>
-
-  <build_depend>message_generation</build_depend>
-  <run_depend>message_runtime</run_depend>
-
-
-	 <build_depend>message_generation</build_depend>
-  <run_depend>message_runtime</run_depend>  
-  
-  
-  <build_depend>tinyxml</build_depend>
-
-
-<run_depend>tinyxml</run_depend>
-<build_depend>cmake_modules</build_depend>
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

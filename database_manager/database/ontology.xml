@@ -1,0 +1,12 @@
+<ontology>
+	
+	<ontology groupe="'color'"  individual="'red'"  instantiated="'true'"  />
+	<ontology groupe="'agent'"  individual="'human'"  instantiated="'false'"  />
+	<ontology groupe="'agent'"  individual="'robot'"  instantiated="'false'"  />
+	<ontology groupe="'tape'"  individual="'grey_tape'"  instantiated="'true'"  />
+	<ontology groupe="'viewable'"  individual="'tape'"  instantiated="'false'"  />
+	<ontology groupe="'fly'"  individual="'bird'"  instantiated="'false'"  />
+	<ontology groupe="'tape'"  individual="'red_tape'"  instantiated="'true'"  />
+	
+</ontology>
+	

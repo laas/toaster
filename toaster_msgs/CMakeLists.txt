@@ -32,6 +32,10 @@ add_message_files(
    Object.msg
    RobotList.msg
    Robot.msg
+
+   Property.msg
+   Event.msg
+   Ontology.msg
 )
 
 # Generate services in the 'srv' folder
@@ -60,6 +64,22 @@ add_service_files(
   GetFacts.srv
   PutInHand.srv
   RemoveFromHand.srv
+
+
+ GetProperties.srv
+  GetPropertyValue.srv
+  ExecuteSQL.srv
+  GetPassedFacts.srv
+  GetCurrentFacts.srv
+  GetAgents.srv
+  GetAgentValue.srv
+  GetEvents.srv
+  GetEventValue.srv
+  AddEvent.srv
+  GetOntologies.srv
+  GetOntologyValues.srv
+  GetOntologyLeaves.srv
+  AddEntity.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

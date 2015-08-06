@@ -1,0 +1,3 @@
+---
+bool boolAnswer
+toaster_msgs/Agent[] resAgents

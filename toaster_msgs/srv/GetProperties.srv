@@ -1,0 +1,4 @@
+
+---
+bool boolAnswer
+toaster_msgs/Property[] resProperty

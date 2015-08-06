@@ -11,5 +11,3 @@ float64 doubleValue
 string stringValue
 float64 confidence
 uint64 time
-uint64 timeStart
-uint64 timeEnd
