@@ -259,8 +259,11 @@ class Run
 		//type
 		marker.type = visualization_msgs::Marker::CUBE; //marker by defaut
 		
-		TiXmlDocument list("src/toaster_visualizer/src/list_obj.xml"); //load xml file
-		//TiXmlDocument list(ros::package::getPath("toaster_vizualiser") + (std::string)"/src/list_obj.xml"); //load xml file
+		//std::stringstream s;
+		//s << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
+		//TiXmlDocument list(s.str()); //load xml file
+		
+		TiXmlDocument list("src/toaster/toaster_visualizer/src/list_obj.xml"); //load xml file
 		
 		if(!list.LoadFile())  
 		{
@@ -729,9 +732,13 @@ class Run
 					markerTempo.type = 3;
 					
 					
-					TiXmlDocument list("src/toaster_visualizer/src/list_members.xml"); //load xml file
-					//TiXmlDocument list(ros::package::getPath("toaster_vizualiser") + (std::string)"/src/list_obj.xml"); //load xml file
-		
+					//std::stringstream s;
+					//s << ros::package::getPath("toaster_visualizer") << "/src/list_members.xml";
+					//TiXmlDocument list(s.str()); //load xml file
+					
+					TiXmlDocument list("src/toaster/toaster_visualizer/src/list_members.xml"); //load xml file
+					
+					
 					if(!list.LoadFile())  
 					{
 						ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
