@@ -778,11 +778,11 @@ int main(int argc, char** argv) {
                 //Swap data
                 if (isHuman) {
                     agntCur = humanRd.lastConfig_[(*itAgnt)];
-                    humanRd.lastConfig_[(*itAgnt)] = new Human(0);
+                    humanRd.lastConfig_[(*itAgnt)] = new Human("");
                     //memcpy(agntCur, humanRd.lastConfig_[(*itAgnt)], sizeof (Human));
                 } else {
                     agntCur = robotRd.lastConfig_[(*itAgnt)];
-                    robotRd.lastConfig_[(*itAgnt)] = new Robot(0);
+                    robotRd.lastConfig_[(*itAgnt)] = new Robot("");
                     //memcpy(agntCur, robotRd.lastConfig_[(*itAgnt)], sizeof (Robot));
                 }
 
@@ -921,7 +921,7 @@ int main(int argc, char** argv) {
                         // Data Swap
 
                         Human * hum = humanRd.lastConfig_[it->first];
-                        humanRd.lastConfig_[it->first] = new Human(0);
+                        humanRd.lastConfig_[it->first] = new Human("");
                         //Human * hum = new Human(it->first);
                         //memcpy(hum, humanRd.lastConfig_[it->first], sizeof (Human));
 
@@ -932,7 +932,7 @@ int main(int argc, char** argv) {
                         // If this is a new data we add it
                     } else if (mapTRBEntity_[it->first].back()->getTime() < it->second->getTime()) {
                         Human * hum = humanRd.lastConfig_[it->first];
-                        humanRd.lastConfig_[it->first] = new Human(0);
+                        humanRd.lastConfig_[it->first] = new Human("");
                         //Human * hum = new Human(it->first);
                         //memcpy(hum, humanRd.lastConfig_[it->first], sizeof (Human));
                         mapTRBEntity_[it->first].push_back(hum->getTime(), hum);
@@ -951,7 +951,7 @@ int main(int argc, char** argv) {
                         TRBuffer<Entity*> buffRob;
 
                         Robot* rob = robotRd.lastConfig_[it->first];
-                        robotRd.lastConfig_[it->first] = new Robot(0);
+                        robotRd.lastConfig_[it->first] = new Robot("");
                         //Robot* rob = new Robot(it->first);
                         //memcpy(rob, robotRd.lastConfig_[it->first], sizeof (Robot));
 
@@ -962,7 +962,7 @@ int main(int argc, char** argv) {
                         // If this is a new data we add it
                     } else if (mapTRBEntity_[it->first].back()->getTime() < it->second->getTime()) {
                         Robot* rob = robotRd.lastConfig_[it->first];
-                        robotRd.lastConfig_[it->first] = new Robot(0);
+                        robotRd.lastConfig_[it->first] = new Robot("");
                         //Robot* rob = new Robot(it->first);
                         //memcpy(rob, robotRd.lastConfig_[it->first], sizeof (Robot));
                         mapTRBEntity_[it->first].push_back(rob->getTime(), rob);
@@ -984,7 +984,7 @@ int main(int argc, char** argv) {
                     TRBuffer<Entity*> buffObj;
 
                     Object* obj = objectRd.lastConfig_[it->first];
-                    objectRd.lastConfig_[it->first] = new Object(0);
+                    objectRd.lastConfig_[it->first] = new Object("");
                     //Object* obj = new Object(it->first);
                     //memcpy(obj, objectRd.lastConfig_[it->first], sizeof (Object));
 
@@ -996,7 +996,7 @@ int main(int argc, char** argv) {
                     // If this is a new data we add it
                 } else if (mapTRBEntity_[it->first].back()->getTime() < it->second->getTime()) {
                     Object* obj = objectRd.lastConfig_[it->first];
-                    objectRd.lastConfig_[it->first] = new Object(0);
+                    objectRd.lastConfig_[it->first] = new Object("");
                     //Object* obj = new Object(it->first);
                     //memcpy(obj, objectRd.lastConfig_[it->first], sizeof (Object));
                     //printf("adding object name: reader %s, tmp %s, in buffer: %s\n", objectRd.lastConfig_[it->first]->getName().c_str(), obj->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str());
