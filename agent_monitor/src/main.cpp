@@ -44,6 +44,7 @@ std::map<std::string, TRBuffer < Entity* > >::iterator itTRB_;
 
 bool isPointing(Agent* agent, std::string pointingJoint, double pointingDistThreshold) {
     // if distance from body > threshold
+    // TODO: check if agent got this joint
     double distBodyJoint = bg::distance(MathFunctions::convert3dTo2d(agent->getPosition()),
             MathFunctions::convert3dTo2d(agent->skeleton_[pointingJoint]->getPosition()));
     if (distBodyJoint > pointingDistThreshold)
@@ -112,7 +113,7 @@ std::map<std::string, double> computePointingToward(std::map<std::string, TRBuff
 
     //For each entities in the same room
     for (std::map<std::string, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) {
-        Entity* curEnt = mapEnts[pointingAgent].back();
+        Entity* curEnt = mapEnts[it->first].back();
         // Can the agent point himself?
         //if (it->first != agentMonitored)
         curConf = MathFunctions::isInAngle(agent->skeleton_[pointingJoint], curEnt,
@@ -619,6 +620,7 @@ bool pointingTowardRequest(toaster_msgs::Pointing::Request &req,
     if (req.pointingJoint != "") {
         res.answer = true;
 
+        // TODO: check if agent is tracked
         Agent* agent = (Agent*) mapTRBEntity_[req.pointingAgentId].back();
         if (isPointing(agent, req.pointingJoint, req.pointingJointDistThreshold)) {
             double towardAngle = 0.0;
@@ -902,7 +904,7 @@ int main(int argc, char** argv) {
             /////////////////////////////////////
 
 
-            //printf("[agent_monitor] updating TRBuffer for each entities\n");
+            printf("[agent_monitor] updating TRBuffer for each entities\n");
 
             // for each entity
             //Put the following in a function?
@@ -1021,7 +1023,7 @@ int main(int argc, char** argv) {
 
 
 
-            //printf("[agent_monitor] computing facts for agent %d\n", (*itAgnt));
+            printf("[agent_monitor] computing facts for agent %s\n", (*itAgnt).c_str());
 
             // Compute motion:
             unsigned long oneSecond = pow(10, 9);
@@ -1041,7 +1043,7 @@ int main(int argc, char** argv) {
             mapIdValue = computeDeltaDist(mapTRBEntity_, (*itAgnt), oneSecond / 4);
             for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
                 printf("[AGENT_MONITOR][DEBUG] agent %s has a deltadist toward  %s of %f\n",
-                        mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
+                        (*itAgnt).c_str(), (it->first).c_str(), it->second);
 
 
 
