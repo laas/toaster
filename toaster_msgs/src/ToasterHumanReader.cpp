@@ -1,11 +1,10 @@
 #include "toaster_msgs/ToasterHumanReader.h"
 
-ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman) {
+ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic) {
     fullHuman_ = fullHuman;
     std::cout << "[area_manager] Initializing ToasterHumanReader" << std::endl;
-
     // Starts listening to the topic
-    sub_ = node.subscribe("/pdg/humanList", 1, &ToasterHumanReader::humanJointStateCallBack, this);
+    sub_ = node.subscribe(topic, 1, &ToasterHumanReader::humanJointStateCallBack, this);
 }
 
 void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg) {

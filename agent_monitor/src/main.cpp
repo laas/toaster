@@ -731,7 +731,7 @@ int main(int argc, char** argv) {
         if (monitorAllHumans_)
             for (std::map<std::string, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
                 // If the pointer was updated and is not the swapped one
-                if (it->second->getId() != "") {
+                if ((it->second->getId() != "") && (std::find(agentsMonitored_.begin(), agentsMonitored_.end(), it->second->getId()) == agentsMonitored_.end())) {
                     agentsMonitored_.push_back(it->first);
                 }
             }
@@ -739,7 +739,8 @@ int main(int argc, char** argv) {
         // If we monitor all robots, we add them to the agentsMonitored vector
         if (monitorAllRobots_)
             for (std::map<std::string, Robot*>::iterator it = robotRd.lastConfig_.begin(); it != robotRd.lastConfig_.end(); ++it) { // If the pointer was updated and is not the swapped one
-                if (it->second->getId() != "") {
+
+                if ((it->second->getId() != "") && (std::find(agentsMonitored_.begin(), agentsMonitored_.end(), it->second->getId()) == agentsMonitored_.end())) {
                     agentsMonitored_.push_back(it->first);
                 }
             }
