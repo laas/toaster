@@ -1,2 +1,2 @@
-uint32 jointOwner
+string jointOwner
 Entity meEntity
