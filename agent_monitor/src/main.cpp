@@ -663,7 +663,7 @@ int main(int argc, char** argv) {
 
     // TODO: add area_manager data reading to get the room of entities.
     //Data reading
-    ToasterHumanReader humanRd(node, HUMAN_FULL_CONFIG);
+    ToasterHumanReader humanRd(node, HUMAN_FULL_CONFIG, "/spark/humanList");
     ToasterRobotReader robotRd(node, ROBOT_FULL_CONFIG);
     ToasterObjectReader objectRd(node);
 
