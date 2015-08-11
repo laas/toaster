@@ -1,0 +1,5 @@
+string id
+string name
+---
+bool boolAnswer
+toaster_msgs/Id resId
