@@ -2,6 +2,7 @@
 #include "toaster_msgs/Event.h"
 #include "toaster_msgs/Ontology.h"
 #include "toaster_msgs/Fact.h"
+#include "toaster_msgs/Id.h"
 #include "toaster_msgs/FactList.h"
 #include "toaster_msgs/AddAgent.h"
 #include "toaster_msgs/AddEntity.h"
@@ -25,7 +26,8 @@
 #include "toaster_msgs/GetPassedFacts.h"
 #include "ros/package.h"
 #include "toaster_msgs/GetAgents.h"
-#include "toaster_msgs/GetAgentValue.h"
+#include "toaster_msgs/GetId.h"
+#include "toaster_msgs/GetIdValue.h"
 #include "toaster_msgs/Agent.h"
 #include "toaster_msgs/ToasterFactReader.h"
 #include "toaster_msgs/ToasterObjectReader.h"
@@ -35,12 +37,6 @@
 #include "toaster_msgs/GetOntologies.h"
 #include "toaster_msgs/GetOntologyValues.h"
 #include "toaster_msgs/GetOntologyLeaves.h"
-#include <typeinfo>
-
-
-
-//librairie
-//doc installation
 
 
 
@@ -48,12 +44,11 @@ std::vector<std::string> agentList;
 
 std::vector<toaster_msgs::Fact> myFactList;
 std::vector<toaster_msgs::Property> myPropertyList;
-std::vector<toaster_msgs::Agent> myAgentList;
+std::vector<toaster_msgs::Id> myEntityList;
 std::vector<toaster_msgs::Event> myEventList;
 std::vector<toaster_msgs::Ontology> myOntologyList;
-std::vector<int> myIdList;
 
-std::vector<std::string>myStringList;
+std::vector<std::string> myStringList;
 
 
 
@@ -91,7 +86,8 @@ class run_server
 	ros::ServiceServer get_property_value;
 	
 	ros::ServiceServer get_agents_service;
-	ros::ServiceServer get_agent_value_service;
+	ros::ServiceServer get_id_service;
+	ros::ServiceServer get_id_value_service;
 	
 	ros::ServiceServer add_event_service;
 	ros::ServiceServer get_events_service;
@@ -101,7 +97,7 @@ class run_server
 	ros::ServiceServer get_ontology_values_service;
 	ros::ServiceServer get_ontology_leaves_service;
  
- 	//sqlite tables' pointers
+ 	//sqlite database's pointer
 	sqlite3 *database;
 	
 	
@@ -112,6 +108,7 @@ class run_server
 	{	
 		ros::NodeHandle node;
 		
+		//facts services
 		add_entity_service = node.advertiseService("database/add_entity", &run_server::add_entity_db, this);
 		
 		add_fact_service = node.advertiseService("database/add_fact", &run_server::add_fact_db, this);
@@ -141,7 +138,8 @@ class run_server
 		get_property_value = node.advertiseService("database/get_property_value", &run_server::get_property_value_db, this);
 		
 		get_agents_service = node.advertiseService("database/get_agents", &run_server::get_agents_db, this);
-		get_agent_value_service = node.advertiseService("database/get_agent_value", &run_server::get_agent_value_db, this);
+		get_id_service = node.advertiseService("database/get_id", &run_server::get_id_db, this);
+		get_id_value_service = node.advertiseService("database/get_id_value", &run_server::get_id_value_db, this);
 		
 		
 		//event services
@@ -356,18 +354,15 @@ class run_server
 		
 	    for(int i=0; i<argc/nb_el; i++)
 	    {
-		  //ROS_INFO("%s = %s", azColName[i], argv[i] ? argv[i] : "NULL"); //if needed to debug
+		 // ROS_INFO("%s = %s", azColName[i], argv[i] ? argv[i] : "NULL"); //if needed to debug
 		  
-		  int id = atoi(argv[i*nb_el] ? argv[i*nb_el] : "NULL");
-		  
-		  toaster_msgs::Agent a;
-		  a.meEntity.id =  argv[i*nb_el] ? argv[i*nb_el] : "NULL";
-		  a.meEntity.name = argv[i*nb_el+1] ? argv[i*nb_el+1] : "NULL";
-		  //a.meEntity.type = argv[i*nb_el+2] ? argv[i*nb_el+2] : "NULL";
-		  //a.skeletonJoint.jointOwner = atoi(argv[i*nb_el+3] ? argv[i*nb_el+3] : "NULL");
+		  toaster_msgs::Id id;
+		  id.id = argv[i*nb_el] ? argv[i*nb_el] : "NULL";
+		  id.name = argv[i*nb_el] ? argv[i*nb_el] : "NULL";
+		  id.type = argv[i*nb_el+2] ? argv[i*nb_el+2] : "NULL";
+		  id.owner_id = argv[i*nb_el+3] ? argv[i*nb_el+3] : "NULL";
 
-		  myAgentList.push_back(a);
-		  myIdList.push_back(id);
+		  myEntityList.push_back(id);
 	   }
 	   ROS_INFO("---");
 	   return 0;
@@ -452,8 +447,7 @@ class run_server
 	   for(int i=0; i<argc; i++)
 	   {
 			//ROS_INFO("%s = %s", azColName[i], argv[i] ? argv[i] : "NULL"); //id needed to debug
-			
-			myStringList.push_back( argv[i] ? argv[i] : "NULL");
+			myStringList.push_back(argv[i] ? argv[i] : "NULL");
 	   }
 	   return 0;
 	}
@@ -514,7 +508,7 @@ class run_server
 	
 	
 	/**
-     * Get all information about agents abd objects contained in the xml file
+     * Get all information about agents and objects contained in the xml file
      * @return void
      */
 	void launchIdList ()
@@ -1890,7 +1884,7 @@ class run_server
      * @param reference to response
      * @return true 
      */
-	bool get_agents_db(toaster_msgs::GetAgents::Request  &req, toaster_msgs::GetAgents::Response &res)
+	bool get_agents_db(toaster_msgs::GetId::Request  &req, toaster_msgs::GetId::Response &res)
 	{
 		ROS_INFO("get_agents");
 			 
@@ -1906,16 +1900,15 @@ class run_server
 		}
 		else
 		{
-			fprintf(stdout, "Agents table obtained successfully\n");
+			fprintf(stdout, "Agents from id_table obtained successfully\n");
 		}
-		return true;
-		
-		//return informations from table
-		if(!myAgentList.empty())
+
+		//return informations from table		
+		if(!myEntityList.empty())
 		{
-			for(int i = 0; i<myAgentList.size(); i++)
+			for(int i = 0; i<myEntityList.size(); i++)
 			{
-				res.resAgents.push_back(myAgentList[i]);
+				res.resId.push_back(myEntityList[i]);
 			}
 			res.boolAnswer = true;
 		}
@@ -1924,7 +1917,53 @@ class run_server
 			res.boolAnswer = false;
 		}
 		
-		myAgentList = std::vector<toaster_msgs::Agent>(); //empty myAgentList
+		myEntityList = std::vector< toaster_msgs::Id >(); //empty myEntityList
+		
+		return true;
+	}
+	
+	
+	
+	/**
+     * Get all ids
+     * @param reference to request
+     * @param reference to response
+     * @return true 
+     */
+	bool get_id_db(toaster_msgs::GetId::Request  &req, toaster_msgs::GetId::Response &res)
+	{
+		ROS_INFO("get_all_id");
+			 
+		char *zErrMsg = 0;
+		const char* data = "Callback function called";
+		std::string sql;
+		
+		sql = (std::string)"SELECT * from id_table;";
+
+		if( sqlite3_exec(database, sql.c_str(), id_callback, (void*)data, &zErrMsg) != SQLITE_OK ){
+		  fprintf(stderr, "SQL error: %s\n", zErrMsg);
+		  sqlite3_free(zErrMsg);
+		}
+		else
+		{
+			fprintf(stdout, "Id table obtained successfully\n");
+		}
+
+		//return informations from table		
+		if(!myEntityList.empty())
+		{
+			for(int i = 0; i<myEntityList.size(); i++)
+			{
+				res.resId.push_back(myEntityList[i]);
+			}
+			res.boolAnswer = true;
+		}
+		else
+		{
+			res.boolAnswer = false;
+		}
+		
+		myEntityList = std::vector< toaster_msgs::Id >(); //empty myEntityList
 		
 		return true;
 	}
@@ -1936,29 +1975,29 @@ class run_server
      * @param reference to response
      * @return true 
      */
-	bool get_agent_value_db(toaster_msgs::GetAgentValue::Request  &req, toaster_msgs::GetAgentValue::Response &res)
+	bool get_id_value_db(toaster_msgs::GetIdValue::Request  &req, toaster_msgs::GetIdValue::Response &res)
 	{
-		ROS_INFO("get_agents_value");
+		ROS_INFO("get_id_value");
 			 
 		char *zErrMsg = 0;
 		const char* data = "Callback function called";
 		std::string sql;
 		
-		sql = (std::string)"SELECT * from id_table where id=" + boost::lexical_cast<std::string>(req.id) + " and name='" + (std::string)req.name + "';";
+		sql = (std::string)"SELECT * from id_table where id='" + boost::lexical_cast<std::string>(req.id) + "' and name='" + (std::string)req.name + "';";
 
-		if( sqlite3_exec(database, sql.c_str(), callback, (void*)data, &zErrMsg) != SQLITE_OK ){
+		if( sqlite3_exec(database, sql.c_str(), id_callback, (void*)data, &zErrMsg) != SQLITE_OK ){
 		  fprintf(stderr, "SQL error: %s\n", zErrMsg);
 		  sqlite3_free(zErrMsg);
 		}
 		else
 		{
-			fprintf(stdout, "Agent informations obtained successfully\n");
+			fprintf(stdout, "Id informations obtained successfully\n");
 		}
 		
 		//return informations from table
-		if(!myAgentList.empty())
+		if(!myEntityList.empty())
 		{
-			res.resAgents.push_back(myAgentList[0]);
+			res.resId = myEntityList[0];
 			res.boolAnswer = true;
 		}
 		else
@@ -1966,7 +2005,7 @@ class run_server
 			res.boolAnswer = false;
 		}
 		
-		myAgentList = std::vector<toaster_msgs::Agent>(); //empty myAgentList
+		myEntityList = std::vector< toaster_msgs::Id >(); //empty myEntityList
 		
 		return true;
 	}

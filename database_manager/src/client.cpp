@@ -25,7 +25,8 @@
 #include <inttypes.h>
 
 #include "toaster_msgs/GetAgents.h"
-#include "toaster_msgs/GetAgentValue.h"
+#include "toaster_msgs/GetId.h"
+#include "toaster_msgs/GetIdValue.h"
 
 #include "toaster_msgs/GetCurrentFacts.h"
 #include "toaster_msgs/GetPassedFacts.h"
@@ -68,7 +69,7 @@ int main(int argc, char **argv)
   ros::ServiceClient client13= ns.serviceClient<toaster_msgs::ExecuteSQL>("database/execute_SQL");
 
   ros::ServiceClient client14 = ns.serviceClient<toaster_msgs::GetAgents>("database/get_agents");
-  ros::ServiceClient client15= ns.serviceClient<toaster_msgs::GetAgentValue>("database/get_agent_value");  
+  ros::ServiceClient client15= ns.serviceClient<toaster_msgs::GetIdValue>("database/get_id_value");  
   
   
   ros::ServiceClient client16 = ns.serviceClient<toaster_msgs::GetCurrentFacts>("database/get_current_facts");

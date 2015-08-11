@@ -36,6 +36,7 @@ add_message_files(
    Property.msg
    Event.msg
    Ontology.msg
+   Id.msg
 )
 
 # Generate services in the 'srv' folder
@@ -72,7 +73,8 @@ add_service_files(
   GetPassedFacts.srv
   GetCurrentFacts.srv
   GetAgents.srv
-  GetAgentValue.srv
+  GetId.srv
+  GetIdValue.srv
   GetEvents.srv
   GetEventValue.srv
   AddEvent.srv

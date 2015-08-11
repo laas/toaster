@@ -1,5 +1,0 @@
-uint32 id
-string name
----
-bool boolAnswer
-toaster_msgs/Agent[] resAgents
