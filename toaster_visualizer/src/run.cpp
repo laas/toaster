@@ -174,7 +174,7 @@ public:
      * @param name 		polygon's name
      * @return marker 	line marker representating input polygon
      */
-    visualization_msgs::Marker definePolynome(geometry_msgs::Polygon poly, double scale, std::string name) {
+    visualization_msgs::Marker definePolygon(geometry_msgs::Polygon poly, double scale, std::string name) {
         //declarration
         visualization_msgs::Marker marker;
 
@@ -237,7 +237,7 @@ public:
      * @param name 		marker's name
      * @return marker 	object marker or mesh marker if the object is in the mesh database
      */
-    visualization_msgs::Marker defineObj(int x, int y, int z, double scale, std::string name) {
+    visualization_msgs::Marker defineObj(double x, double y, double z, double scale, std::string name) {
         //declarration 
         visualization_msgs::Marker marker;
 
@@ -350,7 +350,7 @@ public:
         nameMarker.text = marker.ns;
 
         //scale
-        nameMarker.scale.z = 1.0 * marker.scale.x;
+        nameMarker.scale.z = 0.5 * marker.scale.x;
 
         return nameMarker;
 
@@ -385,7 +385,7 @@ public:
         //position
         marker.pose.position.x = x;
         marker.pose.position.y = y;
-        marker.pose.position.z = z;
+        marker.pose.position.z = z + 0.1;
 
         //orientation
         marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
@@ -552,7 +552,7 @@ public:
 
             visualization_msgs::Marker mn = defineName(m);
             mn = setColor(mn, 1.0, 1.0, 1.0);
-            //mn = setSize(mn, 0, 0, 0.5);
+            mn = setSize(mn, 0, 0, 0.2);
 
             obj_list.markers.push_back(mn);
             obj_list.markers.push_back(m);
@@ -580,7 +580,7 @@ public:
                 m = setRandomColor(m);
 
                 visualization_msgs::Marker mn = defineName(m);
-                mn = setSize(mn, 0.0, 0.0, 1);
+                mn = setSize(mn, 0.0, 0.0, 0.4);
                 mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 1);
 
                 area_list.markers.push_back(m);
@@ -589,12 +589,12 @@ public:
                 ROS_DEBUG("circle %d", m.id);
             } else // polygon case
             {
-                visualization_msgs::Marker m = definePolynome(msg->areaList[i].poly, 0.2, msg->areaList[i].name);
+                visualization_msgs::Marker m = definePolygon(msg->areaList[i].poly, 0.2, msg->areaList[i].name);
 
                 m = setRandomColor(m);
 
                 visualization_msgs::Marker mn = defineName(m);
-                mn = setSize(mn, 0.0, 0.0, 1);
+                mn = setSize(mn, 0.0, 0.0, 0.4);
 
                 int posx = 0;
                 int posy = 0;
@@ -630,7 +630,7 @@ public:
 
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
-            mn = setSize(mn, 0, 0, 1);
+            mn = setSize(mn, 0, 0, 0.5);
             mn = setColor(mn, 1.0, 1.0, 1.0);
 
 
