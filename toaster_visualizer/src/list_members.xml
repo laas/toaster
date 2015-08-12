@@ -51,6 +51,13 @@
 	<object name="Head" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/Head.dae" />
 	<object name="LoArm.L" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/LoArm.L.dae" />
 	<object name="LoArm.R" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/LoArm.R.dae" />
+	<object name="LoLeg.L" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/LoLeg.L.dae" />
+	<object name="LoLeg.R" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/LoLeg.R.dae" />
+	<object name="Pelvis" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/Pelvis.dae" />
+	<object name="UpArm.L" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/UpArm.L.dae" />
+	<object name="UpArm.R" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/UpArm.R.dae" />
+	<object name="UpLeg.L" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/UpLeg.L.dae" />
+	<object name="UpLeg.R" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/UpLeg.R.dae" />
 	
 	
 	
