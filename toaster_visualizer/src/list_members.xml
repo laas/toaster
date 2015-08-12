@@ -41,5 +41,25 @@
 	<object name="torso-polyhedre5" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre5.dae" />
 	<object name="torso-polyhedre6" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre6.dae" />
 	
+	
+	<object name="Chest" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/chest.dae" />
+	<object name="Foot.L" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/Foot.L.dae" />
+	<object name="Foot.R" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/Foot.R.dae" />
+	<object name="Hair" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/hair.dae" />
+	<object name="Hand.L" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/Hand.L.dae" />
+	<object name="Hand.R" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/Hand.R.dae" />
+	<object name="Head" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/Head.dae" />
+	<object name="LoArm.L" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/LoArm.L.dae" />
+	<object name="LoArm.R" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_members/LoArm.R.dae" />
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 </list_members>	
 

@@ -26,7 +26,7 @@
 	<object name="BLACK_CUBE" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/cube_black.3ds" />
 	<object name="BLACK_TAPE" 		mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/BlackVideotape_mesh.3ds" />
 	<object name="WhiteVideotape" 		mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/BlackVideotape_mesh.3ds" />
-
+	<object name="pr2" 		mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/pr2.dae" />
 
 	
 </list_obj>	
