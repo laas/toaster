@@ -18,6 +18,8 @@
 #include "toaster_msgs/ObjectList.h"
 #include "toaster_msgs/Human.h"
 #include "toaster_msgs/HumanList.h"
+#include "toaster_msgs/Robot.h"
+#include "toaster_msgs/RobotList.h"
 #include "toaster_msgs/Joint.h"
 #include <map>
 #include <geometry_msgs/Polygon.h>
@@ -32,28 +34,32 @@ class Run {
     visualization_msgs::MarkerArray area_list;
     visualization_msgs::MarkerArray obj_list;
     visualization_msgs::MarkerArray human_list;
+    visualization_msgs::MarkerArray robot_list;
 
     //a vector to store allready treated marker's name and an id counter
     std::vector<std::string> name_list;
     int id_cpt;
 
     //a vector to store marker's color
-    std::vector<std::vector<float> > color_list;
+    std::map<std::string, std::vector<float> > color_map;
 
 
     //subscribers
     ros::Subscriber sub_objList;
     ros::Subscriber sub_areaList;
     ros::Subscriber sub_humanList;
+    ros::Subscriber sub_robotList;
 
 
     //publishers
     ros::Publisher pub_obj;
     ros::Publisher pub_area;
     ros::Publisher pub_human;
+    ros::Publisher pub_robot;
 
     TiXmlDocument listObj;
     TiXmlDocument listMemb;
+    //TiXmlDocument listRob;
 
 public:
 
@@ -62,7 +68,6 @@ public:
      */
     Run() {
         name_list = std::vector<std::string>();
-        color_list = std::vector<std::vector<float> >(50);
         id_cpt = 1;
 
         ros::NodeHandle reception_node;
@@ -71,22 +76,27 @@ public:
         area_list = visualization_msgs::MarkerArray();
         obj_list = visualization_msgs::MarkerArray();
         human_list = visualization_msgs::MarkerArray();
+        robot_list = visualization_msgs::MarkerArray();
 
         //definition of subscribers
         sub_objList = reception_node.subscribe("/pdg/objectList", 1000, &Run::chatterCallbackObjList, this);
         sub_areaList = reception_node.subscribe("/area_manager/areaList", 1000, &Run::chatterCallbackAreaList, this);
         sub_humanList = reception_node.subscribe("/pdg/humanList", 1000, &Run::chatterCallbackHumanList, this);
+        sub_robotList = reception_node.subscribe("/pdg/robotList", 1000, &Run::chatterCallbackRobotList, this);
 
         //definition of publishers
         pub_obj = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_object", 1000);
         pub_area = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_area", 1000);
         pub_human = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_human", 1000);
+        pub_robot = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_robot", 1000);
 
 
         //open xml files
-        std::stringstream s;
-        s << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
-        listObj = TiXmlDocument(s.str());
+
+        // Objects
+        std::stringstream pathObj;
+        pathObj << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
+        listObj = TiXmlDocument(pathObj.str());
 
         if (!listObj.LoadFile()) {
             ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
@@ -94,9 +104,10 @@ public:
             ROS_WARN_ONCE("%s", listObj.ErrorDesc());
         }
 
-        std::stringstream a;
-        a << ros::package::getPath("toaster_visualizer") << "/src/list_members.xml";
-        listMemb = TiXmlDocument(a.str());
+        // Humans
+        std::stringstream pathHuman;
+        pathHuman << ros::package::getPath("toaster_visualizer") << "/src/list_human_morse_joints.xml";
+        listMemb = TiXmlDocument(pathHuman.str());
 
         if (!listMemb.LoadFile()) {
             ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
@@ -104,7 +115,16 @@ public:
             ROS_WARN_ONCE("%s", listMemb.ErrorDesc());
         }
 
+        // Robots        
+        /*path.flush();
+        path << ros::package::getPath("toaster_visualizer") << "/src/list_robots.xml";
+        listRob = TiXmlDocument(path.str());
 
+        if (!listRob.LoadFile()) {
+            ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
+            ROS_WARN_ONCE("error # %d", listRob.ErrorId());
+            ROS_WARN_ONCE("%s", listRob.ErrorDesc());
+        }*/
 
     }
 
@@ -411,8 +431,60 @@ public:
         return marker;
     }
 
+    /**
+     * create a robot marker
+     * @param x  			coordinates of robot's base in the x direction
+     * @param y			coordinates of robot's base in the y direction
+     * @param z 			coordinates of robot's base in the z direction
+     * @param scale 		dimension of the marker
+     * @param name 		marker's name
+     * @return marker 	mesh marker of robot
+     */
+    visualization_msgs::Marker defineRobot(double x, double y, double z, double roll, double pitch, double yaw, double scale, std::string name) {
 
+        //declarration
+        visualization_msgs::Marker marker;
 
+        //frame id
+        marker.header.frame_id = "map";
+
+        //namespace
+        std::ostringstream nameSpace;
+        nameSpace << name;
+        marker.ns = nameSpace.str();
+        marker.id = id_generator(name); //creation of an unique id based on marker's name
+
+        //action
+        marker.action = visualization_msgs::Marker::ADD;
+
+        //position
+        marker.pose.position.x = x;
+        marker.pose.position.y = y;
+        marker.pose.position.z = z + 0.1;
+
+        //orientation
+        marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
+
+        //color
+        marker.color.r = 0.0f;
+        marker.color.g = 0.0f;
+        marker.color.b = 0.0f;
+        marker.color.a = 0.0;
+
+        //scale
+        marker.scale.x = 1 * scale;
+        marker.scale.y = 1 * scale;
+        marker.scale.z = 1 * scale;
+
+        //type de marker
+        marker.type = visualization_msgs::Marker::MESH_RESOURCE;
+        marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_robots/pr2.dae"; //using 3d robot model
+        marker.mesh_use_embedded_materials = true;
+
+        marker.lifetime = ros::Duration();
+
+        return marker;
+    }
 
 
 
@@ -505,18 +577,17 @@ public:
      * @return marker 		new marker with input modifications
      */
     visualization_msgs::Marker setRandomColor(visualization_msgs::Marker marker) {
-        for (int i = 0; i < name_list.size(); i++) {
-            if ((name_list[i] == marker.ns) && color_list[i].empty()) {
-                color_list[i].push_back(1.0);
-                color_list[i].push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
-                color_list[i].push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
-                color_list[i].push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
-            } else if ((name_list[i] == marker.ns) && !color_list[i].empty()) {
-                marker.color.r = color_list[i][1];
-                marker.color.g = color_list[i][2];
-                marker.color.b = color_list[i][3];
-            }
+        if (color_map.find(marker.ns) == color_map.end()) {
+            std::vector<float> color_list;
+            color_list.push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
+            color_list.push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
+            color_list.push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
+            color_map[marker.ns] = color_list;
         }
+
+        marker.color.r = (color_map[marker.ns])[0];
+        marker.color.g = (color_map[marker.ns])[1];
+        marker.color.b = (color_map[marker.ns])[2];
         return marker;
     }
 
@@ -590,7 +661,6 @@ public:
             } else // polygon case
             {
                 visualization_msgs::Marker m = definePolygon(msg->areaList[i].poly, 0.2, msg->areaList[i].name);
-
                 m = setRandomColor(m);
 
                 visualization_msgs::Marker mn = defineName(m);
@@ -611,6 +681,34 @@ public:
 
                 ROS_DEBUG("poly %d", m.id);
             }
+        }
+    }
+
+    /**
+     * CallBack creating markers based on received toaster_msgs and adding then to robot_list
+     * Robots can be representated by a single unarticulated mesh or by mutiple meshs for an articulated model
+     * @param msg			reference to receive toaster_msgs::RobotList
+     * @return 			void
+     */
+    void chatterCallbackRobotList(const toaster_msgs::RobotList::ConstPtr& msg) {
+        robot_list.markers.clear();
+
+        for (int i = 0; i < msg->robotList.size(); i++) {
+            //non articulated robot
+            visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.positionX, msg->robotList[i].meAgent.meEntity.positionY, msg->robotList[i].meAgent.meEntity.positionZ, msg->robotList[i].meAgent.meEntity.orientationRoll, msg->robotList[i].meAgent.meEntity.orientationPitch, msg->robotList[i].meAgent.meEntity.orientationYaw,
+                    1.0, msg->robotList[i].meAgent.meEntity.name);
+
+            visualization_msgs::Marker mn = defineName(m);
+            mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
+            mn = setSize(mn, 0, 0, 0.5);
+            mn = setColor(mn, 1.0, 1.0, 1.0);
+
+
+            robot_list.markers.push_back(mn);
+
+            robot_list.markers.push_back(m);
+
+            ROS_DEBUG("robot %d", m.id);
         }
     }
 
@@ -642,13 +740,13 @@ public:
                 ROS_DEBUG("human %d", m.id);
             } else //articulated human
             {
-                std::vector<toaster_msgs::Joint> membres = msg->humanList[i].meAgent.skeletonJoint;
+                std::vector<toaster_msgs::Joint> joints = msg->humanList[i].meAgent.skeletonJoint;
                 visualization_msgs::Marker markerTempo;
 
                 int scale = 1;
 
-                for (int y = 0; y < membres.size(); y++) {
-                    ROS_DEBUG("Membre");
+                for (int y = 0; y < joints.size(); y++) {
+                    ROS_DEBUG("joint");
 
                     std::string name = msg->humanList[i].meAgent.skeletonJoint[y].meEntity.name;
 
@@ -656,19 +754,17 @@ public:
                     markerTempo.header.frame_id = "map";
 
                     //namespace
-                    std::ostringstream nameSpace;
-                    nameSpace << name;
-                    markerTempo.ns = nameSpace.str();
-                    markerTempo.id = id_generator(membres[y].meEntity.name); //creation of an unique id based on marker's name
+                    markerTempo.ns = name;
+                    markerTempo.id = id_generator(joints[y].meEntity.name); //creation of an unique id based on marker's name
 
                     //action
                     markerTempo.action = visualization_msgs::Marker::ADD;
 
                     //position
-                    markerTempo = setPosition(markerTempo, membres[y].meEntity.positionX, membres[y].meEntity.positionY, membres[y].meEntity.positionZ);
+                    markerTempo = setPosition(markerTempo, joints[y].meEntity.positionX, joints[y].meEntity.positionY, joints[y].meEntity.positionZ);
 
                     //orientation
-                    markerTempo = setOrientation(markerTempo, membres[y].meEntity.orientationRoll, membres[y].meEntity.orientationPitch, membres[y].meEntity.orientationYaw);
+                    markerTempo = setOrientation(markerTempo, joints[y].meEntity.orientationRoll, joints[y].meEntity.orientationPitch, joints[y].meEntity.orientationYaw);
 
                     //color
                     markerTempo.color.r = 1.0f;
@@ -677,9 +773,9 @@ public:
                     markerTempo.color.a = 1.0;
 
                     //scale
-                    markerTempo.scale.x = 1 * scale;
-                    markerTempo.scale.y = 1 * scale;
-                    markerTempo.scale.z = 1 * scale;
+                    markerTempo.scale.x = 0.1 * scale;
+                    markerTempo.scale.y = 0.1 * scale;
+                    markerTempo.scale.z = 0.1 * scale;
 
                     //type de marker
                     markerTempo.type = 3;
@@ -696,7 +792,7 @@ public:
                         mesh_r = elem->Attribute("mesh_ressource");
                         elem = elem->NextSiblingElement();
 
-                        if (name_obj.compare(name) == 0) //if there is a 3d model relativ to this object
+                        if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
                             markerTempo.scale.x = 1 * scale;
                             markerTempo.scale.y = 1 * scale;
@@ -731,6 +827,7 @@ public:
         pub_area.publish(area_list);
         pub_obj.publish(obj_list);
         pub_human.publish(human_list);
+        pub_robot.publish(robot_list);
 
         ros::spinOnce();
     }
