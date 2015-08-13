@@ -188,7 +188,7 @@ class run_server
 	   
 		//ontology table creation
 		sql = (std::string)"CREATE TABLE ontology_table("  +
-		"groupe 				  CHAR(50)," +
+		"groupe 			 CHAR(50)," +
 		"individual        	 CHAR(50)," +
 		"instantiated      	 BOOLEAN);";
 			 
@@ -207,10 +207,10 @@ class run_server
 		 //property tables creation
 		 sql = (std::string)"CREATE TABLE static_property_table("  +
 		"id 				 INT," +
-		"color        	CHAR(50)," +
+		"color             	 CHAR(50)," +
 		"height        		 INT," +
 		"linkedToId      	 INT," +
-		"linkedTo       CHAR(50), " +
+		"linkedTo       	 CHAR(50), " +
 		" unique (id) );";
 			 
 		if( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
@@ -227,12 +227,12 @@ class run_server
 	   
 	   	//events table creation
 		sql = (std::string)"CREATE TABLE events_table("  +
-		"subject_id 				 unsigned long," +
+		"subject_id 				 	unsigned long," +
 		"predicate         	            string," +
-		"target_id        		     unsigned long," +
-		"observability   		    unsinged short," +
-		"confidence   		        unsigned short," +
-		"time   				               int)";
+		"target_id        		     	unsigned long," +
+		"observability   		    	unsinged short," +
+		"confidence   		        	unsigned short," +
+		"time   				        int)";
 			 
 		if( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
 		{
@@ -542,16 +542,16 @@ class run_server
 						
 						//we create one fact table
 						sql = (std::string)"CREATE TABLE fact_table_" + (std::string)elem->Attribute("id") + " ("  +
-						"subject_id 				 unsigned long," +
+						"subject_id 				 	unsigned long," +
 						"predicate         	            string," +
-						"target_id        		     unsigned long," +
-						"valueType			  	        	string," +
+						"target_id        		     	unsigned long," +
+						"valueType			  	        string," +
 						"valueString       	        	string," +
 						"valueDouble       	        	double," +
-						"observability   		    unsinged short," +
-						"confidence   		        unsigned short," +
-						"start   				               int," +
-						"end 					               int," +
+						"observability   		   		unsinged short," +
+						"confidence   		        	unsigned short," +
+						"start   				        int," +
+						"end 					        int," +
 						"unique (subject_id,predicate,target_id ,valueString ,observability,confidence ,end) );";  //unique fields are used to avoid doublons
 								
 						if( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
@@ -567,15 +567,15 @@ class run_server
 						//and one memory table
 						sql = (std::string)"CREATE TABLE memory_table_" + (std::string)elem->Attribute("id") + " ("  +
 						"subject_id 				 unsigned long," +
-						"predicate         	            string," +
+						"predicate         	         string," +
 						"target_id        		     unsigned long," +
-						"valueType			  	        	string," +
-						"valueString       	        	string," +
-						"valueDouble       	        	double," +
-						"observability   		    unsinged short," +
-						"confidence   		        unsigned short," +
-						"start   				               int," +
-						"end 					               int );";  //in memory table facts aren't unique
+						"valueType			  	     string," +
+						"valueString       	         string," +
+						"valueDouble       	         double," +
+						"observability   		     unsinged short," +
+						"confidence   		         unsigned short," +
+						"start   				     int," +
+						"end 					     int );";  //in memory table facts aren't unique
 								
 						if( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
 						{
@@ -875,7 +875,7 @@ class run_server
 			+ boost::lexical_cast<std::string>(req.fact.doubleValue) + ","
 			+ boost::lexical_cast<std::string>(req.fact.factObservability) + ","
 			+ boost::lexical_cast<std::string>(req.fact.confidence) + ","
-			+ boost::lexical_cast<std::string>(ros::Time::now()) + ",-1)";
+			+ boost::lexical_cast<std::string>(req.fact.time) + ",0)";
 			
 			
 			if ( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
@@ -895,7 +895,7 @@ class run_server
 			+ boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "',"
 			+ boost::lexical_cast<std::string>(req.fact.factObservability) + ","
 			+ boost::lexical_cast<std::string>(req.fact.confidence) + ","
-			+ boost::lexical_cast<std::string>(ros::Time::now()) + ")";
+			+ boost::lexical_cast<std::string>(req.fact.time) + ")";
 			
 			if ( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
 			{
@@ -1007,7 +1007,7 @@ class run_server
 			+ boost::lexical_cast<std::string>(myFactList[0].factObservability) + ","
 			+ boost::lexical_cast<std::string>(myFactList[0].confidence) + ","
 			+ boost::lexical_cast<std::string>(myFactList[0].timeStart) + "," 
-			+ boost::lexical_cast<std::string>(ros::Time::now()) +")";
+			+ boost::lexical_cast<std::string>(req.fact.time) +")";
 			
 			
 			if ( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
@@ -1027,7 +1027,7 @@ class run_server
 			+ boost::lexical_cast<std::string>(myFactList[0].targetId)  + "',"
 			+ boost::lexical_cast<std::string>(myFactList[0].factObservability) + ","
 			+ boost::lexical_cast<std::string>(myFactList[0].confidence) + ","
-			+ boost::lexical_cast<std::string>(ros::Time::now()) + ")";
+			+ boost::lexical_cast<std::string>(req.fact.time) + ")";
 			
 			if ( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
 			{
@@ -1110,7 +1110,7 @@ class run_server
 			+ boost::lexical_cast<std::string>(req.fact.doubleValue) + ","
 			+ boost::lexical_cast<std::string>(req.fact.factObservability) + ","
 			+ boost::lexical_cast<std::string>(req.fact.confidence) + ","
-			+ boost::lexical_cast<std::string>(ros::Time::now()) + ",-1);"; 
+			+ boost::lexical_cast<std::string>(req.fact.time) + ",0);"; 
 			
 			if ( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
 			{
@@ -1130,7 +1130,7 @@ class run_server
 			+ boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId)  + "',"
 			+ boost::lexical_cast<std::string>(req.fact.factObservability) + ","
 			+ boost::lexical_cast<std::string>(req.fact.confidence) + ","
-			+ boost::lexical_cast<std::string>(ros::Time::now()) + ")";
+			+ boost::lexical_cast<std::string>(req.fact.time) + ")";
 			
 			if ( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
 			{
@@ -1242,7 +1242,7 @@ class run_server
 			+ boost::lexical_cast<std::string>(myFactList[0].factObservability) + ","
 			+ boost::lexical_cast<std::string>(myFactList[0].confidence) + ","
 			+ boost::lexical_cast<std::string>(myFactList[0].timeStart) + "," 
-			+ boost::lexical_cast<std::string>(ros::Time::now()) +")";
+			+ boost::lexical_cast<std::string>(req.fact.time) +")";
 		
 
 		
@@ -1262,7 +1262,7 @@ class run_server
 			+ boost::lexical_cast<std::string>(myFactList[0].targetId)  + "',"
 			+ boost::lexical_cast<std::string>(myFactList[0].factObservability) + ","
 			+ boost::lexical_cast<std::string>(myFactList[0].confidence) + ","
-			+ boost::lexical_cast<std::string>(ros::Time::now()) + ")";
+			+ boost::lexical_cast<std::string>(req.fact.time) + ")";
 			
 			if ( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
 			{
@@ -1299,7 +1299,7 @@ class run_server
 		+ boost::lexical_cast<std::string>(req.event.targetId) + boost::lexical_cast<std::string>(req.event.targetOwnerId) +   "'," 
 		+ boost::lexical_cast<std::string>(req.event.factObservability) +   ", " 
 		+ boost::lexical_cast<std::string>(req.event.confidence) +   ", " 
-		+ boost::lexical_cast<std::string>(ros::Time::now()) +   ");"; 
+		+ boost::lexical_cast<std::string>(req.event.time) +   ");"; 
 		
 		if ( sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK )
 		{
