@@ -33,15 +33,22 @@ This node will collect all the perception data (agents configuration, object pos
 These data will be cast in toaster-lib data types and send in topics.
 
 area_manager :
-This node will use the data from PDG to compute geometric facts concerning the environment.
+This node will use the data from pdg to compute geometric facts concerning the environment.
+It creates dynamic area in which some specific computation will be performed.
+As an example, we could put an interaction area on the robot and compute the human orientation when he enters this area.
 
 agent_monitor :
+This node is using data from pdg to compute spatio-temporal facts concerning a set of agent, such as his motion.
 
 belief_manager :
+This node is managing a list of facts for agents involved in the scenario.
+It allows to enhance divergent belief management for the robot.
 
 toaster_visualizer :
+This node sends marker to rviz to visualize toaster's data.
 
 database_manager :
-
+This node is an improvement of belief_manager node. It uses a sql database to store facts, static properties and onthology.
+It provide a set of services and also allow direct sql request.
 
 A [complete documentation](http://homepages.laas.fr/gmilliez/toaster/) is available.
