@@ -5,9 +5,15 @@ Tracking Of Agent (actions and belief) and Spatio-TEmporal Reasoning.
 
 
 ![TOASTER screenshot 1](doc/media/human.png)
+
+The human from [morse](https://www.openrobots.org/morse/doc/stable/morse.html) import in toaster and visualized using rviz
+
 ![TOASTER screenshot 2](doc/media/full.png)
 
-This framework implement ros nodes that play a specific role in building situation assessment 
+A scenario using data input from morse.
+
+
+This framework provides ros nodes that play a specific role in building situation assessment 
 for the robot to understand its surrounding environment and have spatio-temporal reasoning on
 agents actions and belief.
 
@@ -38,4 +44,4 @@ toaster_visualizer :
 database_manager :
 
 
-A  [complete documentation](doc/media/toaster/index.html) is available.
+A [complete documentation](doc/media/toaster/index.html) is available.
