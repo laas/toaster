@@ -44,4 +44,4 @@ toaster_visualizer :
 database_manager :
 
 
-A [complete documentation](doc/media/toaster/index.html) is available.
+A [complete documentation]http://homepages.laas.fr/gmilliez/toaster/) is available.
