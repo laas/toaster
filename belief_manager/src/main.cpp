@@ -34,7 +34,9 @@ bool removeFactToAgent(toaster_msgs::Fact myFact, std::string agentId) {
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].subjectId == myFact.subjectId) &&
                 (factListMap_[agentId].factList[i].targetId == myFact.targetId) &&
-                (factListMap_[agentId].factList[i].property == myFact.property)) {
+                (factListMap_[agentId].factList[i].property == myFact.property) &&
+                (factListMap_[agentId].factList[i].subProperty == myFact.subProperty) &&
+                (factListMap_[agentId].factList[i].propertyType == myFact.propertyType)) {
             //we remove it:
             removeFactToAgent(i, agentId);
             removed = true;
@@ -60,7 +62,8 @@ bool removeInternFactToAgent(std::string agentId) {
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].propertyType != "state") &&
                 (factListMap_[agentId].factList[i].propertyType != "staticProperty") &&
-                (factListMap_[agentId].factList[i].propertyType != "knowledge")) {
+                (factListMap_[agentId].factList[i].propertyType != "knowledge") &&
+                (factListMap_[agentId].factList[i].propertyType != "preference")) {
             //we remove it:
             removeFactToAgent(i, agentId);
             removed = true;
@@ -77,7 +80,9 @@ bool addExternFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, 
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].subjectId == myFact.subjectId) &&
                 (factListMap_[agentId].factList[i].targetId == myFact.targetId) &&
-                (factListMap_[agentId].factList[i].property == myFact.property)) {
+                (factListMap_[agentId].factList[i].property == myFact.property) &&
+                (factListMap_[agentId].factList[i].subProperty == myFact.subProperty) &&
+                (factListMap_[agentId].factList[i].propertyType == myFact.propertyType)) {
             // as it is the same fact, we remove the previous value:
             removeFactToAgent(i, agentId);
             printf("[BELIEF_MANAGER][WARNING] Fact added to agent %s was already in "
@@ -100,7 +105,9 @@ bool addFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, std::s
     for (unsigned int i = 0; i < factListMap_[agentId].factList.size(); i++) {
         if ((factListMap_[agentId].factList[i].subjectId == myFact.subjectId) &&
                 (factListMap_[agentId].factList[i].targetId == myFact.targetId) &&
-                (factListMap_[agentId].factList[i].property == myFact.property)) {
+                (factListMap_[agentId].factList[i].property == myFact.property) &&
+                (factListMap_[agentId].factList[i].subProperty == myFact.subProperty) &&
+                (factListMap_[agentId].factList[i].propertyType == myFact.propertyType)) {
             // as it is the same fact, we remove the previous value:
             removeFactToAgent(i, agentId);
             printf("[BELIEF_MANAGER][WARNING] Fact added to agent %s was already in "
