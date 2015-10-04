@@ -127,7 +127,9 @@ bool getFactValueFromAgent(toaster_msgs::Fact reqFact, std::string agentId, toas
     for (std::vector<toaster_msgs::Fact>::iterator itFact = factListMap_[agentId].factList.begin(); itFact != factListMap_[agentId].factList.end(); ++itFact) {
         if ((*itFact).property == reqFact.property
                 && (*itFact).subjectId == reqFact.subjectId
-                && (*itFact).targetId == reqFact.targetId) {
+                && (*itFact).targetId == reqFact.targetId
+                && (*itFact).subProperty == reqFact.subProperty
+                && (*itFact).propertyType == reqFact.propertyType) {
             resFact = (*itFact);
             return true;
         } else {
