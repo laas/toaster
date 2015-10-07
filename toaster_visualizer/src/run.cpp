@@ -630,6 +630,9 @@ public:
 
             ROS_DEBUG("obj %d", m.id);
         }
+      // extra object for environment
+      visualization_msgs::Marker m = defineObj(0.0, 0.0, 0.0, 1, "env");
+      obj_list.markers.push_back(m);
     }
 
     /**
