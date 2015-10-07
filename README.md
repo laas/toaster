@@ -10,7 +10,7 @@ The human from [morse](https://www.openrobots.org/morse/doc/stable/morse.html) i
 
 ![TOASTER screenshot 2](doc/media/full.png)
 
-[![TOASTER video](http://img.youtube.com/vi/Vh9oEU2jJc/0.jpg)](http://www.youtube.com/watch?v=AVh9oEU2jJc)
+[![TOASTER video](http://img.youtube.com/vi/AVh9oEU2jJc/0.jpg)](http://www.youtube.com/watch?v=AVh9oEU2jJc)
 
 
 A scenario using data input from morse.
