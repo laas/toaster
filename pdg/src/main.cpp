@@ -4,6 +4,7 @@
 #include "pdg/NiutHumanReader.h"
 #include "pdg/GroupHumanReader.h"
 #include "pdg/MocapHumanReader.h"
+#include "pdg/AdreamMocapHumanReader.h"
 
 // Robots
 #include "pdg/Pr2RobotReader.h"
@@ -38,6 +39,7 @@ bool morseHuman_ = false;
 bool niutHuman_ = false;
 bool groupHuman_ = false;
 bool mocapHuman_ = false;
+bool adreamMocapHuman_ = false;
 
 bool pr2Robot_ = false;
 bool spencerRobot_ = false;
@@ -121,6 +123,7 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     niutHuman_ = req.niutHuman;
     groupHuman_ = req.groupHuman;
     mocapHuman_ = req.mocapHuman;
+    adreamMocapHuman_ = req.adreamMocapHuman;
     pr2Robot_ = req.pr2Robot;
     spencerRobot_ = req.spencerRobot;
     ROS_INFO("[pdg] setting pdg input");
@@ -131,7 +134,7 @@ bool putInHand(toaster_msgs::PutInHand::Request &req,
         toaster_msgs::PutInHand::Response & res) {
 
     ROS_INFO("[pdg][Request][put_in_hand] we got request to put object %s in "
-            "agent %s  joint's %s\n", req.objectId.c_str(),  req.agentId.c_str(), req.jointName.c_str());
+            "agent %s  joint's %s\n", req.objectId.c_str(), req.agentId.c_str(), req.jointName.c_str());
 
 
     if (req.agentId == "") {
@@ -181,6 +184,7 @@ int main(int argc, char** argv) {
     MorseHumanReader morseHumanRd(node, humanFullConfig_);
     //NiutHumanReader niutHumanRd()
     MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
+    AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
 
     Pr2RobotReader pr2RobotRd(robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
@@ -272,6 +276,29 @@ int main(int argc, char** argv) {
         if (mocapHuman_) {
             for (std::map<std::string, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
                 if (mocapHumanRd.isPresent(it->first)) {
+
+                    //Fact
+                    fact_msg.property = "isPresent";
+                    fact_msg.subjectId = it->first;
+                    fact_msg.stringValue = "true";
+                    fact_msg.confidence = 0.90;
+                    fact_msg.factObservability = 1.0;
+                    fact_msg.time = it->second->getTime();
+                    fact_msg.valueType = 0;
+
+                    factList_msg.factList.push_back(fact_msg);
+
+                    //Human
+                    fillEntity(it->second, human_msg.meAgent.meEntity);
+                    humanList_msg.humanList.push_back(human_msg);
+
+                }
+            }
+        }
+
+        if (adreamMocapHuman_) {
+            for (std::map<std::string, Human*>::iterator it = adreamMocapHumanRd.lastConfig_.begin(); it != adreamMocapHumanRd.lastConfig_.end(); ++it) {
+                if (adreamMocapHumanRd.isPresent(it->first)) {
 
                     //Fact
                     fact_msg.property = "isPresent";
