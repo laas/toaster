@@ -111,7 +111,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   $ENV{TOASTERLIB_DIR}/include
-  #$ENV{HOME}/openrobots/include/
+  $ENV{HOME}/openrobots/include/
 )
 
 ## Declare a cpp library
@@ -120,7 +120,7 @@ include_directories(
 # )
 
 ## Declare a cpp executable
- add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/AdreamMocapHumanReader.cpp src/GroupHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ObjectReader.cpp src/FactReader.cpp src/main.cpp)
+ add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/AdreamMocapHumanReader.cpp src/GroupHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ObjectReader.cpp src/SparkObjectReader.cpp src/VimanObjectReader.cpp src/FactReader.cpp src/SparkFactReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

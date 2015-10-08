@@ -5,4 +5,7 @@ bool mocapHuman
 bool adreamMocapHuman
 bool pr2Robot
 bool spencerRobot
+bool vimanObject
+bool sparkObject
+bool sparkFact
 ---

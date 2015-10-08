@@ -29,8 +29,6 @@ class VimanObjectReader : public ObjectReader
     GenomPoster* vimanPoster_;
     VimanObjectPublicArray vimanPosterStruct_;
     
-    //init functions    
-    void initObject(unsigned int i);
 };
 
 #endif /* VIMANOBJECTREADER_H */

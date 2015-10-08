@@ -90,6 +90,7 @@ public:
         pub_human = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_human", 1000);
         pub_robot = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_robot", 1000);
 
+// **************************************** definition function of rviz markers ********************************************************
 
         //open xml files
 
@@ -99,7 +100,7 @@ public:
         listObj = TiXmlDocument(pathObj.str());
 
         if (!listObj.LoadFile()) {
-            ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
+            ROS_WARN_ONCE("Error while loading xml file");
             ROS_WARN_ONCE("error # %d", listObj.ErrorId());
             ROS_WARN_ONCE("%s", listObj.ErrorDesc());
         }
@@ -110,7 +111,7 @@ public:
         listMemb = TiXmlDocument(pathHuman.str());
 
         if (!listMemb.LoadFile()) {
-            ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
+            ROS_WARN_ONCE("Error while loading xml file");
             ROS_WARN_ONCE("error # %d", listMemb.ErrorId());
             ROS_WARN_ONCE("%s", listMemb.ErrorDesc());
         }
@@ -594,6 +595,7 @@ public:
 
 
 
+//******************************************************** emission/reception ********************************************************
 
 
 

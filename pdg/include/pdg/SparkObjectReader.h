@@ -26,8 +26,6 @@ private:
     GenomPoster* sparkPoster_;
     STRUCT_SPARK_CURRENT_ENVIRONMENT sparkPosterStruct_;
 
-    //init functions    
-    void initObject(unsigned int i);
 };
 
 #endif	/* SPARKOBJECTREADER_H */

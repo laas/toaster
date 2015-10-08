@@ -23,7 +23,7 @@ public:
 
     bool isPresent(std::string id);
 
-    ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic = "/pdg/humanList");
+    ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic="pdg/humanList");
 
 private:
     void humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg);

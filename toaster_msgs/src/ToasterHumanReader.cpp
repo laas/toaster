@@ -3,7 +3,6 @@
 ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic) {
     fullHuman_ = fullHuman;
     std::cout << "[area_manager] Initializing ToasterHumanReader" << std::endl;
-
     // Starts listening to the topic
     sub_ = node.subscribe(topic, 1, &ToasterHumanReader::humanJointStateCallBack, this);
 }
