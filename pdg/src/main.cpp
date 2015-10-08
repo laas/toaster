@@ -11,8 +11,12 @@
 #include "pdg/SpencerRobotReader.h"
 
 // Objects
+#include "pdg/SparkObjectReader.h"
+#include "pdg/VimanObjectReader.h"
+
 
 // Facts
+#include "pdg/SparkFactReader.h"
 
 
 // Message generated class

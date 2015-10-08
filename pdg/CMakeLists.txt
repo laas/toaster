@@ -130,7 +130,8 @@ include_directories(
 # target_link_libraries(pdg_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(pdg $ENV{TOASTERLIB_DIR}/lib/libtoaster.so
+target_link_libraries(pdg $ENV{ROBOTPKG_BASE}/lib/libposterLib.so
+			  $ENV{TOASTERLIB_DIR}/lib/libtoaster.so
                           ${catkin_LIBRARIES})
 
 

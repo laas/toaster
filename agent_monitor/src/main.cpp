@@ -539,16 +539,6 @@ bool printAllMonitoredAgents(toaster_msgs::Empty::Request &req,
     return true;
 }
 
-bool printAllAgents(toaster_msgs::Empty::Request &req,
-        toaster_msgs::Empty::Response & res) {
-
-    ROS_INFO("[agent_monitor][Request][PRINT] ****** Agents *******");
-    for (std::map<std::string, unsigned int>::iterator itMap = mapNameToAgentId_.begin(); itMap != mapNameToAgentId_.end(); ++itMap)
-        ROS_INFO("[agent_monitor][Request][PRINT] Agent id: %d, name: %s", itMap->second, itMap->first.c_str());
-
-    return true;
-}
-
 bool monitorAllAgents(toaster_msgs::MonitorAll::Request &req,
         toaster_msgs::MonitorAll::Response & res) {
 
@@ -610,13 +600,13 @@ bool pointingTowardTimeRequest(toaster_msgs::PointingTime::Request &req,
                 for (std::map < std::string, double>::iterator it = towardEnts.begin(); it != towardEnts.end(); ++it) {
                     res.pointedId.push_back(it->first);
                     res.confidence.push_back(it->second);
-                    res.pointedName.push_back(mapTRBEntity_[it->first].back()->getName());
                 }
             }
         }
         return true;
     }
 }
+
 
 bool pointingTowardRequest(toaster_msgs::Pointing::Request &req,
         toaster_msgs::Pointing::Response & res) {
