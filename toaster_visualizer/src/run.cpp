@@ -799,9 +799,15 @@ public:
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
+			  if(name_obj == "base"){
+                            markerTempo.scale.x = 0.3 * scale;
+                            markerTempo.scale.y = 0.3 * scale;
+                            markerTempo.scale.z = 0.3 * scale;
+			  }else{
                             markerTempo.scale.x = 1 * scale;
                             markerTempo.scale.y = 1 * scale;
                             markerTempo.scale.z = 1 * scale;
+			  }
 
                             markerTempo.color.r = 0.0f;
                             markerTempo.color.g = 0.0f;
