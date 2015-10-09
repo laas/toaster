@@ -17,5 +17,11 @@
 	<object name="rElbowZ" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/morse/UpArm.R.dae" />
 	<object name="lKnee" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/morse/UpLeg.L.dae" />
 	<object name="rKnee" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/morse/UpLeg.R.dae" />
+
+
+
+	<object name="base" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/morse/humanMocap.dae" />
+	<object name="rightHand" 			mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/morse/Hand.R.dae" />
+
 </list_members>	
 
