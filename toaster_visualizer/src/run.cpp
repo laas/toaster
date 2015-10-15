@@ -258,7 +258,7 @@ public:
      * @param name 		marker's name
      * @return marker 	object marker or mesh marker if the object is in the mesh database
      */
-    visualization_msgs::Marker defineObj(double x, double y, double z, double scale, std::string name) {
+    visualization_msgs::Marker defineObj(double x, double y, double z, double roll, double pitch, double yaw, double scale, std::string name) {
         //declarration 
         visualization_msgs::Marker marker;
 
@@ -280,10 +280,7 @@ public:
         marker.pose.position.z = z;
 
         //orientation
-        marker.pose.orientation.x = 0.0;
-        marker.pose.orientation.y = 0.0;
-        marker.pose.orientation.z = 0.0;
-        marker.pose.orientation.w = 1.0;
+		marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
 
         //color
         marker.color.r = 0.0f;
@@ -618,10 +615,8 @@ public:
         obj_list.markers.clear();
 
         for (int i = 0; i < msg->objectList.size(); i++) {
-            visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.positionX, msg->objectList[i].meEntity.positionY, msg->objectList[i].meEntity.positionZ,
+            visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.positionX, msg->objectList[i].meEntity.positionY, msg->objectList[i].meEntity.positionZ, msg->objectList[i].meEntity.orientationRoll, msg->objectList[i].meEntity.orientationPitch, msg->objectList[i].meEntity.orientationYaw,
                     1, msg->objectList[i].meEntity.name);
-
-            m = setOrientation(m, msg->objectList[i].meEntity.orientationRoll, msg->objectList[i].meEntity.orientationPitch, msg->objectList[i].meEntity.orientationYaw);
 
             visualization_msgs::Marker mn = defineName(m);
             mn = setColor(mn, 1.0, 1.0, 1.0);
@@ -633,7 +628,7 @@ public:
             ROS_DEBUG("obj %d", m.id);
         }
       // extra object for environment
-      visualization_msgs::Marker m = defineObj(0.0, 0.0, 0.0, 1, "env");
+      visualization_msgs::Marker m = defineObj(0.3, 0.3, -0.05, 0.0, 0.0, -1.57, 1, "env");
       obj_list.markers.push_back(m);
     }
 

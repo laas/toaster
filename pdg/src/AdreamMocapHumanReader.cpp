@@ -44,7 +44,7 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
             bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
             humanPosition.set<0>(msg->pos[0].x + 6.407);
             humanPosition.set<1>(msg->pos[0].y + 2.972);
-            humanPosition.set<2>(msg->pos[0].z - 1.2);
+            humanPosition.set<2>(msg->pos[0].z - 1.6);
 
             //set the human orientation
             std::vector<double> humanOrientation;
@@ -52,7 +52,12 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
             //transform the pose message
             humanOrientation.push_back(0.0);
             humanOrientation.push_back(0.0);
-            humanOrientation.push_back(msg->pos[0].qz + 3.14159);
+
+            tf::Quaternion q(msg->pos[0].qx, msg->pos[0].qy, msg->pos[0].qz, msg->pos[0].qw);
+            double roll, pitch, yaw;
+            yaw = tf::getYaw(q);
+
+            humanOrientation.push_back(yaw);
 
             //put the data in the human
             curHuman->setOrientation(humanOrientation);
@@ -117,16 +122,22 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
 
             std::vector<double> jointOrientation;
 
-            jointOrientation.push_back(0.0);
-            jointOrientation.push_back(0.0);
-            jointOrientation.push_back(msg->pos[0].qz + 3.14159);
+
+           tf::Quaternion q(msg->pos[0].qx, msg->pos[0].qy, msg->pos[0].qz, msg->pos[0].qw);
+           double roll, pitch, yaw;
+           tf::Matrix3x3 m(q);
+           m.getEulerYPR(yaw,pitch,roll);
+
+           jointOrientation.push_back(roll+1.57);
+           jointOrientation.push_back(pitch+1.57);
+           jointOrientation.push_back(yaw+3.14);
 
 
-            curJoint->setPosition(jointPosition);
-            curJoint->setOrientation(jointOrientation);
-            curJoint->setTime(now.toNSec());
+           curJoint->setPosition(jointPosition);
+           curJoint->setOrientation(jointOrientation);
+           curJoint->setTime(now.toNSec());
 
-            lastConfig_[humId]->skeleton_[jointName] = curJoint;
+           lastConfig_[humId]->skeleton_[jointName] = curJoint;
         }
 
     } catch (tf::TransformException ex) {
