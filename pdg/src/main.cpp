@@ -59,14 +59,20 @@ void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.orientationYaw = srcEntity->getOrientation()[2];
 }
 
-bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::string joint,
+bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string id, std::string joint,
         toaster_msgs::HumanList& humanList_msg) {
 
     toaster_msgs::Entity jointEntity;
 
-    std::vector<std::string>::iterator it = std::find(humanList_msg.humanList[id].meAgent.skeletonNames.begin(), humanList_msg.humanList[id].meAgent.skeletonNames.end(), joint);
-    if (it != humanList_msg.humanList[id].meAgent.skeletonNames.end()) {
-        jointEntity = humanList_msg.humanList[id].meAgent.skeletonJoint[std::distance(humanList_msg.humanList[id].meAgent.skeletonNames.begin(), it)].meEntity;
+    //  find back the agent:
+    unsigned int i_agent = 0;
+    while (humanList_msg.humanList[i_agent].meAgent.meEntity.id != id)
+        i_agent++;
+
+
+    std::vector<std::string>::iterator it = std::find(humanList_msg.humanList[i_agent].meAgent.skeletonNames.begin(), humanList_msg.humanList[i_agent].meAgent.skeletonNames.end(), joint);
+    if (it != humanList_msg.humanList[i_agent].meAgent.skeletonNames.end()) {
+        jointEntity = humanList_msg.humanList[i_agent].meAgent.skeletonJoint[std::distance(humanList_msg.humanList[i_agent].meAgent.skeletonNames.begin(), it)].meEntity;
 
         msgEntity.positionX = jointEntity.positionX;
         msgEntity.positionX = jointEntity.positionY;
@@ -75,8 +81,8 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::s
         msgEntity.orientationPitch = jointEntity.orientationPitch;
         msgEntity.orientationYaw = jointEntity.orientationYaw;
 
-        humanList_msg.humanList[id].meAgent.hasObjects.push_back(msgEntity.name);
-        humanList_msg.humanList[id].meAgent.busyHands.push_back(jointEntity.name);
+        humanList_msg.humanList[i_agent].meAgent.hasObjects.push_back(msgEntity.name);
+        humanList_msg.humanList[i_agent].meAgent.busyHands.push_back(jointEntity.name);
 
         return true;
     } else
@@ -85,14 +91,19 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::s
     return true;
 }
 
-bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::string joint,
+bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string id, std::string joint,
         toaster_msgs::RobotList robotList_msg) {
 
     toaster_msgs::Entity jointEntity;
 
-    std::vector<std::string>::iterator it = std::find(robotList_msg.robotList[id].meAgent.skeletonNames.begin(), robotList_msg.robotList[id].meAgent.skeletonNames.end(), joint);
-    if (it != robotList_msg.robotList[id].meAgent.skeletonNames.end()) {
-        jointEntity = robotList_msg.robotList[id].meAgent.skeletonJoint[std::distance(robotList_msg.robotList[id].meAgent.skeletonNames.begin(), it)].meEntity;
+    //  find back the agent:
+    unsigned int i_agent = 0;
+    while (robotList_msg.robotList[i_agent].meAgent.meEntity.id != id)
+        i_agent++;
+
+    std::vector<std::string>::iterator it = std::find(robotList_msg.robotList[i_agent].meAgent.skeletonNames.begin(), robotList_msg.robotList[i_agent].meAgent.skeletonNames.end(), joint);
+    if (it != robotList_msg.robotList[i_agent].meAgent.skeletonNames.end()) {
+        jointEntity = robotList_msg.robotList[i_agent].meAgent.skeletonJoint[std::distance(robotList_msg.robotList[i_agent].meAgent.skeletonNames.begin(), it)].meEntity;
 
         msgEntity.positionX = jointEntity.positionX;
         msgEntity.positionX = jointEntity.positionY;
@@ -101,8 +112,8 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, unsigned int id, std::s
         msgEntity.orientationPitch = jointEntity.orientationPitch;
         msgEntity.orientationYaw = jointEntity.orientationYaw;
 
-        robotList_msg.robotList[id].meAgent.hasObjects.push_back(msgEntity.name);
-        robotList_msg.robotList[id].meAgent.busyHands.push_back(msgEntity.name);
+        robotList_msg.robotList[i_agent].meAgent.hasObjects.push_back(msgEntity.name);
+        robotList_msg.robotList[i_agent].meAgent.busyHands.push_back(msgEntity.name);
 
         return true;
     } else
@@ -313,6 +324,17 @@ int main(int argc, char** argv) {
 
                     //Human
                     fillEntity(it->second, human_msg.meAgent.meEntity);
+
+                    //if (humanFullConfig_) {
+                    for (std::map<std::string, Joint*>::iterator itJoint = adreamMocapHumanRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != adreamMocapHumanRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                        human_msg.meAgent.skeletonNames.push_back(itJoint->first);
+                        fillEntity((itJoint->second), joint_msg.meEntity);
+                        joint_msg.jointOwner = it->first;
+
+                        human_msg.meAgent.skeletonJoint.push_back(joint_msg);
+
+                    }
+                    //}
                     humanList_msg.humanList.push_back(human_msg);
 
                 }
@@ -369,15 +391,13 @@ int main(int argc, char** argv) {
                     fillEntity(pr2RobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
                     if (robotFullConfig_) {
-                        unsigned int i = 0;
-                        for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[it->first]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[it->first]->skeleton_.end(); ++it) {
-                            robot_msg.meAgent.skeletonNames[i] = it->first;
-                            fillEntity((it->second), joint_msg.meEntity);
+                        for (std::map<std::string, Joint*>::iterator itJoint = pr2RobotRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != pr2RobotRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                            robot_msg.meAgent.skeletonNames.push_back(itJoint->first);
+                            fillEntity((itJoint->second), joint_msg.meEntity);
 
-                            joint_msg.jointOwner = 1;
+                            joint_msg.jointOwner = it->first;
 
                             robot_msg.meAgent.skeletonJoint.push_back(joint_msg);
-                            i++;
                         }
                     }
                     robotList_msg.robotList.push_back(robot_msg);

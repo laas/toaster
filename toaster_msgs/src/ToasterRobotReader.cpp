@@ -46,18 +46,18 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::
         //TODO: fullRobot case
         if (fullRobot_) {
             Joint * curJnt;
-            for (unsigned int i_jnt = 0; i_jnt < msg->robotList[i].meAgent.skeletonNames.size(); i_jnt++) {
+            for (unsigned int i_jnt = 0; i_jnt < msg->robotList[i].meAgent.skeletonJoint.size(); i_jnt++) {
 
                 // If this joint is not assigned we have to allocate data.
-                if (lastConfig_[curRobot->getId()]->skeleton_[msg->robotList[i].meAgent.skeletonNames[i_jnt] ] == NULL) {
+                if (lastConfig_[curRobot->getId()]->skeleton_[msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.name ] == NULL) {
                     curJnt = new Joint(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.id, msg->robotList[i].meAgent.meEntity.id);
                 } else
-                    curJnt = lastConfig_[curRobot->getId()]->skeleton_[msg->robotList[i].meAgent.skeletonNames[i_jnt] ];
+                    curJnt = lastConfig_[curRobot->getId()]->skeleton_[msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.name ];
 
                 std::vector<double> jointOrientation;
                 bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
 
-                curJnt->setName(msg->robotList[i].meAgent.skeletonNames[i_jnt]);
+                curJnt->setName(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.name);
                 curJnt->setAgentId(curRobot->getId());
                 curJnt->setTime(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.time);
 

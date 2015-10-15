@@ -90,6 +90,7 @@ public:
         pub_human = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_human", 1000);
         pub_robot = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_robot", 1000);
 
+// **************************************** definition function of rviz markers ********************************************************
 
         //open xml files
 
@@ -99,7 +100,7 @@ public:
         listObj = TiXmlDocument(pathObj.str());
 
         if (!listObj.LoadFile()) {
-            ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
+            ROS_WARN_ONCE("Error while loading xml file");
             ROS_WARN_ONCE("error # %d", listObj.ErrorId());
             ROS_WARN_ONCE("%s", listObj.ErrorDesc());
         }
@@ -110,7 +111,7 @@ public:
         listMemb = TiXmlDocument(pathHuman.str());
 
         if (!listMemb.LoadFile()) {
-            ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
+            ROS_WARN_ONCE("Error while loading xml file");
             ROS_WARN_ONCE("error # %d", listMemb.ErrorId());
             ROS_WARN_ONCE("%s", listMemb.ErrorDesc());
         }
@@ -257,7 +258,7 @@ public:
      * @param name 		marker's name
      * @return marker 	object marker or mesh marker if the object is in the mesh database
      */
-    visualization_msgs::Marker defineObj(double x, double y, double z, double scale, std::string name) {
+    visualization_msgs::Marker defineObj(double x, double y, double z, double roll, double pitch, double yaw, double scale, std::string name) {
         //declarration 
         visualization_msgs::Marker marker;
 
@@ -279,10 +280,7 @@ public:
         marker.pose.position.z = z;
 
         //orientation
-        marker.pose.orientation.x = 0.0;
-        marker.pose.orientation.y = 0.0;
-        marker.pose.orientation.z = 0.0;
-        marker.pose.orientation.w = 1.0;
+		marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
 
         //color
         marker.color.r = 0.0f;
@@ -616,10 +614,8 @@ public:
         obj_list.markers.clear();
 
         for (int i = 0; i < msg->objectList.size(); i++) {
-            visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.positionX, msg->objectList[i].meEntity.positionY, msg->objectList[i].meEntity.positionZ,
+            visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.positionX, msg->objectList[i].meEntity.positionY, msg->objectList[i].meEntity.positionZ, msg->objectList[i].meEntity.orientationRoll, msg->objectList[i].meEntity.orientationPitch, msg->objectList[i].meEntity.orientationYaw,
                     1, msg->objectList[i].meEntity.name);
-
-            m = setOrientation(m, msg->objectList[i].meEntity.orientationRoll, msg->objectList[i].meEntity.orientationPitch, msg->objectList[i].meEntity.orientationYaw);
 
             visualization_msgs::Marker mn = defineName(m);
             mn = setColor(mn, 1.0, 1.0, 1.0);
@@ -631,7 +627,7 @@ public:
             ROS_DEBUG("obj %d", m.id);
         }
       // extra object for environment
-      visualization_msgs::Marker m = defineObj(0.0, 0.0, 0.0, 1, "env");
+      visualization_msgs::Marker m = defineObj(0.3, 0.3, -0.05, 0.0, 0.0, -1.57, 1, "env");
       obj_list.markers.push_back(m);
     }
 
@@ -797,20 +793,26 @@ public:
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
+			  if(name_obj == "base" || name_obj == "rightHand"){
+                            markerTempo.scale.x = 0.3 * scale;
+                            markerTempo.scale.y = 0.3 * scale;
+                            markerTempo.scale.z = 0.3 * scale;
+			  }else{
                             markerTempo.scale.x = 1 * scale;
                             markerTempo.scale.y = 1 * scale;
                             markerTempo.scale.z = 1 * scale;
+			  }
 
-                            markerTempo.color.r = 0.0f;
-                            markerTempo.color.g = 0.0f;
-                            markerTempo.color.b = 0.0f;
-                            markerTempo.color.a = 0.0;
+                          markerTempo.color.r = 0.0f;
+                          markerTempo.color.g = 0.0f;
+                          markerTempo.color.b = 0.0f;
+                          markerTempo.color.a = 0.0;
 
-                            markerTempo.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh
-                            markerTempo.mesh_resource = mesh_r;
-                            markerTempo.mesh_use_embedded_materials = true;
+                          markerTempo.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh
+                          markerTempo.mesh_resource = mesh_r;
+                          markerTempo.mesh_use_embedded_materials = true;
 
-                            elem = NULL;
+                          elem = NULL;
                         }
                     }
 

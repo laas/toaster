@@ -3,7 +3,6 @@
 ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic) {
     fullHuman_ = fullHuman;
     std::cout << "[area_manager] Initializing ToasterHumanReader" << std::endl;
-
     // Starts listening to the topic
     sub_ = node.subscribe(topic, 1, &ToasterHumanReader::humanJointStateCallBack, this);
 }
@@ -45,18 +44,18 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::
         //TODO: fullHuman
         if (fullHuman_) {
             Joint * curJnt;
-            for (unsigned int i_jnt = 0; i_jnt < msg->humanList[i].meAgent.skeletonNames.size(); i_jnt++) {
+            for (unsigned int i_jnt = 0; i_jnt < msg->humanList[i].meAgent.skeletonJoint.size(); i_jnt++) {
 
                 // If this joint is not assigned we have to allocate data.
-                if (lastConfig_[curHuman->getId()]->skeleton_[msg->humanList[i].meAgent.skeletonNames[i_jnt] ] == NULL) {
+                if (lastConfig_[curHuman->getId()]->skeleton_[msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.name ] == NULL) {
                     curJnt = new Joint(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.id, msg->humanList[i].meAgent.meEntity.id);
                 } else
-                    curJnt = lastConfig_[curHuman->getId()]->skeleton_[msg->humanList[i].meAgent.skeletonNames[i_jnt] ];
+                    curJnt = lastConfig_[curHuman->getId()]->skeleton_[msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.name ];
 
                 std::vector<double> jointOrientation;
                 bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
 
-                curJnt->setName(msg->humanList[i].meAgent.skeletonNames[i_jnt]);
+                curJnt->setName(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.name);
                 curJnt->setAgentId(curHuman->getId());
                 curJnt->setTime(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.time);
 
