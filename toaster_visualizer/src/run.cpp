@@ -90,7 +90,7 @@ public:
         pub_human = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_human", 1000);
         pub_robot = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_robot", 1000);
 
-// **************************************** definition function of rviz markers ********************************************************
+        // **************************************** definition function of rviz markers ********************************************************
 
         //open xml files
 
@@ -280,7 +280,7 @@ public:
         marker.pose.position.z = z;
 
         //orientation
-		marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
+        marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
 
         //color
         marker.color.r = 0.0f;
@@ -592,7 +592,6 @@ public:
 
 
 
-//******************************************************** emission/reception ********************************************************
 
 
 
@@ -627,9 +626,9 @@ public:
 
             ROS_DEBUG("obj %d", m.id);
         }
-      // extra object for environment
-      visualization_msgs::Marker m = defineObj(0.3, 0.3, -0.05, 0.0, 0.0, -1.57, 1, "env");
-      obj_list.markers.push_back(m);
+        // extra object for environment
+        visualization_msgs::Marker m = defineObj(0.3, 0.3, -0.05, 0.0, 0.0, -1.57, 1, "env");
+        obj_list.markers.push_back(m);
     }
 
     /**
@@ -794,15 +793,15 @@ public:
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
-			  if(name_obj == "base" || name_obj == "rightHand"){
-                            markerTempo.scale.x = 0.3 * scale;
-                            markerTempo.scale.y = 0.3 * scale;
-                            markerTempo.scale.z = 0.3 * scale;
-			  }else{
-                            markerTempo.scale.x = 1 * scale;
-                            markerTempo.scale.y = 1 * scale;
-                            markerTempo.scale.z = 1 * scale;
-			  }
+                            if (name_obj == "base" || name_obj == "rightHand") {
+                                markerTempo.scale.x = 0.3 * scale;
+                                markerTempo.scale.y = 0.3 * scale;
+                                markerTempo.scale.z = 0.3 * scale;
+                            } else {
+                                markerTempo.scale.x = 1 * scale;
+                                markerTempo.scale.y = 1 * scale;
+                                markerTempo.scale.z = 1 * scale;
+                            }
 
                             markerTempo.color.r = 0.0f;
                             markerTempo.color.g = 0.0f;

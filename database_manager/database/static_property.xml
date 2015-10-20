@@ -1,11 +1,11 @@
 <static_property>
 	
-	<entity id="1" color= "'vert'" height="4"  linkedToId="2" linkedTo="'mug'" />
-	<entity id="2" color= "'rouge'" height="4"  linkedToId="1" linkedTo="'balle'" />
-	<entity id="3" color= "'jaune'" height="4"  linkedToId="2" linkedTo="'caillou'" />
-	<entity id="4" color= "'violet'" height="4"  linkedToId="2" linkedTo="'table'" />
-	<entity id="5" color= "'bleu'" height="4"  linkedToId="2" linkedTo="'bol'" />
-	<entity id="6" color= "'noir'" height="4"  linkedToId="2" linkedTo="'tasse'" />
+	<entity id="1" color= "'green'"		height="4"  linkedToId="2" linkType="'mug'" />
+	<entity id="2" color= "'red'" 		height="4"  linkedToId="1" linkType="'ball'" />
+	<entity id="3" color= "'yellow'" 	height="4"  linkedToId="2" linkType="'stone'" />
+	<entity id="4" color= "'purple'" 	height="4"  linkedToId="2" linkType="'table'" />
+	<entity id="5" color= "'blue'" 		height="4"  linkedToId="2" linkType="'book'" />
+	<entity id="6" color= "'black'" 	height="4"  linkedToId="2" linkType="'cube'" />
 	
 </static_property>
 	

@@ -1,3 +1,3 @@
-string groupe
+string entityClass
 string individual
 bool instantiated

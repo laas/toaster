@@ -171,7 +171,7 @@ public:
                 "unique(id) );";
 
         if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-            ROS_WARN_ONCE("SQL error: %s", zErrMsg);
+            ROS_WARN_ONCE("SQL error l174: %s", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             ROS_INFO("Opened id table successfully\n");
@@ -181,12 +181,13 @@ public:
 
         //ontology table creation
         sql = (std::string)"CREATE TABLE ontology_table(" +
-                "group  		 CHAR(50)," +
+                "entityClass  		 CHAR(50)," +
                 "individual        	 CHAR(50)," +
                 "instantiated      	 BOOLEAN);";
 
+
         if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-            ROS_WARN_ONCE("SQL error: %s", zErrMsg);
+            ROS_WARN_ONCE("SQL error l189: %s", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             ROS_INFO("Opened ontology table successfully\n");
@@ -200,11 +201,11 @@ public:
                 "color             	 CHAR(50)," +
                 "height        		 INT," +
                 "linkedToId      	 INT," +
-                "linkedTo       	 CHAR(50), " +
+                "linkType       	 CHAR(50), " +
                 " unique (id) );";
 
         if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-            ROS_WARN_ONCE("SQL error: %s", zErrMsg);
+            ROS_WARN_ONCE("SQL error l207: %s", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             ROS_INFO("Opened static property table successfully\n");
@@ -222,7 +223,7 @@ public:
                 "time   				int)";
 
         if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-            ROS_WARN_ONCE("SQL error: %s", zErrMsg);
+            ROS_WARN_ONCE("SQL error l225: %s", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             ROS_INFO("Opened events table successfully\n");
@@ -305,7 +306,7 @@ public:
             p.color = argv[i * nb_el + 1] ? argv[i * nb_el + 1] : "NULL";
             p.height = argv[i * nb_el + 2] ? argv[i * nb_el + 2] : "NULL";
             p.linkedToId = atoi(argv[i * nb_el + 3] ? argv[i * nb_el + 3] : "NULL");
-            p.linkedTo = argv[i * nb_el + 4] ? argv[i * nb_el + 4] : "NULL";
+            p.linkType = argv[i * nb_el + 4] ? argv[i * nb_el + 4] : "NULL";
 
             myPropertyList.push_back(p);
         }
@@ -388,7 +389,7 @@ public:
             //ROS_INFO("%s = %s", azColName[i*nb_el], argv[i*nb_el] ? argv[i*nb_el] : "NULL"); //if needed to debug
 
             toaster_msgs::Ontology o;
-            o.groupe = argv[(i) * nb_el + 0] ? argv[(i) * nb_el + 0] : "NULL";
+            o.entityClass = argv[(i) * nb_el + 0] ? argv[(i) * nb_el + 0] : "NULL";
             o.individual = argv[(i) * nb_el + 1] ? argv[(i) * nb_el + 1] : "NULL";
             o.instantiated = (bool)(argv[(i) * nb_el + 2] ? argv[(i) * nb_el + 2] : "NULL");
 
@@ -437,7 +438,7 @@ public:
         //TiXmlDocument static_property("src/database_manager/database/static_property.xml"); //load xml file (static way)
 
         if (!static_property.LoadFile()) {
-            ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
+            ROS_WARN_ONCE("Error while loading xml file for static properties");
             ROS_WARN_ONCE("error # %d", static_property.ErrorId());
             ROS_WARN_ONCE("%s", static_property.ErrorDesc());
             exit(0);
@@ -447,12 +448,12 @@ public:
 
             while (elem) //for each element of the xml file
             {
-                sql = (std::string)"INSERT INTO static_property_table (id, color,height,linkedToId,linkedTo) VALUES ("
+                sql = (std::string)"INSERT INTO static_property_table (id, color,height,linkedToId,linkType) VALUES ("
                         + elem->Attribute("id") + ","
                         + elem->Attribute("color") + ","
                         + elem->Attribute("height") + ","
                         + elem->Attribute("linkedToId") + ","
-                        + elem->Attribute("linkedTo") + (std::string)");";
+                        + elem->Attribute("linkType") + (std::string)");";
 
                 if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
                     ROS_WARN_ONCE("SQL error with xml file: %s", zErrMsg);
@@ -508,7 +509,7 @@ public:
                             "unique (subject_id,predicate,target_id ,valueString ,observability,confidence ,end) );"; //unique fields are used to avoid doublons
 
                     if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-                        ROS_WARN_ONCE("SQL error: %s", zErrMsg);
+                        ROS_WARN_ONCE("SQL error l511: %s", zErrMsg);
                         sqlite3_free(zErrMsg);
                     } else {
                         ROS_INFO("Opened fact table successfully\n");
@@ -528,7 +529,7 @@ public:
                             "end 					     int );"; //in memory table facts aren't unique
 
                     if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-                        ROS_WARN_ONCE("SQL error: %s", zErrMsg);
+                        ROS_WARN_ONCE("SQL error l531: %s", zErrMsg);
                         sqlite3_free(zErrMsg);
                     } else {
                         ROS_INFO("Opened memory table successfully\n");
@@ -574,8 +575,8 @@ public:
 
             while (elem) //for each element of the xml file
             {
-                sql = (std::string)"INSERT INTO ontology_table (groupe, individual, instantiated) VALUES ("
-                        + elem->Attribute("groupe") + ","
+                sql = (std::string)"INSERT INTO ontology_table (entityClass, individual, instantiated) VALUES ("
+                        + elem->Attribute("entityClass") + ","
                         + elem->Attribute("individual") + ","
                         + elem->Attribute("instantiated") + (std::string)");";
 
@@ -748,7 +749,7 @@ public:
         std::string sql;
         char *zErrMsg = 0;
 
-        //we first check if there is allready a such fact in db
+        //we first check if there is already such fact in db
         sql = (std::string)"SELECT * from fact_table_" + agentList[0]
                 + " where subject_id='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId)
                 + "' and predicate='" + (std::string)req.fact.property
@@ -1086,8 +1087,7 @@ public:
         if (sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg)) {
             ROS_INFO("SQL error : %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
-        }
-        else {
+        } else {
             ROS_INFO("Fact successfully removed\n");
         }
 
@@ -1186,7 +1186,7 @@ public:
         sql = (std::string)"SELECT * from fact_table_" + agentList[0];
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1189: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Currents facts from robot obtained successfully\n");
@@ -1195,7 +1195,7 @@ public:
         sql = (std::string)"SELECT * from memory_table_" + agentList[0];
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1198: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Facts from robot memory obtained successfully\n");
@@ -1237,7 +1237,7 @@ public:
                 + "' and target_id='" + boost::lexical_cast<std::string>(req.reqFact.targetId) + boost::lexical_cast<std::string>(req.reqFact.targetOwnerId) + "';";
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1240: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Current fact value from robot obtained successfully\n");
@@ -1250,7 +1250,7 @@ public:
                 + "' and target_id='" + boost::lexical_cast<std::string>(req.reqFact.targetId) + boost::lexical_cast<std::string>(req.reqFact.targetOwnerId) + "';";
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1253: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Fact value from robot memory obtained successfully\n");
@@ -1288,7 +1288,7 @@ public:
         sql = (std::string)"SELECT * from fact_table_" + agentList[0];
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1291: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Currents facts from robot obtained successfully\n");
@@ -1328,7 +1328,7 @@ public:
         sql = (std::string)"SELECT * from memory_table_" + agentList[0];
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1331: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Facts from robot memory obtained successfully\n");
@@ -1373,7 +1373,7 @@ public:
         sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId;
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1376: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Facts from agent obtained successfully\n");
@@ -1382,7 +1382,7 @@ public:
         sql = (std::string)"SELECT * from memory_table_" + (std::string)req.agentId;
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1385: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Facts from agent memory obtained successfully\n");
@@ -1428,7 +1428,7 @@ public:
                 + "' and target_id='" + boost::lexical_cast<std::string>(req.reqFact.targetId) + boost::lexical_cast<std::string>(req.reqFact.targetOwnerId) + "';";
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1431: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Current fact value from robot obtained successfully\n");
@@ -1440,7 +1440,7 @@ public:
                 + "' and target_id='" + boost::lexical_cast<std::string>(req.reqFact.targetId) + boost::lexical_cast<std::string>(req.reqFact.targetOwnerId) + "';";
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1443: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Fact value from robot memory obtained successfully\n");
@@ -1478,7 +1478,7 @@ public:
         sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId;
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1481: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Facts from agent obtained successfully\n");
@@ -1519,7 +1519,7 @@ public:
         sql = (std::string)"SELECT * from memory_table_" + (std::string)req.agentId;
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1522: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Facts from agent memory obtained successfully\n");
@@ -1572,7 +1572,7 @@ public:
         sql = (std::string)"SELECT * from static_property_table;";
 
         if (sqlite3_exec(database, sql.c_str(), property_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1575: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Static property table obtained successfully\n");
@@ -1609,7 +1609,7 @@ public:
         sql = (std::string)"SELECT * from static_property_table" + " where id=" + boost::lexical_cast<std::string>(req.id);
 
         if (sqlite3_exec(database, sql.c_str(), property_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1612: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Static property value obtained successfully\n", req.id);
@@ -1644,7 +1644,7 @@ public:
         sql = (std::string)"SELECT * from id_table where type ='human' or type='robot';";
 
         if (sqlite3_exec(database, sql.c_str(), id_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1647: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Agents from id_table obtained successfully\n");
@@ -1681,7 +1681,7 @@ public:
         sql = (std::string)"SELECT * from id_table;";
 
         if (sqlite3_exec(database, sql.c_str(), id_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1684: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Id table obtained successfully\n");
@@ -1718,7 +1718,7 @@ public:
         sql = (std::string)"SELECT * from id_table where id='" + boost::lexical_cast<std::string>(req.id) + "' and name='" + (std::string)req.name + "';";
 
         if (sqlite3_exec(database, sql.c_str(), id_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1721: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Id informations obtained successfully\n");
@@ -1753,7 +1753,7 @@ public:
         sql = (std::string)"SELECT * from events_table;";
 
         if (sqlite3_exec(database, sql.c_str(), event_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1756: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Events table obtained successfully\n");
@@ -1794,7 +1794,7 @@ public:
                 + "' and target_id='" + boost::lexical_cast<std::string>(req.reqEvent.targetId) + "';";
 
         if (sqlite3_exec(database, sql.c_str(), event_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1797: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Event obtained successfully\n");
@@ -1832,7 +1832,7 @@ public:
         sql = (std::string)"SELECT * from ontology_table;";
 
         if (sqlite3_exec(database, sql.c_str(), ontology_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1835: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Ontology table obtained successfully\n");
@@ -1854,7 +1854,7 @@ public:
     }
 
     /**
-     * Get values of a all leaves of ontology table starting from a groupe field
+     * Get values of a all leaves of ontology table starting from a entityClass field
      * @param reference to request
      * @param reference to response
      * @return true 
@@ -1867,15 +1867,15 @@ public:
         std::string sql;
 
         sql = (std::string) "WITH tree(g,ind,inst)  AS ( "
-                + "SELECT groupe ,individual, instantiated  FROM ontology_table WHERE groupe ='" + (std::string)req.groupe
+                + "SELECT entityClass ,individual, instantiated  FROM ontology_table WHERE entityClass ='" + (std::string)req.entityClass
                 + "' UNION ALL"
-                + " SELECT groupe ,individual, instantiated  FROM ontology_table o"
+                + " SELECT entityClass ,individual, instantiated  FROM ontology_table o"
                 + " INNER JOIN tree t"
-                + " ON t.ind = o.groupe)"
+                + " ON t.ind = o.entityClass)"
                 + "SELECT * FROM tree where inst = 'true';";
 
         if (sqlite3_exec(database, sql.c_str(), ontology_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1878: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Ontology leaves obtained successfully\n");
@@ -1909,10 +1909,10 @@ public:
         const char* data = "Callback function called";
         std::string sql;
 
-        sql = (std::string)"SELECT * from ontology_table where groupe='" + (std::string)req.groupe + "';";
+        sql = (std::string)"SELECT * from ontology_table where entityClass='" + (std::string)req.entityClass + "';";
 
         if (sqlite3_exec(database, sql.c_str(), ontology_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1915: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             fprintf(stdout, "Ontology values obtained successfully\n");
@@ -1958,7 +1958,7 @@ public:
         sql = req.order;
 
         if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error: %s\n", zErrMsg);
+            fprintf(stderr, "SQL error l1961: %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             ROS_INFO("SQL order obtained successfully\n");
@@ -2054,6 +2054,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
-
-
