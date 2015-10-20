@@ -1,4 +1,30 @@
+#include <stdio.h>
+#include <sqlite3.h> 
+#include <tinyxml.h>
+#include <sstream>
+
 #include "ros/ros.h"
+#include "ros/package.h"
+#include "std_msgs/String.h"
+
+#include "toaster_msgs/GetProperties.h"
+#include "toaster_msgs/GetPropertyValue.h"
+#include "toaster_msgs/ExecuteSQL.h"
+#include "toaster_msgs/Property.h"
+#include "toaster_msgs/GetCurrentFacts.h"
+#include "toaster_msgs/GetPassedFacts.h"
+#include "toaster_msgs/GetAgents.h"
+#include "toaster_msgs/GetId.h"
+#include "toaster_msgs/GetIdValue.h"
+#include "toaster_msgs/Agent.h"
+#include "toaster_msgs/ToasterFactReader.h"
+#include "toaster_msgs/ToasterObjectReader.h"
+#include "toaster_msgs/AddEvent.h"
+#include "toaster_msgs/GetEvents.h"
+#include "toaster_msgs/GetEventValue.h"
+#include "toaster_msgs/GetOntologies.h"
+#include "toaster_msgs/GetOntologyValues.h"
+#include "toaster_msgs/GetOntologyLeaves.h"
 #include "toaster_msgs/Event.h"
 #include "toaster_msgs/Ontology.h"
 #include "toaster_msgs/Fact.h"
@@ -13,30 +39,6 @@
 #include "toaster_msgs/RemoveFactToAgent.h"
 #include "toaster_msgs/GetFacts.h"
 #include "toaster_msgs/GetFactValue.h"
-#include "std_msgs/String.h"
-#include <stdio.h>
-#include <sqlite3.h> 
-#include <tinyxml.h>
-#include <sstream>
-#include "toaster_msgs/GetProperties.h"
-#include "toaster_msgs/GetPropertyValue.h"
-#include "toaster_msgs/ExecuteSQL.h"
-#include "toaster_msgs/Property.h"
-#include "toaster_msgs/GetCurrentFacts.h"
-#include "toaster_msgs/GetPassedFacts.h"
-#include "ros/package.h"
-#include "toaster_msgs/GetAgents.h"
-#include "toaster_msgs/GetId.h"
-#include "toaster_msgs/GetIdValue.h"
-#include "toaster_msgs/Agent.h"
-#include "toaster_msgs/ToasterFactReader.h"
-#include "toaster_msgs/ToasterObjectReader.h"
-#include "toaster_msgs/AddEvent.h"
-#include "toaster_msgs/GetEvents.h"
-#include "toaster_msgs/GetEventValue.h"
-#include "toaster_msgs/GetOntologies.h"
-#include "toaster_msgs/GetOntologyValues.h"
-#include "toaster_msgs/GetOntologyLeaves.h"
 
 
 
@@ -49,12 +51,16 @@ std::vector<toaster_msgs::Event> myEventList;
 std::vector<toaster_msgs::Ontology> myOntologyList;
 
 std::vector<std::string> myStringList;
+std::vector<toaster_msgs::Fact> previousFactsState;
 
 class run_server {
-    //attributs
+    //attributes
     ros::NodeHandle node;
 
     int nb_agents;
+
+
+    //// SERVICES DECLARATION  /////
 
     ros::ServiceServer add_entity_service;
     ros::ServiceServer add_fact_service;
@@ -97,6 +103,11 @@ class run_server {
     //sqlite database's pointer
     sqlite3 *database;
 
+    /// FACTS READER ///
+    ToasterFactReader* factRdSpark_;
+    ToasterFactReader* factRdPdg_;
+    ToasterFactReader* factRdArea_;
+    ToasterFactReader* factRdAM_;
 
 public:
 
@@ -105,6 +116,20 @@ public:
     run_server() {
         ros::NodeHandle node;
 
+
+        ToasterFactReader factRdSpark(node, "spark/factList");
+        ToasterFactReader factRdPdg(node, "pdg/factList");
+        ToasterFactReader factRdArea(node, "area_manager/factList");
+        ToasterFactReader factRdAM(node, "agent_monitor/factList");
+
+        factRdSpark_ = &factRdSpark;
+        factRdPdg_ = &factRdPdg;
+        factRdArea_ = &factRdArea;
+        factRdAM_ = &factRdAM;
+
+
+        //////////////////////////////////////////////////////////////////////
+        //// SERVICES INSTANCIATION  /////
         //facts services
         add_entity_service = node.advertiseService("database/add_entity", &run_server::add_entity_db, this);
 
@@ -151,7 +176,14 @@ public:
         get_ontology_leaves_service = node.advertiseService("database/get_ontology_leaves", &run_server::get_ontology_leaves_db, this);
 
 
-        //database creation
+        ///////////////////////////////////////////////////////////////
+
+
+
+        ////////////////////////////
+        //// DATABASE CREATION /////
+        ////////////////////////////
+
         char *zErrMsg = 0;
         std::string sql;
         nb_agents = 0;
@@ -162,7 +194,8 @@ public:
         }
 
 
-        //id_table creation
+
+        //// ID TABLE CREATION ///////
         sql = (std::string)"CREATE TABLE id_table(" +
                 "id 		 CHAR(50)," +
                 "name        	 CHAR(50)," +
@@ -179,7 +212,7 @@ public:
         }
 
 
-        //ontology table creation
+        //// ONTOLOGY TABLE CREATION //////
         sql = (std::string)"CREATE TABLE ontology_table(" +
                 "entityClass  		 CHAR(50)," +
                 "individual        	 CHAR(50)," +
@@ -195,7 +228,7 @@ public:
         }
 
 
-        //property tables creation
+        //// PROPERTY TABLE CREATION /////
         sql = (std::string)"CREATE TABLE static_property_table(" +
                 "id 			 INT," +
                 "color             	 CHAR(50)," +
@@ -213,7 +246,7 @@ public:
         }
 
 
-        //events table creation
+        //// EVENTS TABLE CREATION /////
         sql = (std::string)"CREATE TABLE events_table(" +
                 "subject_id 				unsigned long," +
                 "predicate         	                string," +
@@ -231,8 +264,8 @@ public:
 
     }
 
-
-    /////////////////////////////////////////////////////////////////callback functions////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////
+    //////////callback functions//////////////
 
     /**
      * generic callback for debug
@@ -418,11 +451,8 @@ public:
 
 
 
-
-
-
-
-    /////////////////////////////////////////////////////////////////////xml launch functions///////////////////////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////////////
+    //////xml launch functions/////////
 
     /**
      * Get all information contained in the static property xml file 
@@ -593,8 +623,8 @@ public:
 
 
 
-
-    ////////////////////////////////////////////////////////////debug function/////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////
+    /////debug function/////
 
     /**
      * in consol read function for debug or anything
@@ -657,8 +687,8 @@ public:
     }
 
 
-
-    ////////////////////////////////////////////////////////////basic functions/////////////////////////////////////////////////////
+    ///////////////////////////////////////////////////////////////
+    ////////basic functions/////
 
     /**
      * Add an agent to the agent table	
@@ -880,7 +910,7 @@ public:
             ROS_INFO("No such fact in database\n");
             return true;
         } else {
-            //if there is a such fact then we can remove it
+            //if there is such fact then we can remove it
             sql = (std::string)"DELETE from fact_table_" + agentList[0] +
                     " where subject_id ='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) +
                     "' and predicate ='" + (std::string)req.fact.property +
@@ -1168,7 +1198,7 @@ public:
 
 
 
-    /////////////////////////////////////////////////////////getting facts from robot////////////////////////////////////////////////////////////////////
+    ////////////////////getting facts from robot/////////////////
 
     /**
      * Get all known facts (current and past)
@@ -1355,7 +1385,7 @@ public:
 
 
 
-    ///////////////////////////////////////////////////////////////getting facts from agent///////////////////////////////////////////////////////////
+    ////////////////getting facts from agent//////////////////////////
 
     /**
      * Get all facts known from an agent (current and past)
@@ -1554,7 +1584,7 @@ public:
 
 
 
-    ///////////////////////////////////////////////////////getting other information from database/////////////////////////////////////////////////////
+    /////////////////getting other information from database//////////////////
 
     /**
      * Get all static properties
@@ -1940,7 +1970,7 @@ public:
 
 
 
-    ///////////////////////////////////////////////////SQl request function////////////////////////////////////////////////////////////
+    /////////////////////SQl request function/////////////
 
     /**
      * Execute in selected table the SQl request casted in the Request.order field 
@@ -1975,35 +2005,74 @@ public:
         return true;
     }
 
+
+
+
+
+
+
+
+
+
+
+    ///////////////////////////////////////////////////////////
+    // UPDATE WORLD STATE ////////////
+    //////////////////////////////////////////////////////////
+
     void update_world_state() {
-        //Data reading
-        ToasterFactReader factRdSpark(node, "spark/factList");
-        ToasterFactReader factRdPdg(node, "pdg/factList");
-        ToasterFactReader factRdArea(node, "area_manager/factList");
-        ToasterFactReader factRdAM(node, "agent_monitor/factList");
+        /**************************/
+        /* World State management */
+        /**************************/
 
+        //We save the previous state
+        std::vector<toaster_msgs::Fact> newState;
+        newState.insert(newState.end(), this->factRdArea_->lastMsgFact.factList.begin(), this->factRdArea_->lastMsgFact.factList.end());
+        newState.insert(newState.end(), this->factRdSpark_->lastMsgFact.factList.begin(), this->factRdSpark_->lastMsgFact.factList.end());
+        newState.insert(newState.end(), this->factRdPdg_->lastMsgFact.factList.begin(), this->factRdPdg_->lastMsgFact.factList.end());
+        newState.insert(newState.end(), this->factRdAM_->lastMsgFact.factList.begin(), this->factRdAM_->lastMsgFact.factList.end());
+
+
+        //If update, make modification to current db:
+        bool removedFact = true;
+
+
+        // Is there new facts that were not there before?
+        // TODO: don't use a request but internal function!
         ros::ServiceClient AddFactClient = node.serviceClient<toaster_msgs::AddFact>("database_add_fact");
-        toaster_msgs::AddFact srv;
+        toaster_msgs::AddFact srvAdd;
+        ros::ServiceClient RemoveFactClient = node.serviceClient<toaster_msgs::RemoveFact>("database_remove_fact");
+        toaster_msgs::RemoveFact srvRm;
 
 
-        for (unsigned int i = 0; i < factRdArea.lastMsgFact.factList.size(); i++) {
-            srv.request.fact = factRdArea.lastMsgFact.factList[i];
-            AddFactClient.call(srv);
-        }
+        for (unsigned int i = 0; i < newState.size(); i++) {
+            srvAdd.request.fact = newState[i];
+            AddFactClient.call(srvAdd);
+            // This function also takes care of events table.
+            // It also avoid double.
 
-        for (unsigned int i = 0; i < factRdSpark.lastMsgFact.factList.size(); i++) {
-            srv.request.fact = factRdSpark.lastMsgFact.factList[i];
-            AddFactClient.call(srv);
-        }
 
-        for (unsigned int i = 0; i < factRdPdg.lastMsgFact.factList.size(); i++) {
-            srv.request.fact = factRdPdg.lastMsgFact.factList[i];
-            AddFactClient.call(srv);
-        }
-
-        for (unsigned int i = 0; i < factRdAM.lastMsgFact.factList.size(); i++) {
-            srv.request.fact = factRdAM.lastMsgFact.factList[i];
-            AddFactClient.call(srv);
+            for (int j = 0; j < previousFactsState.size(); ++j) {
+                for (int i = 0; i < newState.size(); ++i) {
+                    if ((previousFactsState[j].subjectId == newState[i].subjectId)
+                            && (previousFactsState[j].property == newState[i].property)
+                            && (previousFactsState[j].propertyType == newState[i].propertyType)
+                            && (previousFactsState[j].subProperty == newState[i].subProperty)
+                            && (previousFactsState[j].subjectOwnerId == newState[i].subjectOwnerId)
+                            && (previousFactsState[j].targetId == newState[i].targetId)
+                            && (previousFactsState[j].targetOwnerId == newState[i].targetOwnerId)) {
+                        removedFact = false;
+                        break;
+                    } else
+                        continue;
+                }
+                // send to supervisor remove previousState.factList[i]
+                if (removedFact) {
+                    srvRm.request.fact = previousFactsState[j];
+                    RemoveFactClient.call(srvRm);
+                    //This will also handle memory and events.
+                }
+                removedFact = true;
+            }
         }
     }
 
