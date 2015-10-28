@@ -564,9 +564,10 @@ int main(int argc, char** argv) {
                         printf("[area_manager][WARNING] Area %s has factType %s, which is not available\n", itArea->second->getName().c_str(), itArea->second->getFactType().c_str());
                     }
 
-                    //Fact in Area
-                    fact_msg.property = "IsInArea";
-                    fact_msg.propertyType = "position";
+                    if (itArea->second->getAreaType() == "room") {
+                        //Fact in Area
+                        fact_msg.property = "isIn";
+                        fact_msg.propertyType = "position";
 
                     fact_msg.subProperty = itArea->second->getAreaType();
                     if (ownerEnt != NULL) {
@@ -579,8 +580,43 @@ int main(int argc, char** argv) {
                     fact_msg.factObservability = 0.8;
                     fact_msg.time = itEntity->second->getTime();
 
-                    factList_msg.factList.push_back(fact_msg);
+                        factList_msg.factList.push_back(fact_msg);
+                    } else if (itArea->second->getAreaType() == "support") {
+                        //Fact in Area
+                        fact_msg.property = "isAt";
+                        fact_msg.propertyType = "position";
 
+                        fact_msg.subProperty = "location";
+                        if (ownerEnt != NULL) {
+                            fact_msg.targetOwnerId = ownerEnt->getId();
+                        }
+
+                        fact_msg.subjectId = itEntity->first;
+                        fact_msg.targetId = itArea->second->getId();
+                        fact_msg.confidence = 1;
+                        fact_msg.factObservability = 0.8;
+                        fact_msg.time = itEntity->second->getTime();
+
+                        factList_msg.factList.push_back(fact_msg);
+
+                    } else {
+                        //Fact in Area
+                        fact_msg.property = "IsInArea";
+                        fact_msg.propertyType = "position";
+
+                        fact_msg.subProperty = itArea->second->getAreaType();
+                        if (ownerEnt != NULL) {
+                            fact_msg.targetOwnerId = ownerEnt->getId();
+                        }
+
+                        fact_msg.subjectId = itEntity->first;
+                        fact_msg.targetId = itArea->second->getId();
+                        fact_msg.confidence = 1;
+                        fact_msg.factObservability = 0.8;
+                        fact_msg.time = itEntity->second->getTime();
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
                 }
             }// For all Entities
 

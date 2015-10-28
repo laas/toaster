@@ -196,11 +196,11 @@ int main(int argc, char **argv)
 	
 		/*
 	srv13.request.order = (std::string) "WITH test(g,ind,inst)  AS ( "
-    + "SELECT groupe ,individual, instantiated  FROM ontology_table WHERE groupe = 'viewable' "
+    + "SELECT entityClass ,individual, instantiated  FROM ontology_table WHERE entityClass = 'viewable' "
     +" UNION ALL"
-    + " SELECT groupe ,individual, instantiated  FROM ontology_table o"
+    + " SELECT entityClass ,individual, instantiated  FROM ontology_table o"
 														+" INNER JOIN test t"
-														+" ON t.ind = o.groupe)"
+														+" ON t.ind = o.entityClass)"
 	+ "SELECT * FROM test where inst = 'true';";
 	*/
 	
@@ -247,10 +247,10 @@ int main(int argc, char **argv)
 	toaster_msgs::GetOntologies srv23;
 	
 	toaster_msgs::GetOntologyValues srv24;
-	srv24.request.groupe = "agent";
+	srv24.request.entityClass = "agent";
 	
 	toaster_msgs::GetOntologyLeaves srv25;
-	srv25.request.groupe = "viewable";
+	srv25.request.entityClass = "viewable";
 	
 	ROS_INFO("addEntity");
   client1.call(srv1);
@@ -308,7 +308,7 @@ int main(int argc, char **argv)
      ROS_INFO("taille %d",  (int)srv11.response.resProperty.size());
    for(int i = 0; i<srv11.response.resProperty.size(); i++)
    {
-		std::cout << "                                " + srv11.response.resProperty[i].linkedTo + "\n";
+		std::cout << "                                " + srv11.response.resProperty[i].linkType + "\n";
 		ROS_INFO("%d ",  (int)srv11.response.boolAnswer );
    }
     
@@ -316,7 +316,7 @@ int main(int argc, char **argv)
      
        ROS_INFO("GetPropertiValue");
  
-		std::cout <<  "                                " +  srv12.response.resProperty.linkedTo + "\n";
+		std::cout <<  "                                " +  srv12.response.resProperty.linkType + "\n";
 		ROS_INFO("%d ", (int)srv12.response.boolAnswer );
    
     
@@ -404,7 +404,7 @@ int main(int argc, char **argv)
     for(int i = 0; i<srv23.response.resOntology.size(); i++)
    {
 	   
-		std::cout <<  "                                " +  srv23.response.resOntology[i].groupe + " " + srv23.response.resOntology[i].individual + " " +  "\n";
+		std::cout <<  "                                " +  srv23.response.resOntology[i].entityClass + " " + srv23.response.resOntology[i].individual + " " +  "\n";
 		ROS_INFO("%d ",  (int)srv23.response.boolAnswer);
    }
 	
@@ -413,7 +413,7 @@ int main(int argc, char **argv)
         
     for(int i = 0; i<srv24.response.resOntology.size(); i++)
    {
-		std::cout <<  "                                " +  srv24.response.resOntology[i].groupe + " " + srv24.response.resOntology[i].individual + " " +  "\n";
+		std::cout <<  "                                " +  srv24.response.resOntology[i].entityClass + " " + srv24.response.resOntology[i].individual + " " +  "\n";
 		ROS_INFO("%d ",  (int)srv24.response.boolAnswer);
    }
         
@@ -424,7 +424,7 @@ int main(int argc, char **argv)
              
     for(int i = 0; i<srv25.response.resOntology.size(); i++)
    {
-		std::cout <<  "                                " +  srv25.response.resOntology[i].groupe + " " + srv25.response.resOntology[i].individual + " " +  "\n";
+		std::cout <<  "                                " +  srv25.response.resOntology[i].entityClass + " " + srv25.response.resOntology[i].individual + " " +  "\n";
 		ROS_INFO("%d ",  (int)srv25.response.boolAnswer);
    }
                 
