@@ -95,8 +95,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
-  ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
-  
+  ${Boost_INCLUDE_DIRS}  $ENV{TOASTERLIB_DIR}/include
 )
 
 ## Declare a cpp library
@@ -115,7 +114,7 @@ include_directories(
 # target_link_libraries(agent_monitor_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(area_manager $ENV{HOME}/devel/lib/libtoaster.so ${catkin_LIBRARIES}) 
+target_link_libraries(area_manager $ENV{TOASTERLIB_DIR}/lib/libtoaster.so ${catkin_LIBRARIES})
 
 #############
 ## Install ##
