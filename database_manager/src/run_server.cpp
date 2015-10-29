@@ -768,7 +768,7 @@ public:
     }
 
     /**
-     * Add a fact to main fact table	
+     * Add a fact to main fact table
      * @param reference to request
      * @param reference to response
      * @return true 
@@ -2019,12 +2019,12 @@ public:
     // UPDATE WORLD STATE ////////////
     //////////////////////////////////////////////////////////
 
-    void update_world_state() {
+    void update_world_states() {
         /**************************/
         /* World State management */
         /**************************/
 
-        //We save the previous state
+        //We get the new state
         std::vector<toaster_msgs::Fact> newState;
         newState.insert(newState.end(), this->factRdArea_->lastMsgFact.factList.begin(), this->factRdArea_->lastMsgFact.factList.end());
         newState.insert(newState.end(), this->factRdSpark_->lastMsgFact.factList.begin(), this->factRdSpark_->lastMsgFact.factList.end());
@@ -2038,9 +2038,9 @@ public:
 
         // Is there new facts that were not there before?
         // TODO: don't use a request but internal function!
-        ros::ServiceClient AddFactClient = node.serviceClient<toaster_msgs::AddFact>("database_add_fact");
+        ros::ServiceClient AddFactClient = node.serviceClient<toaster_msgs::AddFact>("database/add_fact");
         toaster_msgs::AddFact srvAdd;
-        ros::ServiceClient RemoveFactClient = node.serviceClient<toaster_msgs::RemoveFact>("database_remove_fact");
+        ros::ServiceClient RemoveFactClient = node.serviceClient<toaster_msgs::RemoveFact>("database/remove_fact");
         toaster_msgs::RemoveFact srvRm;
 
 
@@ -2050,33 +2050,37 @@ public:
             // This function also takes care of events table.
             // It also avoid double.
 
-
-            for (int j = 0; j < previousFactsState.size(); ++j) {
-                for (int i = 0; i < newState.size(); ++i) {
-                    if ((previousFactsState[j].subjectId == newState[i].subjectId)
-                            && (previousFactsState[j].property == newState[i].property)
-                            && (previousFactsState[j].propertyType == newState[i].propertyType)
-                            && (previousFactsState[j].subProperty == newState[i].subProperty)
-                            && (previousFactsState[j].subjectOwnerId == newState[i].subjectOwnerId)
-                            && (previousFactsState[j].targetId == newState[i].targetId)
-                            && (previousFactsState[j].targetOwnerId == newState[i].targetOwnerId)) {
-                        removedFact = false;
-                        break;
-                    } else
-                        continue;
-                }
-                // send to supervisor remove previousState.factList[i]
-                if (removedFact) {
-                    srvRm.request.fact = previousFactsState[j];
-                    RemoveFactClient.call(srvRm);
-                    //This will also handle memory and events.
-                }
-                removedFact = true;
-            }
+            
         }
+
+
+        for (int j = 0; j < previousFactsState.size(); ++j) {
+            for (int i = 0; i < newState.size(); ++i) {
+                if ((previousFactsState[j].subjectId == newState[i].subjectId)
+                        && (previousFactsState[j].property == newState[i].property)
+                        && (previousFactsState[j].propertyType == newState[i].propertyType)
+                        && (previousFactsState[j].subProperty == newState[i].subProperty)
+                        && (previousFactsState[j].subjectOwnerId == newState[i].subjectOwnerId)
+                        && (previousFactsState[j].targetId == newState[i].targetId)
+                        && (previousFactsState[j].targetOwnerId == newState[i].targetOwnerId)) {
+                    removedFact = false;
+                    break;
+                } else
+                    continue;
+            }
+            // Remove facts that are no longer there
+            if (removedFact) {
+                srvRm.request.fact = previousFactsState[j];
+                RemoveFactClient.call(srvRm);
+                //This will also handle memory and events.
+            }
+            removedFact = true;
+        }
+        previousFactsState = newState;
     }
 
-    void conceptual_perspective_taking() {
+    // This is done in add / remove fact
+    /*void conceptual_perspective_taking() {
 
         ros::ServiceClient GetFactsClient = node.serviceClient<toaster_msgs::GetFacts>("database_get_facts");
         ros::ServiceClient AddFactToAgentClient = node.serviceClient<toaster_msgs::AddFactToAgent>("database_add_fact_to_agent");
@@ -2095,7 +2099,7 @@ public:
                 srv2 = toaster_msgs::AddFactToAgent();
             }
         }
-    }
+    }*/
 
 
 };
