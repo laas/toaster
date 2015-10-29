@@ -232,7 +232,7 @@ int main(int argc, char **argv)
 	
 	
 	//publishers
-	ros::Publisher chatter_pub5 = n.advertise<toaster_msgs::ObjectList>("/pdg/objList", 1000);
+	ros::Publisher chatter_pub5 = n.advertise<toaster_msgs::ObjectList>("/pdg/objectList", 1000);
 	ros::Publisher chatter_pub6 = n.advertise<toaster_msgs::HumanList>("/pdg/humanList", 1000);
 	ros::Publisher chatter_pub7 = n.advertise<toaster_msgs::AreaList>("/area_manager/areaList", 1000);
 	
