@@ -2,7 +2,6 @@
 
 
 MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, bool fullHuman){
-  node_ = node;
   fullHuman_ = fullHuman;
   std::cout << "[PDG] Initializing MorseHumanReader" << std::endl;
   init();
@@ -11,7 +10,7 @@ MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, bool fullHuman){
 void MorseHumanReader::init(){
   if(fullHuman_){
     // Starts listening to the joint_states topic
-    //ros::Subscriber sub_ = node_.subscribe("/human/armature/joint_states", 1, humanJointStateCallBack);
+    //ros::Subscriber sub_ = node.subscribe("/human/armature/joint_states", 1, humanJointStateCallBack);
   }
 }
 

@@ -197,7 +197,7 @@ int main(int argc, char** argv) {
     MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
     AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
 
-    Pr2RobotReader pr2RobotRd(robotFullConfig_);
+    Pr2RobotReader pr2RobotRd(node, robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
 
     //Services

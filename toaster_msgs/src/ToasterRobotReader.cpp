@@ -71,6 +71,8 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::
                 jointOrientation.push_back(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationYaw);
                 curJnt->setOrientation(jointOrientation);
 
+                curJnt->position = msg->robotList[i].meAgent.skeletonJoint[i_jnt].position;
+
                 lastConfig_[curRobot->getId()]->skeleton_[curJnt->getName()] = curJnt;
             }
         }
