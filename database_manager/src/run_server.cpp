@@ -26,6 +26,7 @@
 #include "toaster_msgs/GetOntologyValues.h"
 #include "toaster_msgs/GetOntologyLeaves.h"
 #include "toaster_msgs/Event.h"
+#include "toaster_msgs/Empty.h"
 #include "toaster_msgs/Ontology.h"
 #include "toaster_msgs/Fact.h"
 #include "toaster_msgs/Id.h"
@@ -103,6 +104,9 @@ class run_server {
     ros::ServiceServer get_ontology_values_service;
     ros::ServiceServer get_ontology_leaves_service;
 
+
+    ros::ServiceServer print_service;
+
     //sqlite database's pointer
     sqlite3 *database;
 
@@ -163,6 +167,7 @@ public:
         get_agents_service = node.advertiseService("database/get_agents", &run_server::get_agents_db, this);
         get_id_service = node.advertiseService("database/get_id", &run_server::get_id_db, this);
         get_id_value_service = node.advertiseService("database/get_id_value", &run_server::get_id_value_db, this);
+        print_service = node.advertiseService("database/print", &run_server::print, this);
 
 
         //event services
@@ -620,7 +625,65 @@ public:
             }
         }
     }
+/**
+     * print the db in the console
+     * @return void
+     */
+    bool print(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res) {
+        ROS_INFO("*********************** database info ***************************");
 
+        char *zErrMsg = 0;
+        const char* data = "Callback function called";
+        std::string sql;
+
+        //
+        ROS_INFO(" ");
+        ROS_WARN("reading id database");
+
+        sql = (std::string)"SELECT * from id_table;";
+        sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg);
+
+        //
+        ROS_INFO(" ");
+        ROS_WARN("reading static property database");
+
+        sql = (std::string)"SELECT * from static_property_table;";
+        //sqlite3_exec(database, sql.c_str(), callback, (void*)data, &zErrMsg);
+
+        //
+        ROS_INFO(" ");
+        ROS_WARN("reading fact database");
+
+        for (int i = 0; i < agentList.size(); i++) {
+            std::cout << "\nfact_table_" << (std::string)agentList[i] << "\n";
+            sql = (std::string)"SELECT * from fact_table_" + (std::string)agentList[i];
+            sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg);
+        }
+
+        //
+        ROS_INFO(" ");
+        ROS_WARN("reading memory database");
+
+        for (int i = 0; i < agentList.size(); i++) {
+            std::cout << "\nmemory_table_" << (std::string)agentList[i] << "\n";
+            sql = (std::string)"SELECT * from memory_table_" + (std::string)agentList[i];
+            sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg);
+        }
+
+        //
+        ROS_INFO(" ");
+        ROS_WARN("reading ontology database");
+
+        sql = (std::string)"SELECT * from ontology_table;";
+        //sqlite3_exec(database, sql.c_str(), callback, (void*)data, &zErrMsg);
+
+        //
+        ROS_INFO(" ");
+        ROS_WARN("reading events database");
+
+        sql = (std::string)"SELECT * from events_table;";
+        sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg);
+    }
 
 
 
@@ -631,7 +694,7 @@ public:
      * in consol read function for debug or anything
      * @return void
      */
-    void readDb() {
+    void readDb(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res) {
         ROS_INFO("*********************** database info ***************************");
 
         char *zErrMsg = 0;
