@@ -68,6 +68,7 @@ class run_server {
     ros::ServiceServer add_fact_to_agent_service;
     ros::ServiceServer add_facts_to_agent_service;
     ros::ServiceServer remove_fact_to_agent_service;
+    ros::ServiceServer remove_facts_to_agent_service;
     ros::ServiceServer remove_fact_service;
 
     //robot facts services
@@ -137,6 +138,7 @@ public:
 
         remove_fact_service = node.advertiseService("database/remove_fact", &run_server::remove_fact_db, this);
         remove_fact_to_agent_service = node.advertiseService("database/remove_fact_to_agent", &run_server::remove_fact_to_agent_db, this);
+        remove_facts_to_agent_service = node.advertiseService("database/remove_facts_to_agent", &run_server::remove_facts_to_agent_db, this);
 
         //robot facts services
         get_facts_service = node.advertiseService("database/get_facts", &run_server::get_facts_db, this);
@@ -1274,6 +1276,91 @@ public:
     }
 
     /**
+     * Remove facts form targeted agent's fact table without precising the target
+     * @param reference to request
+     * @param reference to response
+     * @return true 
+     */
+    bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toaster_msgs::AddFactsToAgent::Response &res) {
+        ROS_INFO("remove_facts_to_agent");
+
+
+
+        std::string sql;
+        char *zErrMsg = 0;
+        const char* data = "Callback function called";
+
+	for(std::vector<toaster_msgs::Fact>::iterator it = req.facts.begin(); it != req.facts.end(); it++){
+		//first we get all information of the fact from fact table
+		sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
+		        " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
+		        "' and predicate ='" + (std::string)it->property +"'";
+
+		if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg)) {
+		    ROS_INFO("SQL error : %s\n", zErrMsg);
+		    sqlite3_free(zErrMsg);
+		} else {
+		    ROS_INFO("Time successfully saved\n");
+		}
+
+		//then we can delete it
+		sql = "DELETE from fact_table_" + (std::string)req.agentId +
+		        " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
+		        "' and predicate ='" + (std::string)it->property+"'";
+
+		if (sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg)) {
+		    ROS_INFO("SQL error : %s\n", zErrMsg);
+		    sqlite3_free(zErrMsg);
+		} else {
+		    ROS_INFO("Fact successfully removed\n");
+		}
+
+		for(std::vector<toaster_msgs::Fact>::iterator it = myFactList.begin(); it != myFactList.end(); it++){
+			//finally we add it into memory table
+			sql = (std::string)"INSERT into memory_table_" + (std::string)req.agentId + " (subject_id,predicate,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
+				+ boost::lexical_cast<std::string>(it->subjectId) + "','"
+				+ (std::string)it->property + "','"
+				+ boost::lexical_cast<std::string>(it->targetId) + "','"
+				+ (std::string)it->stringValue + "','"
+				+ (std::string)it->stringValue + "',"
+				+ boost::lexical_cast<std::string>(it->doubleValue) + ","
+				+ boost::lexical_cast<std::string>(it->factObservability) + ","
+				+ boost::lexical_cast<std::string>(it->confidence) + ","
+				+ boost::lexical_cast<std::string>(it->timeStart) + ","
+				+ boost::lexical_cast<std::string>(it->time) + ")";
+
+
+
+			if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+			    ROS_INFO("SQL error : %s\n", zErrMsg);
+			    sqlite3_free(zErrMsg);
+			} else {
+			    ROS_INFO("Fact successfully added to memory table\n");
+			}
+			//and add a new event
+			sql = (std::string)"INSERT INTO events_table (subject_id,predicate,target_id,observability,confidence,time) VALUES ('"
+				+ boost::lexical_cast<std::string>(it->subjectId) + "','!"
+				+ (std::string)it->property + "','"
+				+ boost::lexical_cast<std::string>(it->targetId) + "',"
+				+ boost::lexical_cast<std::string>(it->factObservability) + ","
+				+ boost::lexical_cast<std::string>(it->confidence) + ","
+				+ boost::lexical_cast<std::string>(it->time) + ")";
+
+			if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+			    ROS_INFO("SQL error4 : %s\n", zErrMsg);
+			    sqlite3_free(zErrMsg);
+			} else {
+			    ROS_INFO("Event successfully added\n");
+			}
+		}
+
+        myFactList = std::vector<toaster_msgs::Fact>();
+	}
+
+        return true;
+    }
+
+    /**
      * Add an event to events table
      * @param reference to request
      * @param reference to response
@@ -2223,11 +2310,11 @@ int main(int argc, char **argv) {
     run_server rs = run_server();
 
 
-    ros::Rate loop_rate(2);
+    ros::Rate loop_rate(30);
 
     while (ros::ok()) {
-        std::cout << "\n\n\n";
-        rs.readDb();
+        //std::cout << "\n\n\n";
+        //rs.readDb();
         //rs.update_world_state();
         //rs.conceptual_perspective_taking();
         loop_rate.sleep();
