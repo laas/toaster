@@ -51,6 +51,7 @@ add_service_files(
   RemoveAllJointsToAgent.srv
   AddArea.srv
   AddFactToAgent.srv 
+  AddFactsToAgent.srv 
   GetRelativePosition.srv
   GetMultiRelativePosition.srv
   PrintArea.srv

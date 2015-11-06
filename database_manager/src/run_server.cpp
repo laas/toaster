@@ -35,6 +35,7 @@
 #include "toaster_msgs/AddArea.h"
 #include "toaster_msgs/AddFact.h"
 #include "toaster_msgs/AddFactToAgent.h"
+#include "toaster_msgs/AddFactsToAgent.h"
 #include "toaster_msgs/RemoveFact.h"
 #include "toaster_msgs/RemoveFactToAgent.h"
 #include "toaster_msgs/GetFacts.h"
@@ -65,6 +66,7 @@ class run_server {
     ros::ServiceServer add_entity_service;
     ros::ServiceServer add_fact_service;
     ros::ServiceServer add_fact_to_agent_service;
+    ros::ServiceServer add_facts_to_agent_service;
     ros::ServiceServer remove_fact_to_agent_service;
     ros::ServiceServer remove_fact_service;
 
@@ -131,6 +133,7 @@ public:
 
         add_fact_service = node.advertiseService("database/add_fact", &run_server::add_fact_db, this);
         add_fact_to_agent_service = node.advertiseService("database/add_fact_to_agent", &run_server::add_fact_to_agent_db, this);
+        add_facts_to_agent_service = node.advertiseService("database/add_facts_to_agent", &run_server::add_facts_to_agent_db, this);
 
         remove_fact_service = node.advertiseService("database/remove_fact", &run_server::remove_fact_db, this);
         remove_fact_to_agent_service = node.advertiseService("database/remove_fact_to_agent", &run_server::remove_fact_to_agent_db, this);
@@ -1065,6 +1068,115 @@ public:
         }
         myFactList = std::vector<toaster_msgs::Fact>();
 
+        return true;
+    }
+
+    /**
+     * Add a fact in targeted agent's fact table
+     * @param reference to request
+     * @param reference to response
+     * @return true 
+     */
+    bool add_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toaster_msgs::AddFactsToAgent::Response &res) {
+        ROS_INFO("add_facts_to_agent");
+
+
+	for(std::vector<toaster_msgs::Fact>::iterator it = req.facts.begin(); it != req.facts.end(); it++){
+        std::string sql;
+        char *zErrMsg = 0;
+
+
+        //we first check if there is allready a such fact in db
+        sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
+                +" where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
+                + "' and predicate='" + (std::string)it->property
+                + "'and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId)
+                + "';";
+
+        if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+            ROS_INFO("SQL error1 : %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        } else {
+            ROS_INFO("Redondant fact check\n");
+        }
+
+        zErrMsg = 0;
+
+        // update fact if allready here
+        if (!myFactList.empty()) {
+            sql = (std::string)"UPDATE fact_table_" + (std::string)req.agentId +
+                    +" set valueString='" + (std::string)it->stringValue
+                    + "' , valueDouble=" + boost::lexical_cast<std::string>(it->doubleValue)
+                    + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
+                    + "' and predicate='" + (std::string)it->property
+                    + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId)
+                    + "'; SELECT * from fact_table_" + (std::string)req.agentId + ";";
+
+            if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                ROS_INFO("SQL error2 : %s\n", zErrMsg);
+                sqlite3_free(zErrMsg);
+            } else {
+                ROS_INFO("Fact successfully updated\n");
+            }
+        } else //else 
+        {
+            sql = (std::string)"INSERT INTO fact_table_" + (std::string)req.agentId + " (subject_id,predicate,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
+                    + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) + "','"
+                    + (std::string)it->property + "','"
+                    + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "','"
+                    + (std::string)it->stringValue + "','"
+                    + (std::string)it->stringValue + "',"
+                    + boost::lexical_cast<std::string>(it->doubleValue) + ","
+                    + boost::lexical_cast<std::string>(it->factObservability) + ","
+                    + boost::lexical_cast<std::string>(it->confidence) + ","
+                    + boost::lexical_cast<std::string>(it->time) + ",0);";
+
+            if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                ROS_INFO("SQL error3 : %s\n", zErrMsg);
+                sqlite3_free(zErrMsg);
+            } else {
+                ROS_INFO("Fact successfully added to agent in table\n");
+            }
+
+
+            //add a new event
+            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,target_id,observability,confidence,time) VALUES ('"
+                    + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) + "','"
+                    + (std::string)it->property + "','"
+                    + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "',"
+                    + boost::lexical_cast<std::string>(it->factObservability) + ","
+                    + boost::lexical_cast<std::string>(it->confidence) + ","
+                    + boost::lexical_cast<std::string>(it->time) + ")";
+
+            if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                ROS_INFO("SQL error4 : %s\n", zErrMsg);
+                sqlite3_free(zErrMsg);
+            } else {
+                ROS_INFO("Event successfully added\n");
+            }
+
+            //and we add into id_table some new unknown entity (id is unique so there should not be duplicates)
+            sql = (std::string)"INSERT INTO id_table (id,name, type, owner_id) VALUES ('"
+                    + (std::string)it->subjectId + "', '" + (std::string)it->subjectId + "' , '' " + ",'" + (std::string)it->subjectOwnerId + "');";
+
+            if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                sqlite3_free(zErrMsg);
+            } else {
+                ROS_INFO("Subject object successfully added\n");
+            }
+
+
+            sql = (std::string)"INSERT INTO id_table (id,name, type, owner_id) VALUES ('"
+                    + (std::string)it->targetId + "', '" + (std::string)it->targetId + "' , 'object' " + ",'" + (std::string)it->targetOwnerId + "');";
+
+            if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                sqlite3_free(zErrMsg);
+            } else {
+                ROS_INFO("Target object successfully added\n");
+            }
+        }
+        myFactList = std::vector<toaster_msgs::Fact>();
+	}
         return true;
     }
 
