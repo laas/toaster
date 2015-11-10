@@ -41,6 +41,7 @@
 #include "toaster_msgs/RemoveFactToAgent.h"
 #include "toaster_msgs/GetFacts.h"
 #include "toaster_msgs/GetFactValue.h"
+#include "toaster_msgs/AreInTable.h"
 
 
 
@@ -106,6 +107,7 @@ class run_server {
 
 
     ros::ServiceServer print_service;
+    ros::ServiceServer are_in_table_service;
 
     //sqlite database's pointer
     sqlite3 *database;
@@ -168,6 +170,7 @@ public:
         get_id_service = node.advertiseService("database/get_id", &run_server::get_id_db, this);
         get_id_value_service = node.advertiseService("database/get_id_value", &run_server::get_id_value_db, this);
         print_service = node.advertiseService("database/print", &run_server::print, this);
+        are_in_table_service = node.advertiseService("database/are_in_table", &run_server::are_in_table_db, this);
 
 
         //event services
@@ -1835,8 +1838,40 @@ public:
 
 
 
+    /**
+     * Return true if a given list of fact is in the fact table of a given agent
+     */
+    bool are_in_table_db(toaster_msgs::AreInTable::Request &req, toaster_msgs::AreInTable::Response &res) {
+        
+	std::string  sql; 
+	char *zErrMsg = 0;
+        const char* data = "Callback function called";
 
+	for(std::vector<toaster_msgs::Fact>::iterator it = req.facts.begin(); it != req.facts.end(); it++){
+		sql = (std::string)"SELECT * from fact_table_" + req.agent
+                + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
+                + "' and predicate='" + boost::lexical_cast<std::string>(it->property)
+                + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
 
+       	 	if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+          		  fprintf(stderr, "SQL error l1240: %s\n", zErrMsg);
+        		   sqlite3_free(zErrMsg);
+       		 } else {
+      		      fprintf(stdout, "Current fact value from robot obtained successfully\n");
+     		   }
+
+   	    	 //return informations from table
+     	      	if (myFactList.empty()) {
+			res.result = false;
+			return true;
+			
+       		}
+       		myFactList = std::vector<toaster_msgs::Fact>(); //empty myFactList
+	}
+
+	res.result = true;
+        return true;
+    }
 
 
 
