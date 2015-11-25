@@ -26,8 +26,6 @@ class HumanReader{
 
         bool isPresent(std::string id);
 
-    protected:
-        ros::NodeHandle node_;
 };
 
 

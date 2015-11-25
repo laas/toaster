@@ -86,7 +86,6 @@ catkin_package(
 ## Build ##
 ###########
 
-#set(BOOST_ROOT $ENV{HOME}/devel/boost_1_56_0/)
 #set(Boost_NO_SYSTEM_PATHS ON)
 
 ## Specify additional locations of header files

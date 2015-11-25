@@ -34,7 +34,7 @@
     <object name="WhiteVideotape"                       mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
     <object name="GREY_TAPE"                            mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
     <object name="LOTR_TAPE"                            mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
-    <object name="WALLE_TAPE"                            mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
+    <object name="WALLE_TAPE"                           mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
     <object name="env"  				mesh_ressource="package://toaster_visualizer/mesh/toaster_environment/mardi_real.dae" />
 
 
