@@ -83,6 +83,7 @@ add_service_files(
   GetOntologyValues.srv
   GetOntologyLeaves.srv
   AddEntity.srv
+  AreInTable.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
