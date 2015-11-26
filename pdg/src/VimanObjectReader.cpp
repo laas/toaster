@@ -39,8 +39,8 @@ void VimanObjectReader::updateObjects() {
                 lastConfig_[s.str()]->position_.set<0>(vimanPosterStruct_.objects[i_obj].thetaMatOrigin.px);
                 lastConfig_[s.str()]->position_.set<1>(vimanPosterStruct_.objects[i_obj].thetaMatOrigin.py);
                 lastConfig_[s.str()]->position_.set<2>(vimanPosterStruct_.objects[i_obj].thetaMatOrigin.pz);
-                lastConfig_[s.str()]->orientation_[0] = vimanPosterStruct_.objects[i_obj].eulerOrigin.roll;
-                lastConfig_[s.str()]->orientation_[1] = vimanPosterStruct_.objects[i_obj].eulerOrigin.pitch;
+                lastConfig_[s.str()]->orientation_[1] = -vimanPosterStruct_.objects[i_obj].eulerOrigin.roll;
+                lastConfig_[s.str()]->orientation_[0] = -vimanPosterStruct_.objects[i_obj].eulerOrigin.pitch;
                 lastConfig_[s.str()]->orientation_[2] = vimanPosterStruct_.objects[i_obj].eulerOrigin.yaw;
 
                 //Set the time and name
