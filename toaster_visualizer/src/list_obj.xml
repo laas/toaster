@@ -37,6 +37,13 @@
     <object name="WALLE_TAPE"                           mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
     <object name="env"  				mesh_ressource="package://toaster_visualizer/mesh/toaster_environment/mardi_real.dae" />
 
+    <object name="Livingroom_table"                     mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />
+    <object name="Kitchen_table"                        mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />
+    <object name="Bedroom_bedsidetable"                 mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_1.dae" />
+    <object name="Livingroom_coffeetable"               mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_2.dae" />
+    <object name="Bedroom_shelf"                        mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_shelf.dae" />
+
+
 
 	
 </list_obj>	
