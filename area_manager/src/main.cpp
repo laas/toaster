@@ -579,7 +579,7 @@ int main(int argc, char** argv) {
                     }
 
                     fact_msg.subjectId = itEntity->first;
-                    fact_msg.targetId = itArea->second->getId();
+                    fact_msg.targetId = itArea->second->getName();
                     fact_msg.confidence = 1;
                     fact_msg.factObservability = 0.8;
                     fact_msg.time = itEntity->second->getTime();
@@ -596,7 +596,7 @@ int main(int argc, char** argv) {
                         }
 
                         fact_msg.subjectId = itEntity->first;
-                        fact_msg.targetId = itArea->second->getId();
+                        fact_msg.targetId = itArea->second->getName();
                         fact_msg.confidence = 1;
                         fact_msg.factObservability = 0.8;
                         fact_msg.time = itEntity->second->getTime();
@@ -614,7 +614,7 @@ int main(int argc, char** argv) {
                         }
 
                         fact_msg.subjectId = itEntity->first;
-                        fact_msg.targetId = itArea->second->getId();
+                        fact_msg.targetId = itArea->second->getName();
                         fact_msg.confidence = 1;
                         fact_msg.factObservability = 0.8;
                         fact_msg.time = itEntity->second->getTime();

@@ -607,7 +607,6 @@ bool pointingTowardTimeRequest(toaster_msgs::PointingTime::Request &req,
     }
 }
 
-
 bool pointingTowardRequest(toaster_msgs::Pointing::Request &req,
         toaster_msgs::Pointing::Response & res) {
 
@@ -798,7 +797,7 @@ int main(int argc, char** argv) {
 
                 // We will use directly the joint from the agent buffer
                 /*// adding monitored joints to the entity.
-                for (std::vector<std::string>::iterator itJnt = mapJointMonitoredName_[ agntCur->getId() ].begin(); itJnt != mapJointMonitoredName_[ agntCur->getId() ].end(); ++itJnt) {
+                for (std::vector<std::string>::iterator itJnt = mapAgentToJointsMonitored_[ agntCur->getId() ].begin(); itJnt != mapAgentToJointsMonitored_[ agntCur->getId() ].end(); ++itJnt) {
                     jntCur = new Joint(agntCur->skeleton_[(*itJnt)]->getId(), agntCur->getId());
                     memcpy(jntCur, humanRd.lastConfig_[agentMonitored]->skeleton_[jointsMonitoredName[i]], sizeof (Joint));
 
@@ -905,7 +904,7 @@ int main(int argc, char** argv) {
             /////////////////////////////////////
 
 
-            printf("[agent_monitor] updating TRBuffer for each entities\n");
+            ROS_DEBUG("[agent_monitor] updating TRBuffer for each entities\n");
 
             // for each entity
             //Put the following in a function?
@@ -1024,7 +1023,7 @@ int main(int argc, char** argv) {
 
 
 
-            printf("[agent_monitor] computing facts for agent %s\n", (*itAgnt).c_str());
+            ROS_DEBUG("[agent_monitor] computing facts for agent %s\n", (*itAgnt).c_str());
 
             // Compute motion:
             unsigned long oneSecond = pow(10, 9);

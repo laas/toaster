@@ -43,6 +43,7 @@ add_message_files(
 add_service_files(
   FILES
   AddAgent.srv
+  AddEntity.srv
   AddFact.srv
   AddJointToAgent.srv
   MonitorAll.srv
@@ -51,6 +52,7 @@ add_service_files(
   RemoveAllJointsToAgent.srv
   AddArea.srv
   AddFactToAgent.srv 
+  AddFactsToAgent.srv 
   GetRelativePosition.srv
   GetMultiRelativePosition.srv
   PrintArea.srv
@@ -65,7 +67,7 @@ add_service_files(
   GetFacts.srv
   PutInHand.srv
   RemoveFromHand.srv
-
+  SetEntityPose.srv
 
  GetProperties.srv
   GetPropertyValue.srv
@@ -82,6 +84,7 @@ add_service_files(
   GetOntologyValues.srv
   GetOntologyLeaves.srv
   AddEntity.srv
+  AreInTable.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

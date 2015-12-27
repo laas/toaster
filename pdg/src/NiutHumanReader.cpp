@@ -4,13 +4,12 @@
 
 NiutHumanReader::NiutHumanReader(ros::NodeHandle& node, double * kinectPos,
         bool fullHuman) : kinectPos_(kinectPos) {
-    node_ = node;
     fullHuman_ = fullHuman;
     std::cout << "[PDG]Initializing HumanReader" << std::endl;
     // ******************************************
     // Starts listening to the joint_states topic
     // ******************************************
-    sub_ = node_.subscribe("/niut/Human", 1, &NiutHumanReader::humanJointCallBack, this);
+    sub_ = node.subscribe("/niut/Human", 1, &NiutHumanReader::humanJointCallBack, this);
 }
 
 void NiutHumanReader::humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg) {

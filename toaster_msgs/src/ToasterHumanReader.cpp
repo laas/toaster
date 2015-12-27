@@ -69,6 +69,8 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::
                 jointOrientation.push_back(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationYaw);
                 curJnt->setOrientation(jointOrientation);
 
+                curJnt->position = msg->humanList[i].meAgent.skeletonJoint[i_jnt].position;
+
                 lastConfig_[curHuman->getId()]->skeleton_[curJnt->getName()] = curJnt;
             }
         }

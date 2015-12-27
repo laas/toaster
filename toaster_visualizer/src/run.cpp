@@ -176,12 +176,12 @@ public:
         marker.color.a = 1.0;
 
         //dimemsion
-        marker.scale.x = rayon;
-        marker.scale.y = rayon;
-        marker.scale.z = 0.1;
+        marker.scale.x = rayon * 2;
+        marker.scale.y = rayon * 2;
+        marker.scale.z = 0.01;
 
         //type
-        marker.type = 2;
+        marker.type = 3;
 
         marker.lifetime = ros::Duration();
 
@@ -665,8 +665,8 @@ public:
                 visualization_msgs::Marker mn = defineName(m);
                 mn = setSize(mn, 0.0, 0.0, 0.4);
 
-                int posx = 0;
-                int posy = 0;
+                double posx = 0.0;
+                double posy = 0.0;
 
                 for (int i = 0; i < m.points.size(); i++) {
                     posx = posx + m.points[i].x;
