@@ -9,7 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 ## System dependencies are found with CMake's conventions
-find_package(Boost REQUIRED COMPONENTS system)
+#find_package(Boost REQUIRED COMPONENTS system)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -115,7 +115,7 @@ add_dependencies(agent_monitor agent_monitor_generate_messages_cpp)
 # target_link_libraries(agent_monitor_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(agent_monitor ${catkin_LIBRARIES} $ENV{HOME}/devel/lib/libtoaster.so)
+target_link_libraries(agent_monitor ${catkin_LIBRARIES} $ENV{TOASTERLIB_DIR}/lib/libtoaster.so)
 
 #############
 ## Install ##

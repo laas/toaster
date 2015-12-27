@@ -1,15 +1,18 @@
 #include "pdg/Pr2RobotReader.h"
 
-Pr2RobotReader::Pr2RobotReader(bool fullRobot) {
+Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, bool fullRobot) {
     fullRobot_ = fullRobot;
     std::cout << "Initializing Pr2RobotReader" << std::endl;
+    initJointsName_ = true;
     init();
+    if (fullRobot)
+        sub_ = node.subscribe("joint_states", 1, &Pr2RobotReader::pr2JointStateCallBack, this);
 }
 
 
 // Maybe get this from a config file?
 
-void Pr2RobotReader::initJointsName() {
+/*void Pr2RobotReader::initJointsName() {
     pr2JointsName_.push_back("base_link");
     pr2JointsName_.push_back("torso_lift_joint");
     pr2JointsName_.push_back("head_pan_joint");
@@ -31,13 +34,13 @@ void Pr2RobotReader::initJointsName() {
     pr2JointsName_.push_back("l_wrist_flex_joint");
     pr2JointsName_.push_back("l_wrist_roll_joint");
     pr2JointsName_.push_back("l_gripper_joint");
-}
+}*/
 
 void Pr2RobotReader::init() {
     Robot* curRobot = new Robot("pr2");
     //TODO: setname with id
     curRobot->setName("PR2_ROBOT");
-    initJointsName();
+    /*initJointsName();
     if (fullRobot_) {
         std::stringstream jointId;
         jointId << "pr2";
@@ -45,7 +48,7 @@ void Pr2RobotReader::init() {
             jointId << pr2JointsName_[i];
             curRobot->skeleton_[pr2JointsName_[i]] = new Joint(jointId.str(), "pr2");
         }
-    }
+    }*/
     lastConfig_["pr2"] = curRobot;
 }
 
@@ -60,11 +63,11 @@ void Pr2RobotReader::updateRobot(tf::TransformListener &listener) {
     curRobot->setOrientation(curJoint->getOrientation());
     curRobot->setPosition(curJoint->getPosition());
     curRobot->setTime(curJoint->getTime());
-    
+
     delete curJoint;
 
     //Then other joints if needed
-    if (fullRobot_) {
+    if (fullRobot_ && initJointsName_) {
         for (unsigned int i = 0; i < pr2JointsName_.size(); i++) {
             curJoint = curRobot->skeleton_[pr2JointsName_[i]];
             curJoint->setName(pr2JointsName_[i]);
@@ -106,6 +109,28 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
         ROS_ERROR("%s", ex.what());
     }
 }
+
+void Pr2RobotReader::pr2JointStateCallBack(const sensor_msgs::JointState::ConstPtr& msg) {
+
+    if (!initJointsName_) {
+        for (unsigned int i = 0; i < msg->name.size(); i++) {
+            pr2JointsName_.push_back(msg->name[i]);
+            std::stringstream jointId;
+            jointId << "pr2";
+            jointId << msg->name[i];
+            lastConfig_["pr2"]->skeleton_[pr2JointsName_[i]] = new Joint(jointId.str(), "pr2");
+
+        }
+        initJointsName_ = true;
+    }
+
+    if (pr2JointsName_.size() == msg->position.size()) {
+        for (unsigned int i = 0; i < pr2JointsName_.size(); i++) {
+            lastConfig_["pr2"]->skeleton_[pr2JointsName_[i]]->position = msg->position[i];
+        }
+    }
+}
+
 
 //Destructor
 

@@ -134,6 +134,8 @@ target_link_libraries(pdg $ENV{ROBOTPKG_BASE}/lib/libposterLib.so
 			  $ENV{TOASTERLIB_DIR}/lib/libtoaster.so
                           ${catkin_LIBRARIES})
 
+add_executable(simu_input src/input_simu.cpp)
+target_link_libraries(simu_input ${catkin_LIBRARIES})
 
 #############
 ## Install ##

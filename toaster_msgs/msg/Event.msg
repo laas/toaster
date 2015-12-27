@@ -1,0 +1,13 @@
+string property
+string propertyType
+string subProperty
+string subjectId
+string targetId
+string subjectOwnerId
+string targetOwnerId
+bool valueType
+float64 factObservability
+float64 doubleValue
+string stringValue
+float64 confidence
+uint64 time

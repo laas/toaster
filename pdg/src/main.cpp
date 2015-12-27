@@ -49,6 +49,7 @@ bool spencerRobot_ = false;
 
 bool vimanObject_ = false;
 bool sparkObject_ = false;
+
 bool sparkFact_ = false;
 
 
@@ -143,11 +144,15 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     groupHuman_ = req.groupHuman;
     mocapHuman_ = req.mocapHuman;
     adreamMocapHuman_ = req.adreamMocapHuman;
+
     pr2Robot_ = req.pr2Robot;
     spencerRobot_ = req.spencerRobot;
+
     vimanObject_ = req.vimanObject;
     sparkObject_ = req.sparkObject;
+
     sparkFact_ = req.sparkFact;
+
     ROS_INFO("[pdg] setting pdg input");
     return true;
 }
@@ -213,12 +218,13 @@ int main(int argc, char** argv) {
     MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
     AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
 
-    Pr2RobotReader pr2RobotRd(robotFullConfig_);
+    Pr2RobotReader pr2RobotRd(node, robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
 
     // These 2 use special genom library!
     SparkObjectReader sparkObjectRd;
     VimanObjectReader vimanObjectRd;
+
     SparkFactReader sparkFactRd;
 
 
