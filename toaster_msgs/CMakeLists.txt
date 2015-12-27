@@ -43,6 +43,7 @@ add_message_files(
 add_service_files(
   FILES
   AddAgent.srv
+  AddEntity.srv
   AddFact.srv
   AddJointToAgent.srv
   MonitorAll.srv
@@ -66,7 +67,7 @@ add_service_files(
   GetFacts.srv
   PutInHand.srv
   RemoveFromHand.srv
-
+  SetEntityPose.srv
 
  GetProperties.srv
   GetPropertyValue.srv

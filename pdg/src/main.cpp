@@ -336,7 +336,6 @@ int main(int argc, char** argv) {
                     }
                     //}
                     humanList_msg.humanList.push_back(human_msg);
-
                 }
             }
         }

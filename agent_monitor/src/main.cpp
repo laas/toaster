@@ -607,7 +607,6 @@ bool pointingTowardTimeRequest(toaster_msgs::PointingTime::Request &req,
     }
 }
 
-
 bool pointingTowardRequest(toaster_msgs::Pointing::Request &req,
         toaster_msgs::Pointing::Response & res) {
 
@@ -905,7 +904,7 @@ int main(int argc, char** argv) {
             /////////////////////////////////////
 
 
-            //printf("[agent_monitor] updating TRBuffer for each entities\n");
+            //ROS_DEBUG("[agent_monitor] updating TRBuffer for each entities\n");
 
             // for each entity
             //Put the following in a function?
@@ -1024,7 +1023,7 @@ int main(int argc, char** argv) {
 
 
 
-            //printf("[agent_monitor] computing facts for agent %s\n", (*itAgnt).c_str());
+            //ROS_DEBUG("[agent_monitor] computing facts for agent %s\n", (*itAgnt).c_str());
 
             // Compute motion:
             unsigned long oneSecond = pow(10, 9);
