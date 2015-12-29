@@ -8,7 +8,7 @@ Tracking Of Agent (actions and belief) and Spatio-TEmporal Reasoning.
 
 The human from [morse](https://www.openrobots.org/morse/doc/stable/morse.html) import in toaster and visualized using rviz
 
-![TOASTER screenshot 2](doc/media/full.png)](http://www.youtube.com/watch?v=AVh9oEU2jJc)
+[![TOASTER screenshot 2](doc/media/full.png)](http://www.youtube.com/watch?v=AVh9oEU2jJc)
 
 [![TOASTER video](doc/media/toaster.gif)](https://www.youtube.com/watch?v=MTSwhmuiIDw)
 
