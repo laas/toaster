@@ -16,12 +16,117 @@
 //Services
 #include <toaster_msgs/SetEntityPose.h>
 #include <toaster_msgs/AddEntity.h>
+#include <toaster_msgs/AddAgent.h>
 
+#include "toaster_simu/Keyboard.h"
 
 
 std::map<std::string, toaster_msgs::Object> object_map;
 std::map<std::string, toaster_msgs::Human> human_map;
 std::map<std::string, toaster_msgs::Robot> robot_map;
+
+std::string keyboardControlled_ = "";
+
+bool setEntityPose(std::string id, double x, double y, double z, double roll, double pitch, double yaw) {
+    // Is it an object?
+    std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.find(id);
+    if (it != object_map.end()) {
+        toaster_msgs::Object obj;
+        obj.meEntity = it->second.meEntity;
+        obj.meEntity.positionX = x;
+        obj.meEntity.positionY = y;
+        obj.meEntity.positionZ = z;
+        obj.meEntity.orientationRoll = roll;
+        obj.meEntity.orientationPitch = pitch;
+        obj.meEntity.orientationYaw = yaw;
+
+        object_map[id] = obj;
+    } else {
+        // Ok, not an object, mb a human?
+        std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(id);
+        if (itH != human_map.end()) {
+            toaster_msgs::Human hum;
+            hum.meAgent.meEntity = itH->second.meAgent.meEntity;
+            hum.meAgent.meEntity.positionX = x;
+            hum.meAgent.meEntity.positionY = y;
+            hum.meAgent.meEntity.positionZ = z;
+            hum.meAgent.meEntity.orientationRoll = roll;
+            hum.meAgent.meEntity.orientationPitch = pitch;
+            hum.meAgent.meEntity.orientationYaw = yaw;
+
+            human_map[id] = hum;
+        } else {
+            // Ok, not a human, mb a robot??
+            std::map<std::string, toaster_msgs::Robot>::const_iterator itR = robot_map.find(id);
+            if (itR != robot_map.end()) {
+                toaster_msgs::Robot rob;
+                rob.meAgent.meEntity = itR->second.meAgent.meEntity;
+                rob.meAgent.meEntity.positionX = x;
+                rob.meAgent.meEntity.positionY = y;
+                rob.meAgent.meEntity.positionZ = z;
+                rob.meAgent.meEntity.orientationRoll = roll;
+                rob.meAgent.meEntity.orientationPitch = pitch;
+                rob.meAgent.meEntity.orientationYaw = yaw;
+
+                robot_map[id] = rob;
+            } else
+                return false;
+        }
+    }
+    return true;
+}
+
+bool updateEntityPose(std::string id, double x, double y, double z, double roll, double pitch, double yaw) {
+    // Is it an object?
+    std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.find(id);
+    if (it != object_map.end()) {
+        toaster_msgs::Object obj;
+        obj.meEntity = it->second.meEntity;
+        obj.meEntity.positionX += x;
+        obj.meEntity.positionY += y;
+        obj.meEntity.positionZ += z;
+        obj.meEntity.orientationRoll += roll;
+        obj.meEntity.orientationPitch += pitch;
+        obj.meEntity.orientationYaw += yaw;
+
+        object_map[id] = obj;
+    } else {
+        // Ok, not an object, mb a human?
+        std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(id);
+        if (itH != human_map.end()) {
+            toaster_msgs::Human hum;
+            hum.meAgent.meEntity = itH->second.meAgent.meEntity;
+            hum.meAgent.meEntity.positionX += x;
+            hum.meAgent.meEntity.positionY += y;
+            hum.meAgent.meEntity.positionZ += z;
+            hum.meAgent.meEntity.orientationRoll += roll;
+            hum.meAgent.meEntity.orientationPitch += pitch;
+            hum.meAgent.meEntity.orientationYaw += yaw;
+
+            human_map[id] = hum;
+        } else {
+            // Ok, not a human, mb a robot??
+            std::map<std::string, toaster_msgs::Robot>::const_iterator itR = robot_map.find(id);
+            if (itR != robot_map.end()) {
+                toaster_msgs::Robot rob;
+                rob.meAgent.meEntity = itR->second.meAgent.meEntity;
+                rob.meAgent.meEntity.positionX += x;
+                rob.meAgent.meEntity.positionY += y;
+                rob.meAgent.meEntity.positionZ += z;
+                rob.meAgent.meEntity.orientationRoll += roll;
+                rob.meAgent.meEntity.orientationPitch += pitch;
+                rob.meAgent.meEntity.orientationYaw += yaw;
+
+                robot_map[id] = rob;
+            } else
+                return false;
+        }
+    }
+    return true;
+}
+
+
+
 
 ///////////////////////////
 //   Service functions   //
@@ -32,66 +137,20 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
 
     if (req.id != "") {
 
-        // Is it an object?
-        std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.find(req.id);
-        if (it != object_map.end()) {
-            toaster_msgs::Object obj;
-            obj.meEntity = it->second.meEntity;
-            obj.meEntity.positionX = req.positionX;
-            obj.meEntity.positionY = req.positionY;
-            obj.meEntity.positionZ = req.positionZ;
-            obj.meEntity.orientationRoll = req.orientationRoll;
-            obj.meEntity.orientationPitch = req.orientationPitch;
-            obj.meEntity.orientationYaw = req.orientationYaw;
-
-            object_map[req.id] = obj;
+        if (setEntityPose(req.id, req.x, req.y, req.z, req.roll, req.pitch, req.yaw)) {
+            ROS_INFO("[toaster_simu][Request][INFO] request to set entity pose with "
+                    "id %s successful", req.id.c_str());
+            res.answer = true;
         } else {
-            // Ok, not an object, mb a human?
-            std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(req.id);
-            if (itH != human_map.end()) {
-                toaster_msgs::Human hum;
-                hum.meAgent.meEntity = itH->second.meAgent.meEntity;
-                hum.meAgent.meEntity.positionX = req.positionX;
-                hum.meAgent.meEntity.positionY = req.positionY;
-                hum.meAgent.meEntity.positionZ = req.positionZ;
-                hum.meAgent.meEntity.orientationRoll = req.orientationRoll;
-                hum.meAgent.meEntity.orientationPitch = req.orientationPitch;
-                hum.meAgent.meEntity.orientationYaw = req.orientationYaw;
-
-                human_map[req.id] = hum;
-            } else {
-                // Ok, not a human, mb a robot??
-                std::map<std::string, toaster_msgs::Robot>::const_iterator itR = robot_map.find(req.id);
-                if (itR != robot_map.end()) {
-                    toaster_msgs::Robot rob;
-                    rob.meAgent.meEntity = itR->second.meAgent.meEntity;
-                    rob.meAgent.meEntity.positionX = req.positionX;
-                    rob.meAgent.meEntity.positionY = req.positionY;
-                    rob.meAgent.meEntity.positionZ = req.positionZ;
-                    rob.meAgent.meEntity.orientationRoll = req.orientationRoll;
-                    rob.meAgent.meEntity.orientationPitch = req.orientationPitch;
-                    rob.meAgent.meEntity.orientationYaw = req.orientationYaw;
-
-                    robot_map[req.id] = rob;
-
-                    //TODO: add Joint
-                } else {
-                    ROS_WARN("[toaster_simu][Request] request to set entity pose with "
-                            "id %s, we don't know this entity, please add it first", req.id.c_str());
-                    res.answer = false;
-                    return true;
-                }
-            }
-
+            ROS_WARN("[toaster_simu][Request] request to set entity pose with "
+                    "id %s, we don't know this entity, please add it first", req.id.c_str());
+            res.answer = false;
         }
-        ROS_INFO("[toaster_simu][Request][INFO] request to set entity pose with "
-                "id %s successful", req.id.c_str());
     } else {
         ROS_WARN("[toaster_simu][Request] request to set entity pose with "
                 "no id specified, sending back response: false");
         res.answer = false;
     }
-    res.answer = true;
     return true;
 }
 
@@ -153,6 +212,20 @@ bool addEntity(toaster_msgs::AddEntity::Request &req,
 
 }
 
+bool setEntityKeyboard(toaster_msgs::AddAgent::Request &req,
+        toaster_msgs::AddAgent::Response & res) {
+
+    if (req.id != "") {
+        keyboardControlled_ = req.id;
+        res.answer = true;
+    } else {
+        ROS_WARN("[toaster_simu][Request] request to set keyboard entity with "
+                " no id, please enter an id");
+        res.answer = false;
+    }
+    return true;
+}
+
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "toaster_simu");
@@ -166,35 +239,130 @@ int main(int argc, char** argv) {
     ros::ServiceServer serviceAddEnt = node.advertiseService("toaster_simu/add_entity", addEntity);
     ROS_INFO("[Request] Ready to add entities.");
 
+    ros::ServiceServer servicesetKeyb = node.advertiseService("toaster_simu/set_entity_keyboard", setEntityKeyboard);
+    ROS_INFO("[Request] Ready to control entity with keyboard.");
+
     //Data writing
-    ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("toaster_simu/objectList", 1000);
-    ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("toaster_simu/humanList", 1000);
-    ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotList>("toaster_simu/robotList", 1000);
-
-
+    ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("pdg/objectList", 1000);
+    ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("pdg/humanList", 1000);
+    ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotList>("pdg/robotList", 1000);
 
     ros::Rate loop_rate(30);
 
     ROS_INFO("[toaster_simu] initializing\n");
 
+    keyboard::Keyboard kbd;
 
+    uint16_t k;
+    uint16_t mod;
+    bool pressed, new_event;
+    double inc = 0.1;
+    bool update = false;
 
     while (node.ok()) {
+
+        double x = 0.0;
+        double y = 0.0;
+        double z = 0.0;
 
         toaster_msgs::ObjectList objectList_msg;
         toaster_msgs::HumanList humanList_msg;
         toaster_msgs::RobotList robotList_msg;
 
-        for (std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.begin(); it != object_map.end(); ++it)
+        if (kbd.get_key(new_event, pressed, k, mod))
+            if (new_event) {
+                if (pressed)
+                    update = true;
+                else
+                    update = false;
+            }
+
+        if (update) {
+            switch (k) {
+                case (SDLK_UP):
+                {
+                    updateEntityPose(keyboardControlled_, inc, 0.0, 0.0, 0.0, 0.0, 0.0);
+                    break;
+                }
+                case (SDLK_DOWN):
+                {
+                    updateEntityPose(keyboardControlled_, -inc, 0.0, 0.0, 0.0, 0.0, 0.0);
+                    break;
+                }
+                case (SDLK_LEFT):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, inc, 0.0, 0.0, 0.0, 0.0);
+                    break;
+                }
+                case (SDLK_RIGHT):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, -inc, 0.0, 0.0, 0.0, 0.0);
+                    break;
+                }
+                case (SDLK_PAGEUP):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, 0.0, inc, 0.0, 0.0, 0.0);
+                    break;
+                }
+                case (SDLK_PAGEDOWN):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, 0.0, -inc, 0.0, 0.0, 0.0);
+                    break;
+                }
+                case (SDLK_w):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, 0.0, 0.0, inc, 0.0, 0.0);
+                    break;
+                }
+                case (SDLK_s):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, 0.0, 0.0, -inc, 0.0, 0.0);
+                    break;
+                }
+                case (SDLK_a):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, 0.0, 0.0, 0.0, inc, 0.0);
+                    break;
+                }
+                case (SDLK_d):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, 0.0, 0.0, 0.0, -inc, 0.0);
+                    break;
+                }
+                case (SDLK_q):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, 0.0, 0.0, 0.0, 0.0, inc);
+                    break;
+                }
+                case (SDLK_e):
+                {
+                    updateEntityPose(keyboardControlled_, 0.0, 0.0, 0.0, 0.0, 0.0, -inc);
+                    break;
+                }
+                case (SDLK_KP_MINUS):
+                {
+                    inc /= 1.2;
+                    break;
+                }
+                case (SDLK_KP_PLUS):
+                {
+                    inc *= 1.2;
+                    break;
+                }
+            }
+        }
+
+        for (std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.begin(); it != object_map.end(); ++it) {
             objectList_msg.objectList.push_back(it->second);
+        }
 
-
-        for (std::map<std::string, toaster_msgs::Human>::const_iterator it = human_map.begin(); it != human_map.end(); ++it)
+        for (std::map<std::string, toaster_msgs::Human>::const_iterator it = human_map.begin(); it != human_map.end(); ++it) {
             humanList_msg.humanList.push_back(it->second);
+        }
 
-
-        for (std::map<std::string, toaster_msgs::Robot>::const_iterator it = robot_map.begin(); it != robot_map.end(); ++it)
+        for (std::map<std::string, toaster_msgs::Robot>::const_iterator it = robot_map.begin(); it != robot_map.end(); ++it) {
             robotList_msg.robotList.push_back(it->second);
+        }
 
         object_pub.publish(objectList_msg);
         human_pub.publish(humanList_msg);

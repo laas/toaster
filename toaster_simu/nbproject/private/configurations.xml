@@ -4,9 +4,13 @@
     <df root="." name="0">
       <df name="include">
         <df name="toaster_simu">
+          <in>Keyboard.h</in>
         </df>
       </df>
+      <df name="msg">
+      </df>
       <df name="src">
+        <in>Keyboard.cpp</in>
         <in>main.cpp</in>
       </df>
       <df name="srv">
