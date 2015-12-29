@@ -8,9 +8,9 @@ Tracking Of Agent (actions and belief) and Spatio-TEmporal Reasoning.
 
 The human from [morse](https://www.openrobots.org/morse/doc/stable/morse.html) import in toaster and visualized using rviz
 
-![TOASTER screenshot 2](doc/media/full.png)
+![TOASTER screenshot 2](doc/media/full.png)](http://www.youtube.com/watch?v=AVh9oEU2jJc)
 
-[![TOASTER video](doc/media/toaster.gif)](http://www.youtube.com/watch?v=AVh9oEU2jJc)
+[![TOASTER video](doc/media/toaster.gif)](https://www.youtube.com/watch?v=MTSwhmuiIDw)
 
 
 A scenario using data input from morse.
@@ -49,6 +49,9 @@ It allows to enhance divergent belief management for the robot.
 
 toaster_visualizer :
 This node sends marker to rviz to visualize toaster's data.
+
+toaster_simu :
+This node simulate the entity positions. You can either set the object position or move them with keyboard
 
 database_manager :
 This node is an improvement of belief_manager node. It uses a sql database to store facts, static properties and onthology.
