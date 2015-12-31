@@ -615,10 +615,10 @@ public:
 
         for (int i = 0; i < msg->objectList.size(); i++) {
             visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.positionX, msg->objectList[i].meEntity.positionY, msg->objectList[i].meEntity.positionZ, msg->objectList[i].meEntity.orientationRoll, msg->objectList[i].meEntity.orientationPitch, msg->objectList[i].meEntity.orientationYaw,
-                    1, msg->objectList[i].meEntity.name);
+                    1, msg->objectList[i].meEntity.id);
 
             visualization_msgs::Marker mn = defineName(m);
-            mn = setColor(mn, 1.0, 1.0, 1.0);
+            mn = setColor(mn, 0.0, 0.0, 1.0);
             mn = setSize(mn, 0, 0, 0.2);
 
             obj_list.markers.push_back(mn);
@@ -695,12 +695,12 @@ public:
         for (int i = 0; i < msg->robotList.size(); i++) {
             //non articulated robot
             visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.positionX, msg->robotList[i].meAgent.meEntity.positionY, msg->robotList[i].meAgent.meEntity.positionZ, msg->robotList[i].meAgent.meEntity.orientationRoll, msg->robotList[i].meAgent.meEntity.orientationPitch, msg->robotList[i].meAgent.meEntity.orientationYaw,
-                    1.0, msg->robotList[i].meAgent.meEntity.name);
+                    1.0, msg->robotList[i].meAgent.meEntity.id);
 
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
             mn = setSize(mn, 0, 0, 0.5);
-            mn = setColor(mn, 1.0, 1.0, 1.0);
+            mn = setColor(mn, 1.0, 0.0, 0.0);
 
 
             robot_list.markers.push_back(mn);
@@ -723,12 +723,12 @@ public:
         for (int i = 0; i < msg->humanList.size(); i++) {
             //non articulated human
             visualization_msgs::Marker m = defineHuman(msg->humanList[i].meAgent.meEntity.positionX, msg->humanList[i].meAgent.meEntity.positionY, msg->humanList[i].meAgent.meEntity.positionZ, msg->humanList[i].meAgent.meEntity.orientationRoll, msg->humanList[i].meAgent.meEntity.orientationPitch, msg->humanList[i].meAgent.meEntity.orientationYaw,
-                    0.3, msg->humanList[i].meAgent.meEntity.name);
+                    0.3, msg->humanList[i].meAgent.meEntity.id);
 
             visualization_msgs::Marker mn = defineName(m);
-            mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
+            mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 2);
             mn = setSize(mn, 0, 0, 0.5);
-            mn = setColor(mn, 1.0, 1.0, 1.0);
+            mn = setColor(mn, 0.0, 1.0, 0.0);
 
 
             human_list.markers.push_back(mn);
@@ -754,7 +754,7 @@ public:
 
                     //namespace
                     markerTempo.ns = name;
-                    markerTempo.id = id_generator(joints[y].meEntity.name); //creation of an unique id based on marker's name
+                    markerTempo.id = id_generator(joints[y].meEntity.id); //creation of an unique id based on marker's object id
 
                     //action
                     markerTempo.action = visualization_msgs::Marker::ADD;

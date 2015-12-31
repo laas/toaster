@@ -33,9 +33,10 @@
 #include <toaster_msgs/AddStream.h>
 #include <toaster_msgs/PutInHand.h>
 #include <toaster_msgs/RemoveFromHand.h>
+#include <toaster_msgs/SetEntityPose.h>
 
 bool humanFullConfig_ = false; //If false we will use only position and orientation
-bool robotFullConfig_ = false; //If false we will use only position and orientation
+bool robotFullConfig_ = true; //If false we will use only position and orientation
 
 // Stream to activate
 bool morseHuman_ = false;
@@ -52,9 +53,12 @@ bool sparkObject_ = false;
 
 bool sparkFact_ = false;
 
-
+// Use to put an object in agent's hand
 std::map<std::string, std::string> objectInAgent_;
 std::map<std::string, std::string> objectInHand_;
+
+//Used to change position of an entity
+Entity newPoseEnt_("");
 
 void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
@@ -68,6 +72,12 @@ void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.orientationYaw = srcEntity->getOrientation()[2];
 }
 
+void updateEntity(Entity& newPoseEnt, Entity* storedEntity) {
+    ROS_INFO("UPDATE entity");
+    storedEntity->position_ = newPoseEnt.getPosition();
+    storedEntity->orientation_ = newPoseEnt.getOrientation();
+}
+
 bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string id, std::string joint,
         toaster_msgs::HumanList& humanList_msg) {
 
@@ -78,14 +88,16 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string id, std::st
     while (humanList_msg.humanList[i_agent].meAgent.meEntity.id != id)
         i_agent++;
 
+    if (i_agent = humanList_msg.humanList.size())
+        return false;
 
     std::vector<std::string>::iterator it = std::find(humanList_msg.humanList[i_agent].meAgent.skeletonNames.begin(), humanList_msg.humanList[i_agent].meAgent.skeletonNames.end(), joint);
     if (it != humanList_msg.humanList[i_agent].meAgent.skeletonNames.end()) {
         jointEntity = humanList_msg.humanList[i_agent].meAgent.skeletonJoint[std::distance(humanList_msg.humanList[i_agent].meAgent.skeletonNames.begin(), it)].meEntity;
 
         msgEntity.positionX = jointEntity.positionX;
-        msgEntity.positionX = jointEntity.positionY;
-        msgEntity.positionX = jointEntity.positionZ;
+        msgEntity.positionY = jointEntity.positionY;
+        msgEntity.positionZ = jointEntity.positionZ;
         msgEntity.orientationRoll = jointEntity.orientationRoll;
         msgEntity.orientationPitch = jointEntity.orientationPitch;
         msgEntity.orientationYaw = jointEntity.orientationYaw;
@@ -109,6 +121,9 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string id, std::st
     unsigned int i_agent = 0;
     while (robotList_msg.robotList[i_agent].meAgent.meEntity.id != id)
         i_agent++;
+
+    if (i_agent = robotList_msg.robotList.size())
+        return false;
 
     std::vector<std::string>::iterator it = std::find(robotList_msg.robotList[i_agent].meAgent.skeletonNames.begin(), robotList_msg.robotList[i_agent].meAgent.skeletonNames.end(), joint);
     if (it != robotList_msg.robotList[i_agent].meAgent.skeletonNames.end()) {
@@ -200,6 +215,29 @@ bool removeFromHand(toaster_msgs::RemoveFromHand::Request &req,
     return true;
 }
 
+bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
+        toaster_msgs::SetEntityPose::Response & res) {
+
+    if (req.id != "") {
+        newPoseEnt_.setId(req.id);
+        newPoseEnt_.position_.set<0>(req.x);
+        newPoseEnt_.position_.set<1>(req.y);
+        newPoseEnt_.position_.set<2>(req.z);
+        newPoseEnt_.orientation_[0] = req.roll;
+        newPoseEnt_.orientation_[1] = req.pitch;
+        newPoseEnt_.orientation_[2] = req.yaw;
+        ROS_INFO("[toaster_simu][Request][INFO] request to set entity pose with "
+                "id %s successful", req.id.c_str());
+        res.answer = true;
+
+    } else {
+        ROS_WARN("[toaster_simu][Request] request to set entity pose with "
+                "no id specified, sending back response: false");
+        res.answer = false;
+    }
+    return true;
+}
+
 int main(int argc, char** argv) {
 
     ros::init(argc, argv, "pdg");
@@ -237,6 +275,9 @@ int main(int argc, char** argv) {
 
     ros::ServiceServer serviceRemoveFromHand = node.advertiseService("pdg/remove_from_hand", removeFromHand);
     ROS_INFO("[Request] Ready to remove object from hand.");
+
+    ros::ServiceServer setEntPose = node.advertiseService("pdg/set_entity_pose", setEntityPose);
+    ROS_INFO("Ready to set Entity position.");
 
     //Data writing
     ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("pdg/objectList", 1000);
@@ -316,6 +357,8 @@ int main(int argc, char** argv) {
 
         if (morseHuman_)
             for (std::map<std::string, Human*>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (morseHumanRd.isPresent(it->first)) {
 
                     //Fact
@@ -339,6 +382,8 @@ int main(int argc, char** argv) {
 
         if (mocapHuman_) {
             for (std::map<std::string, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (mocapHumanRd.isPresent(it->first)) {
 
                     //Fact
@@ -362,6 +407,8 @@ int main(int argc, char** argv) {
 
         if (adreamMocapHuman_) {
             for (std::map<std::string, Human*>::iterator it = adreamMocapHumanRd.lastConfig_.begin(); it != adreamMocapHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (adreamMocapHumanRd.isPresent(it->first)) {
 
                     //Fact
@@ -395,6 +442,8 @@ int main(int argc, char** argv) {
 
         if (groupHuman_)
             for (std::map<std::string, Human*>::iterator it = groupHumanRd.lastConfig_.begin(); it != groupHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (groupHumanRd.isPresent(it->first)) {
 
                     //Fact
@@ -422,6 +471,8 @@ int main(int argc, char** argv) {
 
         if (pr2Robot_)
             for (std::map<std::string, Robot*>::iterator it = pr2RobotRd.lastConfig_.begin(); it != pr2RobotRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (pr2RobotRd.isPresent(it->first)) {
 
 
@@ -459,6 +510,8 @@ int main(int argc, char** argv) {
 
         if (spencerRobot_) {
             for (std::map<std::string, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 //if (spencerRobotRd.isPresent(it->first)) {
 
                 //Fact
@@ -504,6 +557,8 @@ int main(int argc, char** argv) {
 
         if (sparkObject_)
             for (std::map<std::string, MovableObject*>::iterator it = sparkObjectRd.lastConfig_.begin(); it != sparkObjectRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 //if (sparkObjectRd.isPresent(sparkObjectRd.objectIdOffset_ + i)) {
 
                 //Fact message
@@ -563,6 +618,12 @@ int main(int argc, char** argv) {
         // To compute which objects are seen by the robot, we use Viman:
         if (vimanObject_)
             for (std::map<std::string, MovableObject*>::iterator it = vimanObjectRd.lastConfig_.begin(); it != vimanObjectRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first) {
+                    updateEntity(newPoseEnt_, it->second);
+                    //Reset newPoseEnt_
+                    newPoseEnt_.setId("");
+                    ROS_INFO("got true");
+                }
                 if (vimanObjectRd.isPresent(it->first)) {
 
                     //Fact is seen from viman
@@ -637,6 +698,7 @@ int main(int argc, char** argv) {
         ros::spinOnce();
 
         loop_rate.sleep();
+
 
     }
     return 0;
