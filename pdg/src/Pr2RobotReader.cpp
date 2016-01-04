@@ -3,7 +3,7 @@
 Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, bool fullRobot) {
     fullRobot_ = fullRobot;
     std::cout << "Initializing Pr2RobotReader" << std::endl;
-    initJointsName_ = true;
+    initJointsName_ = false;
     init();
     if (fullRobot)
         sub_ = node.subscribe("joint_states", 1, &Pr2RobotReader::pr2JointStateCallBack, this);
@@ -55,7 +55,7 @@ void Pr2RobotReader::init() {
 void Pr2RobotReader::updateRobot(tf::TransformListener &listener) {
     Robot* curRobot = lastConfig_["pr2"];
     Joint* curJoint = new Joint("pr2_base_link", "pr2");
-    curJoint->setName(pr2JointsName_[0]);
+    curJoint->setName("base_link");
 
     // We start with base:
     setRobotJointLocation(listener, curJoint);
@@ -111,7 +111,6 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
 }
 
 void Pr2RobotReader::pr2JointStateCallBack(const sensor_msgs::JointState::ConstPtr& msg) {
-
     if (!initJointsName_) {
         for (unsigned int i = 0; i < msg->name.size(); i++) {
             pr2JointsName_.push_back(msg->name[i]);
