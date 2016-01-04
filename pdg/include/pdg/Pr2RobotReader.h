@@ -28,7 +28,7 @@ private:
     bool initJointsName_;
     ros::Subscriber sub_;
     std::vector<std::string> pr2JointsName_;
-    void initJointsName();
+    //void initJointsName();
     void init();
     void setRobotJointLocation(tf::TransformListener &listener, Joint* joint);
     void pr2JointStateCallBack(const sensor_msgs::JointState::ConstPtr& msg);

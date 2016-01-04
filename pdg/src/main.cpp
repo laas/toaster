@@ -30,9 +30,10 @@
 #include <toaster_msgs/AddStream.h>
 #include <toaster_msgs/PutInHand.h>
 #include <toaster_msgs/RemoveFromHand.h>
+#include <toaster_msgs/SetEntityPose.h>
 
-bool humanFullConfig_ = false; //If false we will use only position and orientation
-bool robotFullConfig_ = false; //If false we will use only position and orientation
+bool humanFullConfig_ = true; //If false we will use only position and orientation
+bool robotFullConfig_ = true; //If false we will use only position and orientation
 
 // Stream to activate
 bool morseHuman_ = false;
@@ -47,6 +48,9 @@ bool spencerRobot_ = false;
 std::map<std::string, std::string> objectInAgent_;
 std::map<std::string, std::string> objectInHand_;
 
+//Used to change position of an entity
+Entity newPoseEnt_("");
+
 void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
     msgEntity.time = srcEntity->getTime();
@@ -59,67 +63,78 @@ void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.orientationYaw = srcEntity->getOrientation()[2];
 }
 
-bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string id, std::string joint,
+void updateEntity(Entity& newPoseEnt, Entity* storedEntity) {
+    ROS_INFO("UPDATE entity");
+    storedEntity->position_ = newPoseEnt.getPosition();
+    storedEntity->orientation_ = newPoseEnt.getOrientation();
+}
+
+bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, std::string joint,
         toaster_msgs::HumanList& humanList_msg) {
 
     toaster_msgs::Entity jointEntity;
 
     //  find back the agent:
-    unsigned int i_agent = 0;
-    while (humanList_msg.humanList[i_agent].meAgent.meEntity.id != id)
-        i_agent++;
+    for (std::vector<toaster_msgs::Human>::iterator itAgent = humanList_msg.humanList.begin(); itAgent != humanList_msg.humanList.end(); ++itAgent) {
+        if ((*itAgent).meAgent.meEntity.id == agentId) {
 
+            //Find back the joint
+            std::vector<std::string>::iterator it = std::find((*itAgent).meAgent.skeletonNames.begin(),
+                    (*itAgent).meAgent.skeletonNames.end(), joint);
 
-    std::vector<std::string>::iterator it = std::find(humanList_msg.humanList[i_agent].meAgent.skeletonNames.begin(), humanList_msg.humanList[i_agent].meAgent.skeletonNames.end(), joint);
-    if (it != humanList_msg.humanList[i_agent].meAgent.skeletonNames.end()) {
-        jointEntity = humanList_msg.humanList[i_agent].meAgent.skeletonJoint[std::distance(humanList_msg.humanList[i_agent].meAgent.skeletonNames.begin(), it)].meEntity;
+            if (it != (*itAgent).meAgent.skeletonNames.end()) {
+                jointEntity = (*itAgent).meAgent.skeletonJoint[std::distance((*itAgent).meAgent.skeletonNames.begin(), it)].meEntity;
 
-        msgEntity.positionX = jointEntity.positionX;
-        msgEntity.positionX = jointEntity.positionY;
-        msgEntity.positionX = jointEntity.positionZ;
-        msgEntity.orientationRoll = jointEntity.orientationRoll;
-        msgEntity.orientationPitch = jointEntity.orientationPitch;
-        msgEntity.orientationYaw = jointEntity.orientationYaw;
+                msgEntity.positionX = jointEntity.positionX;
+                msgEntity.positionY = jointEntity.positionY;
+                msgEntity.positionZ = jointEntity.positionZ;
+                msgEntity.orientationRoll = jointEntity.orientationRoll;
+                msgEntity.orientationPitch = jointEntity.orientationPitch;
+                msgEntity.orientationYaw = jointEntity.orientationYaw;
 
-        humanList_msg.humanList[i_agent].meAgent.hasObjects.push_back(msgEntity.name);
-        humanList_msg.humanList[i_agent].meAgent.busyHands.push_back(jointEntity.name);
+                (*itAgent).meAgent.hasObjects.push_back(msgEntity.id);
+                (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
 
-        return true;
-    } else
-        return false;
-
-    return true;
+                return true;
+            } else
+                ROS_WARN("Can't find joint %s for human %s. Couldn't attach object %s to this joint", joint.c_str(), agentId.c_str(), msgEntity.id.c_str());
+        }
+    }
+    return false;
 }
 
-bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string id, std::string joint,
+bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, std::string joint,
         toaster_msgs::RobotList robotList_msg) {
 
     toaster_msgs::Entity jointEntity;
 
     //  find back the agent:
-    unsigned int i_agent = 0;
-    while (robotList_msg.robotList[i_agent].meAgent.meEntity.id != id)
-        i_agent++;
+    for (std::vector<toaster_msgs::Robot>::iterator itAgent = robotList_msg.robotList.begin(); itAgent != robotList_msg.robotList.end(); ++itAgent) {
+        if ((*itAgent).meAgent.meEntity.id == agentId) {
 
-    std::vector<std::string>::iterator it = std::find(robotList_msg.robotList[i_agent].meAgent.skeletonNames.begin(), robotList_msg.robotList[i_agent].meAgent.skeletonNames.end(), joint);
-    if (it != robotList_msg.robotList[i_agent].meAgent.skeletonNames.end()) {
-        jointEntity = robotList_msg.robotList[i_agent].meAgent.skeletonJoint[std::distance(robotList_msg.robotList[i_agent].meAgent.skeletonNames.begin(), it)].meEntity;
+            //Find back the joint
+            std::vector<std::string>::iterator it = std::find((*itAgent).meAgent.skeletonNames.begin(),
+                    (*itAgent).meAgent.skeletonNames.end(), joint);
 
-        msgEntity.positionX = jointEntity.positionX;
-        msgEntity.positionX = jointEntity.positionY;
-        msgEntity.positionX = jointEntity.positionZ;
-        msgEntity.orientationRoll = jointEntity.orientationRoll;
-        msgEntity.orientationPitch = jointEntity.orientationPitch;
-        msgEntity.orientationYaw = jointEntity.orientationYaw;
+            if (it != (*itAgent).meAgent.skeletonNames.end()) {
+                jointEntity = (*itAgent).meAgent.skeletonJoint[std::distance((*itAgent).meAgent.skeletonNames.begin(), it)].meEntity;
 
-        robotList_msg.robotList[i_agent].meAgent.hasObjects.push_back(msgEntity.name);
-        robotList_msg.robotList[i_agent].meAgent.busyHands.push_back(msgEntity.name);
+                msgEntity.positionX = jointEntity.positionX;
+                msgEntity.positionY = jointEntity.positionY;
+                msgEntity.positionZ = jointEntity.positionZ;
+                msgEntity.orientationRoll = jointEntity.orientationRoll;
+                msgEntity.orientationPitch = jointEntity.orientationPitch;
+                msgEntity.orientationYaw = jointEntity.orientationYaw;
 
-        return true;
-    } else
-        return false;
+                (*itAgent).meAgent.hasObjects.push_back(msgEntity.id);
+                (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
 
-    return true;
+                return true;
+            } else
+                ROS_WARN("Can't find joint %s for robot %s. Couldn't attach object %s to this joint", joint.c_str(), agentId.c_str(), msgEntity.id.c_str());
+        }
+    }
+    return false;
 }
 
 
@@ -135,9 +150,12 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     groupHuman_ = req.groupHuman;
     mocapHuman_ = req.mocapHuman;
     adreamMocapHuman_ = req.adreamMocapHuman;
+
     pr2Robot_ = req.pr2Robot;
     spencerRobot_ = req.spencerRobot;
+
     ROS_INFO("[pdg] setting pdg input");
+
     return true;
 }
 
@@ -181,6 +199,31 @@ bool removeFromHand(toaster_msgs::RemoveFromHand::Request &req,
 
     objectInAgent_.erase(req.objectId);
     objectInHand_.erase(req.objectId);
+
+    return true;
+}
+
+bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
+        toaster_msgs::SetEntityPose::Response & res) {
+
+    if (req.id != "") {
+        newPoseEnt_.setId(req.id);
+        newPoseEnt_.position_.set<0>(req.x);
+        newPoseEnt_.position_.set<1>(req.y);
+        newPoseEnt_.position_.set<2>(req.z);
+        newPoseEnt_.orientation_[0] = req.roll;
+        newPoseEnt_.orientation_[1] = req.pitch;
+        newPoseEnt_.orientation_[2] = req.yaw;
+        ROS_INFO("[toaster_simu][Request][INFO] request to set entity pose with "
+                "id %s successful", req.id.c_str());
+        res.answer = true;
+
+    } else {
+
+        ROS_WARN("[toaster_simu][Request] request to set entity pose with "
+                "no id specified, sending back response: false");
+        res.answer = false;
+    }
     return true;
 }
 
@@ -209,6 +252,9 @@ int main(int argc, char** argv) {
 
     ros::ServiceServer serviceRemoveFromHand = node.advertiseService("pdg/remove_from_hand", removeFromHand);
     ROS_INFO("[Request] Ready to remove object from hand.");
+
+    ros::ServiceServer setEntPose = node.advertiseService("pdg/set_entity_pose", setEntityPose);
+    ROS_INFO("Ready to set Entity position.");
 
     //Data writing
     ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("pdg/objectList", 1000);
@@ -263,6 +309,8 @@ int main(int argc, char** argv) {
 
         if (morseHuman_)
             for (std::map<std::string, Human*>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (morseHumanRd.isPresent(it->first)) {
 
                     //Fact
@@ -286,6 +334,8 @@ int main(int argc, char** argv) {
 
         if (mocapHuman_) {
             for (std::map<std::string, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (mocapHumanRd.isPresent(it->first)) {
 
                     //Fact
@@ -309,6 +359,8 @@ int main(int argc, char** argv) {
 
         if (adreamMocapHuman_) {
             for (std::map<std::string, Human*>::iterator it = adreamMocapHumanRd.lastConfig_.begin(); it != adreamMocapHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (adreamMocapHumanRd.isPresent(it->first)) {
 
                     //Fact
@@ -342,6 +394,8 @@ int main(int argc, char** argv) {
 
         if (groupHuman_)
             for (std::map<std::string, Human*>::iterator it = groupHumanRd.lastConfig_.begin(); it != groupHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (groupHumanRd.isPresent(it->first)) {
 
                     //Fact
@@ -369,6 +423,8 @@ int main(int argc, char** argv) {
 
         if (pr2Robot_)
             for (std::map<std::string, Robot*>::iterator it = pr2RobotRd.lastConfig_.begin(); it != pr2RobotRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 if (pr2RobotRd.isPresent(it->first)) {
 
 
@@ -406,6 +462,8 @@ int main(int argc, char** argv) {
 
         if (spencerRobot_) {
             for (std::map<std::string, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
                 //if (spencerRobotRd.isPresent(it->first)) {
 
                 //Fact

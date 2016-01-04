@@ -12,9 +12,9 @@ catkin_package(
 include_directories(include ${catkin_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS})
 
 
-add_executable(run src/run.cpp)
-target_link_libraries(run ${catkin_LIBRARIES} ${TinyXML_LIBRARIES})
-add_dependencies(run beginner_tutorials_generate_messages_cpp)
+add_executable(toaster_visualizer src/run.cpp)
+target_link_libraries(toaster_visualizer ${catkin_LIBRARIES} ${TinyXML_LIBRARIES})
+add_dependencies(toaster_visualizer beginner_tutorials_generate_messages_cpp)
 
 
 catkin_package(

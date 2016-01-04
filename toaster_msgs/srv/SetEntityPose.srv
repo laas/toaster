@@ -1,10 +1,10 @@
 string id
 string type
-float64 positionX
-float64 positionY
-float64 positionZ
-float64 orientationRoll
-float64 orientationPitch
-float64 orientationYaw
+float64 x
+float64 y
+float64 z
+float64 roll
+float64 pitch
+float64 yaw
 ---
 bool answer
