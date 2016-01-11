@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 ## System dependencies are found with CMake's conventions
 #find_package(Boost REQUIRED COMPONENTS system)
+find_package(msgconnector REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -91,10 +92,12 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  ${msgconnector_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   $ENV{TOASTERLIB_DIR}/include
   $ENV{ROBOTPKG_BASE}/include
+  $ENV{ROBOTPKG_BASE}/include/openprs
 )
 
 ## Declare a cpp library
@@ -113,7 +116,7 @@ include_directories(
 # target_link_libraries(agent_monitor_node
 #   ${catkin_LIBRARIES}
 # )
-target_link_libraries(belief_manager ${catkin_LIBRARIES} $ENV{TOASTERLIB_DIR}/lib/libtoaster.so)
+target_link_libraries(belief_manager $ENV{ROBOTPKG_BASE}/lib/libExtMP.a ${catkin_LIBRARIES} ${msgconnector_LIBRARIES}  $ENV{TOASTERLIB_DIR}/lib/libtoaster.so)
 
 #############
 ## Install ##

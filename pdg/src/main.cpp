@@ -36,7 +36,7 @@
 #include <toaster_msgs/SetEntityPose.h>
 
 bool humanFullConfig_ = false; //If false we will use only position and orientation
-bool robotFullConfig_ = true; //If false we will use only position and orientation
+bool robotFullConfig_ = false; //If false we will use only position and orientation
 
 // Stream to activate
 bool morseHuman_ = false;
@@ -169,7 +169,6 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     sparkFact_ = req.sparkFact;
 
     ROS_INFO("[pdg] setting pdg input");
-
     return true;
 }
 
@@ -196,7 +195,6 @@ bool putInHand(toaster_msgs::PutInHand::Request &req,
         return true;
     } else {
         ROS_INFO("[pdg][Request][put_in_hand][WARNING] joint name is empty %s\n", req.jointName.c_str());
-
         return false;
     }
     return true;
@@ -702,7 +700,6 @@ int main(int argc, char** argv) {
         ros::spinOnce();
 
         loop_rate.sleep();
-
 
     }
     return 0;

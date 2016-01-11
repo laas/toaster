@@ -64,19 +64,16 @@ void Pr2RobotReader::updateRobot(tf::TransformListener &listener) {
     curRobot->setPosition(curJoint->getPosition());
     curRobot->setTime(curJoint->getTime());
 
-
-    lastConfig_["pr2"]->skeleton_["base_link"] = curJoint;
-
-    //delete curJoint;
+    delete curJoint;
 
     //Then other joints if needed
-   /* if (fullRobot_ && initJointsName_) {
+    if (fullRobot_ && initJointsName_) {
         for (unsigned int i = 0; i < pr2JointsName_.size(); i++) {
             curJoint = curRobot->skeleton_[pr2JointsName_[i]];
             curJoint->setName(pr2JointsName_[i]);
             setRobotJointLocation(listener, curJoint);
         }
-    }*/
+    }
 }
 
 void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Joint* joint) {
