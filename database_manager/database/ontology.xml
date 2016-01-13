@@ -1,0 +1,12 @@
+<ontology>
+	
+	<ontology entityClass="'color'"    individual="'red'"        	instantiated="'true'"  />
+	<ontology entityClass="'agent'"    individual="'human'"      	instantiated="'false'"  />
+	<ontology entityClass="'agent'"    individual="'robot'"      	instantiated="'false'"  />
+	<ontology entityClass="'tape'"     individual="'grey_tape'"  	instantiated="'true'"  />
+	<ontology entityClass="'viewable'" individual="'tape'"  	instantiated="'false'"  />
+	<ontology entityClass="'fly'"      individual="'bird'"		instantiated="'false'"  />
+	<ontology entityClass="'tape'"     individual="'red_tape'"  	instantiated="'true'"  />
+	
+</ontology>
+	

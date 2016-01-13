@@ -1,0 +1,14 @@
+<agents_list>
+	
+	<agent id="pr2"  	name="'pr2'"  	type="'robot'" owner_id="' '" />
+	<agent id="jean"  	name="'jean'"  	type="'human'" owner_id="' '" />
+	<agent id="andre"  	name="'andre'"  type="'human'" owner_id="' '" />
+	<agent id="michel"  	name="'michel'" type="'human'" owner_id="' '" />
+	<agent id="paul"  	name="'paul'"  	type="'human'" owner_id="' '" />
+
+	<agent id="mug"  	name="'mug'"  	type="'object'" owner_id="' '" />
+	<agent id="cube"  	name="'cube'"  	type="'object'" owner_id="' '" />
+	<agent id="table"  	name="'table'"  type="'object'" owner_id="' '" />
+	<agent id="ps3"  	name="'ps3'"  	type="'object'" owner_id="' '" />
+
+</agents_list>
