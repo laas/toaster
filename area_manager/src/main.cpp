@@ -33,7 +33,7 @@ std::map<unsigned int, Area*> mapArea_;
 std::map<std::string, Entity*> mapEntities_;
 
 // Publisher for area
-bool publishingArea_ = false;
+bool publishingArea_ = true;
 
 ros::NodeHandle* node_;
 
