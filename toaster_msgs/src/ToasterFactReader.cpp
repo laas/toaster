@@ -8,7 +8,7 @@
 #include "toaster_msgs/ToasterFactReader.h"
 
 ToasterFactReader::ToasterFactReader(ros::NodeHandle& node, std::string subTopic) {
-    std::cout << "[area_manager] Initializing ToasterFactReader" << std::endl;
+    //std::cout << " Initializing ToasterFactReader" << std::endl;
 
     // Starts listening to the topic
     sub_ = node.subscribe(subTopic, 1, &ToasterFactReader::factCallBack, this);
