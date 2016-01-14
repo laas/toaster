@@ -2434,7 +2434,7 @@ int main(int argc, char **argv) {
     while (ros::ok()) {
         //std::cout << "\n\n\n";
         //rs.readDb();
-        //rs.update_world_state();
+        rs.update_world_state();
         //rs.conceptual_perspective_taking();
         loop_rate.sleep();
         ros::spinOnce();
