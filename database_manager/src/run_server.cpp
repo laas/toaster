@@ -327,6 +327,7 @@ void launchIdList() {
                 sql = (std::string)"CREATE TABLE fact_table_" + (std::string)elem->Attribute("id") + " (" +
                         "subject_id 				 	unsigned long," +
                         "predicate         	            string," +
+                        "propertyType                          string," +
                         "target_id        		     	unsigned long," +
                         "valueType			  	        string," +
                         "valueString       	        	string," +
@@ -335,7 +336,7 @@ void launchIdList() {
                         "confidence   		        	unsigned short," +
                         "start   				        int," +
                         "end 					        int," +
-                        "unique (subject_id,predicate,target_id ,valueString ,observability,confidence ,end) );"; //unique fields are used to avoid doublons
+                        "unique (subject_id,predicate,propertyType,target_id ,valueString ,observability,confidence ,end) );"; //unique fields are used to avoid doublons
 
                 if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
                     ROS_WARN_ONCE("SQL error l511: %s", zErrMsg);
@@ -348,6 +349,7 @@ void launchIdList() {
                 sql = (std::string)"CREATE TABLE memory_table_" + (std::string)elem->Attribute("id") + " (" +
                         "subject_id 				 unsigned long," +
                         "predicate         	         string," +
+                        "propertyType                          string," +
                         "target_id        		     unsigned long," +
                         "valueType			  	     string," +
                         "valueString       	         string," +
@@ -578,6 +580,7 @@ bool add_entity_db(toaster_msgs::AddEntity::Request &req, toaster_msgs::AddEntit
         sql = (std::string)"CREATE TABLE fact_table_" + (std::string)req.id + " (" +
                 "subject_id 				 unsigned long," +
                 "predicate         	            string," +
+                "propertyType                          string," +
                 "target_id        		     unsigned long," +
                 "valueType			  	        	string," +
                 "valueString       	        	string," +
@@ -586,7 +589,7 @@ bool add_entity_db(toaster_msgs::AddEntity::Request &req, toaster_msgs::AddEntit
                 "confidence   		        unsigned short," +
                 "start   				               int," +
                 "end 					               int," +
-                "unique (subject_id,predicate,target_id ,valueString ,observability,confidence ,end) );";
+                "unique (subject_id,predicate,propertyType,target_id ,valueString ,observability,confidence ,end) );";
 
 
         //and his memory table
@@ -594,6 +597,7 @@ bool add_entity_db(toaster_msgs::AddEntity::Request &req, toaster_msgs::AddEntit
         sql2 = (std::string)"CREATE TABLE memory_table_" + (std::string)req.id + " (" +
                 "subject_id 				 unsigned long," +
                 "predicate         	            string," +
+                "propertyType                          string," +
                 "target_id        		     unsigned long," +
                 "valueType			  	        	string," +
                 "valueString       	        	string," +
@@ -641,6 +645,7 @@ bool add_fact_db(toaster_msgs::AddFact::Request &req, toaster_msgs::AddFact::Res
     sql = (std::string)"SELECT * from fact_table_" + agentList[0]
             + " where subject_id='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId)
             + "' and predicate='" + (std::string)req.fact.property
+            + "' and propertyType='" + (std::string)req.fact.propertyType
             + "' and target_id='" + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId)
             + "' ;";
 
@@ -660,6 +665,7 @@ bool add_fact_db(toaster_msgs::AddFact::Request &req, toaster_msgs::AddFact::Res
                 + "' , valueDouble=" + boost::lexical_cast<std::string>(req.fact.doubleValue)
                 + " where subject_id='" + (std::string)req.fact.subjectId + boost::lexical_cast<std::string>(req.fact.subjectOwnerId)
                 + "' and predicate='" + (std::string)req.fact.property
+                + "' and propertyType='" + (std::string)req.fact.propertyType
                 + "' and target_id='" + (std::string)req.fact.targetId + boost::lexical_cast<std::string>(req.fact.targetOwnerId)
                 + "';";
 
@@ -674,7 +680,7 @@ bool add_fact_db(toaster_msgs::AddFact::Request &req, toaster_msgs::AddFact::Res
         zErrMsg = 0;
 
         sql = (std::string)"INSERT INTO fact_table_" + agentList[0]
-                + " (subject_id,predicate,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
+                + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
                 + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) + "','"
                 + (std::string)req.fact.property + "','"
                 + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "','"
@@ -694,7 +700,7 @@ bool add_fact_db(toaster_msgs::AddFact::Request &req, toaster_msgs::AddFact::Res
         }
 
         //a new event
-        sql = (std::string)"INSERT INTO events_table (subject_id,predicate,target_id,observability,confidence,time) VALUES ('"
+        sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
                 + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) + "','"
                 + (std::string)req.fact.property + "','"
                 + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "',"
@@ -754,6 +760,7 @@ bool remove_fact_db(toaster_msgs::RemoveFact::Request &req, toaster_msgs::Remove
     sql = (std::string)"SELECT * from fact_table_" + agentList[0] +
             " where subject_id ='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) +
             "' and predicate ='" + (std::string)req.fact.property +
+            "' and propertyType='" + (std::string)req.fact.propertyType +
             "' and target_id ='" + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "'; ";
 
 
@@ -772,6 +779,7 @@ bool remove_fact_db(toaster_msgs::RemoveFact::Request &req, toaster_msgs::Remove
         sql = (std::string)"DELETE from fact_table_" + agentList[0] +
                 " where subject_id ='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) +
                 "' and predicate ='" + (std::string)req.fact.property +
+                "' and propertyType='" + (std::string)req.fact.propertyType +
                 "' and target_id='" + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "';";
 
         if (sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg)) {
@@ -782,7 +790,7 @@ bool remove_fact_db(toaster_msgs::RemoveFact::Request &req, toaster_msgs::Remove
         }
         //finally we add it in memory table
         sql = (std::string)"INSERT into memory_table_" + agentList[0]
-                + " (subject_id,predicate,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
+                + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
                 + boost::lexical_cast<std::string>(myFactList[0].subjectId) + "','"
                 + (std::string)myFactList[0].property + "','"
                 + boost::lexical_cast<std::string>(myFactList[0].targetId) + "','"
@@ -803,7 +811,7 @@ bool remove_fact_db(toaster_msgs::RemoveFact::Request &req, toaster_msgs::Remove
         }
 
         //and add a new event
-        sql = (std::string)"INSERT INTO events_table (subject_id,predicate,target_id,observability,confidence,time) VALUES ('"
+        sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
                 + boost::lexical_cast<std::string>(myFactList[0].subjectId) + "','!"
                 + (std::string)myFactList[0].property + "','"
                 + boost::lexical_cast<std::string>(myFactList[0].targetId) + "',"
@@ -840,6 +848,7 @@ bool add_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster_ms
     sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
             +" where subject_id='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId)
             + "' and predicate='" + (std::string)req.fact.property
+            + "' and propertyType='" + (std::string)req.fact.propertyType
             + "'and target_id='" + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId)
             + "';";
 
@@ -859,6 +868,7 @@ bool add_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster_ms
                 + "' , valueDouble=" + boost::lexical_cast<std::string>(req.fact.doubleValue)
                 + " where subject_id='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId)
                 + "' and predicate='" + (std::string)req.fact.property
+                + "' and propertyType='" + (std::string)req.fact.propertyType
                 + "' and target_id='" + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId)
                 + "'; SELECT * from fact_table_" + (std::string)req.agentId + ";";
 
@@ -870,7 +880,7 @@ bool add_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster_ms
         }
     } else //else 
     {
-        sql = (std::string)"INSERT INTO fact_table_" + (std::string)req.agentId + " (subject_id,predicate,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
+        sql = (std::string)"INSERT INTO fact_table_" + (std::string)req.agentId + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
                 + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) + "','"
                 + (std::string)req.fact.property + "','"
                 + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "','"
@@ -890,7 +900,7 @@ bool add_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster_ms
 
 
         //add a new event
-        sql = (std::string)"INSERT INTO events_table (subject_id,predicate,target_id,observability,confidence,time) VALUES ('"
+        sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
                 + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) + "','"
                 + (std::string)req.fact.property + "','"
                 + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "',"
@@ -949,6 +959,7 @@ bool add_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toaster_
         sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
                 +" where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
                 + "' and predicate='" + (std::string)it->property
+                + "' and propertyType='" + (std::string)it->propertyType
                 + "'and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId)
                 + "';";
 
@@ -968,6 +979,7 @@ bool add_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toaster_
                     + "' , valueDouble=" + boost::lexical_cast<std::string>(it->doubleValue)
                     + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
                     + "' and predicate='" + (std::string)it->property
+                    + "' and propertyType='" + (std::string)it->propertyType
                     + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId)
                     + "'; SELECT * from fact_table_" + (std::string)req.agentId + ";";
 
@@ -979,7 +991,7 @@ bool add_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toaster_
             }
         } else //else 
         {
-            sql = (std::string)"INSERT INTO fact_table_" + (std::string)req.agentId + " (subject_id,predicate,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
+            sql = (std::string)"INSERT INTO fact_table_" + (std::string)req.agentId + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
                     + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) + "','"
                     + (std::string)it->property + "','"
                     + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "','"
@@ -999,7 +1011,7 @@ bool add_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toaster_
 
 
             //add a new event
-            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,target_id,observability,confidence,time) VALUES ('"
+            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
                     + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) + "','"
                     + (std::string)it->property + "','"
                     + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "',"
@@ -1058,6 +1070,7 @@ bool remove_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster
     sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
             " where subject_id ='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) +
             "' and predicate ='" + (std::string)req.fact.property +
+            "' and propertyType ='" + (std::string)req.fact.propertyType +
             "' and target_id ='" + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) +
             "' and valueString  ='" + (std::string)req.fact.stringValue +
             "' and valueDouble =" + boost::lexical_cast<std::string>(req.fact.doubleValue) +
@@ -1075,6 +1088,7 @@ bool remove_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster
     sql = "DELETE from fact_table_" + (std::string)req.agentId +
             " where subject_id ='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) +
             "' and predicate ='" + (std::string)req.fact.property +
+            "' and propertyType ='" + (std::string)req.fact.propertyType +
             "' and target_id ='" + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) +
             "' and valueString  ='" + (std::string)req.fact.stringValue +
             "' and valueDouble =" + boost::lexical_cast<std::string>(req.fact.doubleValue) +
@@ -1090,7 +1104,7 @@ bool remove_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster
 
     for (std::vector<toaster_msgs::Fact>::iterator it = myFactList.begin(); it != myFactList.end(); it++) {
         //finally we add it into memory table
-        sql = (std::string)"INSERT into memory_table_" + (std::string)req.agentId + " (subject_id,predicate,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
+        sql = (std::string)"INSERT into memory_table_" + (std::string)req.agentId + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
                 + boost::lexical_cast<std::string>(it->subjectId) + "','"
                 + (std::string)it->property + "','"
                 + boost::lexical_cast<std::string>(it->targetId) + "','"
@@ -1111,7 +1125,7 @@ bool remove_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster
             //ROS_INFO("Fact successfully added to memory table\n");
         }
         //and add a new event
-        sql = (std::string)"INSERT INTO events_table (subject_id,predicate,target_id,observability,confidence,time) VALUES ('"
+        sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
                 + boost::lexical_cast<std::string>(it->subjectId) + "','!"
                 + (std::string)it->property + "','"
                 + boost::lexical_cast<std::string>(it->targetId) + "',"
@@ -1152,16 +1166,19 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
         if (it->targetId == "NULL") {
             sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'";
+                    "' and predicate ='" + (std::string)it->property + "'" +
+                    "' and propertyType ='" + (std::string)it->propertyType + "'";
         } else if (it->subjectId == "NULL") {
             sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
                     " where target_id ='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'";
+                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and propertyType ='" + (std::string)it->propertyType + "'";
         } else {
             sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
                     "' and target_id ='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'";
+                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and propertyType ='" + (std::string)it->propertyType + "'";
         }
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg)) {
             ROS_INFO("SQL error : %s\n", zErrMsg);
@@ -1174,16 +1191,19 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
         if (it->targetId == "NULL") {
             sql = "DELETE from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'";
+                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and propertyType ='" + (std::string)it->propertyType + "'";
         } else if (it->subjectId == "NULL") {
             sql = "DELETE from fact_table_" + (std::string)req.agentId +
                     " where target_id ='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'";
+                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and propertyType ='" + (std::string)it->propertyType + "'";
         } else {
             sql = "DELETE from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
                     "' and target_id ='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'";
+                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and propertyType ='" + (std::string)it->propertyType + "'";
         }
 
         if (sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg)) {
@@ -1195,7 +1215,7 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
 
         for (std::vector<toaster_msgs::Fact>::iterator it = myFactList.begin(); it != myFactList.end(); it++) {
             //finally we add it into memory table
-            sql = (std::string)"INSERT into memory_table_" + (std::string)req.agentId + " (subject_id,predicate,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
+            sql = (std::string)"INSERT into memory_table_" + (std::string)req.agentId + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
                     + boost::lexical_cast<std::string>(it->subjectId) + "','"
                     + (std::string)it->property + "','"
                     + boost::lexical_cast<std::string>(it->targetId) + "','"
@@ -1216,7 +1236,7 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
                 //ROS_INFO("Fact successfully added to memory table\n");
             }
             //and add a new event
-            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,target_id,observability,confidence,time) VALUES ('"
+            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
                     + boost::lexical_cast<std::string>(it->subjectId) + "','!"
                     + (std::string)it->property + "','"
                     + boost::lexical_cast<std::string>(it->targetId) + "',"
@@ -1250,7 +1270,7 @@ bool add_event_db(toaster_msgs::AddEvent::Request &req, toaster_msgs::AddEvent::
     std::string sql;
     char *zErrMsg = 0;
 
-    sql = (std::string)"INSERT INTO events_table (subject_id,predicate,target_id,observability,confidence,time) VALUES ('"
+    sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
             + boost::lexical_cast<std::string>(req.event.subjectId) + boost::lexical_cast<std::string>(req.event.subjectOwnerId) + "','"
             + (std::string)req.event.property + "','"
             + boost::lexical_cast<std::string>(req.event.targetId) + boost::lexical_cast<std::string>(req.event.targetOwnerId) + "',"
@@ -1339,6 +1359,7 @@ bool get_fact_value_db(toaster_msgs::GetFactValue::Request &req, toaster_msgs::G
     sql = (std::string)"SELECT * from fact_table_" + agentList[0]
             + " where subject_id='" + boost::lexical_cast<std::string>(req.reqFact.subjectId) + boost::lexical_cast<std::string>(req.reqFact.subjectOwnerId)
             + "' and predicate='" + boost::lexical_cast<std::string>(req.reqFact.property)
+            + "' and propertyType='" + boost::lexical_cast<std::string>(req.reqFact.propertyType)
             + "' and target_id='" + boost::lexical_cast<std::string>(req.reqFact.targetId) + boost::lexical_cast<std::string>(req.reqFact.targetOwnerId) + "';";
 
     if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
@@ -1352,6 +1373,7 @@ bool get_fact_value_db(toaster_msgs::GetFactValue::Request &req, toaster_msgs::G
     sql = (std::string)"SELECT * from memory_table_" + agentList[0]
             + " where subject_id='" + boost::lexical_cast<std::string>(req.reqFact.subjectId) + boost::lexical_cast<std::string>(req.reqFact.subjectOwnerId)
             + "' and predicate='" + (std::string)req.reqFact.property
+            + "' and propertyType='" + (std::string)req.reqFact.propertyType
             + "' and target_id='" + boost::lexical_cast<std::string>(req.reqFact.targetId) + boost::lexical_cast<std::string>(req.reqFact.targetOwnerId) + "';";
 
     if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
@@ -1530,6 +1552,7 @@ bool get_fact_value_from_agent_db(toaster_msgs::GetFactValue::Request &req, toas
     sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId
             + " where subject_id='" + boost::lexical_cast<std::string>(req.reqFact.subjectId) + boost::lexical_cast<std::string>(req.reqFact.subjectOwnerId)
             + "' and predicate='" + (std::string)req.reqFact.property
+            + "' and propertyType='" + (std::string)req.reqFact.propertyType
             + "' and target_id='" + boost::lexical_cast<std::string>(req.reqFact.targetId) + boost::lexical_cast<std::string>(req.reqFact.targetOwnerId) + "';";
 
     if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
@@ -1542,6 +1565,7 @@ bool get_fact_value_from_agent_db(toaster_msgs::GetFactValue::Request &req, toas
     sql = (std::string)"SELECT * from memory_table_" + (std::string)req.agentId
             + " where subject_id='" + boost::lexical_cast<std::string>(req.reqFact.subjectId) + boost::lexical_cast<std::string>(req.reqFact.subjectOwnerId)
             + "' and predicate='" + (std::string)req.reqFact.property
+            + "' and propertyType='" + (std::string)req.reqFact.propertyType
             + "' and target_id='" + boost::lexical_cast<std::string>(req.reqFact.targetId) + boost::lexical_cast<std::string>(req.reqFact.targetOwnerId) + "';";
 
     if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
@@ -1661,6 +1685,7 @@ bool are_in_table_db(toaster_msgs::AreInTable::Request &req, toaster_msgs::AreIn
         sql = (std::string)"SELECT * from fact_table_" + req.agent
                 + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
                 + "' and predicate='" + boost::lexical_cast<std::string>(it->property)
+            + "' and propertyType='" + boost::lexical_cast<std::string>(it->propertyType)
                 + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
@@ -1926,6 +1951,7 @@ bool get_event_value_db(toaster_msgs::GetEventValue::Request &req, toaster_msgs:
 
     sql = (std::string)"SELECT * from events_table where subject_id='" + boost::lexical_cast<std::string>(req.reqEvent.subjectId)
             + "' and predicate='" + (std::string)req.reqEvent.property
+            + "' and propertyType='" + (std::string)req.reqEvent.propertyType
             + "' and target_id='" + boost::lexical_cast<std::string>(req.reqEvent.targetId) + "';";
 
     if (sqlite3_exec(database, sql.c_str(), event_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
@@ -2285,6 +2311,7 @@ void initServer() {
     sql = (std::string)"CREATE TABLE events_table(" +
             "subject_id 				unsigned long," +
             "predicate         	                string," +
+            "propertyType                          string," +
             "target_id        		     	unsigned long," +
             "observability   		    	unsinged short," +
             "confidence   		        	unsigned short," +
@@ -2298,7 +2325,6 @@ void initServer() {
     }
 
 }
-
 
 /**
  * Main function
