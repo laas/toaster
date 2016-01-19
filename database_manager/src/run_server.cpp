@@ -101,14 +101,15 @@ int get_facts_callback(void *NotUsed, int argc, char **argv, char **azColName) {
         toaster_msgs::Fact f;
         f.subjectId = argv[(i) * nb_el + 0] ? argv[(i) * nb_el + 0] : "NULL";
         f.property = argv[(i) * nb_el + 1] ? argv[(i) * nb_el + 1] : "NULL";
-        f.targetId = argv[(i) * nb_el + 2] ? argv[(i) * nb_el + 2] : "NULL";
-        f.valueType = (bool)(argv[(i) * nb_el + 3] ? argv[(i) * nb_el + 3] : "NULL");
-        f.stringValue = argv[(i) * nb_el + 4] ? argv[i * nb_el + 4] : "NULL";
-        f.doubleValue = atof(argv[i * nb_el + 5] ? argv[i * nb_el + 5] : "NULL");
-        f.factObservability = atof(argv[i * nb_el + 6] ? argv[i * nb_el + 6] : "NULL");
-        f.confidence = atof(argv[i * nb_el + 7] ? argv[i * nb_el + 7] : "NULL");
-        f.timeStart = atof(argv[i * nb_el + 8] ? argv[i * nb_el + 8] : "NULL");
-        f.timeEnd = atof(argv[i * nb_el + 9] ? argv[i * nb_el + 9] : "NULL");
+        f.propertyType = argv[(i) * nb_el + 2] ? argv[(i) * nb_el + 2] : "NULL";
+        f.targetId = argv[(i) * nb_el + 3] ? argv[(i) * nb_el + 3] : "NULL";
+        f.valueType = (bool)(argv[(i) * nb_el + 4] ? argv[(i) * nb_el + 4] : "NULL");
+        f.stringValue = argv[(i) * nb_el + 5] ? argv[i * nb_el + 5] : "NULL";
+        f.doubleValue = atof(argv[i * nb_el + 6] ? argv[i * nb_el + 6] : "NULL");
+        f.factObservability = atof(argv[i * nb_el + 7] ? argv[i * nb_el + 7] : "NULL");
+        f.confidence = atof(argv[i * nb_el + 8] ? argv[i * nb_el + 8] : "NULL");
+        f.timeStart = atof(argv[i * nb_el + 9] ? argv[i * nb_el + 9] : "NULL");
+        f.timeEnd = atof(argv[i * nb_el + 10] ? argv[i * nb_el + 10] : "NULL");
 
         myFactList.push_back(f);
     }
@@ -193,10 +194,11 @@ int event_callback(void *NotUsed, int argc, char **argv, char **azColName) {
         toaster_msgs::Event e;
         e.subjectId = argv[(i) * nb_el + 0] ? argv[(i) * nb_el + 0] : "NULL";
         e.property = argv[(i) * nb_el + 1] ? argv[(i) * nb_el + 1] : "NULL";
-        e.targetId = argv[(i) * nb_el + 2] ? argv[(i) * nb_el + 2] : "NULL";
-        e.factObservability = atof(argv[i * nb_el + 3] ? argv[i * nb_el + 3] : "NULL");
-        e.confidence = atof(argv[i * nb_el + 4] ? argv[i * nb_el + 4] : "NULL");
-        e.time = atof(argv[i * nb_el + 5] ? argv[i * nb_el + 5] : "NULL");
+        e.propertyType = argv[(i) * nb_el + 2] ? argv[(i) * nb_el + 2] : "NULL";
+        e.targetId = argv[(i) * nb_el + 3] ? argv[(i) * nb_el + 3] : "NULL";
+        e.factObservability = atof(argv[i * nb_el + 4] ? argv[i * nb_el + 4] : "NULL");
+        e.confidence = atof(argv[i * nb_el + 5] ? argv[i * nb_el + 5] : "NULL");
+        e.time = atof(argv[i * nb_el + 6] ? argv[i * nb_el + 6] : "NULL");
 
         myEventList.push_back(e);
     }
@@ -704,7 +706,7 @@ bool add_fact_db(toaster_msgs::AddFact::Request &req, toaster_msgs::AddFact::Res
         sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
                 + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) + "','"
                 + (std::string)req.fact.property + "','"
-                + (std::string)req.fact.property + "','"
+                + (std::string)req.fact.propertyType + "','"
                 + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "',"
                 + boost::lexical_cast<std::string>(req.fact.factObservability) + ","
                 + boost::lexical_cast<std::string>(req.fact.confidence) + ","
@@ -795,7 +797,7 @@ bool remove_fact_db(toaster_msgs::RemoveFact::Request &req, toaster_msgs::Remove
                 + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
                 + boost::lexical_cast<std::string>(myFactList[0].subjectId) + "','"
                 + (std::string)myFactList[0].property + "','"
-                + (std::string)req.fact.property + "','"
+                + (std::string)myFactList[0].propertyType + "','"
                 + boost::lexical_cast<std::string>(myFactList[0].targetId) + "','"
                 + (std::string)myFactList[0].stringValue + "','"
                 + (std::string)myFactList[0].stringValue + "',"
@@ -887,7 +889,7 @@ bool add_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster_ms
         sql = (std::string)"INSERT INTO fact_table_" + (std::string)req.agentId + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
                 + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId) + "','"
                 + (std::string)req.fact.property + "','"
-                + (std::string)req.fact.property + "','"
+                + (std::string)req.fact.propertyType + "','"
                 + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "','"
                 + (std::string)req.fact.stringValue + "','"
                 + (std::string)req.fact.stringValue + "',"
@@ -1342,8 +1344,6 @@ bool get_facts_db(toaster_msgs::GetFacts::Request &req, toaster_msgs::GetFacts::
     //return informations from table
     if (!myFactList.empty()) {
         for (int i = 0; i < myFactList.size(); i++) {
-            myFactList[i].subjectId = myFactList[i].subjectId;
-            myFactList[i].targetId = myFactList[i].targetId;
             res.resFactList.factList.push_back(myFactList[i]);
         }
         res.boolAnswer = true;
