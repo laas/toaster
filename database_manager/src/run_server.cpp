@@ -331,7 +331,7 @@ void launchIdList() {
                         "predicate         	            string," +
                         "propertyType                          string," +
                         "target_id        		     	unsigned long," +
-                        "valueType			  	        string," +
+                        "valueType			  	        bit," +
                         "valueString       	        	string," +
                         "valueDouble       	        	double," +
                         "observability   		   		unsinged short," +
@@ -353,7 +353,7 @@ void launchIdList() {
                         "predicate         	         string," +
                         "propertyType                          string," +
                         "target_id        		     unsigned long," +
-                        "valueType			  	     string," +
+                        "valueType			  	     bit," +
                         "valueString       	         string," +
                         "valueDouble       	         double," +
                         "observability   		     unsinged short," +
@@ -584,7 +584,7 @@ bool add_entity_db(toaster_msgs::AddEntity::Request &req, toaster_msgs::AddEntit
                 "predicate         	            string," +
                 "propertyType                          string," +
                 "target_id        		     unsigned long," +
-                "valueType			  	        	string," +
+                "valueType			  	        	bit," +
                 "valueString       	        	string," +
                 "valueDouble       	        	double," +
                 "observability   		    unsinged short," +
@@ -601,7 +601,7 @@ bool add_entity_db(toaster_msgs::AddEntity::Request &req, toaster_msgs::AddEntit
                 "predicate         	            string," +
                 "propertyType                          string," +
                 "target_id        		     unsigned long," +
-                "valueType			  	        	string," +
+                "valueType			  	        	bit," +
                 "valueString       	        	string," +
                 "valueDouble       	        	double," +
                 "observability   		    unsinged short," +
@@ -665,6 +665,7 @@ bool add_fact_db(toaster_msgs::AddFact::Request &req, toaster_msgs::AddFact::Res
         sql = (std::string)"UPDATE fact_table_" + agentList[0]
                 + " set valueString='" + (std::string)req.fact.stringValue
                 + "' , valueDouble=" + boost::lexical_cast<std::string>(req.fact.doubleValue)
+                + ", valueType=" + boost::lexical_cast<std::string>((int)req.fact.valueType)
                 + " where subject_id='" + (std::string)req.fact.subjectId + boost::lexical_cast<std::string>(req.fact.subjectOwnerId)
                 + "' and predicate='" + (std::string)req.fact.property
                 + "' and propertyType='" + (std::string)req.fact.propertyType
@@ -687,7 +688,7 @@ bool add_fact_db(toaster_msgs::AddFact::Request &req, toaster_msgs::AddFact::Res
                 + (std::string)req.fact.property + "','"
                 + (std::string)req.fact.propertyType + "','"
                 + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "','"
-                + (std::string)req.fact.stringValue + "','"
+                + boost::lexical_cast<std::string>((int)req.fact.valueType) + "','"
                 + (std::string)req.fact.stringValue + "',"
                 + boost::lexical_cast<std::string>(req.fact.doubleValue) + ","
                 + boost::lexical_cast<std::string>(req.fact.factObservability) + ","
@@ -799,7 +800,7 @@ bool remove_fact_db(toaster_msgs::RemoveFact::Request &req, toaster_msgs::Remove
                 + (std::string)myFactList[0].property + "','"
                 + (std::string)myFactList[0].propertyType + "','"
                 + boost::lexical_cast<std::string>(myFactList[0].targetId) + "','"
-                + (std::string)myFactList[0].stringValue + "','"
+                + boost::lexical_cast<std::string>((int)req.fact.valueType) + "','"
                 + (std::string)myFactList[0].stringValue + "',"
                 + boost::lexical_cast<std::string>(myFactList[0].doubleValue) + ","
                 + boost::lexical_cast<std::string>(myFactList[0].factObservability) + ","
@@ -872,6 +873,7 @@ bool add_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster_ms
         sql = (std::string)"UPDATE fact_table_" + (std::string)req.agentId +
                 +" set valueString='" + (std::string)req.fact.stringValue
                 + "' , valueDouble=" + boost::lexical_cast<std::string>(req.fact.doubleValue)
+                + ", valueType=" + boost::lexical_cast<std::string>((int)req.fact.valueType)
                 + " where subject_id='" + boost::lexical_cast<std::string>(req.fact.subjectId) + boost::lexical_cast<std::string>(req.fact.subjectOwnerId)
                 + "' and predicate='" + (std::string)req.fact.property
                 + "' and propertyType='" + (std::string)req.fact.propertyType
@@ -891,7 +893,7 @@ bool add_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster_ms
                 + (std::string)req.fact.property + "','"
                 + (std::string)req.fact.propertyType + "','"
                 + boost::lexical_cast<std::string>(req.fact.targetId) + boost::lexical_cast<std::string>(req.fact.targetOwnerId) + "','"
-                + (std::string)req.fact.stringValue + "','"
+                + boost::lexical_cast<std::string>((int)req.fact.valueType) + "','"
                 + (std::string)req.fact.stringValue + "',"
                 + boost::lexical_cast<std::string>(req.fact.doubleValue) + ","
                 + boost::lexical_cast<std::string>(req.fact.factObservability) + ","
@@ -985,6 +987,7 @@ bool add_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toaster_
             sql = (std::string)"UPDATE fact_table_" + (std::string)req.agentId +
                     +" set valueString='" + (std::string)it->stringValue
                     + "' , valueDouble=" + boost::lexical_cast<std::string>(it->doubleValue)
+                    + ", valueType=" + boost::lexical_cast<std::string>((int)it->valueType)
                     + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
                     + "' and predicate='" + (std::string)it->property
                     + "' and propertyType='" + (std::string)it->propertyType
@@ -1004,7 +1007,7 @@ bool add_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toaster_
                     + (std::string)it->property + "','"
                     + (std::string)it->propertyType + "','"
                     + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "','"
-                    + (std::string)it->stringValue + "','"
+                    + boost::lexical_cast<std::string>((int)it->valueType) + "','"
                     + (std::string)it->stringValue + "',"
                     + boost::lexical_cast<std::string>(it->doubleValue) + ","
                     + boost::lexical_cast<std::string>(it->factObservability) + ","
@@ -1119,7 +1122,7 @@ bool remove_fact_to_agent_db(toaster_msgs::AddFactToAgent::Request &req, toaster
                 + (std::string)it->property + "','"
                 + (std::string)it->propertyType + "','"
                 + boost::lexical_cast<std::string>(it->targetId) + "','"
-                + (std::string)it->stringValue + "','"
+                + boost::lexical_cast<std::string>((int)it->valueType) + "','"
                 + (std::string)it->stringValue + "',"
                 + boost::lexical_cast<std::string>(it->doubleValue) + ","
                 + boost::lexical_cast<std::string>(it->factObservability) + ","
@@ -1232,7 +1235,7 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
                     + (std::string)it->property + "','"
                     + (std::string)it->propertyType + "','"
                     + boost::lexical_cast<std::string>(it->targetId) + "','"
-                    + (std::string)it->stringValue + "','"
+                    + boost::lexical_cast<std::string>((int)it->valueType) + "','"
                     + (std::string)it->stringValue + "',"
                     + boost::lexical_cast<std::string>(it->doubleValue) + ","
                     + boost::lexical_cast<std::string>(it->factObservability) + ","
