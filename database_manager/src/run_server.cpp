@@ -1181,22 +1181,22 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
         if (it->targetId == "NULL") {
             sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'" +
+                    "' and predicate ='" + (std::string)it->property +
                     "' and propertyType ='" + (std::string)it->propertyType + "'";
         } else if (it->subjectId == "NULL") {
             sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
                     " where target_id ='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and predicate ='" + (std::string)it->property +
                     "' and propertyType ='" + (std::string)it->propertyType + "'";
         } else {
             sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
                     "' and target_id ='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and predicate ='" + (std::string)it->property +
                     "' and propertyType ='" + (std::string)it->propertyType + "'";
         }
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg)) {
-            ROS_INFO("SQL error : %s\n", zErrMsg);
+            ROS_INFO("SQL error 1 : %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             //ROS_INFO("Time successfully saved\n");
@@ -1206,23 +1206,23 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
         if (it->targetId == "NULL") {
             sql = "DELETE from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and predicate ='" + (std::string)it->property +
                     "' and propertyType ='" + (std::string)it->propertyType + "'";
         } else if (it->subjectId == "NULL") {
             sql = "DELETE from fact_table_" + (std::string)req.agentId +
                     " where target_id ='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and predicate ='" + (std::string)it->property +
                     "' and propertyType ='" + (std::string)it->propertyType + "'";
         } else {
             sql = "DELETE from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
                     "' and target_id ='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) +
-                    "' and predicate ='" + (std::string)it->property + "'"
+                    "' and predicate ='" + (std::string)it->property +
                     "' and propertyType ='" + (std::string)it->propertyType + "'";
         }
 
         if (sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg)) {
-            ROS_INFO("SQL error : %s\n", zErrMsg);
+            ROS_INFO("SQL error 2 : %s\n", zErrMsg);
             sqlite3_free(zErrMsg);
         } else {
             //ROS_INFO("Fact successfully removed\n");
@@ -1246,7 +1246,7 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
 
 
             if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-                ROS_INFO("SQL error : %s\n", zErrMsg);
+                ROS_INFO("SQL error3 : %s\n", zErrMsg);
                 sqlite3_free(zErrMsg);
             } else {
                 //ROS_INFO("Fact successfully added to memory table\n");
