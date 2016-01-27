@@ -1204,7 +1204,11 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
 
     for (std::vector<toaster_msgs::Fact>::iterator it = req.facts.begin(); it != req.facts.end(); it++) {
         //first we get all information of the fact from fact table
-        if (it->targetId == "NULL") {
+        if(it->targetId == "NULL" && it->subjectId == "NULL") {
+            sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
+                    " where predicate ='" + (std::string)it->property +
+                    "' and propertyType ='" + (std::string)it->propertyType + "'";
+        }else if (it->targetId == "NULL") {
             sql = (std::string)"SELECT * from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
                     "' and predicate ='" + (std::string)it->property +
@@ -1229,7 +1233,11 @@ bool remove_facts_to_agent_db(toaster_msgs::AddFactsToAgent::Request &req, toast
         }
 
         //then we can delete it
-        if (it->targetId == "NULL") {
+        if(it->targetId == "NULL" && it->subjectId == "NULL") {
+            sql = "DELETE from fact_table_" + (std::string)req.agentId +
+                    " where predicate ='" + (std::string)it->property +
+                    "' and propertyType ='" + (std::string)it->propertyType + "'";
+        }else if (it->targetId == "NULL") {
             sql = "DELETE from fact_table_" + (std::string)req.agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
                     "' and predicate ='" + (std::string)it->property +
@@ -1727,7 +1735,6 @@ bool are_in_table_db(toaster_msgs::AreInTable::Request &req, toaster_msgs::AreIn
         sql = (std::string)"SELECT * from fact_table_" + req.agent
                 + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
                 + "' and predicate='" + boost::lexical_cast<std::string>(it->property)
-            + "' and propertyType='" + boost::lexical_cast<std::string>(it->propertyType)
                 + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
 
         if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
