@@ -85,6 +85,7 @@ add_service_files(
   GetOntologyLeaves.srv
   AddEntity.srv
   AreInTable.srv
+  PrintAgent.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

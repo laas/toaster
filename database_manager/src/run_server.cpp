@@ -42,6 +42,7 @@
 #include "toaster_msgs/GetFacts.h"
 #include "toaster_msgs/GetFactValue.h"
 #include "toaster_msgs/AreInTable.h"
+#include "toaster_msgs/PrintAgent.h"
 
 
 
@@ -481,6 +482,31 @@ bool print(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res
 
     sql = (std::string)"SELECT * from events_table;";
     sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg);
+}
+
+/**
+ * print the db in the console
+ * @return void
+ */
+bool print_agent(toaster_msgs::PrintAgent::Request &req, toaster_msgs::PrintAgent::Response &res) {
+    ROS_INFO("*********************** database info ***************************");
+
+    char *zErrMsg = 0;
+    const char* data = "Callback function called";
+    std::string sql;
+
+    //
+    ROS_INFO(" ");
+    ROS_WARN("reading fact database");
+
+    for (int i = 0; i < agentList.size(); i++) {
+        if((std::string)agentList[i] == req.agent){
+         std::cout << "\nfact_table_" << (std::string)agentList[i] << "\n";
+         sql = (std::string)"SELECT * from fact_table_" + (std::string)agentList[i];
+         sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg);
+        }
+    }
+
 }
 
 
@@ -2395,6 +2421,7 @@ int main(int argc, char **argv) {
 
 
     ros::ServiceServer print_service;
+    ros::ServiceServer print_agent_service;
     ros::ServiceServer are_in_table_service;
 
 
@@ -2435,6 +2462,7 @@ int main(int argc, char **argv) {
     get_id_service = node.advertiseService("database/get_id", get_id_db);
     get_id_value_service = node.advertiseService("database/get_id_value", get_id_value_db);
     print_service = node.advertiseService("database/print", print);
+    print_agent_service = node.advertiseService("database/print_agent", print_agent);
     are_in_table_service = node.advertiseService("database/are_in_table", are_in_table_db);
 
 
