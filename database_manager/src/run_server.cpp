@@ -27,6 +27,7 @@
 #include "toaster_msgs/GetOntologyLeaves.h"
 #include "toaster_msgs/Event.h"
 #include "toaster_msgs/Empty.h"
+#include "toaster_msgs/EmptyDbAgent.h"
 #include "toaster_msgs/Ontology.h"
 #include "toaster_msgs/Fact.h"
 #include "toaster_msgs/Id.h"
@@ -2185,7 +2186,84 @@ bool execute_SQL_db(toaster_msgs::ExecuteSQL::Request &req, toaster_msgs::Execut
     return true;
 }
 
+/////////////////////SQl request function/////////////
 
+/**
+ * Empty the table of all agents
+ */
+bool empty_database_db(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res) {
+    //ROS_INFO("sql order");
+
+    char *zErrMsg = 0;
+    const char* data = "Callback function called";
+    std::string sql;
+
+
+    for(std::vector<std::string>::iterator it = agentList.begin(); it != agentList.end(); it++){
+       sql = (std::string)"DELETE from fact_table_" + *it ;
+                       
+      if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+           fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+           sqlite3_free(zErrMsg);
+       } else {
+           // ROS_INFO("SQL order obtained successfully\n");
+       }
+
+      sql = (std::string)"DELETE from memory_table_" + *it ;
+                          
+      if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+              fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+              sqlite3_free(zErrMsg);
+      } else {
+              // ROS_INFO("SQL order obtained successfully\n");
+      }
+   }
+   
+   sql = (std::string)"DELETE from events_table";
+                          
+   if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+              fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+              sqlite3_free(zErrMsg);
+   } else {
+              // ROS_INFO("SQL order obtained successfully\n");
+   }
+   
+
+   return true;
+}
+
+/////////////////////SQl request function/////////////
+
+/**
+ * Empty the table of an agents
+ */
+bool empty_database_for_agent_db(toaster_msgs::EmptyDbAgent::Request &req, toaster_msgs::EmptyDbAgent::Response &res) {
+    //ROS_INFO("sql order");
+
+    char *zErrMsg = 0;
+    const char* data = "Callback function called";
+    std::string sql;
+
+   sql = (std::string)"DELETE from fact_table_" + req.agent ;
+                       
+   if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+           fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+           sqlite3_free(zErrMsg);
+   } else {
+           // ROS_INFO("SQL order obtained successfully\n");
+   }
+
+   sql = (std::string)"DELETE from memory_table_" + req.agent ;
+                       
+   if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+           fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+           sqlite3_free(zErrMsg);
+   } else {
+           // ROS_INFO("SQL order obtained successfully\n");
+   }
+   
+   return true;
+}
 
 
 
@@ -2431,6 +2509,8 @@ int main(int argc, char **argv) {
     ros::ServiceServer print_agent_service;
     ros::ServiceServer are_in_table_service;
 
+    ros::ServiceServer empty_database_service;
+    ros::ServiceServer empty_database_for_agent_service;
 
     //////////////////////////////////////////////////////////////////////
     //// SERVICES INSTANCIATION  /////
@@ -2483,6 +2563,10 @@ int main(int argc, char **argv) {
     get_ontologies_service = node.advertiseService("database/get_ontologies", get_ontologies_db);
     get_ontology_values_service = node.advertiseService("database/get_ontology_values", get_ontology_values_db);
     get_ontology_leaves_service = node.advertiseService("database/get_ontology_leaves", get_ontology_leaves_db);
+    
+    //reset services
+    empty_database_service = node.advertiseService("database/empty_database", empty_database_db);
+    empty_database_for_agent_service = node.advertiseService("database/empty_database_for_agent", empty_database_for_agent_db);
 
 
     ///////////////////////////////////////////////////////////////
