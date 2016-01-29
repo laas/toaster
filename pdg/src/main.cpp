@@ -425,7 +425,7 @@ int main(int argc, char** argv) {
             for (std::map<std::string, Robot*>::iterator it = pr2RobotRd.lastConfig_.begin(); it != pr2RobotRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
-                if (pr2RobotRd.isPresent(it->first)) {
+                //if (pr2RobotRd.isPresent(it->first)) {
 
 
                     //Fact
@@ -451,12 +451,13 @@ int main(int argc, char** argv) {
                             fillEntity((itJoint->second), joint_msg.meEntity);
 
                             joint_msg.jointOwner = it->first;
+                            joint_msg.position = itJoint->second->position;
 
                             robot_msg.meAgent.skeletonJoint.push_back(joint_msg);
                         }
                     }
                     robotList_msg.robotList.push_back(robot_msg);
-                }
+                //}
             }
 
 
