@@ -1,0 +1,25 @@
+/* 
+ * File:   ToasterSimuHumanReader.h
+ * Author: gmilliez
+ *
+ * Created on February 3, 2016, 12:15 PM
+ */
+
+#ifndef TOASTERSIMUHUMANREADER_H
+#define	TOASTERSIMUHUMANREADER_H
+
+#include <ros/ros.h>
+#include "toaster-lib/Human.h"
+#include "toaster_msgs/HumanList.h"
+#include "pdg/HumanReader.h"
+
+class ToasterSimuHumanReader : public HumanReader {
+public:
+    ToasterSimuHumanReader(ros::NodeHandle& node);
+
+private:
+    void humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg);
+    ros::Subscriber sub_;
+};
+
+#endif	/* TOASTERSIMUHUMANREADER_H */

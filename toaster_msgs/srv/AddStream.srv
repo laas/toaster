@@ -3,6 +3,9 @@ bool niutHuman
 bool groupHuman
 bool mocapHuman
 bool adreamMocapHuman
+bool toasterSimuHuman
 bool pr2Robot
 bool spencerRobot
+bool toasterSimuRobot
+bool toasterSimuObject
 ---
