@@ -10,7 +10,7 @@
 ToasterSimuHumanReader::ToasterSimuHumanReader(ros::NodeHandle& node) {
     std::cout << "[area_manager] Initializing ToasterHumanReader" << std::endl;
     // Starts listening to the topic
-    sub_ = node.subscribe("/toastersimu/humanList", 1, &ToasterSimuHumanReader::humanJointStateCallBack, this);
+    sub_ = node.subscribe("/toaster_simu/humanList", 1, &ToasterSimuHumanReader::humanJointStateCallBack, this);
 }
 
 void ToasterSimuHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg) {

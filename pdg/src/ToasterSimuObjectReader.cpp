@@ -11,7 +11,7 @@ ToasterSimuObjectReader::ToasterSimuObjectReader(ros::NodeHandle& node) {
     std::cout << " Initializing ToasterSimuObjectReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/toastersimu/objectList", 1, &ToasterSimuObjectReader::objectStateCallBack, this);
+    sub_ = node.subscribe("/toaster_simu/objectList", 1, &ToasterSimuObjectReader::objectStateCallBack, this);
 }
 
 void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectList::ConstPtr& msg) {

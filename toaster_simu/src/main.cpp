@@ -396,9 +396,9 @@ int main(int argc, char** argv) {
     ROS_INFO("[Request] Ready to control entity with keyboard.");
 
     //Data writing
-    ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("toastersimu/objectList", 1000);
-    ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("toastersimu/humanList", 1000);
-    ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotList>("toastersimu/robotList", 1000);
+    ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("toaster_simu/objectList", 1000);
+    ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("toaster_simu/humanList", 1000);
+    ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotList>("toaster_simu/robotList", 1000);
 
     ros::Rate loop_rate(30);
 

@@ -58,6 +58,9 @@ std::map<std::string, std::string> objectInHand_;
 //Used to change position of an entity
 Entity newPoseEnt_("");
 
+// Service client
+ros::ServiceClient* setPoseClient_;
+
 void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
     msgEntity.time = srcEntity->getTime();
@@ -76,8 +79,28 @@ void updateEntity(Entity& newPoseEnt, Entity* storedEntity) {
     storedEntity->orientation_ = newPoseEnt.getOrientation();
 }
 
+bool updateToasterSimu(toaster_msgs::Entity& ent, std::string type) {
+    toaster_msgs::SetEntityPose setPose;
+    setPose.request.id = ent.id;
+    setPose.request.type = type;
+    setPose.request.x = ent.positionX;
+    setPose.request.y = ent.positionY;
+    setPose.request.z = ent.positionZ;
+    setPose.request.roll = ent.orientationRoll;
+    setPose.request.pitch = ent.orientationPitch;
+    setPose.request.yaw = ent.orientationYaw;
+
+    if (setPoseClient_->call(setPose)) {
+        ROS_DEBUG("[Request] we request to set Pose in toaster_simu: %s \n", ent.id.c_str());
+        return true;
+    } else {
+        ROS_INFO("[Request] we failed to request to set Pose in toaster_simu: %s\n", ent.id.c_str());
+        return false;
+    }
+}
+
 bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, std::string joint,
-        toaster_msgs::HumanList& humanList_msg) {
+        toaster_msgs::HumanList& humanList_msg, bool toastersimu) {
 
     toaster_msgs::Entity jointEntity;
 
@@ -102,6 +125,9 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
                 (*itAgent).meAgent.hasObjects.push_back(msgEntity.id);
                 (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
 
+                if (toastersimu)
+                    updateToasterSimu(msgEntity, "object");
+
                 return true;
             } else
                 ROS_WARN("Can't find joint %s for human %s. Couldn't attach object %s to this joint", joint.c_str(), agentId.c_str(), msgEntity.id.c_str());
@@ -111,7 +137,7 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
 }
 
 bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, std::string joint,
-        toaster_msgs::RobotList robotList_msg) {
+        toaster_msgs::RobotList robotList_msg, bool toastersimu) {
 
     toaster_msgs::Entity jointEntity;
 
@@ -135,6 +161,9 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
 
                 (*itAgent).meAgent.hasObjects.push_back(msgEntity.id);
                 (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
+
+                if (toastersimu)
+                    updateToasterSimu(msgEntity, "object");
 
                 return true;
             } else
@@ -279,7 +308,8 @@ int main(int argc, char** argv) {
 
 
 
-
+    ros::ServiceClient setPoseClient = node.serviceClient<toaster_msgs::SetEntityPose>("/toaster_simu/set_entity_pose", true);
+    setPoseClient_ = &setPoseClient;
 
     ros::Rate loop_rate(30);
 
@@ -598,8 +628,8 @@ int main(int argc, char** argv) {
                 // If in hand, modify position:
                 if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
                     bool addFactHand = true;
-                    if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg))
-                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg)) {
+                    if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg, true))
+                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg, true)) {
                             ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
                             addFactHand = false;
                         }

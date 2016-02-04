@@ -12,7 +12,7 @@ ToasterSimuRobotReader::ToasterSimuRobotReader(ros::NodeHandle& node) {
     std::cout << "Initializing ToasterSimuRobotReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/toastersimu/robotList", 1, &ToasterSimuRobotReader::robotJointStateCallBack, this);
+    sub_ = node.subscribe("/toaster_simu/robotList", 1, &ToasterSimuRobotReader::robotJointStateCallBack, this);
 }
 
 void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::ConstPtr& msg) {
