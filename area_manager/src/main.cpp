@@ -19,13 +19,13 @@
 #include <toaster_msgs/FactList.h>
 #include <geometry_msgs/PolygonStamped.h>
 #include <iterator>
-#include <boost/numeric/ublas/matrix.hpp>
-#include <boost/numeric/ublas/io.hpp>
+//#include <boost/numeric/ublas/matrix.hpp>
+//#include <boost/numeric/ublas/io.hpp>
 
 
-namespace trans = bg::strategy::transform;
+//namespace trans = bg::strategy::transform;
 typedef bg::model::point<double, 2, bg::cs::cartesian> point_type;
-namespace bn = boost::numeric;
+//namespace bn = boost::numeric;
 
 // Vector of Area
 // It should be possible to add an area on the fly with a ros service.
@@ -101,7 +101,9 @@ bool areaCompatible(std::string areaEntType, EntityType entType) {
 // Entity should be a vector or a map with all entities
 // This function update all the area that depends on an entity position.
 
-void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
+// Boost > 1.55
+
+/*void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
         if (it->second->getMyOwner() == entity->getId()) {
 
@@ -126,6 +128,56 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
                 ((PolygonArea*) it->second)->poly_ = newPoly;
 
 
+            }
+        }
+    }
+}*/
+
+void rotateTranslate(Entity* rotEnt, CircleArea* circleArea) {
+
+    double theta = rotEnt->getOrientation()[2];
+    point_type newCenter;
+
+    newCenter.set<0>(cos(theta) * circleArea->getCenterRelative().get<0>() - sin(theta) * circleArea->getCenterRelative().get<1>());
+    newCenter.set<1>(sin(theta) * circleArea->getCenterRelative().get<0>() + cos(theta) * circleArea->getCenterRelative().get<1>());
+
+    newCenter.set<0>(newCenter.get<0>() + rotEnt->getPosition().get<0>());
+    newCenter.set<1>(newCenter.get<1>() + rotEnt->getPosition().get<1>());
+    circleArea->setCenter(newCenter);
+}
+
+void rotateTranslate(Entity* rotEnt, PolygonArea* polyArea) {
+
+    double theta = rotEnt->getOrientation()[2];
+    bg::model::polygon<bg::model::d2::point_xy<double> > newPoly;
+
+    std::vector<bg::model::d2::point_xy<double> > polyPointsRelative = polyArea->getPolyRelative().outer();
+
+    //Just to init with something...
+    std::vector<bg::model::d2::point_xy<double> > polyPoints = polyArea->getPolyRelative().outer();
+
+
+    for (unsigned int i = 0; i < polyPoints.size(); ++i) {
+
+        polyPoints[i].set<0>(cos(theta) * polyPointsRelative[i].get<0>() - sin(theta) * polyPointsRelative[i].get<1>());
+        polyPoints[i].set<1>(sin(theta) * polyPointsRelative[i].get<0>() + cos(theta) * polyPointsRelative[i].get<1>());
+
+        polyPoints[i].set<0>(polyPoints[i].get<0>() + rotEnt->getPosition().get<0>());
+        polyPoints[i].set<1>(polyPoints[i].get<1>() + rotEnt->getPosition().get<1>());
+        bg::append(newPoly, polyPoints[i]);
+
+    }
+    polyArea->poly_ = newPoly;
+}
+
+void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
+    for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
+        if (it->second->getMyOwner() == entity->getId()) {
+
+            if (it->second->getIsCircle()) {
+                rotateTranslate(entity, ((CircleArea*) it->second));
+            } else {
+                rotateTranslate(entity, ((PolygonArea*) it->second));
             }
         }
     }
@@ -292,7 +344,7 @@ bool getRelativePosition(toaster_msgs::GetRelativePosition::Request &req,
         toaster_msgs::GetRelativePosition::Response & res) {
     double pi = 3.1416;
 
-    if (mapEntities_.find(req.subjectId) !=  mapEntities_.end() && mapEntities_.find(req.targetId) !=  mapEntities_.end() ) {
+    if (mapEntities_.find(req.subjectId) != mapEntities_.end() && mapEntities_.find(req.targetId) != mapEntities_.end()) {
         double angleResult;
         angleResult = MathFunctions::relativeAngle(mapEntities_[req.subjectId], mapEntities_[req.targetId], mapEntities_[req.subjectId]->getOrientation()[2]);
         if (angleResult > 0) {
@@ -573,16 +625,16 @@ int main(int argc, char** argv) {
                         fact_msg.property = "isIn";
                         fact_msg.propertyType = "position";
 
-                    fact_msg.subProperty = itArea->second->getAreaType();
-                    if (ownerEnt != NULL) {
-                        fact_msg.targetOwnerId = ownerEnt->getId();
-                    }
+                        fact_msg.subProperty = itArea->second->getAreaType();
+                        if (ownerEnt != NULL) {
+                            fact_msg.targetOwnerId = ownerEnt->getId();
+                        }
 
-                    fact_msg.subjectId = itEntity->first;
-                    fact_msg.targetId = itArea->second->getName();
-                    fact_msg.confidence = 1;
-                    fact_msg.factObservability = 0.8;
-                    fact_msg.time = itEntity->second->getTime();
+                        fact_msg.subjectId = itEntity->first;
+                        fact_msg.targetId = itArea->second->getName();
+                        fact_msg.confidence = 1;
+                        fact_msg.factObservability = 0.8;
+                        fact_msg.time = itEntity->second->getTime();
 
                         factList_msg.factList.push_back(fact_msg);
                     } else if (itArea->second->getAreaType() == "support") {
