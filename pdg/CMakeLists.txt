@@ -120,7 +120,7 @@ include_directories(
 # )
 
 ## Declare a cpp executable
- add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/AdreamMocapHumanReader.cpp src/GroupHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ObjectReader.cpp src/SparkObjectReader.cpp src/VimanObjectReader.cpp src/FactReader.cpp src/SparkFactReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
+ add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/AdreamMocapHumanReader.cpp src/GroupHumanReader.cpp src/ToasterSimuHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ToasterSimuRobotReader.cpp src/ObjectReader.cpp src/ToasterSimuObjectReader.cpp src/SparkObjectReader.cpp src/VimanObjectReader.cpp src/FactReader.cpp src/SparkFactReader.cpp src/middleware/GenomPoster.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

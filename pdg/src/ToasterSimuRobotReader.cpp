@@ -1,14 +1,21 @@
-#include "toaster_msgs/ToasterRobotReader.h"
+/* 
+ * File:   ToasterSimuRobotReader.cpp
+ * Author: gmilliez
+ * 
+ * Created on February 3, 2016, 12:14 PM
+ */
 
-ToasterRobotReader::ToasterRobotReader(ros::NodeHandle& node, bool fullRobot) {
-    fullRobot_ = fullRobot;
-    std::cout << "Initializing ToasterRobotReader" << std::endl;
+#include "pdg/ToasterSimuRobotReader.h"
+
+
+ToasterSimuRobotReader::ToasterSimuRobotReader(ros::NodeHandle& node) {
+    std::cout << "Initializing ToasterSimuRobotReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/pdg/robotList", 1, &ToasterRobotReader::robotJointStateCallBack, this);
+    sub_ = node.subscribe("/toaster_simu/robotList", 1, &ToasterSimuRobotReader::robotJointStateCallBack, this);
 }
 
-void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::ConstPtr& msg) {
+void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for robot received" << std::endl;
 
     Robot* curRobot;
@@ -44,7 +51,7 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::
         lastConfig_[curRobot->getId()] = curRobot;
 
         //TODO: fullRobot case
-        if (fullRobot_) {
+        if (msg->robotList[i].meAgent.skeletonJoint.size() > 0) {
             Joint * curJnt;
             for (unsigned int i_jnt = 0; i_jnt < msg->robotList[i].meAgent.skeletonJoint.size(); i_jnt++) {
 
@@ -77,20 +84,5 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::
             }
         }
     }
-}
-
-bool ToasterRobotReader::isPresent(std::string id) {
-    timeval curTime;
-    gettimeofday(&curTime, NULL);
-    unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;
-    unsigned long timeThreshold = pow(10, 9);
-    //std::cout << "current time: " << now <<  "  robot time: " << m_LastTime << std::endl;
-    long timeDif = lastConfig_[id]->getTime() - now;
-    //std::cout << "time dif: " << timeDif << std::endl;
-
-    if (fabs(timeDif) < timeThreshold)
-        return true;
-    else
-        return false;
 }
 

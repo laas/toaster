@@ -5,14 +5,17 @@
 #include "pdg/GroupHumanReader.h"
 #include "pdg/MocapHumanReader.h"
 #include "pdg/AdreamMocapHumanReader.h"
+#include "pdg/ToasterSimuHumanReader.h"
 
 // Robots
 #include "pdg/Pr2RobotReader.h"
 #include "pdg/SpencerRobotReader.h"
+#include "pdg/ToasterSimuRobotReader.h"
 
 // Objects
 #include "pdg/VimanObjectReader.h"
 #include "pdg/SparkObjectReader.h"
+#include "pdg/ToasterSimuObjectReader.h"
 
 // Facts
 #include "pdg/SparkFactReader.h"
@@ -44,12 +47,15 @@ bool niutHuman_ = false;
 bool groupHuman_ = false;
 bool mocapHuman_ = false;
 bool adreamMocapHuman_ = false;
+bool toasterSimuHuman_ = false;
 
 bool pr2Robot_ = false;
 bool spencerRobot_ = false;
+bool toasterSimuRobot_ = false;
 
 bool vimanObject_ = false;
 bool sparkObject_ = false;
+bool toasterSimuObject_ = false;
 
 bool sparkFact_ = false;
 
@@ -59,6 +65,9 @@ std::map<std::string, std::string> objectInHand_;
 
 //Used to change position of an entity
 Entity newPoseEnt_("");
+
+// Service client
+ros::ServiceClient* setPoseClient_;
 
 void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
@@ -78,8 +87,28 @@ void updateEntity(Entity& newPoseEnt, Entity* storedEntity) {
     storedEntity->orientation_ = newPoseEnt.getOrientation();
 }
 
+bool updateToasterSimu(toaster_msgs::Entity& ent, std::string type) {
+    toaster_msgs::SetEntityPose setPose;
+    setPose.request.id = ent.id;
+    setPose.request.type = type;
+    setPose.request.x = ent.positionX;
+    setPose.request.y = ent.positionY;
+    setPose.request.z = ent.positionZ;
+    setPose.request.roll = ent.orientationRoll;
+    setPose.request.pitch = ent.orientationPitch;
+    setPose.request.yaw = ent.orientationYaw;
+
+    if (setPoseClient_->call(setPose)) {
+        ROS_DEBUG("[Request] we request to set Pose in toaster_simu: %s \n", ent.id.c_str());
+        return true;
+    } else {
+        ROS_INFO("[Request] we failed to request to set Pose in toaster_simu: %s\n", ent.id.c_str());
+        return false;
+    }
+}
+
 bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, std::string joint,
-        toaster_msgs::HumanList& humanList_msg) {
+        toaster_msgs::HumanList& humanList_msg, bool toastersimu) {
 
     toaster_msgs::Entity jointEntity;
 
@@ -104,6 +133,9 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
                 (*itAgent).meAgent.hasObjects.push_back(msgEntity.id);
                 (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
 
+                if (toastersimu)
+                    updateToasterSimu(msgEntity, "object");
+
                 return true;
             } else
                 ROS_WARN("Can't find joint %s for human %s. Couldn't attach object %s to this joint", joint.c_str(), agentId.c_str(), msgEntity.id.c_str());
@@ -113,7 +145,7 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
 }
 
 bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, std::string joint,
-        toaster_msgs::RobotList robotList_msg) {
+        toaster_msgs::RobotList robotList_msg, bool toastersimu) {
 
     toaster_msgs::Entity jointEntity;
 
@@ -138,6 +170,9 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
                 (*itAgent).meAgent.hasObjects.push_back(msgEntity.id);
                 (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
 
+                if (toastersimu)
+                    updateToasterSimu(msgEntity, "object");
+
                 return true;
             } else
                 ROS_WARN("Can't find joint %s for robot %s. Couldn't attach object %s to this joint", joint.c_str(), agentId.c_str(), msgEntity.id.c_str());
@@ -159,10 +194,13 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     groupHuman_ = req.groupHuman;
     mocapHuman_ = req.mocapHuman;
     adreamMocapHuman_ = req.adreamMocapHuman;
+    toasterSimuHuman_ = req.toasterSimuHuman;
 
     pr2Robot_ = req.pr2Robot;
     spencerRobot_ = req.spencerRobot;
+    toasterSimuRobot_ = req.toasterSimuRobot;
 
+    toasterSimuObject_ = req.toasterSimuObject;
     vimanObject_ = req.vimanObject;
     sparkObject_ = req.sparkObject;
 
@@ -257,9 +295,13 @@ int main(int argc, char** argv) {
     //NiutHumanReader niutHumanRd()
     MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
     AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
+    ToasterSimuHumanReader toasterSimuHumanRd(node);
 
     Pr2RobotReader pr2RobotRd(node, robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
+    ToasterSimuRobotReader toasterSimuRobotRd(node);
+
+    ToasterSimuObjectReader toasterSimuObjectRd(node);
 
     // These 2 use special genom library!
     SparkObjectReader sparkObjectRd;
@@ -290,7 +332,8 @@ int main(int argc, char** argv) {
 
 
 
-
+    ros::ServiceClient setPoseClient = node.serviceClient<toaster_msgs::SetEntityPose>("/toaster_simu/set_entity_pose", true);
+    setPoseClient_ = &setPoseClient;
 
     ros::Rate loop_rate(30);
 
@@ -465,6 +508,29 @@ int main(int argc, char** argv) {
                 }
             }
 
+        if (toasterSimuHuman_) {
+            for (std::map<std::string, Human*>::iterator it = toasterSimuHumanRd.lastConfig_.begin(); it != toasterSimuHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
+
+
+
+                //Human
+                fillEntity(it->second, human_msg.meAgent.meEntity);
+
+                for (std::map<std::string, Joint*>::iterator itJoint = toasterSimuHumanRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != toasterSimuHumanRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                    human_msg.meAgent.skeletonNames.push_back(itJoint->first);
+                    fillEntity((itJoint->second), joint_msg.meEntity);
+                    joint_msg.jointOwner = it->first;
+
+                    human_msg.meAgent.skeletonJoint.push_back(joint_msg);
+
+                }
+                humanList_msg.humanList.push_back(human_msg);
+
+            }
+        }
+
         ////////////////////////////////////////////////////////////////////////
 
         //////////
@@ -550,11 +616,104 @@ int main(int argc, char** argv) {
             }
         }
 
+		if (toasterSimuRobot_)
+            for (std::map<std::string, Robot*>::iterator it = toasterSimuRobotRd.lastConfig_.begin(); it != toasterSimuRobotRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
+                //if (toasterSimuRobotRd.isPresent(it->first)) {
+
+
+                //Fact
+                fact_msg.property = "isPresent";
+                fact_msg.subjectId = it->first;
+                fact_msg.stringValue = "true";
+                fact_msg.confidence = 0.90;
+                fact_msg.factObservability = 1.0;
+                fact_msg.time = it->second->getTime();
+                fact_msg.valueType = 0;
+
+
+                factList_msg.factList.push_back(fact_msg);
+
+
+                //Robot
+                robot_msg.meAgent.mobility = 0;
+                fillEntity(toasterSimuRobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
+
+                if (robotFullConfig_) {
+                    for (std::map<std::string, Joint*>::iterator itJoint = toasterSimuRobotRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != toasterSimuRobotRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                        robot_msg.meAgent.skeletonNames.push_back(itJoint->first);
+                        fillEntity((itJoint->second), joint_msg.meEntity);
+
+                        joint_msg.jointOwner = it->first;
+                        joint_msg.position = itJoint->second->position;
+
+                        robot_msg.meAgent.skeletonJoint.push_back(joint_msg);
+                    }
+                }
+                robotList_msg.robotList.push_back(robot_msg);
+                //}
+            }
+
+
+
         ////////////////////////////////////////////////////////////////////////
 
         /////////////
         // Objects //
         /////////////
+
+		if (toasterSimuObject_)
+            for (std::map<std::string, MovableObject*>::iterator it = toasterSimuObjectRd.lastConfig_.begin(); it != toasterSimuObjectRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first) {
+                    updateEntity(newPoseEnt_, it->second);
+                    //Reset newPoseEnt_
+                    newPoseEnt_.setId("");
+                    ROS_INFO("got true");
+                }
+
+                //Message for object
+                fillEntity(it->second, object_msg.meEntity);
+
+                // If in hand, modify position:
+                if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
+                    bool addFactHand = true;
+                    if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg, true))
+                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg, true)) {
+                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
+                            addFactHand = false;
+                        }
+
+                    if (addFactHand) {
+
+                        //Fact message
+                        fact_msg.property = "IsInHand";
+                        fact_msg.propertyType = "position";
+                        fact_msg.subProperty = "object";
+                        fact_msg.subjectId = it->first;
+                        fact_msg.targetId = objectInAgent_[it->first];
+                        fact_msg.targetOwnerId = objectInAgent_[it->first];
+                        fact_msg.confidence = 1.0;
+                        fact_msg.factObservability = 0.8;
+                        fact_msg.time = it->second->getTime();
+                        fact_msg.valueType = 0;
+                        fact_msg.stringValue = "true";
+
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
+
+                }
+
+                objectList_msg.objectList.push_back(object_msg);
+
+
+                //printf("[PDG] Last time object %d: %lu\n", i, toasterSimuObjectRd.lastConfig_[toasterSimuObjectRd.objectIdOffset_ + i]->getTime());
+                //printf("[PDG] object %d named %s is seen\n", toasterSimuObjectRd.objectIdOffset_ + i, toasterSimuObjectRd.lastConfig_[toasterSimuObjectRd.objectIdOffset_ + i]->getName().c_str());
+                //}
+            }
+
+
 
         //printf("[PDG][DEBUG] Nb object from SPARK: %d\n", sparkObjectRd.nbObjects_);
 
@@ -584,11 +743,12 @@ int main(int argc, char** argv) {
                 // If in hand, modify position:
                 if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
                     bool addFactHand = true;
-                    if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg))
-                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg)) {
+                    if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg, false))
+                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg, false)) {
                             ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
                             addFactHand = false;
                         }
+						// TODO: update last config if needed
 
                     if (addFactHand) {
 
@@ -651,11 +811,12 @@ int main(int argc, char** argv) {
                     // If in hand, modify position:
                     if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
                         bool addFactHand = true;
-                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg))
-                            if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg)) {
+                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg, false))
+                            if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg, false)) {
                                 ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
                                 addFactHand = false;
                             }
+						// TODO: update last config if needed
 
                         if (addFactHand) {
 
