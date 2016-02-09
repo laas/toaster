@@ -37,24 +37,24 @@ Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, bool fullRobot) {
 }*/
 
 void Pr2RobotReader::init() {
-    Robot* curRobot = new Robot("pr2");
+    Robot* curRobot = new Robot("PR2_ROBOT");
     //TODO: setname with id
     curRobot->setName("PR2_ROBOT");
     /*initJointsName();
     if (fullRobot_) {
         std::stringstream jointId;
-        jointId << "pr2";
+        jointId << "PR2_ROBOT";
         for (unsigned int i = 0; i < pr2JointsName_.size(); i++) {
             jointId << pr2JointsName_[i];
-            curRobot->skeleton_[pr2JointsName_[i]] = new Joint(jointId.str(), "pr2");
+            curRobot->skeleton_[pr2JointsName_[i]] = new Joint(jointId.str(), "PR2_ROBOT");
         }
     }*/
-    lastConfig_["pr2"] = curRobot;
+    lastConfig_["PR2_ROBOT"] = curRobot;
 }
 
 void Pr2RobotReader::updateRobot(tf::TransformListener &listener) {
-    Robot* curRobot = lastConfig_["pr2"];
-    Joint* curJoint = new Joint("pr2_base_link", "pr2");
+    Robot* curRobot = lastConfig_["PR2_ROBOT"];
+    Joint* curJoint = new Joint("pr2_base_link", "PR2_ROBOT");
     curJoint->setName("base_link");
 
     // We start with base:

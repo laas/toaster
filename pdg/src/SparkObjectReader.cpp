@@ -46,8 +46,8 @@ void SparkObjectReader::updateObjects() {
             lastConfig_[s.str()]->position_.set<0>(sparkPosterStruct_.freeflyer[i_obj].q[0]);
             lastConfig_[s.str()]->position_.set<1>(sparkPosterStruct_.freeflyer[i_obj].q[1]);
             lastConfig_[s.str()]->position_.set<2>(sparkPosterStruct_.freeflyer[i_obj].q[2]);
-            lastConfig_[s.str()]->orientation_[0] = sparkPosterStruct_.freeflyer[i_obj].q[3];
-            lastConfig_[s.str()]->orientation_[1] = sparkPosterStruct_.freeflyer[i_obj].q[4];
+            lastConfig_[s.str()]->orientation_[1] = -sparkPosterStruct_.freeflyer[i_obj].q[3];
+            lastConfig_[s.str()]->orientation_[0] = -sparkPosterStruct_.freeflyer[i_obj].q[4];
             lastConfig_[s.str()]->orientation_[2] = sparkPosterStruct_.freeflyer[i_obj].q[5];
 
             //Set the time and name

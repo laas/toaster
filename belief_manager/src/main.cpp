@@ -86,11 +86,13 @@ bool addExternFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, 
                 (factListMap_[agentId].factList[i].property == myFact.property)) {
             // as it is the same fact, we remove the previous value:
             removeFactToAgent(i, agentId);
-            printf("[BELIEF_MANAGER][WARNING] Fact added to agent %s was already in "
+            /*printf("[BELIEF_MANAGER][WARNING] Fact added to agent %s was already in "
                     "current fact list: \n fact %s %s %s was removed to avoid double\n",
                     agentId.c_str(), factListMap_[agentId].factList[i].subjectId.c_str(),
                     factListMap_[agentId].factList[i].property.c_str(),
                     factListMap_[agentId].factList[i].targetId.c_str());
+                    factListMap_[agentId].factList[i].targetName.c_str());
+*/
         }
     }
     myFact.confidence *= confidenceDecrease;
@@ -109,12 +111,15 @@ bool addFactToAgent(toaster_msgs::Fact myFact, double confidenceDecrease, std::s
                 (factListMap_[agentId].factList[i].property == myFact.property)) {
             // as it is the same fact, we remove the previous value:
             removeFactToAgent(i, agentId);
-            printf("[BELIEF_MANAGER][WARNING] Fact added to agent %s was already in "
+/*            printf("[BELIEF_MANAGER][WARNING] Fact added to agent %s was already in "
                     "current fact list: \n fact %s %s %s was removed to avoid double\n",
                     agentId.c_str(), factListMap_[agentId].factList[i].subjectId.c_str(),
                     factListMap_[agentId].factList[i].property.c_str(),
                     factListMap_[agentId].factList[i].targetId.c_str());
         }
+                    factListMap_[agentId].factList[i].targetName.c_str());
+*/ 
+       }
     }
     myFact.confidence *= confidenceDecrease;
     factListMap_[agentId].factList.push_back(myFact);
@@ -301,7 +306,7 @@ int main(int argc, char** argv) {
     ros::init(argc, argv, "belief_manager");
     ros::NodeHandle node;
 
-    int mpSocket = external_register_to_the_mp_prot("toaster", 3300, STRINGS_PT);
+    mpSocket_ = external_register_to_the_mp_prot("toaster", 3300, STRINGS_PT);
 
     //Data reading
     ToasterFactReader factRdSpark(node, "spark/factList");
@@ -414,7 +419,8 @@ int main(int argc, char** argv) {
                 int length;
                 char *sender = read_string_from_socket(mpSocket_, &length);
                 char *message = read_string_from_socket(mpSocket_, &length);
-            }
+            } else 
+		newFact = true;           
         }
 
         for (int j = 0; j < previousState.factList.size(); ++j) {
@@ -446,7 +452,8 @@ int main(int argc, char** argv) {
                 int length;
                 char *sender = read_string_from_socket(mpSocket_, &length);
                 char *message = read_string_from_socket(mpSocket_, &length);
-            }
+            } else 
+		removedFact = true;
         }
 
 
@@ -454,7 +461,7 @@ int main(int argc, char** argv) {
         /**********************************/
         /* Conceptual perspective taking: */
         /**********************************/
-
+/*
         // We remove facts that are visible before updating.
         for (std::vector<std::string>::iterator itAgent = agentsTracked_.begin(); itAgent != agentsTracked_.end(); ++itAgent) {
             for (std::vector<toaster_msgs::Fact>::iterator itFactAgent = factListMap_[*itAgent].factList.begin(); itFactAgent != factListMap_[*itAgent].factList.end(); ++itFactAgent) {
@@ -487,7 +494,7 @@ int main(int argc, char** argv) {
                                     factListMap_[mainAgentId_].factList[i].targetId.c_str());
 
                              */
-                            removeFactToAgent((*itFactAgent), *itAgent);
+/*                            removeFactToAgent((*itFactAgent), *itAgent);
                         }
                     }
                     //Or if fact concerns himself
@@ -496,7 +503,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-
+            printf("agent observes new fact\n");
             // Agent observes new facts
             for (unsigned int i = 0; i < factListMap_[mainAgentId_].factList.size(); i++) {
                 // Update if:
@@ -537,6 +544,7 @@ int main(int argc, char** argv) {
                 }
             }
         }
+*/
 
         //TODO: publish for each agent:
         fact_pub_main.publish(factListMap_[mainAgentId_]);

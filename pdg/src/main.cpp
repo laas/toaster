@@ -692,6 +692,17 @@ int main(int argc, char** argv) {
         //ROS_INFO("%s", msg.data.c_str());
 
         object_pub.publish(objectList_msg);
+
+// Hack mardi
+    human_msg.meAgent.meEntity.id = "HERAKLES_HUMAN1";
+    human_msg.meAgent.meEntity.time = 0;
+    human_msg.meAgent.meEntity.name = "HERAKLES_HUMAN1";
+    human_msg.meAgent.meEntity.positionX = 2.95;
+    human_msg.meAgent.meEntity.positionY = 7.1;
+    human_msg.meAgent.meEntity.positionZ = -0.7;
+
+    humanList_msg.humanList.push_back(human_msg);
+
         human_pub.publish(humanList_msg);
         robot_pub.publish(robotList_msg);
         fact_pub.publish(factList_msg);
