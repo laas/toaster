@@ -27,7 +27,8 @@ void VimanObjectReader::updateObjects() {
             if (vimanPosterStruct_.objects[i_obj].found_Stereo || vimanPosterStruct_.objects[i_obj].found_Left || vimanPosterStruct_.objects[i_obj].found_Right) {
 
                 std::stringstream s;
-                s << "viman_object_" << vimanPosterStruct_.objects[i_obj].name;
+                //s << "viman_object_" << vimanPosterStruct_.objects[i_obj].name;
+                s <<  vimanPosterStruct_.objects[i_obj].name;
 
                 //If object is not in lastConfig_
                 if (lastConfig_.find(s.str()) == lastConfig_.end()) {

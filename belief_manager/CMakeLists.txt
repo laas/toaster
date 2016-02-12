@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(belief_manager)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} $ENV{ROBOTPKG_BASE}/share/cmake/Modules)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages

@@ -318,8 +318,8 @@ int main(int argc, char** argv) {
             initSparkObject = true;
         }
         if (vimanObject_ && !initVimanObject) {
-            //vimanObjectRd.init("vimanObjectPose");
-            vimanObjectRd.init("morseViman");
+            vimanObjectRd.init("vimanObjectPose");
+            //vimanObjectRd.init("morseViman");
             initVimanObject = true;
         }
         if (sparkFact_ && !initSparkFact) {

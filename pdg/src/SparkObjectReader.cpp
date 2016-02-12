@@ -34,7 +34,8 @@ void SparkObjectReader::updateObjects() {
         for (i_obj = 0; i_obj < nbObjects_; i_obj++) {
 
             std::stringstream s;
-            s << "viman_object_" << sparkPosterStruct_.freeflyer[i_obj].name.name;
+            //s << "viman_object_" << sparkPosterStruct_.freeflyer[i_obj].name.name;
+            s << sparkPosterStruct_.freeflyer[i_obj].name.name;
 
             //If object is not in lastConfig_
             if (lastConfig_.find(s.str()) == lastConfig_.end()) {
