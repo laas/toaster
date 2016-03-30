@@ -476,7 +476,7 @@ public:
 
         //type de marker
         marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-        marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_robots/pr2.dae"; //using 3d robot model
+        marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_robots/spencer_robot_full.dae"; //using 3d robot model
         marker.mesh_use_embedded_materials = true;
 
         marker.lifetime = ros::Duration();

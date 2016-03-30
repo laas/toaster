@@ -83,11 +83,12 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
     bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
     jointId.append(joint->getName());
     try {
-        ros::Time now = ros::Time::now();
+        //ros::Time now = ros::Time::now();
+        ros::Time last = ros::Time(0);
         listener.waitForTransform("/map", jointId,
-                now, ros::Duration(3.0));
+                last, ros::Duration(0.0));
         listener.lookupTransform("/map", jointId,
-                now, transform);
+                last, transform);
 
         //Joint position
         jointPosition.set<0>(transform.getOrigin().x());
@@ -101,7 +102,7 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
         jointOrientation.push_back(0.0);
         jointOrientation.push_back(tf::getYaw(transform.getRotation()));
 
-        joint->setTime(now.toNSec());
+        joint->setTime(last.toNSec());
         joint->setPosition(jointPosition);
         joint->setOrientation(jointOrientation);
 
@@ -110,10 +111,15 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
     }
 }
 
-void Pr2RobotReader::pr2JointStateCallBack(const sensor_msgs::JointState::ConstPtr& msg) {
+void Pr2RobotReader::pr2JointStateCallBack(const sensor_msgs::JointState::ConstPtr & msg) {
     if (!initJointsName_) {
         for (unsigned int i = 0; i < msg->name.size(); i++) {
-            pr2JointsName_.push_back(msg->name[i]);
+            std::string jointName = msg->name[i];
+            jointName = jointName.substr(0, msg->name[i].size() - 5);
+            if (jointName.compare("r_gripper_") == 0 || jointName.compare("l_gripper_") == 0)
+                jointName.append("palm_");
+            jointName.append("link");
+            pr2JointsName_.push_back(jointName);
             std::stringstream jointId;
             jointId << "pr2";
             jointId << msg->name[i];
