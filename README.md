@@ -15,8 +15,7 @@ The human from [morse](https://www.openrobots.org/morse/doc/stable/morse.html) i
 
 A scenario using data input from morse.
 
-![TOASTER screenshot 3](doc/media/real1.jpg)
-![TOASTER screenshot 4](doc/media/real2.jpg)
+![TOASTER screenshot 3](doc/media/real.jpg)
 
 
 This framework provides ros nodes that play a specific role in building situation assessment 
