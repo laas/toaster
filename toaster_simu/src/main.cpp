@@ -116,7 +116,7 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
             joint.meEntity.orientationYaw = yaw;
 
             hum.meAgent.skeletonJoint[index] = joint;
-            human_map[id] = hum;
+            human_map[itH->second.meAgent.meEntity.id] = hum;
 
         } else {
             std::map<std::string, toaster_msgs::Robot>::const_iterator itR = robot_map.find(ownerId);
@@ -148,7 +148,7 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
                 joint.meEntity.orientationYaw = yaw;
 
                 rob.meAgent.skeletonJoint[index] = joint;
-                robot_map[id] = rob;
+                robot_map[itR->second.meAgent.meEntity.id] = rob;
 
             } else {
                 return false;
@@ -558,7 +558,7 @@ int main(int argc, char** argv) {
 
             human_map[it->second.meAgent.meEntity.id] = hum;
         }
-
+        
         for (std::map<std::string, toaster_msgs::Robot>::const_iterator it = robot_map.begin(); it != robot_map.end(); ++it) {
             toaster_msgs::Robot rob;
             rob.meAgent = it->second.meAgent;
