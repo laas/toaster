@@ -84,8 +84,11 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
             return false;
         }
     } else if (boost::iequals(type, "joint")) {
+        ROS_DEBUG("Changing joint position");
         std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(ownerId);
         if (itH != human_map.end()) {
+
+            ROS_DEBUG("set joint pose: owner is human");
             toaster_msgs::Joint joint;
             // find the joint
             int index = -1;
@@ -118,12 +121,14 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
         } else {
             std::map<std::string, toaster_msgs::Robot>::const_iterator itR = robot_map.find(ownerId);
             if (itR != robot_map.end()) {
+
+                ROS_DEBUG("set joint pose: owner is robot");
                 toaster_msgs::Joint joint;
 
                 // find the joint
                 int index = -1;
                 for (int i = 0; i < itR->second.meAgent.skeletonJoint.size(); i++) {
-                    if (boost::iequals(itH->second.meAgent.skeletonJoint[i].meEntity.id, id) )
+                    if (boost::iequals(itH->second.meAgent.skeletonJoint[i].meEntity.id, id))
                         index = i;
                 }
 
@@ -541,23 +546,23 @@ int main(int argc, char** argv) {
         for (std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.begin(); it != object_map.end(); ++it) {
             toaster_msgs::Object obj;
             obj.meEntity = it->second.meEntity;
-            obj.meEntity.time =  now.toNSec();
+            obj.meEntity.time = now.toNSec();
 
             object_map[it->second.meEntity.id] = obj;
         }
 
         for (std::map<std::string, toaster_msgs::Human>::const_iterator it = human_map.begin(); it != human_map.end(); ++it) {
             toaster_msgs::Human hum;
-            hum.meAgent.meEntity = it->second.meAgent.meEntity;
-            hum.meAgent.meEntity.time =  now.toNSec();
+            hum.meAgent = it->second.meAgent;
+            hum.meAgent.meEntity.time = now.toNSec();
 
             human_map[it->second.meAgent.meEntity.id] = hum;
         }
 
         for (std::map<std::string, toaster_msgs::Robot>::const_iterator it = robot_map.begin(); it != robot_map.end(); ++it) {
             toaster_msgs::Robot rob;
-            rob.meAgent.meEntity = it->second.meAgent.meEntity;
-            rob.meAgent.meEntity.time =  now.toNSec();
+            rob.meAgent = it->second.meAgent;
+            rob.meAgent.meEntity.time = now.toNSec();
 
             robot_map[it->second.meAgent.meEntity.id] = rob;
         }
