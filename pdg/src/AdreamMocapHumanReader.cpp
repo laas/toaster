@@ -106,7 +106,7 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
             curJoint->setOrientation(headOrientation);
             curJoint->setTime(now.toNSec());
 
-            lastConfig_[humId]->skeleton_[jointName] = curJoint;
+            lastConfig_[humId]->skeleton_[jointNameHead] = curJoint;
             
         }
 
