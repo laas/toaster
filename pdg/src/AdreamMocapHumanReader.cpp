@@ -116,8 +116,8 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
 
         if (msg->pos.size() != 0) {
             bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
-            jointPosition.set<0>(msg->pos[0].x + 6.4329);
-            jointPosition.set<1>(msg->pos[0].y + 3.2017);
+            jointPosition.set<0>(msg->pos[0].x + 6.407);
+            jointPosition.set<1>(msg->pos[0].y + 2.972);
             jointPosition.set<2>(msg->pos[0].z);
 
             std::vector<double> jointOrientation;
