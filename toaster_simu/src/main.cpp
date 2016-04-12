@@ -84,8 +84,11 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
             return false;
         }
     } else if (boost::iequals(type, "joint")) {
+        ROS_DEBUG("Changing joint position");
         std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(ownerId);
         if (itH != human_map.end()) {
+
+            ROS_DEBUG("set joint pose: owner is human");
             toaster_msgs::Joint joint;
             // find the joint
             int index = -1;
@@ -113,17 +116,19 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
             joint.meEntity.orientationYaw = yaw;
 
             hum.meAgent.skeletonJoint[index] = joint;
-            human_map[id] = hum;
+            human_map[itH->second.meAgent.meEntity.id] = hum;
 
         } else {
             std::map<std::string, toaster_msgs::Robot>::const_iterator itR = robot_map.find(ownerId);
             if (itR != robot_map.end()) {
+
+                ROS_DEBUG("set joint pose: owner is robot");
                 toaster_msgs::Joint joint;
 
                 // find the joint
                 int index = -1;
                 for (int i = 0; i < itR->second.meAgent.skeletonJoint.size(); i++) {
-                    if (boost::iequals(itH->second.meAgent.skeletonJoint[i].meEntity.id, id) )
+                    if (boost::iequals(itH->second.meAgent.skeletonJoint[i].meEntity.id, id))
                         index = i;
                 }
 
@@ -143,7 +148,7 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
                 joint.meEntity.orientationYaw = yaw;
 
                 rob.meAgent.skeletonJoint[index] = joint;
-                robot_map[id] = rob;
+                robot_map[itR->second.meAgent.meEntity.id] = rob;
 
             } else {
                 return false;
@@ -264,6 +269,8 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
 bool addEntity(toaster_msgs::AddEntity::Request &req,
         toaster_msgs::AddEntity::Response & res) {
 
+    ros::Time now = ros::Time::now();
+
     if (req.type == "" || req.id == "") {
         ROS_WARN("[toaster_simu][Request] to add entity you need to specify "
                 "at least the entity type and id");
@@ -278,6 +285,7 @@ bool addEntity(toaster_msgs::AddEntity::Request &req,
             else
                 obj.meEntity.name = req.name;
 
+            obj.meEntity.time = now.toNSec();
             object_map[req.id] = obj;
 
         }// Ok, not an object, mb a human?
@@ -290,6 +298,7 @@ bool addEntity(toaster_msgs::AddEntity::Request &req,
             else
                 hum.meAgent.meEntity.name = req.name;
 
+            hum.meAgent.meEntity.time = now.toNSec();
             human_map[req.id] = hum;
 
         }// Ok, not a human, mb a robot??
@@ -302,6 +311,7 @@ bool addEntity(toaster_msgs::AddEntity::Request &req,
             else
                 rob.meAgent.meEntity.name = req.name;
 
+            rob.meAgent.meEntity.time = now.toNSec();
             robot_map[req.id] = rob;
 
         }// So I guess it's a joint...
@@ -314,6 +324,7 @@ bool addEntity(toaster_msgs::AddEntity::Request &req,
             else
                 joint.meEntity.name = req.name;
 
+            joint.meEntity.time = now.toNSec();
             joint.jointOwner = req.ownerId;
 
 
@@ -529,7 +540,33 @@ int main(int argc, char** argv) {
                 }
             updateEntityPose(keyboardControlled_, x*inc, y*inc, z*inc, roll*inc, pitch*inc, yaw * inc);
         }
+        ros::Time now = ros::Time::now();
 
+        //update time
+        for (std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.begin(); it != object_map.end(); ++it) {
+            toaster_msgs::Object obj;
+            obj.meEntity = it->second.meEntity;
+            obj.meEntity.time = now.toNSec();
+
+            object_map[it->second.meEntity.id] = obj;
+        }
+
+        for (std::map<std::string, toaster_msgs::Human>::const_iterator it = human_map.begin(); it != human_map.end(); ++it) {
+            toaster_msgs::Human hum;
+            hum.meAgent = it->second.meAgent;
+            hum.meAgent.meEntity.time = now.toNSec();
+
+            human_map[it->second.meAgent.meEntity.id] = hum;
+        }
+        
+        for (std::map<std::string, toaster_msgs::Robot>::const_iterator it = robot_map.begin(); it != robot_map.end(); ++it) {
+            toaster_msgs::Robot rob;
+            rob.meAgent = it->second.meAgent;
+            rob.meAgent.meEntity.time = now.toNSec();
+
+            robot_map[it->second.meAgent.meEntity.id] = rob;
+        }
+        //update msg list
         for (std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.begin(); it != object_map.end(); ++it) {
             objectList_msg.objectList.push_back(it->second);
         }

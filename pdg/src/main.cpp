@@ -715,8 +715,6 @@ int main(int argc, char** argv) {
 
 
 
-        //printf("[PDG][DEBUG] Nb object from SPARK: %d\n", sparkObjectRd.nbObjects_);
-
         if (sparkObject_)
             for (std::map<std::string, MovableObject*>::iterator it = sparkObjectRd.lastConfig_.begin(); it != sparkObjectRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first)

@@ -55,7 +55,8 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
 
             tf::Quaternion q(msg->pos[0].qx, msg->pos[0].qy, msg->pos[0].qz, msg->pos[0].qw);
             double roll, pitch, yaw;
-            yaw = tf::getYaw(q);
+           tf::Matrix3x3 m(q);
+           m.getEulerYPR(yaw,pitch,roll);
 
             humanOrientation.push_back(yaw);
 
@@ -66,7 +67,7 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
 
             lastConfig_[humId] = curHuman;
 
-
+            //update the base
             std::string jointName = "base";
 
             if (curHuman->skeleton_.find(jointName) == curHuman->skeleton_.end()) {
@@ -81,6 +82,32 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
             curJoint->setTime(now.toNSec());
 
             lastConfig_[humId]->skeleton_[jointName] = curJoint;
+            
+            //update the head
+            std::string jointNameHead = "head";
+
+            if (curHuman->skeleton_.find(jointNameHead) == curHuman->skeleton_.end()) {
+                curJoint = new Joint(jointNameHead, humId);
+                curJoint->setName(jointNameHead);
+            } else {
+                curJoint = curHuman->skeleton_[jointNameHead];
+            }
+           
+            bg::model::point<double, 3, bg::cs::cartesian> headPosition;
+            headPosition.set<0>(msg->pos[0].x + 6.407);
+            headPosition.set<1>(msg->pos[0].y + 2.972);
+            headPosition.set<2>(msg->pos[0].z);
+            std::vector<double> headOrientation;
+            headOrientation.push_back(roll);
+            headOrientation.push_back(pitch);
+            headOrientation.push_back(yaw);
+
+            curJoint->setPosition(headPosition);
+            curJoint->setOrientation(headOrientation);
+            curJoint->setTime(now.toNSec());
+
+            lastConfig_[humId]->skeleton_[jointNameHead] = curJoint;
+            
         }
 
 
@@ -116,8 +143,8 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
 
         if (msg->pos.size() != 0) {
             bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
-            jointPosition.set<0>(msg->pos[0].x + 6.4329);
-            jointPosition.set<1>(msg->pos[0].y + 3.2017);
+            jointPosition.set<0>(msg->pos[0].x + 6.407);
+            jointPosition.set<1>(msg->pos[0].y + 2.972);
             jointPosition.set<2>(msg->pos[0].z);
 
             std::vector<double> jointOrientation;
