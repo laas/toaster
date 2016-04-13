@@ -44,7 +44,7 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
             bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
             humanPosition.set<0>(msg->pos[0].x + 6.407);
             humanPosition.set<1>(msg->pos[0].y + 2.972);
-            humanPosition.set<2>(msg->pos[0].z - 1.6);
+            humanPosition.set<2>(msg->pos[0].z - 1.48);
 
             //set the human orientation
             std::vector<double> humanOrientation;
@@ -155,9 +155,9 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
            tf::Matrix3x3 m(q);
            m.getEulerYPR(yaw,pitch,roll);
 
-           jointOrientation.push_back(roll+1.57);
-           jointOrientation.push_back(pitch+1.57);
-           jointOrientation.push_back(yaw+3.14);
+           jointOrientation.push_back(roll);
+           jointOrientation.push_back(pitch);
+           jointOrientation.push_back(yaw);
 
 
            curJoint->setPosition(jointPosition);

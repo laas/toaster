@@ -107,7 +107,7 @@ public:
 
         // Humans
         std::stringstream pathHuman;
-        pathHuman << ros::package::getPath("toaster_visualizer") << "/src/list_human_morse_joints.xml";
+        pathHuman << ros::package::getPath("toaster_visualizer") << "/src/list_human_joints.xml";
         listMemb = TiXmlDocument(pathHuman.str());
 
         if (!listMemb.LoadFile()) {
@@ -618,7 +618,7 @@ public:
                     1, msg->objectList[i].meEntity.name);
 
             visualization_msgs::Marker mn = defineName(m);
-            mn = setColor(mn, 1.0, 1.0, 1.0);
+            mn = setColor(mn, 0.0, 0.0, 1.0);
             mn = setSize(mn, 0, 0, 0.2);
 
             obj_list.markers.push_back(mn);
@@ -700,7 +700,7 @@ public:
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
             mn = setSize(mn, 0, 0, 0.5);
-            mn = setColor(mn, 1.0, 1.0, 1.0);
+            mn = setColor(mn, 1.0, 0.0, 0.0);
 
 
             robot_list.markers.push_back(mn);
@@ -728,7 +728,7 @@ public:
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
             mn = setSize(mn, 0, 0, 0.5);
-            mn = setColor(mn, 1.0, 1.0, 1.0);
+            mn = setColor(mn, 0.0, 1.0, 0.0);
 
 
             human_list.markers.push_back(mn);
@@ -793,10 +793,10 @@ public:
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
-                            if (name_obj == "base" || name_obj == "rightHand") {
-                                markerTempo.scale.x = 0.3 * scale;
-                                markerTempo.scale.y = 0.3 * scale;
-                                markerTempo.scale.z = 0.3 * scale;
+                            if (name_obj == "base" || name_obj == "rightHand"|| name_obj == "head") {
+                                markerTempo.scale.x = 0.25 * scale;
+                                markerTempo.scale.y = 0.25 * scale;
+                                markerTempo.scale.z = 0.25 * scale;
                             } else {
                                 markerTempo.scale.x = 1 * scale;
                                 markerTempo.scale.y = 1 * scale;

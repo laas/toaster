@@ -111,6 +111,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   $ENV{TOASTERLIB_DIR}/include
+  $ENV{ROBOTPKG_BASE}/include
 )
 
 ## Declare a cpp library
