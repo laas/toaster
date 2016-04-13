@@ -755,7 +755,6 @@ int main(int argc, char** argv) {
         human_pub.publish(humanList_msg);
         robot_pub.publish(robotList_msg);
         fact_pub.publish(factList_msg);
-        fact_pub_spark.publish(sparkFactRd.currentFactList_);
 
         ros::spinOnce();
 
