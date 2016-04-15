@@ -86,7 +86,7 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
     ROS_DEBUG("current joint %s \n", jointId.c_str());
 
     try {
-        //ros::Time now = ros::Time::now();
+        ros::Time now = ros::Time::now();
         ros::Time last = ros::Time(0);
         listener.waitForTransform("/map", jointId,
                 last, ros::Duration(0.0));
@@ -105,7 +105,7 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
         jointOrientation.push_back(0.0);
         jointOrientation.push_back(tf::getYaw(transform.getRotation()));
 
-        joint->setTime(last.toNSec());
+        joint->setTime(now.toNSec());
         joint->setPosition(jointPosition);
         joint->setOrientation(jointOrientation);
 
