@@ -646,7 +646,7 @@ bool pointingTowardRequest(toaster_msgs::Pointing::Request &req,
 int main(int argc, char** argv) {
     // Set this in a ros service
     const bool HUMAN_FULL_CONFIG = true; //If false we will use only position and orientation
-    const bool ROBOT_FULL_CONFIG = false;
+    const bool ROBOT_FULL_CONFIG = true;
 
     // Make this a vector? Not really relevant if several monitored agents...
     //unsigned int roomOfInterest = 0;
@@ -752,7 +752,7 @@ int main(int argc, char** argv) {
         // All the following computation are done for each monitored agents!
 
         for (std::vector<std::string>::iterator itAgnt = agentsMonitored_.begin(); itAgnt != agentsMonitored_.end(); ++itAgnt) {
-            //printf("[agent_monitor][DEBUG] computation for agent %d\n", (*itAgnt));
+            //printf("[agent_monitor][DEBUG] computation for agent %s\n", itAgnt->c_str());
             Agent* agentMonitored;
 
             bool isHuman = true;
@@ -770,6 +770,7 @@ int main(int argc, char** argv) {
             } else {
                 continue;
             }
+
 
             // We verify if the buffer is already there...
             itTRB_ = mapTRBEntity_.find((*itAgnt));
@@ -1023,7 +1024,7 @@ int main(int argc, char** argv) {
 
 
 
-            //ROS_DEBUG("[agent_monitor] computing facts for agent %s\n", (*itAgnt).c_str());
+            ROS_DEBUG("[agent_monitor] computing facts for agent %s\n", (*itAgnt).c_str());
 
             // Compute motion:
             unsigned long oneSecond = pow(10, 9);
@@ -1042,8 +1043,8 @@ int main(int argc, char** argv) {
             // We compute /_\distance toward entities
             mapIdValue = computeDeltaDist(mapTRBEntity_, (*itAgnt), oneSecond / 4);
             for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
-                printf("[AGENT_MONITOR][DEBUG] agent %s has a deltadist toward  %s of %f\n",
-                        (*itAgnt).c_str(), (it->first).c_str(), it->second);
+                //printf("[AGENT_MONITOR][DEBUG] agent %s has a deltadist toward  %s of %f\n",
+                 //       (*itAgnt).c_str(), (it->first).c_str(), it->second);
 
 
 
@@ -1069,7 +1070,7 @@ int main(int argc, char** argv) {
 
             // If the agent is moving
             if (computeMotion2D(mapTRBEntity_[(*itAgnt)], oneSecond / 4, 0.03)) {
-                printf("[AGENT_MONITOR][DEBUG] %s is moving %lu\n", mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[(*itAgnt)].back()->getTime());
+                //printf("[AGENT_MONITOR][DEBUG] %s is moving %lu\n", mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[(*itAgnt)].back()->getTime());
 
                 //Fact moving
                 fact_msg.property = "IsMoving";
@@ -1086,8 +1087,8 @@ int main(int argc, char** argv) {
                 angleDirection = computeMotion2DDirection(mapTRBEntity_[(*itAgnt)], oneSecond);
                 mapIdValue = computeMotion2DToward(mapTRBEntity_, (*itAgnt), angleDirection, 0.5);
                 for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
-                    printf("[AGENT_MONITOR][DEBUG] %s is moving toward %s with a confidence of %f\n",
-                            mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
+                    //printf("[AGENT_MONITOR][DEBUG] %s is moving toward %s with a confidence of %f\n",
+                    //        mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
 
                     //Fact moving toward
                     fact_msg.property = "IsMovingToward";
@@ -1111,8 +1112,8 @@ int main(int argc, char** argv) {
 
                 // What is the distance between joints and objects?
                 for (std::vector<std::string>::iterator itJnt = mapAgentToJointsMonitored_[(*itAgnt)].begin(); itJnt != mapAgentToJointsMonitored_[(*itAgnt)].end(); ++itJnt) {
-                    Joint* curMonitoredJnt = ((Agent*) mapTRBEntity_[(*itAgnt)].back())->skeleton_[(*itJnt)];
 
+                    Joint* curMonitoredJnt = ((Agent*) mapTRBEntity_[(*itAgnt)].back())->skeleton_[(*itJnt)];
                     for (std::map<std::string, TRBuffer < Entity*> >::iterator itEnt = mapTRBEntity_.begin(); itEnt != mapTRBEntity_.end(); ++itEnt) {
                         // if in same room as monitored agent and not monitored joint
                         //if ((roomOfInterest == it->second.back()->getRoomId()) && (it->first != jointsMonitoredId[i])) {
@@ -1149,7 +1150,7 @@ int main(int argc, char** argv) {
                     }
                     // Is the joint moving?
                     if (computeJointMotion2D(mapTRBEntity_[(*itAgnt)], (*itJnt), oneSecond / 4, 0.03)) {
-                        printf("[AGENT_MONITOR][DEBUG] %s of agent %s is moving %lu\n", (*itJnt).c_str(), mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[(*itAgnt)].back()->getTime());
+                     //   printf("[AGENT_MONITOR][DEBUG] %s of agent %s is moving %lu\n", (*itJnt).c_str(), mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[(*itAgnt)].back()->getTime());
 
 
                         //Fact moving
@@ -1172,8 +1173,8 @@ int main(int argc, char** argv) {
                         angleDirection = computeJointMotion2DDirection(mapTRBEntity_[(*itAgnt)], (*itJnt), oneSecond);
                         mapIdValue = computeJointMotion2DToward(mapTRBEntity_, (*itAgnt), (*itJnt), angleDirection, 0.5);
                         for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
-                            printf("[AGENT_MONITOR][DEBUG] %s of agent %s is moving toward %s with a confidence of %f\n", (*itJnt).c_str(),
-                                    mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
+                           // printf("[AGENT_MONITOR][DEBUG] %s of agent %s is moving toward %s with a confidence of %f\n", (*itJnt).c_str(),
+                           //         mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
 
                             //Fact moving toward
                             fact_msg.property = "IsMovingToward";
@@ -1191,8 +1192,8 @@ int main(int argc, char** argv) {
                         // Then we compute /_\distance
                         mapIdValue = computeJointDeltaDist(mapTRBEntity_, (*itAgnt), (*itJnt), oneSecond / 4);
                         for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
-                            printf("[AGENT_MONITOR][DEBUG] joint %s of agent %s has a deltadist toward  %s of %f\n", (*itJnt).c_str(),
-                                    mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
+                           //printf("[AGENT_MONITOR][DEBUG] joint %s of agent %s has a deltadist toward  %s of %f\n", (*itJnt).c_str(),
+                           //         mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
 
                             //Fact moving toward
                             fact_msg.property = "IsMovingToward";
