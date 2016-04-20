@@ -58,6 +58,8 @@ std::vector<toaster_msgs::Ontology> myOntologyList;
 std::vector<std::string> myStringList;
 std::vector<toaster_msgs::Fact> previousFactsState;
 
+std::vector<ToasterFactReader*> factsReaders;
+
 int nb_agents;
 
 //sqlite database's pointer
@@ -2277,26 +2279,18 @@ bool empty_database_for_agent_db(toaster_msgs::EmptyDbAgent::Request &req, toast
 // UPDATE WORLD STATE ////////////
 //////////////////////////////////////////////////////////
 
-void update_world_states(ros::NodeHandle& node, std::vector<toaster_msgs::Fact>& factListArea, std::vector<toaster_msgs::Fact>& factListAgtMon) {
+void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> factsReader) {
     /**************************/
     /* World State management */
     /**************************/
 
     //We get the new state
     std::vector<toaster_msgs::Fact> newState;
-    if (factListArea.size() > 0) {
-        ROS_DEBUG("updating Area facts, size %d", factListArea.size());
-        newState.insert(newState.end(), factListArea.begin(), factListArea.end());
+    for(std::vector<ToasterFactReader*>::iterator it = factsReader.begin(); it != factsReader.end(); it++){
+        if ((*it)->lastMsgFact.factList.size() > 0) {
+            newState.insert(newState.end(), (*it)->lastMsgFact.factList.begin(), (*it)->lastMsgFact.factList.end());
+         } 
     }
-    /*if (factListArea.size() > 0) {
-        ROS_INFO("updating PDG facts");
-        newState.insert(newState.end(), factListPdg.begin(), factListPdg.end());
-    }*/
-    if (factListAgtMon.size() > 0) {
-        ROS_DEBUG("updating Area facts, size %d", factListAgtMon.size());
-        newState.insert(newState.end(), factListAgtMon.begin(), factListAgtMon.end());
-    }
-
     //If update, make modification to current db:
     bool removedFact = true;
 
@@ -2575,17 +2569,39 @@ int main(int argc, char **argv) {
 
 
     initServer();
-
-    //ToasterFactReader factRdPdg(node, "pdg/factList");
+    
+    ToasterFactReader factRdAgent(node, "agent_monitor/factList");
     ToasterFactReader factRdArea(node, "area_manager/factList");
-    ToasterFactReader factRdAM(node, "agent_monitor/factList");
+    ToasterFactReader factRdMove3D(node, "move3d_facts/factList");
+
+    //Get topics from params if exist
+    bool activate;
+    if(node.hasParam("/database/area_manager")){
+       node.getParam("/database/area_manage", activate);
+       if(activate){
+         factsReaders.push_back(&factRdArea);
+       }
+    }
+    if(node.hasParam("/database/agent_monitor")){
+       node.getParam("/database/agent_monitor", activate);
+       if(activate){
+         factsReaders.push_back(&factRdAgent);
+       }
+    }
+    if(node.hasParam("/database/move3d_facts")){
+       node.getParam("/database/move3d_facts", activate);
+       if(activate){
+         factsReaders.push_back(&factRdMove3D);
+       }
+    }
+
 
     ros::Rate loop_rate(30);
 
     while (ros::ok()) {
         //std::cout << "\n\n\n";
         //db.readDb();
-        update_world_states(node, factRdArea.lastMsgFact.factList, factRdAM.lastMsgFact.factList);
+        update_world_states(node, factsReaders);
         //db.conceptual_perspective_taking();
         loop_rate.sleep();
         ros::spinOnce();
