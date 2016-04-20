@@ -12,13 +12,11 @@
 #include <vector>
 #include "toaster_msgs/Entity.h"
 #include "toaster_msgs/Object.h"
-#include "toaster_msgs/Area.h"
 #include "toaster_msgs/AreaList.h"
 #include "geometry_msgs/Point.h"
 #include "toaster_msgs/ObjectList.h"
-#include "toaster_msgs/Human.h"
 #include "toaster_msgs/HumanList.h"
-#include "toaster_msgs/Robot.h"
+#include "toaster_msgs/FactList.h"
 #include "toaster_msgs/RobotList.h"
 #include "toaster_msgs/Joint.h"
 #include <map>
@@ -42,6 +40,7 @@ class Run {
 
     //a vector to store marker's color
     std::map<std::string, std::vector<float> > color_map;
+    std::map<std::string, double> agentMoving_map;
 
 
     //subscribers
@@ -49,7 +48,7 @@ class Run {
     ros::Subscriber sub_areaList;
     ros::Subscriber sub_humanList;
     ros::Subscriber sub_robotList;
-
+    ros::Subscriber sub_agentFactList;
 
     //publishers
     ros::Publisher pub_obj;
@@ -83,6 +82,7 @@ public:
         sub_areaList = reception_node.subscribe("/area_manager/areaList", 1000, &Run::chatterCallbackAreaList, this);
         sub_humanList = reception_node.subscribe("/pdg/humanList", 1000, &Run::chatterCallbackHumanList, this);
         sub_robotList = reception_node.subscribe("/pdg/robotList", 1000, &Run::chatterCallbackRobotList, this);
+        sub_agentFactList = reception_node.subscribe("/agent_monitor/factList", 1000, &Run::chatterCallbackAgentFactList, this);
 
         //definition of publishers
         pub_obj = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_object", 1000);
@@ -697,10 +697,17 @@ public:
             visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.positionX, msg->robotList[i].meAgent.meEntity.positionY, msg->robotList[i].meAgent.meEntity.positionZ, msg->robotList[i].meAgent.meEntity.orientationRoll, msg->robotList[i].meAgent.meEntity.orientationPitch, msg->robotList[i].meAgent.meEntity.orientationYaw,
                     1.0, msg->robotList[i].meAgent.meEntity.name);
 
+
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
             mn = setSize(mn, 0, 0, 0.5);
-            mn = setColor(mn, 1.0, 0.0, 0.0);
+
+            //If the robot is moving, we intensify its name color
+            std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->robotList[i].meAgent.meEntity.id);
+            if (it != agentMoving_map.end())
+                mn = setColor(mn, 0.4 + it->second * 0.6, 0.0, 0.0);
+            else
+                mn = setColor(mn, 0.2, 0.0, 0.0);
 
 
             robot_list.markers.push_back(mn);
@@ -728,8 +735,13 @@ public:
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
             mn = setSize(mn, 0, 0, 0.5);
-            mn = setColor(mn, 0.0, 1.0, 0.0);
 
+            //If the human is moving, we intensify its color
+            std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->humanList[i].meAgent.meEntity.id);
+            if (it != agentMoving_map.end())
+                mn = setColor(mn, 0.0, 0.4 + it->second * 0.6, 0.0);
+            else
+                mn = setColor(mn, 0.0, 0.2, 0.0);
 
             human_list.markers.push_back(mn);
 
@@ -793,7 +805,7 @@ public:
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
-                            if (name_obj == "base" || name_obj == "rightHand"|| name_obj == "head") {
+                            if (name_obj == "base" || name_obj == "rightHand" || name_obj == "head") {
                                 markerTempo.scale.x = 0.25 * scale;
                                 markerTempo.scale.y = 0.25 * scale;
                                 markerTempo.scale.z = 0.25 * scale;
@@ -820,6 +832,15 @@ public:
 
                     human_list.markers.push_back(markerTempo);
                 }
+            }
+        }
+    }
+
+    void chatterCallbackAgentFactList(const toaster_msgs::FactList::ConstPtr& msg) {
+        agentMoving_map.clear();
+        for (int i = 0; i < msg->factList.size(); i++) {
+            if (msg->factList[i].property == "IsMoving") {
+                agentMoving_map[msg->factList[i].subjectId] = msg->factList[i].confidence;
             }
         }
     }
