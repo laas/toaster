@@ -63,6 +63,7 @@ std::vector<ToasterFactReader*> factsReaders;
 ToasterFactReader* readerAgent;
 ToasterFactReader* readerArea;
 ToasterFactReader* readerMove3d;
+ToasterFactReader* readerPdg;
 
 int nb_agents;
 
@@ -2288,6 +2289,9 @@ bool set_topics(toaster_msgs::SetTopics::Request &req, toaster_msgs::SetTopics::
     if(req.move3dTopic){
        factsReaders.push_back(readerMove3d);
     }
+    if(req.pdgTopic){
+       factsReaders.push_back(readerPdg);
+    }
     
 }
 
@@ -2659,9 +2663,11 @@ int main(int argc, char **argv) {
     ToasterFactReader factRdAgent(node, "agent_monitor/factList");
     ToasterFactReader factRdArea(node, "area_manager/factList");
     ToasterFactReader factRdMove3D(node, "move3d_facts/factList");
+    ToasterFactReader factRdPdg(node, "pdg/factList");
     readerAgent = &factRdAgent;
     readerArea = &factRdArea;
     readerMove3d = &factRdMove3D;
+    readerPdg = &factRdPdg;
 
     //Get topics from params if exist
     bool activate;
@@ -2681,6 +2687,12 @@ int main(int argc, char **argv) {
        node.getParam("/database/move3d_facts", activate);
        if(activate){
          factsReaders.push_back(readerMove3d);
+       }
+    }
+    if(node.hasParam("/database/pdg_facts")){
+       node.getParam("/database/pdg_facts", activate);
+       if(activate){
+         factsReaders.push_back(readerPdg);
        }
     }
 

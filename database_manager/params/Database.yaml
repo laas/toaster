@@ -3,3 +3,4 @@ database:
    area_manager: true
    agent_monitor: true
    move3d_facts: true
+   pdg_facts: true
