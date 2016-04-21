@@ -370,7 +370,7 @@ std::map<std::string, double> computeDeltaDist(std::map<std::string, TRBuffer < 
 
 
             //We compute Deltadist
-            deltaDist = curDist - prevDist;
+            deltaDist = prevDist - curDist;
 
             // We fill towardConfidence
             deltaDistMap[it->first] = deltaDist;
@@ -1095,35 +1095,6 @@ int main(int argc, char** argv) {
 
             double angleDirection = 0.0;
             std::map<std::string, double> mapIdValue;
-
-            // We compute /_\distance toward entities
-            mapIdValue = computeDeltaDist(mapTRBEntity_, (*itAgnt), oneSecond / 4);
-            for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
-                //printf("[AGENT_MONITOR][DEBUG] agent %s has a deltadist toward  %s of %f\n",
-                //       (*itAgnt).c_str(), (it->first).c_str(), it->second);
-
-
-
-                //filter to get a minimal motion
-                double value = 0.0;
-                if (it->second > 0.01)
-                    value = it->second;
-
-                //Fact moving toward
-                fact_msg.property = "IsMovingToward";
-                fact_msg.propertyType = "motion";
-                fact_msg.subProperty = "distance";
-                fact_msg.subjectId = (*itAgnt);
-                fact_msg.targetId = it->first;
-                fact_msg.confidence = value;
-                fact_msg.doubleValue = value;
-                fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
-
-                factList_msg.factList.push_back(fact_msg);
-            }
-
-
-
             // If the agent is moving
             double speed = computeMotion2D(mapTRBEntity_[(*itAgnt)], oneSecond / 4);
 
@@ -1144,6 +1115,8 @@ int main(int argc, char** argv) {
                 fact_msg.doubleValue = speed;
                 fact_msg.confidence = confidence;
                 fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
+                fact_msg.subjectOwnerId = "";
+                fact_msg.targetOwnerId = "";
 
                 factList_msg.factList.push_back(fact_msg);
 
@@ -1154,23 +1127,58 @@ int main(int argc, char** argv) {
                     //printf("[AGENT_MONITOR][DEBUG] %s is moving toward %s with a confidence of %f\n",
                     //        mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
 
-                    //Fact moving toward
-                    fact_msg.property = "IsMovingToward";
-                    fact_msg.propertyType = "motion";
-                    fact_msg.subProperty = "direction";
-                    fact_msg.subjectId = (*itAgnt);
-                    fact_msg.targetId = it->first;
-                    fact_msg.confidence = it->second;
-                    fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
+                    //filter to get a minimal motion
 
-                    factList_msg.factList.push_back(fact_msg);
+                    if (it->second > 0.01) {
+
+                        //Fact moving toward
+                        fact_msg.property = "IsMovingToward";
+                        fact_msg.propertyType = "motion";
+                        fact_msg.subProperty = "direction";
+                        fact_msg.subjectId = (*itAgnt);
+                        fact_msg.targetId = it->first;
+                        fact_msg.confidence = it->second;
+                        fact_msg.doubleValue = it->second;
+                        fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
+                        fact_msg.subjectOwnerId = "";
+                        fact_msg.targetOwnerId = "";
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
                 }
+
+
+                // We compute /_\distance toward entities
+                mapIdValue = computeDeltaDist(mapTRBEntity_, (*itAgnt), oneSecond / 4);
+                for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
+
+
+                    //filter to get a minimal motion
+                    double value = 0.0;
+                    if (it->second > 0.01) {
+                        value = it->second;
+
+                        //Fact moving toward
+                        fact_msg.property = "IsMovingToward";
+                        fact_msg.propertyType = "motion";
+                        fact_msg.subProperty = "distance";
+                        fact_msg.subjectId = (*itAgnt);
+                        fact_msg.targetId = it->first;
+                        fact_msg.confidence = value;
+                        fact_msg.doubleValue = value;
+                        fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
+                        fact_msg.subjectOwnerId = "";
+                        fact_msg.targetOwnerId = "";
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
+                }
+
 
                 // If agent is not moving, we compute his joint motion
                 // TODO: do this in 3D!
             } else {
 
-                std::map<std::string, double> mapIdValue;
                 double dist3D;
                 std::string dist3DString;
 
