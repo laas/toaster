@@ -217,6 +217,7 @@ bool computeJointIsMoving2D(TRBuffer< Entity* > confBuffer, std::string jointNam
     }
 }
 
+
 double computeJointMotion2D(TRBuffer< Entity* > confBuffer, std::string jointName,
         unsigned long timelapse) {
     int index;
@@ -1059,6 +1060,7 @@ int main(int argc, char** argv) {
                 } else if (mapTRBEntity_[it->first].back()->getTime() < it->second->getTime()) {
                     Object* obj = objectRd.lastConfig_[it->first];
                     objectRd.lastConfig_[it->first] = new Object("");
+                    mapTRBEntity_[it->first].push_back(obj->getTime(), obj);
                     //Object* obj = new Object(it->first);
                     //memcpy(obj, objectRd.lastConfig_[it->first], sizeof (Object));
                     //printf("adding object name: reader %s, tmp %s, in buffer: %s\n", objectRd.lastConfig_[it->first]->getName().c_str(), obj->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str());
