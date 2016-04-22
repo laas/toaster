@@ -2349,7 +2349,6 @@ void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> 
     toaster_msgs::RemoveFact srvRm;
 
 
-
     for (unsigned int i = 0; i < newState.size(); i++) {
         srvAdd.request.fact = newState[i];
         add_fact_db(srvAdd.request, srvAdd.response);
@@ -2672,7 +2671,7 @@ int main(int argc, char **argv) {
     //Get topics from params if exist
     bool activate;
     if(node.hasParam("/database/area_manager")){
-       node.getParam("/database/area_manage", activate);
+       node.getParam("/database/area_manager", activate);
        if(activate){
          factsReaders.push_back(readerArea);
        }
