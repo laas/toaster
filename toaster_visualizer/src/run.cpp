@@ -12,13 +12,11 @@
 #include <vector>
 #include "toaster_msgs/Entity.h"
 #include "toaster_msgs/Object.h"
-#include "toaster_msgs/Area.h"
 #include "toaster_msgs/AreaList.h"
 #include "geometry_msgs/Point.h"
 #include "toaster_msgs/ObjectList.h"
-#include "toaster_msgs/Human.h"
 #include "toaster_msgs/HumanList.h"
-#include "toaster_msgs/Robot.h"
+#include "toaster_msgs/FactList.h"
 #include "toaster_msgs/RobotList.h"
 #include "toaster_msgs/Joint.h"
 #include <map>
@@ -35,6 +33,7 @@ class Run {
     visualization_msgs::MarkerArray obj_list;
     visualization_msgs::MarkerArray human_list;
     visualization_msgs::MarkerArray robot_list;
+    visualization_msgs::MarkerArray arrow_list;
 
     //a vector to store allready treated marker's name and an id counter
     std::vector<std::string> name_list;
@@ -42,6 +41,7 @@ class Run {
 
     //a vector to store marker's color
     std::map<std::string, std::vector<float> > color_map;
+    std::map<std::string, double> agentMoving_map;
 
 
     //subscribers
@@ -49,13 +49,14 @@ class Run {
     ros::Subscriber sub_areaList;
     ros::Subscriber sub_humanList;
     ros::Subscriber sub_robotList;
-
+    ros::Subscriber sub_agentFactList;
 
     //publishers
     ros::Publisher pub_obj;
     ros::Publisher pub_area;
     ros::Publisher pub_human;
     ros::Publisher pub_robot;
+    ros::Publisher pub_movingTwrd;
 
     TiXmlDocument listObj;
     TiXmlDocument listMemb;
@@ -77,18 +78,21 @@ public:
         obj_list = visualization_msgs::MarkerArray();
         human_list = visualization_msgs::MarkerArray();
         robot_list = visualization_msgs::MarkerArray();
+        arrow_list = visualization_msgs::MarkerArray();
 
         //definition of subscribers
         sub_objList = reception_node.subscribe("/pdg/objectList", 1000, &Run::chatterCallbackObjList, this);
         sub_areaList = reception_node.subscribe("/area_manager/areaList", 1000, &Run::chatterCallbackAreaList, this);
         sub_humanList = reception_node.subscribe("/pdg/humanList", 1000, &Run::chatterCallbackHumanList, this);
         sub_robotList = reception_node.subscribe("/pdg/robotList", 1000, &Run::chatterCallbackRobotList, this);
+        sub_agentFactList = reception_node.subscribe("/agent_monitor/factList", 1000, &Run::chatterCallbackAgentFactList, this);
 
         //definition of publishers
         pub_obj = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_object", 1000);
         pub_area = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_area", 1000);
         pub_human = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_human", 1000);
         pub_robot = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_robot", 1000);
+        pub_movingTwrd = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_motion", 1000);
 
         // **************************************** definition function of rviz markers ********************************************************
 
@@ -484,6 +488,69 @@ public:
         return marker;
     }
 
+    visualization_msgs::Marker defineArrow(visualization_msgs::Marker& sub, visualization_msgs::Marker& targ, double confidence, bool distance) {
+
+        //declaration
+        visualization_msgs::Marker marker;
+
+        //frame id
+        marker.header.frame_id = "map";
+
+        //namespace
+        std::ostringstream nameSpace;
+        std::string subtype = "distance";
+        if (!distance)
+            subtype = "direction";
+        nameSpace << sub.ns << " MvTwd " << subtype << targ.ns;
+        marker.ns = nameSpace.str();
+        marker.id = id_generator(nameSpace.str()); //creation of an unique id based on marker's name
+
+        //action
+        marker.action = visualization_msgs::Marker::ADD;
+
+        //position
+        geometry_msgs::Point point0;
+        geometry_msgs::Point point1;
+
+        point0.x = sub.pose.position.x;
+        point0.y = sub.pose.position.y;
+        point0.z = sub.pose.position.z;
+
+        point1.x = targ.pose.position.x;
+        point1.y = targ.pose.position.y;
+        point1.z = targ.pose.position.z;
+
+        if (distance) {
+            point0.x += 0.1;
+            point0.y += 0.1;
+            point1.y += 0.1;
+            point1.x += 0.1;
+        }
+
+
+        marker.points.push_back(point0);
+        marker.points.push_back(point1);
+
+        //color
+        if (distance)
+            marker.color.r = confidence;
+        else
+            marker.color.g = confidence;
+        marker.color.a = 1.0;
+
+        //scale
+        marker.scale.x = 0.05;
+        marker.scale.y = 0.2;
+        marker.scale.z = 0.3;
+
+        //type de marker
+        marker.type = visualization_msgs::Marker::ARROW;
+        marker.mesh_use_embedded_materials = true;
+
+        marker.lifetime = ros::Duration(0.1);
+
+        return marker;
+    }
 
 
     // ******************************************************** id generator for markers  ********************************************************
@@ -495,7 +562,7 @@ public:
      */
     int id_generator(std::string name) {
         if (std::find(name_list.begin(), name_list.end(), name) != name_list.end()) {
-            return find(name_list.begin(), name_list.end(), name) - name_list.begin() + 1;
+            return std::find(name_list.begin(), name_list.end(), name) - name_list.begin() + 1;
         } else {
             name_list.push_back(name);
             return id_cpt++;
@@ -562,9 +629,9 @@ public:
      * @return marker 		new marker with input modifications
      */
     visualization_msgs::Marker setSize(visualization_msgs::Marker marker, float x, float y, float z) {
-        marker.scale.x = 1 * x;
-        marker.scale.y = 1 * y;
-        marker.scale.z = 1 * z;
+        marker.scale.x = x;
+        marker.scale.y = y;
+        marker.scale.z = z;
 
         return marker;
     }
@@ -697,10 +764,17 @@ public:
             visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.positionX, msg->robotList[i].meAgent.meEntity.positionY, msg->robotList[i].meAgent.meEntity.positionZ, msg->robotList[i].meAgent.meEntity.orientationRoll, msg->robotList[i].meAgent.meEntity.orientationPitch, msg->robotList[i].meAgent.meEntity.orientationYaw,
                     1.0, msg->robotList[i].meAgent.meEntity.name);
 
+
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
             mn = setSize(mn, 0, 0, 0.5);
-            mn = setColor(mn, 1.0, 0.0, 0.0);
+
+            //If the robot is moving, we intensify its name color
+            std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->robotList[i].meAgent.meEntity.id);
+            if (it != agentMoving_map.end())
+                mn = setColor(mn, 0.4 + it->second * 0.6, 0.0, 0.0);
+            else
+                mn = setColor(mn, 0.2, 0.0, 0.0);
 
 
             robot_list.markers.push_back(mn);
@@ -728,8 +802,13 @@ public:
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
             mn = setSize(mn, 0, 0, 0.5);
-            mn = setColor(mn, 0.0, 1.0, 0.0);
 
+            //If the human is moving, we intensify its color
+            std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->humanList[i].meAgent.meEntity.id);
+            if (it != agentMoving_map.end())
+                mn = setColor(mn, 0.0, 0.4 + it->second * 0.6, 0.0);
+            else
+                mn = setColor(mn, 0.0, 0.2, 0.0);
 
             human_list.markers.push_back(mn);
 
@@ -793,7 +872,7 @@ public:
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
-                            if (name_obj == "base" || name_obj == "rightHand"|| name_obj == "head") {
+                            if (name_obj == "base" || name_obj == "rightHand" || name_obj == "head") {
                                 markerTempo.scale.x = 0.25 * scale;
                                 markerTempo.scale.y = 0.25 * scale;
                                 markerTempo.scale.z = 0.25 * scale;
@@ -824,6 +903,121 @@ public:
         }
     }
 
+    void chatterCallbackAgentFactList(const toaster_msgs::FactList::ConstPtr& msg) {
+        agentMoving_map.clear();
+        arrow_list.markers.clear();
+
+        for (int iFact = 0; iFact < msg->factList.size(); iFact++) {
+            if (msg->factList[iFact].property == "IsMoving")
+                agentMoving_map[msg->factList[iFact].subjectId] = msg->factList[iFact].confidence;
+            else if (msg->factList[iFact].property == "IsMovingToward") {
+
+                bool foundSub = false;
+                bool foundTarg = false;
+                visualization_msgs::Marker sub;
+                visualization_msgs::Marker targ;
+                visualization_msgs::Marker arrow;
+
+                //Let's look for the subject position:
+                for (unsigned int i = 0; i < human_list.markers.size(); i++) {
+                    if (human_list.markers[i].ns.compare(msg->factList[iFact].subjectId) == 0) {
+                        sub = human_list.markers[i];
+                        foundSub = true;
+                        break;
+                    }
+                }
+
+                if (foundSub) {
+                    for (unsigned int i = 0; i < human_list.markers.size(); i++) {
+
+                        if (human_list.markers[i].ns.compare(msg->factList[iFact].targetId) == 0) {
+
+                            targ = human_list.markers[i];
+                            foundTarg = true;
+                            break;
+                        }
+                    }
+
+                    if (!foundTarg) {
+                        for (unsigned int i = 0; i < robot_list.markers.size(); i++) {
+                            if (robot_list.markers[i].ns.compare(msg->factList[iFact].targetId) == 0) {
+                                targ = robot_list.markers[i];
+                                foundTarg = true;
+                                break;
+                            }
+                        }
+                        if (!foundTarg) {
+                            for (unsigned int i = 0; i < obj_list.markers.size(); i++) {
+                                if (obj_list.markers[i].ns.compare(msg->factList[iFact].targetId) == 0) {
+                                    targ = obj_list.markers[i];
+                                    foundTarg = true;
+                                    break;
+                                }
+                            }
+                            if (!foundTarg) {
+                                continue;
+                            }
+                        }
+                    }
+
+
+                } else {
+                    for (unsigned int i = 0; i < robot_list.markers.size(); i++) {
+                        if (robot_list.markers[i].ns.compare(msg->factList[iFact].subjectId) == 0) {
+                            sub = human_list.markers[i];
+                            foundSub = true;
+                            break;
+                        }
+                    }
+
+                    if (foundSub) {
+                        for (unsigned int i = 0; i < human_list.markers.size(); i++) {
+                            if (human_list.markers[i].ns.compare(msg->factList[iFact].targetId) == 0) {
+                                targ = human_list.markers[i];
+                                foundTarg = true;
+                                break;
+                            }
+                        }
+                        if (!foundTarg) {
+                            for (unsigned int i = 0; i < robot_list.markers.size(); i++) {
+                                if (robot_list.markers[i].ns.compare(msg->factList[iFact].targetId) == 0) {
+                                    targ = robot_list.markers[i];
+                                    foundTarg = true;
+                                    break;
+                                }
+                            }
+                            if (!foundTarg) {
+                                for (unsigned int i = 0; i < obj_list.markers.size(); i++) {
+                                    if (obj_list.markers[i].ns.compare(msg->factList[iFact].targetId) == 0) {
+                                        targ = human_list.markers[i];
+                                        foundTarg = true;
+                                        break;
+                                    }
+                                }
+                                if (!foundTarg) {
+                                    continue;
+                                }
+                            }
+                        }
+
+                    }
+
+
+
+                }
+
+
+                // Create arrow
+                if (foundTarg && foundSub) {
+                    arrow = defineArrow(sub, targ, msg->factList[iFact].confidence, msg->factList[iFact].subProperty.compare("distance") == 0);
+                    arrow_list.markers.push_back(arrow);
+                }
+
+
+            }
+        }
+    }
+
     /**
      * Function sending all marker list to rviz
      * @return 			void
@@ -833,6 +1027,7 @@ public:
         pub_obj.publish(obj_list);
         pub_human.publish(human_list);
         pub_robot.publish(robot_list);
+        pub_movingTwrd.publish(arrow_list);
 
         ros::spinOnce();
     }

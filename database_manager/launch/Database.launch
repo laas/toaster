@@ -1,0 +1,5 @@
+<launch>
+	<rosparam command="load" file="$(find database_manager)/params/Database.yaml" />
+
+	<node name="run_server" pkg="database_manager" type="run_server" output="screen"/>  <!-- Launch the toaster database -->
+</launch>

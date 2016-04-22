@@ -44,6 +44,7 @@
 #include "toaster_msgs/GetFactValue.h"
 #include "toaster_msgs/AreInTable.h"
 #include "toaster_msgs/PrintAgent.h"
+#include "toaster_msgs/SetTopics.h"
 
 
 
@@ -57,6 +58,12 @@ std::vector<toaster_msgs::Ontology> myOntologyList;
 
 std::vector<std::string> myStringList;
 std::vector<toaster_msgs::Fact> previousFactsState;
+
+std::vector<ToasterFactReader*> factsReaders;
+ToasterFactReader* readerAgent;
+ToasterFactReader* readerArea;
+ToasterFactReader* readerMove3d;
+ToasterFactReader* readerPdg;
 
 int nb_agents;
 
@@ -2267,8 +2274,51 @@ bool empty_database_for_agent_db(toaster_msgs::EmptyDbAgent::Request &req, toast
 
 
 
+/**
+ * Set the topics the database should read
+ */
+bool set_topics(toaster_msgs::SetTopics::Request &req, toaster_msgs::SetTopics::Response &res) {
+    
+    factsReaders.clear();
+    if(req.areaTopic){
+       factsReaders.push_back(readerArea);
+    }
+    if(req.agentTopic){
+       factsReaders.push_back(readerAgent);
+    }
+    if(req.move3dTopic){
+       factsReaders.push_back(readerMove3d);
+    }
+    if(req.pdgTopic){
+       factsReaders.push_back(readerPdg);
+    }
+    
+}
 
 
+bool isVisibleBy(std::string entity, std::string agent){
+
+   if(entity == agent){
+      return true;
+   }
+
+   toaster_msgs::AreInTable srvAre;
+   std::vector<toaster_msgs::Fact> toTestVector;
+
+   toaster_msgs::Fact toTest;
+   toTest.subjectId = entity;
+   toTest.targetId = agent;
+   toTest.property = "isVisibleBy";
+   
+   srvAre.request.agent = agentList[0];
+   toTestVector.push_back(toTest);
+   srvAre.request.facts = toTestVector;
+   are_in_table_db(srvAre.request, srvAre.response);
+   
+   return srvAre.response.result;
+   
+   
+}
 
 
 
@@ -2277,26 +2327,18 @@ bool empty_database_for_agent_db(toaster_msgs::EmptyDbAgent::Request &req, toast
 // UPDATE WORLD STATE ////////////
 //////////////////////////////////////////////////////////
 
-void update_world_states(ros::NodeHandle& node, std::vector<toaster_msgs::Fact>& factListArea, std::vector<toaster_msgs::Fact>& factListAgtMon) {
+void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> factsReader) {
     /**************************/
     /* World State management */
     /**************************/
 
     //We get the new state
     std::vector<toaster_msgs::Fact> newState;
-    if (factListArea.size() > 0) {
-        ROS_DEBUG("updating Area facts, size %d", factListArea.size());
-        newState.insert(newState.end(), factListArea.begin(), factListArea.end());
+    for(std::vector<ToasterFactReader*>::iterator it = factsReader.begin(); it != factsReader.end(); it++){
+        if ((*it)->lastMsgFact.factList.size() > 0) {
+            newState.insert(newState.end(), (*it)->lastMsgFact.factList.begin(), (*it)->lastMsgFact.factList.end());
+         } 
     }
-    /*if (factListArea.size() > 0) {
-        ROS_INFO("updating PDG facts");
-        newState.insert(newState.end(), factListPdg.begin(), factListPdg.end());
-    }*/
-    if (factListAgtMon.size() > 0) {
-        ROS_DEBUG("updating Area facts, size %d", factListAgtMon.size());
-        newState.insert(newState.end(), factListAgtMon.begin(), factListAgtMon.end());
-    }
-
     //If update, make modification to current db:
     bool removedFact = true;
 
@@ -2305,7 +2347,6 @@ void update_world_states(ros::NodeHandle& node, std::vector<toaster_msgs::Fact>&
     // TODO: don't use a request but internal function!
     toaster_msgs::AddFact srvAdd;
     toaster_msgs::RemoveFact srvRm;
-
 
 
     for (unsigned int i = 0; i < newState.size(); i++) {
@@ -2341,27 +2382,67 @@ void update_world_states(ros::NodeHandle& node, std::vector<toaster_msgs::Fact>&
     previousFactsState = newState;
 }
 
-// This is done in add / remove fact
-/*void conceptual_perspective_taking() {
 
-    ros::ServiceClient GetFactsClient = node.serviceClient<toaster_msgs::GetFacts>("database_get_facts");
-    ros::ServiceClient AddFactToAgentClient = node.serviceClient<toaster_msgs::AddFactToAgent>("database_add_fact_to_agent");
+void conceptual_perspective_taking() {
+
     toaster_msgs::GetFacts srv;
-    toaster_msgs::AddFactToAgent srv2;
+    toaster_msgs::AreInTable srvAre;
+    toaster_msgs::AddFactsToAgent srvAdd;
+    std::vector<toaster_msgs::Fact> toTest, toAdd, toRm;
 
-    GetFactsClient.call(srv);
-
-
-    for (int y = 0; y < srv.response.resFactList.factList.size(); y++) {
-        if (srv.response.resFactList.factList[y].factObservability > 0.0) {
-            srv2.request.fact = srv.response.resFactList.factList[y];
-            srv2.request.agentId = srv.response.resFactList.factList[y].targetId;
-            AddFactToAgentClient.call(srv2);
-
-            srv2 = toaster_msgs::AddFactToAgent();
-        }
+    //we get the main agent facts
+    srv.request.agentId = agentList[0];
+    get_current_facts_from_agent_db(srv.request, srv.response);
+    
+    //for all other agents we add all facts observable and where subject and target are visible.
+    for (int i = 1; i < agentList.size(); i++) {
+       for (int y = 0; y < srv.response.resFactList.factList.size(); y++) {
+           if (srv.response.resFactList.factList[y].factObservability > 0.0) {
+               if(isVisibleBy(srv.response.resFactList.factList[y].subjectId, agentList[i]) && isVisibleBy(srv.response.resFactList.factList[y].targetId, agentList[i])){
+                  //check if the fact is already in the agent table
+                  srvAre.request.agent = agentList[i];
+                  toTest.push_back(srv.response.resFactList.factList[y]);
+                  srvAre.request.facts = toTest;
+                  are_in_table_db(srvAre.request, srvAre.response);
+                  if(!srvAre.response.result){
+                     toAdd.push_back(srv.response.resFactList.factList[y]);
+                  }
+                  toTest.clear();
+               }
+           }
+       }
+       if(toAdd.size() > 0){
+         srvAdd.request.agentId = agentList[i];
+         srvAdd.request.facts = toAdd;
+         add_facts_to_agent_db(srvAdd.request, srvAdd.response);
+         toAdd.clear();
+       }
     }
-}*/
+    
+    //for all other agents we check if the fact in their table are still in the robot table
+    for (int i = 1; i < agentList.size(); i++) {
+      srv.request.agentId = agentList[i];
+      get_current_facts_from_agent_db(srv.request, srv.response);
+      for (int y = 0; y < srv.response.resFactList.factList.size(); y++) {
+         srvAre.request.agent = agentList[0];
+         toTest.push_back(srv.response.resFactList.factList[y]);
+         srvAre.request.facts = toTest;
+         are_in_table_db(srvAre.request, srvAre.response);
+         if(!srvAre.response.result){
+            if(isVisibleBy(srv.response.resFactList.factList[y].subjectId, agentList[i]) && isVisibleBy(srv.response.resFactList.factList[y].targetId, agentList[i])){
+               toRm.push_back(srv.response.resFactList.factList[y]);
+            }
+         }
+         toTest.clear();
+      }
+      if(toRm.size() > 0){
+         srvAdd.request.agentId = agentList[i];
+         srvAdd.request.facts = toRm;
+         remove_facts_to_agent_db(srvAdd.request, srvAdd.response);
+         toRm.clear();
+       }
+    }
+}
 
 //init server
 
@@ -2511,6 +2592,7 @@ int main(int argc, char **argv) {
 
     ros::ServiceServer empty_database_service;
     ros::ServiceServer empty_database_for_agent_service;
+    ros::ServiceServer set_topics_service;
 
     //////////////////////////////////////////////////////////////////////
     //// SERVICES INSTANCIATION  /////
@@ -2567,6 +2649,7 @@ int main(int argc, char **argv) {
     //reset services
     empty_database_service = node.advertiseService("database/empty_database", empty_database_db);
     empty_database_for_agent_service = node.advertiseService("database/empty_database_for_agent", empty_database_for_agent_db);
+    set_topics_service = node.advertiseService("database/set_topics", set_topics);
 
 
     ///////////////////////////////////////////////////////////////
@@ -2575,18 +2658,51 @@ int main(int argc, char **argv) {
 
 
     initServer();
-
-    //ToasterFactReader factRdPdg(node, "pdg/factList");
+    
+    ToasterFactReader factRdAgent(node, "agent_monitor/factList");
     ToasterFactReader factRdArea(node, "area_manager/factList");
-    ToasterFactReader factRdAM(node, "agent_monitor/factList");
+    ToasterFactReader factRdMove3D(node, "move3d_facts/factList");
+    ToasterFactReader factRdPdg(node, "pdg/factList");
+    readerAgent = &factRdAgent;
+    readerArea = &factRdArea;
+    readerMove3d = &factRdMove3D;
+    readerPdg = &factRdPdg;
+
+    //Get topics from params if exist
+    bool activate;
+    if(node.hasParam("/database/area_manager")){
+       node.getParam("/database/area_manager", activate);
+       if(activate){
+         factsReaders.push_back(readerArea);
+       }
+    }
+    if(node.hasParam("/database/agent_monitor")){
+       node.getParam("/database/agent_monitor", activate);
+       if(activate){
+         factsReaders.push_back(readerAgent);
+       }
+    }
+    if(node.hasParam("/database/move3d_facts")){
+       node.getParam("/database/move3d_facts", activate);
+       if(activate){
+         factsReaders.push_back(readerMove3d);
+       }
+    }
+    if(node.hasParam("/database/pdg_facts")){
+       node.getParam("/database/pdg_facts", activate);
+       if(activate){
+         factsReaders.push_back(readerPdg);
+       }
+    }
+
 
     ros::Rate loop_rate(30);
 
     while (ros::ok()) {
         //std::cout << "\n\n\n";
         //db.readDb();
-        update_world_states(node, factRdArea.lastMsgFact.factList, factRdAM.lastMsgFact.factList);
-        //db.conceptual_perspective_taking();
+        update_world_states(node, factsReaders);
+        conceptual_perspective_taking();
         loop_rate.sleep();
         ros::spinOnce();
     }

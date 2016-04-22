@@ -319,6 +319,7 @@ int main(int argc, char** argv) {
     ros::ServiceServer serviceRemove = node.advertiseService("belief_manager/remove_fact", removeFact);
     ROS_INFO("Ready to remove fact.");
 
+
     ros::ServiceServer serviceAddFactToAgent = node.advertiseService("belief_manager/add_fact_to_agent", addFactToAgentService);
     ROS_INFO("Ready to add fact to agent.");
 

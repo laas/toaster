@@ -87,6 +87,7 @@ add_service_files(
   AreInTable.srv
   PrintAgent.srv
   EmptyDbAgent.srv
+  SetTopics.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
