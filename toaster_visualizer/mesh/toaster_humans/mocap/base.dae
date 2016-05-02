@@ -348,7 +348,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0 0 0 1</color>
@@ -380,7 +380,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0 0 0 1</color>
@@ -412,7 +412,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.001606274 0.001606274 0.001606274 1</color>
@@ -444,7 +444,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.001606274 0.001606274 0.001606274 1</color>
@@ -476,7 +476,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0 0 0 1</color>
@@ -508,7 +508,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0 0 0 1</color>
@@ -540,7 +540,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.001606274 0.001606274 0.001606274 1</color>
@@ -572,7 +572,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.001606274 0.001606274 0.001606274 1</color>
@@ -604,7 +604,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.2537914 0.2104219 0.1734776 1</color>
@@ -636,7 +636,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.001606274 0.001606274 0.001606274 1</color>
@@ -668,7 +668,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.001606274 0.001606274 0.001606274 1</color>
@@ -700,7 +700,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.001606274 0.001606274 0.001606274 1</color>
@@ -732,7 +732,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.3003734 0.3019796 0.3019796 1</color>
@@ -764,7 +764,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.05782589 0.05621959 0.05782589 1</color>
@@ -796,7 +796,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.03373177 0.03855059 0.03855059 1</color>
@@ -828,7 +828,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.3774745 0.3774745 0.3774745 1</color>
@@ -860,7 +860,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.001606274 0.001606274 0.001606274 1</color>
@@ -892,7 +892,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1.0</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.001606274 0.001606274 0.001606274 1</color>

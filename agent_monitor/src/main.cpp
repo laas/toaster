@@ -17,6 +17,8 @@
 
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
+#define PI 3.141592
+
 
 std::vector<std::string> agentsMonitored_;
 std::map<std::string, std::vector<std::string> > mapAgentToJointsMonitored_;
@@ -378,6 +380,213 @@ std::map<std::string, double> computeDeltaDist(std::map<std::string, TRBuffer < 
     }
     return deltaDistMap;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+* @brief This function compute the map required by the fact "IsLookingToward" 
+*        by testing if an entity is lying in the 3D cone of agent visual attention
+* @param Entity map containing all entity involved in the joint action & their 
+*        respective ids
+* @param Monitored agent id
+* @param Distance beetween center of basement circle and agent head position
+* @param Angular aperture of the cone in radians
+* @return Map required by the fact "IsLookingToward" containing all entities 
+*         lying in the cone and all normalized angles beetween entities and cone axis         
+*/
+//for convenience
+typedef std::vector<double> Vec_t;
+typedef std::vector<Vec_t> Mat_t;
+typedef std::map<std::string, double> Map_t;
+typedef std::pair<std::string, double> Pair_t;
+
+Vec_t operator*(const Mat_t &a, const Vec_t &x)
+{
+  int i,j;
+  int m = a.size();
+  int n = x.size();
+
+  Vec_t prod(m);
+
+  for(i = 0; i < m; i++){
+    prod[i] = 0.;
+    for(j = 0; j < n; j++)
+      prod[i] += a[i][j]*x[j];
+  }
+  return prod;
+}
+
+Vec_t operator-(const Vec_t &a , const Vec_t &b)
+{
+    int i;
+    int m = a.size();
+    int n = b.size();
+    if (m == n)
+    {
+        Vec_t diff(m);
+        for (int i = 0; i < m; ++i)
+        {
+            diff[i]=a[i]-b[i];
+        }
+        return diff;
+    } else {
+
+    }
+        return (Vec_t)0;
+}
+
+Mat_t matrixfromAngle(const int &angleType , const double &angle)
+{
+    Mat_t mat(3);
+    Vec_t row0;
+    Vec_t row1;
+    Vec_t row2;
+
+    if (angleType==0)
+    {
+        row0.push_back(1.0);
+        row0.push_back(0.0);
+        row0.push_back(0.0);
+        
+        row1.push_back(0.0);
+        row1.push_back(cos(angle));
+        row1.push_back(-sin(angle));
+        
+        row2.push_back(0.0);
+        row2.push_back(sin(angle));
+        row2.push_back(cos(angle));
+        
+    }else{
+        if (angleType==1)
+        {
+            row0.push_back(cos(angle));
+            row0.push_back(0.0);
+            row0.push_back(sin(angle));
+            
+            row1.push_back(0.0);
+            row1.push_back(1.0);
+            row1.push_back(0.0);
+            
+            row2.push_back(-sin(angle));
+            row2.push_back(0.0);
+            row2.push_back(cos(angle));
+        }else{
+            row0.push_back(cos(angle));
+            row0.push_back(-sin(angle));
+            row0.push_back(0.0);
+            
+            row1.push_back(sin(angle));
+            row1.push_back(cos(angle));
+            row1.push_back(0.0);
+            
+            row2.push_back(0.0);
+            row2.push_back(0.0);
+            row2.push_back(1.0);
+        }
+    }
+    mat[0]=row0;
+    mat[1]=row1;
+    mat[2]=row2;
+    return mat;
+}
+
+double magn(const Vec_t &a)
+{
+    int n=a.size();
+    double magn=0;
+    for (int i = 0; i < n; ++i)
+    {
+        magn+=a[i]*a[i];
+    }
+    return sqrt(magn);
+}
+
+double dotProd(const Vec_t &a, const Vec_t &b)
+{
+    int n=a.size();
+    int m=b.size();
+    double dotProd=0;
+    if (n==m)
+    {
+        for (int i = 0; i < m; ++i)
+        {
+            dotProd+=a[i]*b[i];
+        }
+    }
+    return dotProd;
+}
+
+std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuffer < Entity* > > mapEnts,
+    std::string agentMonitored, double deltaDist, double angularAperture)
+    {
+        Map_t returnMap;
+        Pair_t pair;
+        Entity * currentEntity;
+        Entity * monitoredAgent;
+        float halfAperture=angularAperture/2.f;
+        Vec_t agentHeadPosition(3);
+        Vec_t agentHeadOrientation(3);
+        Vec_t entityPosition(3);
+        Vec_t agentToEntity(3);
+        Vec_t coneAxis(3);
+        Vec_t coneBase(3);
+        float entitytoAxisAngle;
+        Mat_t rotX(3);
+        Mat_t rotY(3);
+        Mat_t rotZ(3);
+        bool isInInfiniteCone=false;
+        double angle;
+
+        //Get the monitored agent head entity
+        monitoredAgent = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head"];
+        //Get 3d position from agent head
+        agentHeadPosition[0]=bg::get<0>(monitoredAgent->getPosition());
+        agentHeadPosition[1]=bg::get<1>(monitoredAgent->getPosition());
+        agentHeadPosition[2]=bg::get<2>(monitoredAgent->getPosition());
+        //Get 3d orientation (roll pitch yaw) from agent head
+        agentHeadOrientation=(Vec_t)monitoredAgent->getOrientation();        
+        //Compute rotation matricies from agent head orientation
+        rotX=matrixfromAngle(0,agentHeadOrientation[0]);
+        rotY=matrixfromAngle(1,agentHeadOrientation[1]);
+        rotZ=matrixfromAngle(2,agentHeadOrientation[2]);
+
+        for (std::map<std::string, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) 
+        {
+            if (it->first != agentMonitored)
+            {
+                
+                //Get the current entity
+                currentEntity = it->second.back();
+                //Get the postion from current entity
+                entityPosition[0]=bg::get<0>(currentEntity->getPosition());
+                entityPosition[1]=bg::get<1>(currentEntity->getPosition());
+                entityPosition[2]=bg::get<2>(currentEntity->getPosition());
+                //Compute cone base coordinates
+                coneBase[0]=agentHeadPosition[0]+deltaDist;
+                coneBase[1]=agentHeadPosition[1];
+                coneBase[2]=agentHeadPosition[2];
+                //Apply rotation matrix from agent head orientation to cone base
+                //coneBase=rotX*coneBase;
+                coneBase=rotY*coneBase;
+                coneBase=rotZ*coneBase;
+                //Compute the 3d vector from agent head to current entity
+                agentToEntity=agentHeadPosition-entityPosition;                
+                //Compute cone axis
+                coneAxis=agentHeadPosition-coneBase;
+                
+                angle=(dotProd(agentToEntity,coneAxis)/magn(agentToEntity)/magn(coneAxis));
+                if(angle>cos(halfAperture))
+                {
+                    if(dotProd(agentToEntity,coneAxis)/magn(coneAxis)<magn(coneAxis))
+                    {
+                        returnMap.insert(std::pair<std::string,double>(currentEntity->getId(),angle));
+                    }
+                }
+            }
+        }
+        return returnMap;
+    }
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::map<std::string, double> computeJointDeltaDist(std::map<std::string, TRBuffer < Entity* > > mapEnts,
         std::string agentMonitored, std::string jointName, unsigned long timelapse) {
@@ -1096,6 +1305,26 @@ int main(int argc, char** argv) {
 
             double angleDirection = 0.0;
             std::map<std::string, double> mapIdValue;
+            double radAngle=(PI*30.0)/180.0;
+            mapIdValue = computeIsLookingToward(mapTRBEntity_,(*itAgnt),2,radAngle);
+            for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it)
+            {
+                ROS_INFO("%s is looking toward %s",(*itAgnt).c_str(),it->first.c_str());
+                fact_msg.property = "IsLookingToward";
+                fact_msg.propertyType = "attention";
+                fact_msg.subProperty = "agent";
+                fact_msg.stringValue = "";
+                fact_msg.subjectId = (*itAgnt);
+                fact_msg.targetId = it->first;
+                fact_msg.confidence = (radAngle - it->second) / radAngle;
+                fact_msg.doubleValue = it->second;
+                fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
+                fact_msg.subjectOwnerId = "";
+                fact_msg.targetOwnerId = "";
+
+                factList_msg.factList.push_back(fact_msg);
+            }
+
             // If the agent is moving
             double speed = computeMotion2D(mapTRBEntity_[(*itAgnt)], oneSecond / 4);
 
