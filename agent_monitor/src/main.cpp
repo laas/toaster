@@ -17,7 +17,7 @@
 
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
-#define PI 3.141592
+#define PI 3.14159265
 
 
 std::vector<std::string> agentsMonitored_;
@@ -564,18 +564,19 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
                 coneBase[0]=agentHeadPosition[0]+deltaDist;
                 coneBase[1]=agentHeadPosition[1];
                 coneBase[2]=agentHeadPosition[2];
-                //Apply rotation matrix from agent head orientation to cone base
-                //coneBase=rotX*coneBase;
-                coneBase=rotY*coneBase;
-                coneBase=rotZ*coneBase;
-                //Compute the 3d vector from agent head to current entity
-                agentToEntity=agentHeadPosition-entityPosition;                
                 //Compute cone axis
                 coneAxis=agentHeadPosition-coneBase;
-                
+                //Apply rotation matrix from agent head orientation to cone base
+                coneAxis=rotY*coneAxis;
+                coneAxis=rotZ*coneAxis;
+                //Compute the 3d vector from agent head to current entity
+                agentToEntity=agentHeadPosition-entityPosition;                
+                //Compute angle
                 angle=(dotProd(agentToEntity,coneAxis)/magn(agentToEntity)/magn(coneAxis));
+                //Test
                 if(angle>cos(halfAperture))
                 {
+
                     if(dotProd(agentToEntity,coneAxis)/magn(coneAxis)<magn(coneAxis))
                     {
                         returnMap.insert(std::pair<std::string,double>(currentEntity->getId(),angle));
