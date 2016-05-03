@@ -553,9 +553,13 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
         {
             if (it->first != agentMonitored)
             {
-                
                 //Get the current entity
-                currentEntity = it->second.back();
+		if(it->first =="pr2")
+		{
+		 currentEntity = ((Agent*)it->second.back())->skeleton_["head_tilt_link"]; 
+		}else{
+		 currentEntity =it->second.back();
+		}
                 //Get the postion from current entity
                 entityPosition[0]=bg::get<0>(currentEntity->getPosition());
                 entityPosition[1]=bg::get<1>(currentEntity->getPosition());
@@ -574,6 +578,7 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
                 //Compute angle
                 angle=(dotProd(agentToEntity,coneAxis)/magn(agentToEntity)/magn(coneAxis));
                 //Test
+		ROS_INFO("%f > %f",angle,cos(halfAperture));
                 if(angle>cos(halfAperture))
                 {
 
@@ -1306,7 +1311,7 @@ int main(int argc, char** argv) {
 
             double angleDirection = 0.0;
             std::map<std::string, double> mapIdValue;
-            double radAngle=(PI*30.0)/180.0;
+            double radAngle=(PI*60.0)/180.0;
             mapIdValue = computeIsLookingToward(mapTRBEntity_,(*itAgnt),2,radAngle);
             for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it)
             {
