@@ -1749,11 +1749,7 @@ void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> 
       for (int j = 0; j < previousFactsState.size(); ++j) {
             if ((previousFactsState[j].subjectId == newState[i].subjectId)
                     && (previousFactsState[j].property == newState[i].property)
-                    && (previousFactsState[j].propertyType == newState[i].propertyType)
-                    && (previousFactsState[j].subProperty == newState[i].subProperty)
-                    && (previousFactsState[j].subjectOwnerId == newState[i].subjectOwnerId)
-                    && (previousFactsState[j].targetId == newState[i].targetId)
-                    && (previousFactsState[j].targetOwnerId == newState[i].targetOwnerId)) {
+                    && (previousFactsState[j].targetId == newState[i].targetId)) {
                 find = true;
                 break;
             } else
@@ -1775,11 +1771,7 @@ void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> 
         for (int i = 0; i < newState.size(); ++i) {
             if ((previousFactsState[j].subjectId == newState[i].subjectId)
                     && (previousFactsState[j].property == newState[i].property)
-                    && (previousFactsState[j].propertyType == newState[i].propertyType)
-                    && (previousFactsState[j].subProperty == newState[i].subProperty)
-                    && (previousFactsState[j].subjectOwnerId == newState[i].subjectOwnerId)
-                    && (previousFactsState[j].targetId == newState[i].targetId)
-                    && (previousFactsState[j].targetOwnerId == newState[i].targetOwnerId)) {
+                    && (previousFactsState[j].targetId == newState[i].targetId)) {
                 removedFact = false;
                 break;
             } else
