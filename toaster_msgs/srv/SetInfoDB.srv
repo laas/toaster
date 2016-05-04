@@ -1,0 +1,11 @@
+bool add
+string infoType
+string agentId
+toaster_msgs/Fact[] facts
+toaster_msgs/Event event
+string id
+string name
+string type
+string ownerId
+---
+bool answer

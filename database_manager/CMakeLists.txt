@@ -18,12 +18,6 @@ catkin_package(
 include_directories(include ${catkin_INCLUDE_DIRS}  ${TinyXML_INCLUDE_DIRS}  $ENV{TOASTERLIB_DIR}/include)
 
 
-
-add_executable(client src/client.cpp)
-target_link_libraries(client ${catkin_LIBRARIES})
-add_dependencies(client database_manager)
-
-
 add_executable(run_server src/run_server.cpp)
 target_link_libraries(run_server ${catkin_LIBRARIES} ${TinyXML_LIBRARIES} libsqlite3.so $ENV{TOASTERLIB_DIR}/lib/libtoaster.so)
 add_dependencies(run_server database_manager)

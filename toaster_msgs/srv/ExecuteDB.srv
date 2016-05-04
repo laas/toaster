@@ -1,0 +1,12 @@
+string command
+string type
+toaster_msgs/Fact[] facts
+string agent
+string order
+bool areaTopic
+bool agentTopic
+bool move3dTopic
+bool pdgTopic
+---
+bool boolAnswer
+string[] results

@@ -1,14 +1,14 @@
 <agents_list>
 	
-	<agent id="pr2"  	name="'pr2'"  	type="'robot'" owner_id="' '" />
-	<agent id="jean"  	name="'jean'"  	type="'human'" owner_id="' '" />
-	<agent id="andre"  	name="'andre'"  type="'human'" owner_id="' '" />
-	<agent id="michel"  	name="'michel'" type="'human'" owner_id="' '" />
-	<agent id="paul"  	name="'paul'"  	type="'human'" owner_id="' '" />
+	<agent id="PR2_ROBOT"  	name="'PR2_ROBOT'"  	type="'robot'" owner_id="' '" />
+	<agent id="HERAKLES_HUMAN1"  	name="'HERAKLES_HUMAN1'"  	type="'human'" owner_id="' '" />
+	<agent id="HERAKLES_HUMAN2"  	name="'HERAKLES_HUMAN2'"  	type="'human'" owner_id="' '" />
 
-	<agent id="mug"  	name="'mug'"  	type="'object'" owner_id="' '" />
-	<agent id="cube"  	name="'cube'"  	type="'object'" owner_id="' '" />
-	<agent id="table"  	name="'table'"  type="'object'" owner_id="' '" />
-	<agent id="ps3"  	name="'ps3'"  	type="'object'" owner_id="' '" />
+	<agent id="RED_CUBE"  	name="'RED_CUBE'"  	type="'Object'" owner_id="' '" />
+	<agent id="GREEN_CUBE"  	name="'GREEN_CUBE'"  	type="'Object'" owner_id="' '" />
+	<agent id="BLUE_CUBE"  	name="'BLUE_CUBE'"  	type="'Object'" owner_id="' '" />
+	<agent id="BLACK_CUBE"  	name="'BLACK_CUBE'"  	type="'Object'" owner_id="' '" />
+	<agent id="TABLE_4"  	name="'TABLE_4'"  	type="'Object'" owner_id="' '" />
+	<agent id="PLACEMAT_RED"  	name="'PLACEMAT_RED'"  	type="'Object'" owner_id="' '" />
 
 </agents_list>

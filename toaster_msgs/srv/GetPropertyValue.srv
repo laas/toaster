@@ -1,4 +1,0 @@
-uint32 id
----
-bool boolAnswer
-toaster_msgs/Property resProperty
