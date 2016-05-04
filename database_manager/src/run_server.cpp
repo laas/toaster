@@ -1358,11 +1358,11 @@ bool get_info_db(toaster_msgs::GetInfoDB::Request &req, toaster_msgs::GetInfoDB:
          std::pair<bool, toaster_msgs::FactList> answer = get_fact_value_from_agent_db(req.agentId, req.reqFact);
          res.boolAnswer = answer.first;
          res.resFactList = answer.second;
-      }else if(req.subType == "OLD"){
+      }else if(req.subType == "CURRENT"){
          std::pair<bool, toaster_msgs::FactList> answer = get_current_facts_from_agent_db(req.agentId);
          res.boolAnswer = answer.first;
          res.resFactList = answer.second;
-      }else if(req.subType == "CURRENT"){
+      }else if(req.subType == "OLD"){
          std::pair<bool, toaster_msgs::FactList> answer = get_passed_facts_from_agent_db(req.agentId);
          res.boolAnswer = answer.first;
          res.resFactList = answer.second;
