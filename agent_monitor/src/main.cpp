@@ -217,6 +217,7 @@ bool computeJointIsMoving2D(TRBuffer< Entity* > confBuffer, std::string jointNam
     }
 }
 
+
 double computeJointMotion2D(TRBuffer< Entity* > confBuffer, std::string jointName,
         unsigned long timelapse) {
     int index;
