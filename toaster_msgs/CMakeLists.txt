@@ -44,50 +44,32 @@ add_service_files(
   FILES
   AddAgent.srv
   AddEntity.srv
-  AddFact.srv
   AddJointToAgent.srv
   MonitorAll.srv
   Empty.srv
-  RemoveFact.srv 
   RemoveAllJointsToAgent.srv
   AddArea.srv
-  AddFactToAgent.srv 
-  AddFactsToAgent.srv 
   GetRelativePosition.srv
   GetMultiRelativePosition.srv
   PrintArea.srv
   RemoveAgent.srv
   RemoveArea.srv
-  RemoveFactToAgent.srv
   RemoveJointToAgent.srv
   AddStream.srv
   PointingTime.srv
   Pointing.srv
-  GetFactValue.srv
-  GetFacts.srv
   PutInHand.srv
   RemoveFromHand.srv
   SetEntityPose.srv
-
- GetProperties.srv
-  GetPropertyValue.srv
-  ExecuteSQL.srv
-  GetPassedFacts.srv
-  GetCurrentFacts.srv
-  GetAgents.srv
-  GetId.srv
-  GetIdValue.srv
-  GetEvents.srv
-  GetEventValue.srv
-  AddEvent.srv
-  GetOntologies.srv
-  GetOntologyValues.srv
-  GetOntologyLeaves.srv
-  AddEntity.srv
-  AreInTable.srv
-  PrintAgent.srv
-  EmptyDbAgent.srv
-  SetTopics.srv
+  GetInfoDB.srv
+  SetInfoDB.srv
+  ExecuteDB.srv
+  AddFact.srv
+  AddFactToAgent.srv
+  RemoveFact.srv
+  RemoveFactToAgent.srv
+  GetFactValue.srv
+  GetFacts.srv
 )
 
 ## Generate added messages and services with any dependencies listed here

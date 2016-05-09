@@ -20,3 +20,5 @@
 *.out
 *.app
 /AGENT_MONITOR/build/
+
+*~

@@ -1,4 +1,0 @@
-toaster_msgs/Event reqEvent
----
-bool boolAnswer
-toaster_msgs/Event resEvent
