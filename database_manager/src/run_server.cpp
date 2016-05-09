@@ -1747,9 +1747,15 @@ void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> 
     bool find = false;
     for (int i = 0; i < newState.size(); ++i) {
       for (int j = 0; j < previousFactsState.size(); ++j) {
-            if ((previousFactsState[j].subjectId == newState[i].subjectId)
-                    && (previousFactsState[j].property == newState[i].property)
-                    && (previousFactsState[j].targetId == newState[i].targetId)) {
+            if ((previousFactsState[j].subjectId.compare(newState[i].subjectId) == 0)
+                    && (previousFactsState[j].property.compare(newState[i].property) == 0)
+                    && (previousFactsState[j].propertyType.compare(newState[i].propertyType) == 0)
+                    && (previousFactsState[j].subProperty.compare(newState[i].subProperty) == 0)
+                    && (previousFactsState[j].subjectOwnerId.compare(newState[i].subjectOwnerId) == 0)
+                    && (previousFactsState[j].targetId.compare(newState[i].targetId) == 0)
+                    && (previousFactsState[j].targetOwnerId.compare(newState[i].targetOwnerId) == 0)
+                    && (previousFactsState[j].targetId.compare(newState[i].targetId) == 0)) {
+                    
                 find = true;
                 break;
             } else
@@ -1769,9 +1775,14 @@ void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> 
     bool removedFact = true;
     for (int j = 0; j < previousFactsState.size(); ++j) {
         for (int i = 0; i < newState.size(); ++i) {
-            if ((previousFactsState[j].subjectId == newState[i].subjectId)
-                    && (previousFactsState[j].property == newState[i].property)
-                    && (previousFactsState[j].targetId == newState[i].targetId)) {
+            if ((previousFactsState[j].subjectId.compare(newState[i].subjectId) == 0)
+                    && (previousFactsState[j].property.compare(newState[i].property) == 0)
+                    && (previousFactsState[j].propertyType.compare(newState[i].propertyType) == 0)
+                    && (previousFactsState[j].subProperty.compare(newState[i].subProperty) == 0)
+                    && (previousFactsState[j].subjectOwnerId.compare(newState[i].subjectOwnerId) == 0)
+                    && (previousFactsState[j].targetId.compare(newState[i].targetId) == 0)
+                    && (previousFactsState[j].targetOwnerId.compare(newState[i].targetOwnerId) == 0)
+                    && (previousFactsState[j].targetId.compare(newState[i].targetId) == 0)) {
                 removedFact = false;
                 break;
             } else
