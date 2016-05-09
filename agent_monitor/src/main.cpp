@@ -584,7 +584,7 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
 
                     if(dotProd(agentToEntity,coneAxis)/magn(coneAxis)<magn(coneAxis))
                     {
-                        returnMap.insert(std::pair<std::string,double>(currentEntity->getId(),angle));
+                        returnMap.insert(std::pair<std::string,double>(it->first,angle));
                     }
                 }
             }
