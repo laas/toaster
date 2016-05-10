@@ -578,7 +578,7 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
                 //Compute angle
                 angle=(dotProd(agentToEntity,coneAxis)/magn(agentToEntity)/magn(coneAxis));
                 //Test
-		ROS_INFO("%f > %f",angle,cos(halfAperture));
+		        //ROS_INFO("%f > %f",angle,cos(halfAperture));
                 if(angle>cos(halfAperture))
                 {
 
