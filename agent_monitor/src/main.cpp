@@ -17,7 +17,6 @@
 
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
-#define PI 3.14159265
 
 
 std::vector<std::string> agentsMonitored_;
@@ -394,128 +393,6 @@ std::map<std::string, double> computeDeltaDist(std::map<std::string, TRBuffer < 
 * @return Map required by the fact "IsLookingToward" containing all entities 
 *         lying in the cone and all normalized angles beetween entities and cone axis         
 */
-//for convenience
-typedef std::vector<double> Vec_t;
-typedef std::vector<Vec_t> Mat_t;
-typedef std::map<std::string, double> Map_t;
-typedef std::pair<std::string, double> Pair_t;
-
-Vec_t operator*(const Mat_t &a, const Vec_t &x)
-{
-  int i,j;
-  int m = a.size();
-  int n = x.size();
-
-  Vec_t prod(m);
-
-  for(i = 0; i < m; i++){
-    prod[i] = 0.;
-    for(j = 0; j < n; j++)
-      prod[i] += a[i][j]*x[j];
-  }
-  return prod;
-}
-
-Vec_t operator-(const Vec_t &a , const Vec_t &b)
-{
-    int i;
-    int m = a.size();
-    int n = b.size();
-    if (m == n)
-    {
-        Vec_t diff(m);
-        for (int i = 0; i < m; ++i)
-        {
-            diff[i]=a[i]-b[i];
-        }
-        return diff;
-    } else {
-
-    }
-        return (Vec_t)0;
-}
-
-Mat_t matrixfromAngle(const int &angleType , const double &angle)
-{
-    Mat_t mat(3);
-    Vec_t row0;
-    Vec_t row1;
-    Vec_t row2;
-
-    if (angleType==0)
-    {
-        row0.push_back(1.0);
-        row0.push_back(0.0);
-        row0.push_back(0.0);
-        
-        row1.push_back(0.0);
-        row1.push_back(cos(angle));
-        row1.push_back(-sin(angle));
-        
-        row2.push_back(0.0);
-        row2.push_back(sin(angle));
-        row2.push_back(cos(angle));
-        
-    }else{
-        if (angleType==1)
-        {
-            row0.push_back(cos(angle));
-            row0.push_back(0.0);
-            row0.push_back(sin(angle));
-            
-            row1.push_back(0.0);
-            row1.push_back(1.0);
-            row1.push_back(0.0);
-            
-            row2.push_back(-sin(angle));
-            row2.push_back(0.0);
-            row2.push_back(cos(angle));
-        }else{
-            row0.push_back(cos(angle));
-            row0.push_back(-sin(angle));
-            row0.push_back(0.0);
-            
-            row1.push_back(sin(angle));
-            row1.push_back(cos(angle));
-            row1.push_back(0.0);
-            
-            row2.push_back(0.0);
-            row2.push_back(0.0);
-            row2.push_back(1.0);
-        }
-    }
-    mat[0]=row0;
-    mat[1]=row1;
-    mat[2]=row2;
-    return mat;
-}
-
-double magn(const Vec_t &a)
-{
-    int n=a.size();
-    double magn=0;
-    for (int i = 0; i < n; ++i)
-    {
-        magn+=a[i]*a[i];
-    }
-    return sqrt(magn);
-}
-
-double dotProd(const Vec_t &a, const Vec_t &b)
-{
-    int n=a.size();
-    int m=b.size();
-    double dotProd=0;
-    if (n==m)
-    {
-        for (int i = 0; i < m; ++i)
-        {
-            dotProd+=a[i]*b[i];
-        }
-    }
-    return dotProd;
-}
-
 std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuffer < Entity* > > mapEnts,
     std::string agentMonitored, double deltaDist, double angularAperture)
     {
@@ -570,20 +447,20 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
                 coneBase[1]=agentHeadPosition[1];
                 coneBase[2]=agentHeadPosition[2];
                 //Compute cone axis
-                coneAxis=agentHeadPosition-coneBase;
+                coneAxis=MathFunctions::operator-(agentHeadPosition,coneBase);
                 //Apply rotation matrix from agent head orientation to cone base
-                coneAxis=rotY*coneAxis;
-                coneAxis=rotZ*coneAxis;
+                coneAxis=MathFunctions::operator*(rotY,coneAxis);
+                coneAxis=MathFunctions::operator*(rotZ,coneAxis);
                 //Compute the 3d vector from agent head to current entity
-                agentToEntity=agentHeadPosition-entityPosition;                
+                agentToEntity=MathFunctions::operator-(agentHeadPosition,entityPosition);                
                 //Compute angle
-                angle=(dotProd(agentToEntity,coneAxis)/magn(agentToEntity)/magn(coneAxis));
+                angle=(MathFunctions::dotProd(agentToEntity,coneAxis)/MathFunctions::magn(agentToEntity)/MathFunctions::magn(coneAxis));
                 //Test
 		        //ROS_INFO("%f > %f",angle,cos(halfAperture));
                 if(angle>cos(halfAperture))
                 {
 
-                    if(dotProd(agentToEntity,coneAxis)/magn(coneAxis)<magn(coneAxis))
+                    if(MathFunctions::dotProd(agentToEntity,coneAxis)/MathFunctions::magn(coneAxis)<MathFunctions::magn(coneAxis))
                     {
                         returnMap.insert(std::pair<std::string,double>(it->first,angle));
                     }
