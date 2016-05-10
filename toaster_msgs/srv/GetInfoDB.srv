@@ -1,0 +1,16 @@
+string type
+string subType
+string agentId
+toaster_msgs/Fact reqFact
+toaster_msgs/Event reqEvent
+uint32 id
+string idString
+string name
+string entityClass
+---
+bool boolAnswer
+toaster_msgs/FactList resFactList
+toaster_msgs/Property[] resProperties
+toaster_msgs/Event[] resEventList
+toaster_msgs/Id[] resId
+toaster_msgs/Ontology[] resOntology

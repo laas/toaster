@@ -1,4 +1,0 @@
-toaster_msgs/Fact[] facts
-string agent
----
-bool result

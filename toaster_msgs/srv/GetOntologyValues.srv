@@ -1,4 +1,0 @@
-string entityClass
----
-bool boolAnswer
-toaster_msgs/Ontology[] resOntology

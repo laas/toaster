@@ -547,7 +547,7 @@ public:
         marker.type = visualization_msgs::Marker::ARROW;
         marker.mesh_use_embedded_materials = true;
 
-        marker.lifetime = ros::Duration(0.1);
+        marker.lifetime = ros::Duration(0.01);
 
         return marker;
     }

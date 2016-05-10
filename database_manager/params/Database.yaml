@@ -4,3 +4,4 @@ database:
    agent_monitor: true
    move3d_facts: true
    pdg_facts: true
+   mainAgent: 'PR2_ROBOT'
