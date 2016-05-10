@@ -1310,7 +1310,7 @@ int main(int argc, char** argv) {
             mapIdValue = computeIsLookingToward(mapTRBEntity_,(*itAgnt),2,radAngle);
             for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it)
             {
-                ROS_INFO("%s is looking toward %s",(*itAgnt).c_str(),it->first.c_str());
+                //ROS_INFO("%s is looking toward %s",(*itAgnt).c_str(),it->first.c_str());
                 fact_msg.property = "IsLookingToward";
                 fact_msg.propertyType = "attention";
                 fact_msg.subProperty = "agent";
