@@ -423,9 +423,9 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
         //Get 3d orientation (roll pitch yaw) from agent head
         agentHeadOrientation=(Vec_t)monitoredAgent->getOrientation();        
         //Compute rotation matricies from agent head orientation
-        rotX=matrixfromAngle(0,agentHeadOrientation[0]);
-        rotY=matrixfromAngle(1,agentHeadOrientation[1]);
-        rotZ=matrixfromAngle(2,agentHeadOrientation[2]);
+        rotX=MathFunctions::matrixfromAngle(0,agentHeadOrientation[0]);
+        rotY=MathFunctions::matrixfromAngle(1,agentHeadOrientation[1]);
+        rotZ=MathFunctions::matrixfromAngle(2,agentHeadOrientation[2]);
 
         for (std::map<std::string, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) 
         {
@@ -447,12 +447,12 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
                 coneBase[1]=agentHeadPosition[1];
                 coneBase[2]=agentHeadPosition[2];
                 //Compute cone axis
-                coneAxis=MathFunctions::operator-(agentHeadPosition,coneBase);
+                coneAxis=MathFunctions::diffVec(agentHeadPosition,coneBase);
                 //Apply rotation matrix from agent head orientation to cone base
-                coneAxis=MathFunctions::operator*(rotY,coneAxis);
-                coneAxis=MathFunctions::operator*(rotZ,coneAxis);
+                coneAxis=MathFunctions::multiplyMatVec(rotY,coneAxis);
+                coneAxis=MathFunctions::multiplyMatVec(rotZ,coneAxis);
                 //Compute the 3d vector from agent head to current entity
-                agentToEntity=MathFunctions::operator-(agentHeadPosition,entityPosition);                
+                agentToEntity=MathFunctions::diffVec(agentHeadPosition,entityPosition);                
                 //Compute angle
                 angle=(MathFunctions::dotProd(agentToEntity,coneAxis)/MathFunctions::magn(agentToEntity)/MathFunctions::magn(coneAxis));
                 //Test
