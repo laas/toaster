@@ -907,7 +907,7 @@ std::pair<bool, toaster_msgs::FactList> get_all_facts_planning_db() {
         }
         res.first = true;
     } else {
-        res.first = false;
+        res.first = true;
     }
 
     myFactList = std::vector<toaster_msgs::Fact>(); //empty myFactList
@@ -2079,7 +2079,7 @@ void initServer() {
     }
     
     //PLANNING TABLE CREATION
-    sql = (std::string)"CREATE TABLE planning_table" +
+    sql = (std::string)"CREATE TABLE planning_table(" +
                         "subject_id 				 	unsigned long," +
                         "predicate         	            string," +
                         "propertyType                          string," +
