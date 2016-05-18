@@ -415,7 +415,12 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
         double angle;
 
         //Get the monitored agent head entity
-        monitoredAgent = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head"];
+        if(agentMonitored=="pr2")
+        {
+            monitoredAgent = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head_tilt_link"];
+        } else {
+            monitoredAgent = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head"];
+        }
         //Get 3d position from agent head
         agentHeadPosition[0]=bg::get<0>(monitoredAgent->getPosition());
         agentHeadPosition[1]=bg::get<1>(monitoredAgent->getPosition());
@@ -432,12 +437,17 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
             if (it->first != agentMonitored)
             {
                 //Get the current entity
-		if(it->first =="pr2")
-		{
-		 currentEntity = ((Agent*)it->second.back())->skeleton_["head_tilt_link"]; 
-		}else{
-		 currentEntity =it->second.back();
-		}
+        		if(it->first =="pr2")
+        		{
+                  //robots
+        		  currentEntity = ((Agent*)it->second.back())->skeleton_["head_tilt_link"]; 
+        		}else if (it->first == "HERAKLES_HUMAN1" || it->first == "HERAKLES_HUMAN2"){
+                  //humans
+        		  currentEntity = ((Agent*)it->second.back())->skeleton_["head"];
+        		} else {
+                  //objects
+                  currentEntity = it->second.back();
+                }
                 //Get the postion from current entity
                 entityPosition[0]=bg::get<0>(currentEntity->getPosition());
                 entityPosition[1]=bg::get<1>(currentEntity->getPosition());
