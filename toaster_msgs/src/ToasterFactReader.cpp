@@ -15,5 +15,7 @@ ToasterFactReader::ToasterFactReader(ros::NodeHandle& node, std::string subTopic
 }
 
 void ToasterFactReader::factCallBack(const toaster_msgs::FactList::ConstPtr& msg) {
+   
     lastMsgFact.factList = msg->factList;
+   
 }
