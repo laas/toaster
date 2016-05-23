@@ -399,7 +399,7 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
         Map_t returnMap;
         Pair_t pair;
         Entity * currentEntity;
-        Entity * monitoredAgent;
+        Entity * monitoredAgentHead;
         float halfAperture=angularAperture/2.f;
         Vec_t agentHeadPosition(3);
         Vec_t agentHeadOrientation(3);
@@ -417,16 +417,16 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
         //Get the monitored agent head entity
         if(agentMonitored=="pr2")
         {
-            monitoredAgent = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head_tilt_link"];
+            monitoredAgentHead = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head_tilt_link"];
         } else {
-            monitoredAgent = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head"];
+            monitoredAgentHead = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head"];
         }
         //Get 3d position from agent head
-        agentHeadPosition[0]=bg::get<0>(monitoredAgent->getPosition());
-        agentHeadPosition[1]=bg::get<1>(monitoredAgent->getPosition());
-        agentHeadPosition[2]=bg::get<2>(monitoredAgent->getPosition());
+        agentHeadPosition[0]=bg::get<0>(monitoredAgentHead->getPosition());
+        agentHeadPosition[1]=bg::get<1>(monitoredAgentHead->getPosition());
+        agentHeadPosition[2]=bg::get<2>(monitoredAgentHead->getPosition());
         //Get 3d orientation (roll pitch yaw) from agent head
-        agentHeadOrientation=(Vec_t)monitoredAgent->getOrientation();        
+        agentHeadOrientation=(Vec_t)monitoredAgentHead->getOrientation();        
         //Compute rotation matricies from agent head orientation
         rotX=MathFunctions::matrixfromAngle(0,agentHeadOrientation[0]);
         rotY=MathFunctions::matrixfromAngle(1,agentHeadOrientation[1]);
