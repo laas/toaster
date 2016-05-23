@@ -218,7 +218,6 @@ bool computeJointIsMoving2D(TRBuffer< Entity* > confBuffer, std::string jointNam
     }
 }
 
-
 double computeJointMotion2D(TRBuffer< Entity* > confBuffer, std::string jointName,
         unsigned long timelapse) {
     int index;
@@ -382,20 +381,20 @@ std::map<std::string, double> computeDeltaDist(std::map<std::string, TRBuffer < 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 /**
-* @brief This function compute the map required by the fact "IsLookingToward" 
-*        by testing if an entity is lying in the 3D cone of agent visual attention
-* @param Entity map containing all entity involved in the joint action & their 
-*        respective ids
-* @param Monitored agent id
-* @param Distance beetween center of basement circle and agent head position
-* @param Angular aperture of the cone in radians
-* @return Map required by the fact "IsLookingToward" containing all entities 
-*         lying in the cone and all normalized angles beetween entities and cone axis         
-*/
-std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuffer < Entity* > > mapEnts,
-    std::string agentMonitored, double deltaDist, double angularAperture)
-    {
+ * @brief This function compute the map required by the fact "IsLookingToward" 
+ *        by testing if an entity is lying in the 3D cone of agent visual attention
+ * @param Entity map containing all entity involved in the joint action & their 
+ *        respective ids
+ * @param Monitored agent id
+ * @param Distance beetween center of basement circle and agent head position
+ * @param Angular aperture of the cone in radians
+ * @return Map required by the fact "IsLookingToward" containing all entities 
+ *         lying in the cone and all normalized angles beetween entities and cone axis         
+ */
+std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuffer < Entity* > > mapEnts, std::string agentMonitored, double deltaDist, double angularAperture)
+{
         Map_t returnMap;
         Pair_t pair;
         Entity * currentEntity;
@@ -415,11 +414,27 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
         double angle;
 
         //Get the monitored agent head entity
-        if(agentMonitored=="pr2")
+        //TODO add a rosparam for robot's head joint name
+        if (agentMonitored == "pr2") 
         {
-            monitoredAgentHead = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head_tilt_link"];
+            std::map<std::string, Joint*> skelMap = ((Agent*) mapEnts[agentMonitored].back())->skeleton_;
+            if (skelMap.find("head_tilt_link") != skelMap.end())
+            {
+              monitoredAgentHead = skelMap["head_tilt_link"];
+            } else {
+              return returnMap;
+            }
+        } else if (agentMonitored == "HERAKLES_HUMAN1" || agentMonitored == "HERAKLES_HUMAN2")
+        {
+            std::map<std::string, Joint*> skelMap = ((Agent*) mapEnts[agentMonitored].back())->skeleton_;
+            if (skelMap.find("head") != skelMap.end())
+            {
+              monitoredAgentHead = skelMap["head"];
+            } else {
+              return returnMap;
+            }
         } else {
-            monitoredAgentHead = ((Agent*) mapEnts[agentMonitored].back())->skeleton_["head"];
+            return returnMap;
         }
         //Get 3d position from agent head
         agentHeadPosition[0]=bg::get<0>(monitoredAgentHead->getPosition());
@@ -440,10 +455,22 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
         		if(it->first =="pr2")
         		{
                   //robots
-        		  currentEntity = ((Agent*)it->second.back())->skeleton_["head_tilt_link"]; 
-        		}else if (it->first == "HERAKLES_HUMAN1" || it->first == "HERAKLES_HUMAN2"){
+                  std::map<std::string, Joint*> skelMap = ((Agent*)it->second.back())->skeleton_;
+                  if (skelMap.find("head_tilt_link") != skelMap.end())
+                  {
+                    currentEntity = skelMap["head_tilt_link"];
+                  } else {
+                    break;
+                  }
+        		} else if (it->first == "HERAKLES_HUMAN1" || it->first == "HERAKLES_HUMAN2"){
                   //humans
-        		  currentEntity = ((Agent*)it->second.back())->skeleton_["head"];
+                  std::map<std::string, Joint*> skelMap = ((Agent*)it->second.back())->skeleton_;
+                  if (skelMap.find("head") != skelMap.end())
+                  {
+                    currentEntity = skelMap["head"];
+                  } else {
+                    break;
+                  }
         		} else {
                   //objects
                   currentEntity = it->second.back();
@@ -469,7 +496,6 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
 		        //ROS_INFO("%f > %f",angle,cos(halfAperture));
                 if(angle>cos(halfAperture))
                 {
-
                     if(MathFunctions::dotProd(agentToEntity,coneAxis)/MathFunctions::magn(coneAxis)<MathFunctions::magn(coneAxis))
                     {
                         returnMap.insert(std::pair<std::string,double>(it->first,angle));
@@ -477,8 +503,8 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
                 }
             }
         }
-        return returnMap;
-    }
+    return returnMap;
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1199,10 +1225,9 @@ int main(int argc, char** argv) {
 
             double angleDirection = 0.0;
             std::map<std::string, double> mapIdValue;
-            double radAngle=(PI*60.0)/180.0;
-            mapIdValue = computeIsLookingToward(mapTRBEntity_,(*itAgnt),2,radAngle);
-            for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it)
-            {
+            double radAngle = (PI * 60.0) / 180.0;
+            mapIdValue = computeIsLookingToward(mapTRBEntity_, (*itAgnt), 2, radAngle);
+            for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
                 //ROS_INFO("%s is looking toward %s",(*itAgnt).c_str(),it->first.c_str());
                 fact_msg.property = "IsLookingToward";
                 fact_msg.propertyType = "attention";
@@ -1246,7 +1271,7 @@ int main(int argc, char** argv) {
 
                 // We compute the direction toward fact:
                 angleDirection = computeMotion2DDirection(mapTRBEntity_[(*itAgnt)], oneSecond);
-                mapIdValue = computeMotion2DToward(mapTRBEntity_, (*itAgnt), angleDirection, 0.5);
+                mapIdValue = computeMotion2DToward(mapTRBEntity_, (*itAgnt), angleDirection, 1.0);
                 for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
                     //printf("[AGENT_MONITOR][DEBUG] %s is moving toward %s with a confidence of %f\n",
                     //        mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
