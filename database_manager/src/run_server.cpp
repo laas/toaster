@@ -1869,6 +1869,8 @@ bool isVisibleBy(std::string entity, std::string agent){
    toTest.targetId = agent;
    toTest.property = "isVisibleBy";
    
+   toTestVector.push_back(toTest);
+   
    return are_in_table_db(mainAgent, toTestVector);
    
 }

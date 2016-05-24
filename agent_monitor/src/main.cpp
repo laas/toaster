@@ -21,6 +21,7 @@
 
 std::vector<std::string> agentsMonitored_;
 std::map<std::string, std::vector<std::string> > mapAgentToJointsMonitored_;
+std::map<std::string, std::vector<toaster_msgs::Fact> > previousAgentsFactList_;
 bool monitorAllHumans_ = false;
 bool monitorAllRobots_ = false;
 
@@ -907,6 +908,7 @@ int main(int argc, char** argv) {
 
     while (node.ok()) {
         toaster_msgs::FactList factList_msg;
+        toaster_msgs::FactList agentFactList_msg;
         toaster_msgs::Fact fact_msg;
         // We received agentMonitored
 
@@ -1077,6 +1079,7 @@ int main(int argc, char** argv) {
                     // This will be done at the end of the for loop
                     //ros::spinOnce();
                     //loop_rate.sleep();
+                     factList_msg.factList.insert(factList_msg.factList.end(), previousAgentsFactList_[*itAgnt].begin(),previousAgentsFactList_[*itAgnt].end());
                     continue;
                 }
             }
@@ -1241,7 +1244,7 @@ int main(int argc, char** argv) {
                 fact_msg.subjectOwnerId = "";
                 fact_msg.targetOwnerId = "";
 
-                factList_msg.factList.push_back(fact_msg);
+                agentFactList_msg.factList.push_back(fact_msg);
             }
 
             // If the agent is moving
@@ -1267,7 +1270,7 @@ int main(int argc, char** argv) {
                 fact_msg.subjectOwnerId = "";
                 fact_msg.targetOwnerId = "";
 
-                factList_msg.factList.push_back(fact_msg);
+                agentFactList_msg.factList.push_back(fact_msg);
 
                 // We compute the direction toward fact:
                 angleDirection = computeMotion2DDirection(mapTRBEntity_[(*itAgnt)], oneSecond);
@@ -1292,7 +1295,7 @@ int main(int argc, char** argv) {
                         fact_msg.subjectOwnerId = "";
                         fact_msg.targetOwnerId = "";
 
-                        factList_msg.factList.push_back(fact_msg);
+                        agentFactList_msg.factList.push_back(fact_msg);
                     }
                 }
 
@@ -1319,7 +1322,7 @@ int main(int argc, char** argv) {
                         fact_msg.subjectOwnerId = "";
                         fact_msg.targetOwnerId = "";
 
-                        factList_msg.factList.push_back(fact_msg);
+                        agentFactList_msg.factList.push_back(fact_msg);
                     }
                 }
 
@@ -1365,7 +1368,7 @@ int main(int argc, char** argv) {
                         fact_msg.confidence = 0.90;
                         fact_msg.time = curMonitoredJnt->getTime();
 
-                        factList_msg.factList.push_back(fact_msg);
+                        agentFactList_msg.factList.push_back(fact_msg);
 
                         //}
                     }
@@ -1392,7 +1395,7 @@ int main(int argc, char** argv) {
                         fact_msg.confidence = confidence;
                         fact_msg.time = curMonitoredJnt->getTime();
 
-                        factList_msg.factList.push_back(fact_msg);
+                        agentFactList_msg.factList.push_back(fact_msg);
 
 
                         double angleDirection = 0.0;
@@ -1414,7 +1417,7 @@ int main(int argc, char** argv) {
                             fact_msg.confidence = it->second;
                             fact_msg.time = curMonitoredJnt->getTime();
 
-                            factList_msg.factList.push_back(fact_msg);
+                            agentFactList_msg.factList.push_back(fact_msg);
                         }
 
                         // Then we compute /_\distance
@@ -1436,6 +1439,10 @@ int main(int argc, char** argv) {
                     } // Joint moving
                 } // All monitored joints
             } // Joints or full agent?
+            
+            previousAgentsFactList_[*itAgnt] = agentFactList_msg.factList;
+            factList_msg.factList.insert(factList_msg.factList.end(), agentFactList_msg.factList.begin(),agentFactList_msg.factList.end());
+            agentFactList_msg.factList.clear();
 
         } // each monitored agents
         //publish only if we have something
