@@ -601,6 +601,79 @@ bool add_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fact> 
 }
 
 /**
+ * Add a fact in the planning table
+ */
+bool add_facts_planning_db(std::vector<toaster_msgs::Fact> facts) {
+    //ROS_INFO("add_facts_to_agent");
+   
+    for (std::vector<toaster_msgs::Fact>::iterator it = facts.begin(); it != facts.end(); it++) {
+        std::string sql;
+        char *zErrMsg = 0;
+
+
+        //we first check if there is allready a such fact in db
+        sql = (std::string)"SELECT * from planning_table" +
+                +" where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
+                + "' and predicate='" + (std::string)it->property
+                + "' and propertyType='" + (std::string)it->propertyType
+                + "'and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId)
+                + "';";
+
+        if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+            ROS_INFO("SQL error1 : %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        } else {
+            //ROS_INFO("Redondant fact check\n");
+        }
+
+        zErrMsg = 0;
+
+        // update fact if allready here
+        if (!myFactList.empty()) {
+            sql = (std::string)"UPDATE planning_table" +
+                    +" set valueString='" + (std::string)it->stringValue
+                    + "' , valueDouble=" + boost::lexical_cast<std::string>(it->doubleValue)
+                    + ", valueType=" + boost::lexical_cast<std::string>((int)it->valueType)
+                    + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
+                    + "' and predicate='" + (std::string)it->property
+                    + "' and propertyType='" + (std::string)it->propertyType
+                    + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId)
+                    + "'; SELECT * from planning_table" + ";";
+
+            if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                ROS_INFO("SQL error2 : %s\n", zErrMsg);
+                sqlite3_free(zErrMsg);
+            } else {
+                //ROS_INFO("Fact successfully updated\n");
+            }
+        } else //else 
+        {
+            sql = (std::string)"INSERT INTO planning_table" + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
+                    + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) + "','"
+                    + (std::string)it->property + "','"
+                    + (std::string)it->propertyType + "','"
+                    + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "','"
+                    + boost::lexical_cast<std::string>((int)it->valueType) + "','"
+                    + (std::string)it->stringValue + "',"
+                    + boost::lexical_cast<std::string>(it->doubleValue) + ","
+                    + boost::lexical_cast<std::string>(it->factObservability) + ","
+                    + boost::lexical_cast<std::string>(it->confidence) + ","
+                    + boost::lexical_cast<std::string>(it->time) + ",0);";
+
+            if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                ROS_INFO("SQL error3 : %s\n", zErrMsg);
+                sqlite3_free(zErrMsg);
+            } else {
+                //ROS_INFO("Fact successfully added to agent in table\n");
+            }
+
+        }
+        myFactList = std::vector<toaster_msgs::Fact>();
+    }
+    return true;
+}
+
+/**
  * Remove facts form targeted agent's fact table without precising the either subject or target (put NULL instead)
  * @param reference to request
  * @param reference to response
@@ -752,7 +825,26 @@ bool add_event_db(toaster_msgs::Event event) {
     return true;
 }
 
+/**
+ * Empty the planning table
+ */
+void empty_database_planning_db() {
+    //ROS_INFO("sql order");
 
+    char *zErrMsg = 0;
+    const char* data = "Callback function called";
+    std::string sql;
+
+   sql = (std::string)"DELETE from planning_table";
+                       
+   if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+           fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+           sqlite3_free(zErrMsg);
+   } else {
+           // ROS_INFO("SQL order obtained successfully\n");
+   }
+  
+}
 
 /**
  * Add or remove information to the db
@@ -765,10 +857,17 @@ bool set_info_db(toaster_msgs::SetInfoDB::Request &req, toaster_msgs::SetInfoDB:
       return add_entity_db(req.id, req.ownerId, req.name, req.type);
    }else if(req.infoType == "FACT"){
       if(req.add){
-         return add_facts_to_agent_db(req.agentId, req.facts);
+         if(req.agentId == "PLANNING"){
+            return add_facts_planning_db(req.facts);
+         }else{
+            return add_facts_to_agent_db(req.agentId, req.facts);
+         }
       }else{
          return remove_facts_to_agent_db(req.agentId, req.facts);
       }
+   }else if(req.infoType == "RESET_PLANNING"){
+      empty_database_planning_db();
+      return add_facts_planning_db(req.facts);
    }else if(req.infoType == "EVENT"){
       return add_event_db(req.event);
    }
@@ -779,6 +878,43 @@ bool set_info_db(toaster_msgs::SetInfoDB::Request &req, toaster_msgs::SetInfoDB:
 
 
 ////////////////getting info//////////////////////////
+
+/**
+ * Get all facts from the planning table
+ */
+std::pair<bool, toaster_msgs::FactList> get_all_facts_planning_db() {
+    //ROS_INFO("get_facts_from_agent");
+
+    char *zErrMsg = 0;
+    const char* data = "Callback function called";
+    std::string sql;
+    std::pair<bool, toaster_msgs::FactList> res;
+
+    sql = (std::string)"SELECT * from planning_table";
+
+    if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+        fprintf(stderr, "SQL error l1376: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    } else {
+        //fprintf(stdout, "Facts from agent obtained successfully\n");
+    }
+
+
+    //return informations from table
+    if (!myFactList.empty()) {
+        for (int i = 0; i < myFactList.size(); i++) {
+            res.second.factList.push_back(myFactList[i]);
+        }
+        res.first = true;
+    } else {
+        res.first = true;
+    }
+
+    myFactList = std::vector<toaster_msgs::Fact>(); //empty myFactList
+
+
+    return res;
+}
 
 /**
  * Get all facts known from an agent (current and past)
@@ -1366,6 +1502,10 @@ bool get_info_db(toaster_msgs::GetInfoDB::Request &req, toaster_msgs::GetInfoDB:
          std::pair<bool, toaster_msgs::FactList> answer = get_passed_facts_from_agent_db(req.agentId);
          res.boolAnswer = answer.first;
          res.resFactList = answer.second;
+      }else if(req.subType == "PLANNING"){
+         std::pair<bool, toaster_msgs::FactList> answer = get_all_facts_planning_db();
+         res.boolAnswer = answer.first;
+         res.resFactList = answer.second;
       }
    }else if(req.type == "PROPERTY"){
       if(req.subType == "ALL"){
@@ -1568,6 +1708,8 @@ void empty_database_for_agent_db(std::string agent) {
 
 
 
+
+
 /**
  * Set the topics the database should read
  */
@@ -1693,6 +1835,8 @@ bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::
          empty_database_db();
       }else if(req.type == "AGENT"){
          empty_database_for_agent_db(req.agent);
+      }else if(req.type == "PLANNING"){
+         empty_database_planning_db();
       }
    }else if(req.command == "PRINT"){
       if(req.type == "ALL"){
@@ -1933,7 +2077,28 @@ void initServer() {
     } else {
         ROS_INFO("Opened events table successfully\n");
     }
-
+    
+    //PLANNING TABLE CREATION
+    sql = (std::string)"CREATE TABLE planning_table(" +
+                        "subject_id 				 	unsigned long," +
+                        "predicate         	            string," +
+                        "propertyType                          string," +
+                        "target_id        		     	unsigned long," +
+                        "valueType			  	        bit," +
+                        "valueString       	        	string," +
+                        "valueDouble       	        	double," +
+                        "observability   		   		unsinged short," +
+                        "confidence   		        	unsigned short," +
+                        "start   				        int," +
+                        "end 					        int," +
+                        "unique (subject_id,predicate,propertyType,target_id ,valueString ,observability,confidence ,end) );"; //unique fields are used to avoid doublons
+   if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+        ROS_WARN_ONCE("SQL error l225: %s", zErrMsg);
+        sqlite3_free(zErrMsg);
+    } else {
+        ROS_INFO("Opened planning table successfully\n");
+    }
+    
 }
 
 /**
