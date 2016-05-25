@@ -1,6 +1,0 @@
-toaster_msgs/Fact reqFact
-string agentId
-
----
-bool boolAnswer
-toaster_msgs/FactList resFactList

@@ -18,8 +18,10 @@
 #include "toaster-lib/TRBuffer.h"
 #include "toaster-lib/MathFunctions.h"
 
+
 std::vector<std::string> agentsMonitored_;
 std::map<std::string, std::vector<std::string> > mapAgentToJointsMonitored_;
+std::map<std::string, std::vector<toaster_msgs::Fact> > previousAgentsFactList_;
 bool monitorAllHumans_ = false;
 bool monitorAllRobots_ = false;
 
@@ -378,6 +380,134 @@ std::map<std::string, double> computeDeltaDist(std::map<std::string, TRBuffer < 
     }
     return deltaDistMap;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * @brief This function compute the map required by the fact "IsLookingToward" 
+ *        by testing if an entity is lying in the 3D cone of agent visual attention
+ * @param Entity map containing all entity involved in the joint action & their 
+ *        respective ids
+ * @param Monitored agent id
+ * @param Distance beetween center of basement circle and agent head position
+ * @param Angular aperture of the cone in radians
+ * @return Map required by the fact "IsLookingToward" containing all entities 
+ *         lying in the cone and all normalized angles beetween entities and cone axis         
+ */
+std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuffer < Entity* > > mapEnts, std::string agentMonitored, double deltaDist, double angularAperture)
+{
+        Map_t returnMap;
+        Pair_t pair;
+        Entity * currentEntity;
+        Entity * monitoredAgentHead;
+        float halfAperture=angularAperture/2.f;
+        Vec_t agentHeadPosition(3);
+        Vec_t agentHeadOrientation(3);
+        Vec_t entityPosition(3);
+        Vec_t agentToEntity(3);
+        Vec_t coneAxis(3);
+        Vec_t coneBase(3);
+        float entitytoAxisAngle;
+        Mat_t rotX(3);
+        Mat_t rotY(3);
+        Mat_t rotZ(3);
+        bool isInInfiniteCone=false;
+        double angle;
+
+        //Get the monitored agent head entity
+        //TODO add a rosparam for robot's head joint name
+        if (agentMonitored == "pr2") 
+        {
+            std::map<std::string, Joint*> skelMap = ((Agent*) mapEnts[agentMonitored].back())->skeleton_;
+            if (skelMap.find("head_tilt_link") != skelMap.end())
+            {
+              monitoredAgentHead = skelMap["head_tilt_link"];
+            } else {
+              return returnMap;
+            }
+        } else if (agentMonitored == "HERAKLES_HUMAN1" || agentMonitored == "HERAKLES_HUMAN2")
+        {
+            std::map<std::string, Joint*> skelMap = ((Agent*) mapEnts[agentMonitored].back())->skeleton_;
+            if (skelMap.find("head") != skelMap.end())
+            {
+              monitoredAgentHead = skelMap["head"];
+            } else {
+              return returnMap;
+            }
+        } else {
+            return returnMap;
+        }
+        //Get 3d position from agent head
+        agentHeadPosition[0]=bg::get<0>(monitoredAgentHead->getPosition());
+        agentHeadPosition[1]=bg::get<1>(monitoredAgentHead->getPosition());
+        agentHeadPosition[2]=bg::get<2>(monitoredAgentHead->getPosition());
+        //Get 3d orientation (roll pitch yaw) from agent head
+        agentHeadOrientation=(Vec_t)monitoredAgentHead->getOrientation();        
+        //Compute rotation matricies from agent head orientation
+        rotX=MathFunctions::matrixfromAngle(0,agentHeadOrientation[0]);
+        rotY=MathFunctions::matrixfromAngle(1,agentHeadOrientation[1]);
+        rotZ=MathFunctions::matrixfromAngle(2,agentHeadOrientation[2]);
+
+        for (std::map<std::string, TRBuffer < Entity*> >::iterator it = mapEnts.begin(); it != mapEnts.end(); ++it) 
+        {
+            if (it->first != agentMonitored)
+            {
+                //Get the current entity
+        		if(it->first =="pr2")
+        		{
+                  //robots
+                  std::map<std::string, Joint*> skelMap = ((Agent*)it->second.back())->skeleton_;
+                  if (skelMap.find("head_tilt_link") != skelMap.end())
+                  {
+                    currentEntity = skelMap["head_tilt_link"];
+                  } else {
+                    break;
+                  }
+        		} else if (it->first == "HERAKLES_HUMAN1" || it->first == "HERAKLES_HUMAN2"){
+                  //humans
+                  std::map<std::string, Joint*> skelMap = ((Agent*)it->second.back())->skeleton_;
+                  if (skelMap.find("head") != skelMap.end())
+                  {
+                    currentEntity = skelMap["head"];
+                  } else {
+                    break;
+                  }
+        		} else {
+                  //objects
+                  currentEntity = it->second.back();
+                }
+                //Get the postion from current entity
+                entityPosition[0]=bg::get<0>(currentEntity->getPosition());
+                entityPosition[1]=bg::get<1>(currentEntity->getPosition());
+                entityPosition[2]=bg::get<2>(currentEntity->getPosition());
+                //Compute cone base coordinates
+                coneBase[0]=agentHeadPosition[0]+deltaDist;
+                coneBase[1]=agentHeadPosition[1];
+                coneBase[2]=agentHeadPosition[2];
+                //Compute cone axis
+                coneAxis=MathFunctions::diffVec(agentHeadPosition,coneBase);
+                //Apply rotation matrix from agent head orientation to cone base
+                coneAxis=MathFunctions::multiplyMatVec(rotY,coneAxis);
+                coneAxis=MathFunctions::multiplyMatVec(rotZ,coneAxis);
+                //Compute the 3d vector from agent head to current entity
+                agentToEntity=MathFunctions::diffVec(agentHeadPosition,entityPosition);                
+                //Compute angle
+                angle=(MathFunctions::dotProd(agentToEntity,coneAxis)/MathFunctions::magn(agentToEntity)/MathFunctions::magn(coneAxis));
+                //Test
+		        //ROS_INFO("%f > %f",angle,cos(halfAperture));
+                if(angle>cos(halfAperture))
+                {
+                    if(MathFunctions::dotProd(agentToEntity,coneAxis)/MathFunctions::magn(coneAxis)<MathFunctions::magn(coneAxis))
+                    {
+                        returnMap.insert(std::pair<std::string,double>(it->first,angle));
+                    }
+                }
+            }
+        }
+    return returnMap;
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 std::map<std::string, double> computeJointDeltaDist(std::map<std::string, TRBuffer < Entity* > > mapEnts,
         std::string agentMonitored, std::string jointName, unsigned long timelapse) {
@@ -778,6 +908,7 @@ int main(int argc, char** argv) {
 
     while (node.ok()) {
         toaster_msgs::FactList factList_msg;
+        toaster_msgs::FactList agentFactList_msg;
         toaster_msgs::Fact fact_msg;
         // We received agentMonitored
 
@@ -948,6 +1079,7 @@ int main(int argc, char** argv) {
                     // This will be done at the end of the for loop
                     //ros::spinOnce();
                     //loop_rate.sleep();
+                     factList_msg.factList.insert(factList_msg.factList.end(), previousAgentsFactList_[*itAgnt].begin(),previousAgentsFactList_[*itAgnt].end());
                     continue;
                 }
             }
@@ -1096,6 +1228,25 @@ int main(int argc, char** argv) {
 
             double angleDirection = 0.0;
             std::map<std::string, double> mapIdValue;
+            double radAngle = (PI * 60.0) / 180.0;
+            mapIdValue = computeIsLookingToward(mapTRBEntity_, (*itAgnt), 2, radAngle);
+            for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
+                //ROS_INFO("%s is looking toward %s",(*itAgnt).c_str(),it->first.c_str());
+                fact_msg.property = "IsLookingToward";
+                fact_msg.propertyType = "attention";
+                fact_msg.subProperty = "agent";
+                fact_msg.stringValue = "";
+                fact_msg.subjectId = (*itAgnt);
+                fact_msg.targetId = it->first;
+                fact_msg.confidence = (radAngle - it->second) / radAngle;
+                fact_msg.doubleValue = it->second;
+                fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
+                fact_msg.subjectOwnerId = "";
+                fact_msg.targetOwnerId = "";
+
+                agentFactList_msg.factList.push_back(fact_msg);
+            }
+
             // If the agent is moving
             double speed = computeMotion2D(mapTRBEntity_[(*itAgnt)], oneSecond / 4);
 
@@ -1119,11 +1270,11 @@ int main(int argc, char** argv) {
                 fact_msg.subjectOwnerId = "";
                 fact_msg.targetOwnerId = "";
 
-                factList_msg.factList.push_back(fact_msg);
+                agentFactList_msg.factList.push_back(fact_msg);
 
                 // We compute the direction toward fact:
                 angleDirection = computeMotion2DDirection(mapTRBEntity_[(*itAgnt)], oneSecond);
-                mapIdValue = computeMotion2DToward(mapTRBEntity_, (*itAgnt), angleDirection, 0.5);
+                mapIdValue = computeMotion2DToward(mapTRBEntity_, (*itAgnt), angleDirection, 1.0);
                 for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
                     //printf("[AGENT_MONITOR][DEBUG] %s is moving toward %s with a confidence of %f\n",
                     //        mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[it->first].back()->getName().c_str(), it->second);
@@ -1144,7 +1295,7 @@ int main(int argc, char** argv) {
                         fact_msg.subjectOwnerId = "";
                         fact_msg.targetOwnerId = "";
 
-                        factList_msg.factList.push_back(fact_msg);
+                        agentFactList_msg.factList.push_back(fact_msg);
                     }
                 }
 
@@ -1171,7 +1322,7 @@ int main(int argc, char** argv) {
                         fact_msg.subjectOwnerId = "";
                         fact_msg.targetOwnerId = "";
 
-                        factList_msg.factList.push_back(fact_msg);
+                        agentFactList_msg.factList.push_back(fact_msg);
                     }
                 }
 
@@ -1217,7 +1368,7 @@ int main(int argc, char** argv) {
                         fact_msg.confidence = 0.90;
                         fact_msg.time = curMonitoredJnt->getTime();
 
-                        factList_msg.factList.push_back(fact_msg);
+                        agentFactList_msg.factList.push_back(fact_msg);
 
                         //}
                     }
@@ -1244,7 +1395,7 @@ int main(int argc, char** argv) {
                         fact_msg.confidence = confidence;
                         fact_msg.time = curMonitoredJnt->getTime();
 
-                        factList_msg.factList.push_back(fact_msg);
+                        agentFactList_msg.factList.push_back(fact_msg);
 
 
                         double angleDirection = 0.0;
@@ -1266,7 +1417,7 @@ int main(int argc, char** argv) {
                             fact_msg.confidence = it->second;
                             fact_msg.time = curMonitoredJnt->getTime();
 
-                            factList_msg.factList.push_back(fact_msg);
+                            agentFactList_msg.factList.push_back(fact_msg);
                         }
 
                         // Then we compute /_\distance
@@ -1288,6 +1439,10 @@ int main(int argc, char** argv) {
                     } // Joint moving
                 } // All monitored joints
             } // Joints or full agent?
+            
+            previousAgentsFactList_[*itAgnt] = agentFactList_msg.factList;
+            factList_msg.factList.insert(factList_msg.factList.end(), agentFactList_msg.factList.begin(),agentFactList_msg.factList.end());
+            agentFactList_msg.factList.clear();
 
         } // each monitored agents
         //publish only if we have something
