@@ -424,8 +424,7 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
             } else {
               return returnMap;
             }
-        } else if (agentMonitored == "HERAKLES_HUMAN1" || agentMonitored == "HERAKLES_HUMAN2")
-        {
+        } else {
             std::map<std::string, Joint*> skelMap = ((Agent*) mapEnts[agentMonitored].back())->skeleton_;
             if (skelMap.find("head") != skelMap.end())
             {
@@ -433,8 +432,6 @@ std::map<std::string, double> computeIsLookingToward(std::map<std::string, TRBuf
             } else {
               return returnMap;
             }
-        } else {
-            return returnMap;
         }
         //Get 3d position from agent head
         agentHeadPosition[0]=bg::get<0>(monitoredAgentHead->getPosition());
@@ -1227,21 +1224,25 @@ int main(int argc, char** argv) {
             std::map<std::string, double> mapIdValue;
             double radAngle = (PI * 60.0) / 180.0;
             mapIdValue = computeIsLookingToward(mapTRBEntity_, (*itAgnt), 2, radAngle);
-            for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) {
-                //ROS_INFO("%s is looking toward %s",(*itAgnt).c_str(),it->first.c_str());
-                fact_msg.property = "IsLookingToward";
-                fact_msg.propertyType = "attention";
-                fact_msg.subProperty = "agent";
-                fact_msg.stringValue = "";
-                fact_msg.subjectId = (*itAgnt);
-                fact_msg.targetId = it->first;
-                fact_msg.confidence = (radAngle - it->second) / radAngle;
-                fact_msg.doubleValue = it->second;
-                fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
-                fact_msg.subjectOwnerId = "";
-                fact_msg.targetOwnerId = "";
+            if(!mapIdValue.empty())
+            {
+                for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it) 
+                {
+                    ROS_INFO("%s is looking toward %s",(*itAgnt).c_str(),it->first.c_str());
+                    fact_msg.property = "IsLookingToward";
+                    fact_msg.propertyType = "attention";
+                    fact_msg.subProperty = "agent";
+                    fact_msg.stringValue = "";
+                    fact_msg.subjectId = (*itAgnt);
+                    fact_msg.targetId = it->first;
+                    fact_msg.confidence = (radAngle - it->second) / radAngle;
+                    fact_msg.doubleValue = it->second;
+                    fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
+                    fact_msg.subjectOwnerId = "";
+                    fact_msg.targetOwnerId = "";
 
-                factList_msg.factList.push_back(fact_msg);
+                    factList_msg.factList.push_back(fact_msg);
+                }
             }
 
             // If the agent is moving
