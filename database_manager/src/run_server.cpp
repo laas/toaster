@@ -559,20 +559,22 @@ bool add_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fact> 
 
 
             //add a new event
-            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
-                    + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) + "','"
-                    + (std::string)it->property + "','"
-                    + (std::string)it->propertyType + "','"
-                    + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "',"
-                    + boost::lexical_cast<std::string>(it->factObservability) + ","
-                    + boost::lexical_cast<std::string>(it->confidence) + ","
-                    + boost::lexical_cast<std::string>(it->time) + ")";
+            if(agentId == mainAgent){
+               sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
+                       + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) + "','"
+                       + (std::string)it->property + "','"
+                       + (std::string)it->propertyType + "','"
+                       + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "',"
+                       + boost::lexical_cast<std::string>(it->factObservability) + ","
+                       + boost::lexical_cast<std::string>(it->confidence) + ","
+                       + boost::lexical_cast<std::string>(it->time) + ")";
 
-            if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-                ROS_INFO("SQL error4 : %s\n", zErrMsg);
-                sqlite3_free(zErrMsg);
-            } else {
-                //ROS_INFO("Event successfully added\n");
+               if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                   ROS_INFO("SQL error4 : %s\n", zErrMsg);
+                   sqlite3_free(zErrMsg);
+               } else {
+                   //ROS_INFO("Event successfully added\n");
+               }
             }
 
             //and we add into id_table some new unknown entity (id is unique so there should not be duplicates)
@@ -772,21 +774,23 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
                 //ROS_INFO("Fact successfully added to memory table\n");
             }
             //and add a new event
-            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
-                    + boost::lexical_cast<std::string>(it->subjectId) + "','!"
-                    + (std::string)it->property + "','"
-                    + (std::string)it->propertyType + "','"
-                    + boost::lexical_cast<std::string>(it->targetId) + "',"
-                    + boost::lexical_cast<std::string>(it->factObservability) + ","
-                    + boost::lexical_cast<std::string>(it->confidence) + ","
-                    + boost::lexical_cast<std::string>(it->time) + ")";
+            if(agentId == mainAgent){
+               sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
+                       + boost::lexical_cast<std::string>(it->subjectId) + "','!"
+                       + (std::string)it->property + "','"
+                       + (std::string)it->propertyType + "','"
+                       + boost::lexical_cast<std::string>(it->targetId) + "',"
+                       + boost::lexical_cast<std::string>(it->factObservability) + ","
+                       + boost::lexical_cast<std::string>(it->confidence) + ","
+                       + boost::lexical_cast<std::string>(it->time) + ")";
 
-            if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-                ROS_INFO("SQL error4 : %s\n", zErrMsg);
-                sqlite3_free(zErrMsg);
-            } else {
-                //ROS_INFO("Event successfully added\n");
-            }
+               if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                   ROS_INFO("SQL error4 : %s\n", zErrMsg);
+                   sqlite3_free(zErrMsg);
+               } else {
+                   //ROS_INFO("Event successfully added\n");
+               }
+           }
         }
 
         myFactList = std::vector<toaster_msgs::Fact>();
@@ -1961,6 +1965,7 @@ void conceptual_perspective_taking() {
            if (response.second.factList[y].factObservability > 0.0) {
                if(isVisibleBy(response.second.factList[y].subjectId, agentList[i]) && isVisibleBy(response.second.factList[y].targetId, agentList[i])){
                   //check if the fact is already in the agent table
+                  toTest.push_back(response.second.factList[y]);
                   if(!are_in_table_db(agentList[i], toTest)){
                      toAdd.push_back(response.second.factList[y]);
                   }
