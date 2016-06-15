@@ -35,9 +35,9 @@ void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectList
 
         curObject->setTime(msg->objectList[i].meEntity.time);
 
-        objPosition.set<0>(msg->objectList[i].meEntity.positionX);
-        objPosition.set<1>(msg->objectList[i].meEntity.positionY);
-        objPosition.set<2>(msg->objectList[i].meEntity.positionZ);
+        objPosition.set<0>(msg->objectList[i].meEntity.Pose.position.x);
+        objPosition.set<1>(msg->objectList[i].meEntity.Pose.position.y);
+        objPosition.set<2>(msg->objectList[i].meEntity.Pose.position.z);
         curObject->setPosition(objPosition);
 
         objOrientation.push_back(msg->objectList[i].meEntity.orientationRoll);

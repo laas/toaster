@@ -35,9 +35,9 @@ void ToasterSimuHumanReader::humanJointStateCallBack(const toaster_msgs::HumanLi
         curHuman->setTime(msg->humanList[i].meAgent.meEntity.time);
         curHuman->busyHands_ = msg->humanList[i].meAgent.busyHands;
 
-        humanPosition.set<0>(msg->humanList[i].meAgent.meEntity.positionX);
-        humanPosition.set<1>(msg->humanList[i].meAgent.meEntity.positionY);
-        humanPosition.set<2>(msg->humanList[i].meAgent.meEntity.positionZ);
+        humanPosition.set<0>(msg->humanList[i].meAgent.meEntity.Pose.position.x);
+        humanPosition.set<1>(msg->humanList[i].meAgent.meEntity.Pose.position.y);
+        humanPosition.set<2>(msg->humanList[i].meAgent.meEntity.Pose.position.z);
         curHuman->setPosition(humanPosition);
 
         humanOrientation.push_back(msg->humanList[i].meAgent.meEntity.orientationRoll);
@@ -65,9 +65,9 @@ void ToasterSimuHumanReader::humanJointStateCallBack(const toaster_msgs::HumanLi
                 curJnt->setAgentId(curHuman->getId());
                 curJnt->setTime(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.time);
 
-                jointPosition.set<0>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.positionX);
-                jointPosition.set<1>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.positionY);
-                jointPosition.set<2>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.positionZ);
+                jointPosition.set<0>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.x);
+                jointPosition.set<1>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.y);
+                jointPosition.set<2>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.z);
                 curJnt->setPosition(jointPosition);
 
                 jointOrientation.push_back(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationRoll);

@@ -34,9 +34,9 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
         if (it != object_map.end()) {
             toaster_msgs::Object obj;
             obj.meEntity = it->second.meEntity;
-            obj.meEntity.positionX = x;
-            obj.meEntity.positionY = y;
-            obj.meEntity.positionZ = z;
+            obj.meEntity.Pose.position.x = x;
+            obj.meEntity.Pose.position.y = y;
+            obj.meEntity.Pose.position.z = z;
             obj.meEntity.orientationRoll = roll;
             obj.meEntity.orientationPitch = pitch;
             obj.meEntity.orientationYaw = yaw;
@@ -52,9 +52,9 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
         if (itH != human_map.end()) {
             toaster_msgs::Human hum;
             hum.meAgent.meEntity = itH->second.meAgent.meEntity;
-            hum.meAgent.meEntity.positionX = x;
-            hum.meAgent.meEntity.positionY = y;
-            hum.meAgent.meEntity.positionZ = z;
+            hum.meAgent.meEntity.Pose.position.x = x;
+            hum.meAgent.meEntity.Pose.position.y = y;
+            hum.meAgent.meEntity.Pose.position.z = z;
             hum.meAgent.meEntity.orientationRoll = roll;
             hum.meAgent.meEntity.orientationPitch = pitch;
             hum.meAgent.meEntity.orientationYaw = yaw;
@@ -72,9 +72,9 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
         if (itR != robot_map.end()) {
             toaster_msgs::Robot rob;
             rob.meAgent.meEntity = itR->second.meAgent.meEntity;
-            rob.meAgent.meEntity.positionX = x;
-            rob.meAgent.meEntity.positionY = y;
-            rob.meAgent.meEntity.positionZ = z;
+            rob.meAgent.meEntity.Pose.position.x = x;
+            rob.meAgent.meEntity.Pose.position.y = y;
+            rob.meAgent.meEntity.Pose.position.z = z;
             rob.meAgent.meEntity.orientationRoll = roll;
             rob.meAgent.meEntity.orientationPitch = pitch;
             rob.meAgent.meEntity.orientationYaw = yaw;
@@ -108,9 +108,9 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
 
             // Update position
             joint = itH->second.meAgent.skeletonJoint[index];
-            joint.meEntity.positionX = x;
-            joint.meEntity.positionY = y;
-            joint.meEntity.positionZ = z;
+            joint.meEntity.Pose.position.x = x;
+            joint.meEntity.Pose.position.y = y;
+            joint.meEntity.Pose.position.z = z;
             joint.meEntity.orientationRoll = roll;
             joint.meEntity.orientationPitch = pitch;
             joint.meEntity.orientationYaw = yaw;
@@ -140,9 +140,9 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, double
 
                 // Update position
                 joint = itR->second.meAgent.skeletonJoint[index];
-                joint.meEntity.positionX = x;
-                joint.meEntity.positionY = y;
-                joint.meEntity.positionZ = z;
+                joint.meEntity.Pose.position.x = x;
+                joint.meEntity.Pose.position.y = y;
+                joint.meEntity.Pose.position.z = z;
                 joint.meEntity.orientationRoll = roll;
                 joint.meEntity.orientationPitch = pitch;
                 joint.meEntity.orientationYaw = yaw;
@@ -164,9 +164,9 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
     if (it != object_map.end()) {
         toaster_msgs::Object obj;
         obj.meEntity = it->second.meEntity;
-        obj.meEntity.positionX += x;
-        obj.meEntity.positionY += y;
-        obj.meEntity.positionZ += z;
+        obj.meEntity.Pose.position.x += x;
+        obj.meEntity.Pose.position.y += y;
+        obj.meEntity.Pose.position.z += z;
         obj.meEntity.orientationRoll += roll;
         obj.meEntity.orientationPitch += pitch;
         obj.meEntity.orientationYaw += yaw;
@@ -178,9 +178,9 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
         if (itH != human_map.end()) {
             toaster_msgs::Human hum;
             hum.meAgent.meEntity = itH->second.meAgent.meEntity;
-            hum.meAgent.meEntity.positionX += x;
-            hum.meAgent.meEntity.positionY += y;
-            hum.meAgent.meEntity.positionZ += z;
+            hum.meAgent.meEntity.Pose.position.x += x;
+            hum.meAgent.meEntity.Pose.position.y += y;
+            hum.meAgent.meEntity.Pose.position.z += z;
             hum.meAgent.meEntity.orientationRoll += roll;
             hum.meAgent.meEntity.orientationPitch += pitch;
             hum.meAgent.meEntity.orientationYaw += yaw;
@@ -189,9 +189,9 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
             for (int i = 0; i < itH->second.meAgent.skeletonJoint.size(); i++) {
                 toaster_msgs::Joint joint;
                 joint = itH->second.meAgent.skeletonJoint[i];
-                joint.meEntity.positionX += x;
-                joint.meEntity.positionY += y;
-                joint.meEntity.positionZ += z;
+                joint.meEntity.Pose.position.x += x;
+                joint.meEntity.Pose.position.y += y;
+                joint.meEntity.Pose.position.z += z;
                 joint.meEntity.orientationRoll += roll;
                 joint.meEntity.orientationPitch += pitch;
                 joint.meEntity.orientationYaw += yaw;
@@ -207,9 +207,9 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
             if (itR != robot_map.end()) {
                 toaster_msgs::Robot rob;
                 rob.meAgent.meEntity = itR->second.meAgent.meEntity;
-                rob.meAgent.meEntity.positionX += x;
-                rob.meAgent.meEntity.positionY += y;
-                rob.meAgent.meEntity.positionZ += z;
+                rob.meAgent.meEntity.Pose.position.x += x;
+                rob.meAgent.meEntity.Pose.position.y += y;
+                rob.meAgent.meEntity.Pose.position.z += z;
                 rob.meAgent.meEntity.orientationRoll += roll;
                 rob.meAgent.meEntity.orientationPitch += pitch;
                 rob.meAgent.meEntity.orientationYaw += yaw;
@@ -218,9 +218,9 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
                 for (int i = 0; i < itR->second.meAgent.skeletonJoint.size(); i++) {
                     toaster_msgs::Joint joint;
                     joint = itR->second.meAgent.skeletonJoint[i];
-                    joint.meEntity.positionX += x;
-                    joint.meEntity.positionY += y;
-                    joint.meEntity.positionZ += z;
+                    joint.meEntity.Pose.position.x += x;
+                    joint.meEntity.Pose.position.y += y;
+                    joint.meEntity.Pose.position.z += z;
                     joint.meEntity.orientationRoll += roll;
                     joint.meEntity.orientationPitch += pitch;
                     joint.meEntity.orientationYaw += yaw;

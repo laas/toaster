@@ -133,8 +133,8 @@ include_directories(
 target_link_libraries(pdg $ENV{TOASTERLIB_DIR}/lib/libtoaster.so
                           ${catkin_LIBRARIES})
 
-add_executable(simu_input src/input_simu.cpp)
-target_link_libraries(simu_input ${catkin_LIBRARIES})
+#add_executable(simu_input src/input_simu.cpp)
+#target_link_libraries(simu_input ${catkin_LIBRARIES})
 
 #############
 ## Install ##

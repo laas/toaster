@@ -65,9 +65,9 @@ void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
     msgEntity.time = srcEntity->getTime();
     msgEntity.name = srcEntity->getName();
-    msgEntity.positionX = srcEntity->getPosition().get<0>();
-    msgEntity.positionY = srcEntity->getPosition().get<1>();
-    msgEntity.positionZ = srcEntity->getPosition().get<2>();
+    msgEntity.Pose.position.x = srcEntity->getPosition().get<0>();
+    msgEntity.Pose.position.y = srcEntity->getPosition().get<1>();
+    msgEntity.Pose.position.z = srcEntity->getPosition().get<2>();
     msgEntity.orientationRoll = srcEntity->getOrientation()[0];
     msgEntity.orientationPitch = srcEntity->getOrientation()[1];
     msgEntity.orientationYaw = srcEntity->getOrientation()[2];
@@ -83,9 +83,9 @@ bool updateToasterSimu(toaster_msgs::Entity& ent, std::string type) {
     toaster_msgs::SetEntityPose setPose;
     setPose.request.id = ent.id;
     setPose.request.type = type;
-    setPose.request.x = ent.positionX;
-    setPose.request.y = ent.positionY;
-    setPose.request.z = ent.positionZ;
+    setPose.request.x = ent.Pose.position.x;
+    setPose.request.y = ent.Pose.position.y;
+    setPose.request.z = ent.Pose.position.z;
     setPose.request.roll = ent.orientationRoll;
     setPose.request.pitch = ent.orientationPitch;
     setPose.request.yaw = ent.orientationYaw;
@@ -115,9 +115,7 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
             if (it != (*itAgent).meAgent.skeletonNames.end()) {
                 jointEntity = (*itAgent).meAgent.skeletonJoint[std::distance((*itAgent).meAgent.skeletonNames.begin(), it)].meEntity;
 
-                msgEntity.positionX = jointEntity.positionX;
-                msgEntity.positionY = jointEntity.positionY;
-                msgEntity.positionZ = jointEntity.positionZ;
+                msgEntity.Pose = jointEntity.Pose;
                 msgEntity.orientationRoll = jointEntity.orientationRoll;
                 msgEntity.orientationPitch = jointEntity.orientationPitch;
                 msgEntity.orientationYaw = jointEntity.orientationYaw;
@@ -152,9 +150,7 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
             if (it != (*itAgent).meAgent.skeletonNames.end()) {
                 jointEntity = (*itAgent).meAgent.skeletonJoint[std::distance((*itAgent).meAgent.skeletonNames.begin(), it)].meEntity;
 
-                msgEntity.positionX = jointEntity.positionX;
-                msgEntity.positionY = jointEntity.positionY;
-                msgEntity.positionZ = jointEntity.positionZ;
+                msgEntity.Pose = jointEntity.Pose;
                 msgEntity.orientationRoll = jointEntity.orientationRoll;
                 msgEntity.orientationPitch = jointEntity.orientationPitch;
                 msgEntity.orientationYaw = jointEntity.orientationYaw;

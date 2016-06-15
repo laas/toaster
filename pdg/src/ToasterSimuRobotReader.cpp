@@ -38,9 +38,9 @@ void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotLi
         curRobot->setTime(msg->robotList[i].meAgent.meEntity.time);
         curRobot->busyHands_ = msg->robotList[i].meAgent.busyHands;
 
-        robPosition.set<0>(msg->robotList[i].meAgent.meEntity.positionX);
-        robPosition.set<1>(msg->robotList[i].meAgent.meEntity.positionY);
-        robPosition.set<2>(msg->robotList[i].meAgent.meEntity.positionZ);
+        robPosition.set<0>(msg->robotList[i].meAgent.meEntity.Pose.position.x);
+        robPosition.set<1>(msg->robotList[i].meAgent.meEntity.Pose.position.y);
+        robPosition.set<2>(msg->robotList[i].meAgent.meEntity.Pose.position.z);
         curRobot->setPosition(robPosition);
 
         robOrientation.push_back(msg->robotList[i].meAgent.meEntity.orientationRoll);
@@ -68,9 +68,9 @@ void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotLi
                 curJnt->setAgentId(curRobot->getId());
                 curJnt->setTime(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.time);
 
-                jointPosition.set<0>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.positionX);
-                jointPosition.set<1>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.positionY);
-                jointPosition.set<2>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.positionZ);
+                jointPosition.set<0>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.x);
+                jointPosition.set<1>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.y);
+                jointPosition.set<2>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.z);
                 curJnt->setPosition(jointPosition);
 
                 jointOrientation.push_back(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationRoll);

@@ -681,7 +681,7 @@ public:
         obj_list.markers.clear();
 
         for (int i = 0; i < msg->objectList.size(); i++) {
-            visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.positionX, msg->objectList[i].meEntity.positionY, msg->objectList[i].meEntity.positionZ, msg->objectList[i].meEntity.orientationRoll, msg->objectList[i].meEntity.orientationPitch, msg->objectList[i].meEntity.orientationYaw,
+            visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.Pose.position.x, msg->objectList[i].meEntity.Pose.position.y, msg->objectList[i].meEntity.Pose.position.z, msg->objectList[i].meEntity.orientationRoll, msg->objectList[i].meEntity.orientationPitch, msg->objectList[i].meEntity.orientationYaw,
                     1, msg->objectList[i].meEntity.name);
 
             visualization_msgs::Marker mn = defineName(m);
@@ -717,7 +717,7 @@ public:
                 m = setRandomColor(m);
 
                 visualization_msgs::Marker mn = defineName(m);
-                mn = setSize(mn, 0.0, 0.0, 0.4);
+                mn = setSize(mn, 0.0, 0.0, 0.3);
                 mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 1);
 
                 area_list.markers.push_back(m);
@@ -730,7 +730,7 @@ public:
                 m = setRandomColor(m);
 
                 visualization_msgs::Marker mn = defineName(m);
-                mn = setSize(mn, 0.0, 0.0, 0.4);
+                mn = setSize(mn, 0.0, 0.0, 0.3);
 
                 double posx = 0.0;
                 double posy = 0.0;
@@ -761,13 +761,13 @@ public:
 
         for (int i = 0; i < msg->robotList.size(); i++) {
             //non articulated robot
-            visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.positionX, msg->robotList[i].meAgent.meEntity.positionY, msg->robotList[i].meAgent.meEntity.positionZ, msg->robotList[i].meAgent.meEntity.orientationRoll, msg->robotList[i].meAgent.meEntity.orientationPitch, msg->robotList[i].meAgent.meEntity.orientationYaw,
+            visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.Pose.position.x, msg->robotList[i].meAgent.meEntity.Pose.position.y, msg->robotList[i].meAgent.meEntity.Pose.position.z, msg->robotList[i].meAgent.meEntity.orientationRoll, msg->robotList[i].meAgent.meEntity.orientationPitch, msg->robotList[i].meAgent.meEntity.orientationYaw,
                     1.0, msg->robotList[i].meAgent.meEntity.name);
 
 
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
-            mn = setSize(mn, 0, 0, 0.5);
+            mn = setSize(mn, 0, 0, 0.3);
 
             //If the robot is moving, we intensify its name color
             std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->robotList[i].meAgent.meEntity.id);
@@ -796,12 +796,12 @@ public:
 
         for (int i = 0; i < msg->humanList.size(); i++) {
             //non articulated human
-            visualization_msgs::Marker m = defineHuman(msg->humanList[i].meAgent.meEntity.positionX, msg->humanList[i].meAgent.meEntity.positionY, msg->humanList[i].meAgent.meEntity.positionZ, msg->humanList[i].meAgent.meEntity.orientationRoll, msg->humanList[i].meAgent.meEntity.orientationPitch, msg->humanList[i].meAgent.meEntity.orientationYaw,
+            visualization_msgs::Marker m = defineHuman(msg->humanList[i].meAgent.meEntity.Pose.position.x, msg->humanList[i].meAgent.meEntity.Pose.position.y, msg->humanList[i].meAgent.meEntity.Pose.position.z, msg->humanList[i].meAgent.meEntity.orientationRoll, msg->humanList[i].meAgent.meEntity.orientationPitch, msg->humanList[i].meAgent.meEntity.orientationYaw,
                     0.3, msg->humanList[i].meAgent.meEntity.name);
 
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
-            mn = setSize(mn, 0, 0, 0.5);
+            mn = setSize(mn, 0, 0, 0.3);
 
             //If the human is moving, we intensify its color
             std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->humanList[i].meAgent.meEntity.id);
@@ -839,7 +839,7 @@ public:
                     markerTempo.action = visualization_msgs::Marker::ADD;
 
                     //position
-                    markerTempo = setPosition(markerTempo, joints[y].meEntity.positionX, joints[y].meEntity.positionY, joints[y].meEntity.positionZ);
+                    markerTempo = setPosition(markerTempo, joints[y].meEntity.Pose.position.x, joints[y].meEntity.Pose.position.y, joints[y].meEntity.Pose.position.z);
 
                     //orientation
                     markerTempo = setOrientation(markerTempo, joints[y].meEntity.orientationRoll, joints[y].meEntity.orientationPitch, joints[y].meEntity.orientationYaw);
