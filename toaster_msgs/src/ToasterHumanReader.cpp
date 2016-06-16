@@ -1,4 +1,12 @@
+/* 
+ * File:   ToasterObjectReader.cpp
+ * Author: gmilliez
+ * 
+ * Created on December 12, 2014, 2:23 PM
+ */
+
 #include "toaster_msgs/ToasterHumanReader.h"
+#include "tf/transform_datatypes.h"
 
 ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic) {
     fullHuman_ = fullHuman;
@@ -9,7 +17,10 @@ ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, st
 
 void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for human received with time " << msg->humanList[0].meAgent.meEntity.time  << std::endl;
+
+    double roll, pitch, yaw;
     Human * curHuman;
+
     for (unsigned int i = 0; i < msg->humanList.size(); i++) {
 
         // If this human is not assigned we have to allocate data.
@@ -29,14 +40,19 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::
         curHuman->setTime(msg->humanList[i].meAgent.meEntity.time);
         curHuman->busyHands_ = msg->humanList[i].meAgent.busyHands;
 
-        humanPosition.set<0>(msg->humanList[i].meAgent.meEntity.Pose.position.x);
-        humanPosition.set<1>(msg->humanList[i].meAgent.meEntity.Pose.position.y);
-        humanPosition.set<2>(msg->humanList[i].meAgent.meEntity.Pose.position.z);
+        humanPosition.set<0>(msg->humanList[i].meAgent.meEntity.pose.position.x);
+        humanPosition.set<1>(msg->humanList[i].meAgent.meEntity.pose.position.y);
+        humanPosition.set<2>(msg->humanList[i].meAgent.meEntity.pose.position.z);
         curHuman->setPosition(humanPosition);
 
-        humanOrientation.push_back(msg->humanList[i].meAgent.meEntity.orientationRoll);
-        humanOrientation.push_back(msg->humanList[i].meAgent.meEntity.orientationPitch);
-        humanOrientation.push_back(msg->humanList[i].meAgent.meEntity.orientationYaw);
+        tf::Quaternion q;
+
+        tf::quaternionMsgToTF(msg->humanList[i].meAgent.meEntity.pose.orientation, q);
+        tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
+
+        humanOrientation.push_back(roll);
+        humanOrientation.push_back(pitch);
+        humanOrientation.push_back(yaw);
         curHuman->setOrientation(humanOrientation);
 
         lastConfig_[curHuman->getId()] = curHuman;
@@ -59,14 +75,19 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::
                 curJnt->setAgentId(curHuman->getId());
                 curJnt->setTime(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.time);
 
-                jointPosition.set<0>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.x);
-                jointPosition.set<1>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.y);
-                jointPosition.set<2>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.z);
+                jointPosition.set<0>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.position.x);
+                jointPosition.set<1>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.position.y);
+                jointPosition.set<2>(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.position.z);
                 curJnt->setPosition(jointPosition);
 
-                jointOrientation.push_back(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationRoll);
-                jointOrientation.push_back(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationPitch);
-                jointOrientation.push_back(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationYaw);
+                tf::Quaternion q;
+
+                tf::quaternionMsgToTF(msg->humanList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.orientation, q);
+                tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
+
+                jointOrientation.push_back(roll);
+                jointOrientation.push_back(pitch);
+                jointOrientation.push_back(yaw);
                 curJnt->setOrientation(jointOrientation);
 
                 curJnt->position = msg->humanList[i].meAgent.skeletonJoint[i_jnt].position;

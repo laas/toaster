@@ -6,7 +6,7 @@
  */
 
 #include "pdg/ToasterSimuRobotReader.h"
-
+#include "tf/transform_datatypes.h"
 
 ToasterSimuRobotReader::ToasterSimuRobotReader(ros::NodeHandle& node) {
     std::cout << "Initializing ToasterSimuRobotReader" << std::endl;
@@ -19,6 +19,7 @@ void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotLi
     //std::cout << "[area_manager][DEBUG] new data for robot received" << std::endl;
 
     Robot* curRobot;
+    double roll, pitch, yaw;
     for (unsigned int i = 0; i < msg->robotList.size(); i++) {
 
         // If this robot is not assigned we have to allocate data.
@@ -28,6 +29,7 @@ void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotLi
             curRobot = lastConfig_[msg->robotList[i].meAgent.meEntity.id];
 
         std::vector<double> robOrientation;
+        double roll, pitch, ywa;
         bg::model::point<double, 3, bg::cs::cartesian> robPosition;
 
         Mobility curRobMobility = FULL;
@@ -38,14 +40,20 @@ void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotLi
         curRobot->setTime(msg->robotList[i].meAgent.meEntity.time);
         curRobot->busyHands_ = msg->robotList[i].meAgent.busyHands;
 
-        robPosition.set<0>(msg->robotList[i].meAgent.meEntity.Pose.position.x);
-        robPosition.set<1>(msg->robotList[i].meAgent.meEntity.Pose.position.y);
-        robPosition.set<2>(msg->robotList[i].meAgent.meEntity.Pose.position.z);
+        robPosition.set<0>(msg->robotList[i].meAgent.meEntity.pose.position.x);
+        robPosition.set<1>(msg->robotList[i].meAgent.meEntity.pose.position.y);
+        robPosition.set<2>(msg->robotList[i].meAgent.meEntity.pose.position.z);
         curRobot->setPosition(robPosition);
 
-        robOrientation.push_back(msg->robotList[i].meAgent.meEntity.orientationRoll);
-        robOrientation.push_back(msg->robotList[i].meAgent.meEntity.orientationPitch);
-        robOrientation.push_back(msg->robotList[i].meAgent.meEntity.orientationYaw);
+
+        tf::Quaternion q;
+
+        tf::quaternionMsgToTF(msg->robotList[i].meAgent.meEntity.pose.orientation, q);
+        tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
+
+        robOrientation.push_back(roll);
+        robOrientation.push_back(pitch);
+        robOrientation.push_back(yaw);
         curRobot->setOrientation(robOrientation);
 
         lastConfig_[curRobot->getId()] = curRobot;
@@ -68,14 +76,20 @@ void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotLi
                 curJnt->setAgentId(curRobot->getId());
                 curJnt->setTime(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.time);
 
-                jointPosition.set<0>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.x);
-                jointPosition.set<1>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.y);
-                jointPosition.set<2>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.Pose.position.z);
+                jointPosition.set<0>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.position.x);
+                jointPosition.set<1>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.position.y);
+                jointPosition.set<2>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.position.z);
                 curJnt->setPosition(jointPosition);
 
-                jointOrientation.push_back(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationRoll);
-                jointOrientation.push_back(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationPitch);
-                jointOrientation.push_back(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.orientationYaw);
+
+                tf::Quaternion q;
+
+                tf::quaternionMsgToTF(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.orientation, q);
+                tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
+
+                jointOrientation.push_back(roll);
+                jointOrientation.push_back(pitch);
+                jointOrientation.push_back(yaw);
                 curJnt->setOrientation(jointOrientation);
 
                 curJnt->position = msg->robotList[i].meAgent.skeletonJoint[i_jnt].position;

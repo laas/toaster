@@ -34,6 +34,7 @@
 #include <toaster_msgs/PutInHand.h>
 #include <toaster_msgs/RemoveFromHand.h>
 #include <toaster_msgs/SetEntityPose.h>
+#include "tf/transform_datatypes.h"
 
 bool humanFullConfig_ = true; //If false we will use only position and orientation
 bool robotFullConfig_ = true; //If false we will use only position and orientation
@@ -65,12 +66,17 @@ void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
     msgEntity.time = srcEntity->getTime();
     msgEntity.name = srcEntity->getName();
-    msgEntity.Pose.position.x = srcEntity->getPosition().get<0>();
-    msgEntity.Pose.position.y = srcEntity->getPosition().get<1>();
-    msgEntity.Pose.position.z = srcEntity->getPosition().get<2>();
-    msgEntity.orientationRoll = srcEntity->getOrientation()[0];
-    msgEntity.orientationPitch = srcEntity->getOrientation()[1];
-    msgEntity.orientationYaw = srcEntity->getOrientation()[2];
+    msgEntity.pose.position.x = srcEntity->getPosition().get<0>();
+    msgEntity.pose.position.y = srcEntity->getPosition().get<1>();
+    msgEntity.pose.position.z = srcEntity->getPosition().get<2>();
+
+    tf::Quaternion q;
+    q.setRPY(srcEntity->getOrientation()[0], srcEntity->getOrientation()[1], srcEntity->getOrientation()[2]);
+
+    msgEntity.pose.orientation.x = q[0];
+    msgEntity.pose.orientation.y = q[1];
+    msgEntity.pose.orientation.z = q[2];
+    msgEntity.pose.orientation.w = q[3];
 }
 
 void updateEntity(Entity& newPoseEnt, Entity* storedEntity) {
@@ -83,12 +89,7 @@ bool updateToasterSimu(toaster_msgs::Entity& ent, std::string type) {
     toaster_msgs::SetEntityPose setPose;
     setPose.request.id = ent.id;
     setPose.request.type = type;
-    setPose.request.x = ent.Pose.position.x;
-    setPose.request.y = ent.Pose.position.y;
-    setPose.request.z = ent.Pose.position.z;
-    setPose.request.roll = ent.orientationRoll;
-    setPose.request.pitch = ent.orientationPitch;
-    setPose.request.yaw = ent.orientationYaw;
+    setPose.request.pose = ent.pose;
 
     if (setPoseClient_->call(setPose)) {
         ROS_DEBUG("[Request] we request to set Pose in toaster_simu: %s \n", ent.id.c_str());
@@ -115,10 +116,7 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
             if (it != (*itAgent).meAgent.skeletonNames.end()) {
                 jointEntity = (*itAgent).meAgent.skeletonJoint[std::distance((*itAgent).meAgent.skeletonNames.begin(), it)].meEntity;
 
-                msgEntity.Pose = jointEntity.Pose;
-                msgEntity.orientationRoll = jointEntity.orientationRoll;
-                msgEntity.orientationPitch = jointEntity.orientationPitch;
-                msgEntity.orientationYaw = jointEntity.orientationYaw;
+                msgEntity.pose = jointEntity.pose;
 
                 (*itAgent).meAgent.hasObjects.push_back(msgEntity.id);
                 (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
@@ -150,10 +148,7 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
             if (it != (*itAgent).meAgent.skeletonNames.end()) {
                 jointEntity = (*itAgent).meAgent.skeletonJoint[std::distance((*itAgent).meAgent.skeletonNames.begin(), it)].meEntity;
 
-                msgEntity.Pose = jointEntity.Pose;
-                msgEntity.orientationRoll = jointEntity.orientationRoll;
-                msgEntity.orientationPitch = jointEntity.orientationPitch;
-                msgEntity.orientationYaw = jointEntity.orientationYaw;
+                msgEntity.pose = jointEntity.pose;
 
                 (*itAgent).meAgent.hasObjects.push_back(msgEntity.id);
                 (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
@@ -243,13 +238,21 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
         toaster_msgs::SetEntityPose::Response & res) {
 
     if (req.id != "") {
+        double roll, pitch, yaw;
         newPoseEnt_.setId(req.id);
-        newPoseEnt_.position_.set<0>(req.x);
-        newPoseEnt_.position_.set<1>(req.y);
-        newPoseEnt_.position_.set<2>(req.z);
-        newPoseEnt_.orientation_[0] = req.roll;
-        newPoseEnt_.orientation_[1] = req.pitch;
-        newPoseEnt_.orientation_[2] = req.yaw;
+        newPoseEnt_.position_.set<0>(req.pose.position.x);
+        newPoseEnt_.position_.set<1>(req.pose.position.y);
+        newPoseEnt_.position_.set<2>(req.pose.position.z);
+
+        tf::Quaternion q;
+
+        tf::quaternionMsgToTF(req.pose.orientation, q);
+        tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
+
+
+        newPoseEnt_.orientation_[0] = roll;
+        newPoseEnt_.orientation_[1] = pitch;
+        newPoseEnt_.orientation_[2] = yaw;
         ROS_INFO("[toaster_simu][Request][INFO] request to set entity pose with "
                 "id %s successful", req.id.c_str());
         res.answer = true;

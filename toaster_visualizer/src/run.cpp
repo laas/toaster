@@ -262,8 +262,9 @@ public:
      * @param name 		marker's name
      * @return marker 	object marker or mesh marker if the object is in the mesh database
      */
-    visualization_msgs::Marker defineObj(double x, double y, double z, double roll, double pitch, double yaw, double scale, std::string name) {
-        //declarration 
+    visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, double scale, std::string name) {
+        //declaration
+        double roll, pitch, yaw;
         visualization_msgs::Marker marker;
 
         //frame id
@@ -278,18 +279,17 @@ public:
         //action
         marker.action = visualization_msgs::Marker::ADD;
 
-        //position
-        marker.pose.position.x = x;
-        marker.pose.position.y = y;
-        marker.pose.position.z = z;
+        //pose
+        marker.pose = pose;
+
 
         //orientation
-        marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
+        //marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
 
         //color
-        marker.color.r = 0.0f;
-        marker.color.g = 1.0f;
-        marker.color.b = 1.0f;
+        marker.color.r = 0.0;
+        marker.color.g = 1.0;
+        marker.color.b = 1.0;
         marker.color.a = 1.0;
 
         //scale
@@ -387,9 +387,10 @@ public:
      * @param name 		marker's name
      * @return marker 	mesh marker of human
      */
-    visualization_msgs::Marker defineHuman(double x, double y, double z, double roll, double pitch, double yaw, double scale, std::string name) {
+    visualization_msgs::Marker defineHuman(geometry_msgs::Pose pose, double scale, std::string name) {
 
-        //declarration
+        //declaration
+        double roll, pitch, yaw;
         visualization_msgs::Marker marker;
 
         //frame id
@@ -405,12 +406,15 @@ public:
         marker.action = visualization_msgs::Marker::ADD;
 
         //position
-        marker.pose.position.x = x;
-        marker.pose.position.y = y;
-        marker.pose.position.z = z + 0.1;
+        /*tf::Quaternion q;
+        tf::quaternionMsgToTF(marker.pose.orientation, q);
+        tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
 
-        //orientation
-        marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
+        yaw += 3.141596 / 2;
+
+        pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
+         */
+        marker.pose = pose;
 
         //color
         marker.color.r = 0.0f;
@@ -442,7 +446,7 @@ public:
      * @param name 		marker's name
      * @return marker 	mesh marker of robot
      */
-    visualization_msgs::Marker defineRobot(double x, double y, double z, double roll, double pitch, double yaw, double scale, std::string name) {
+    visualization_msgs::Marker defineRobot(geometry_msgs::Pose pose, double scale, std::string name) {
 
         //declarration
         visualization_msgs::Marker marker;
@@ -459,13 +463,11 @@ public:
         //action
         marker.action = visualization_msgs::Marker::ADD;
 
-        //position
-        marker.pose.position.x = x;
-        marker.pose.position.y = y;
-        marker.pose.position.z = z + 0.1;
+        //pose
+        marker.pose = pose;
 
         //orientation
-        marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
+        //marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
 
         //color
         marker.color.r = 0.0f;
@@ -575,20 +577,6 @@ public:
     // ******************************************************** adjustment functions ********************************************************
 
     /**
-     * Function to modify a marker's orientation
-     * @param marker		name of target marker
-     * @param orientationX value of rotation around x axis
-     * @param orientationY value of rotation around y axis
-     * @param orientationZ value of rotation around z axis
-     * @return marker 		new marker with input modifications
-     */
-    visualization_msgs::Marker setOrientation(visualization_msgs::Marker marker, float orientationX, float orientationY, float orientationZ) {
-        marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(orientationX, orientationY, orientationZ);
-
-        return marker;
-    }
-
-    /**
      * Function to modify a marker's color
      * @param marker		name of target marker
      * @param r 			value of red coefficient
@@ -681,7 +669,7 @@ public:
         obj_list.markers.clear();
 
         for (int i = 0; i < msg->objectList.size(); i++) {
-            visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.Pose.position.x, msg->objectList[i].meEntity.Pose.position.y, msg->objectList[i].meEntity.Pose.position.z, msg->objectList[i].meEntity.orientationRoll, msg->objectList[i].meEntity.orientationPitch, msg->objectList[i].meEntity.orientationYaw,
+            visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.pose,
                     1, msg->objectList[i].meEntity.name);
 
             visualization_msgs::Marker mn = defineName(m);
@@ -694,7 +682,12 @@ public:
             ROS_DEBUG("obj %d", m.id);
         }
         // extra object for environment
-        visualization_msgs::Marker m = defineObj(0.3, 0.3, -0.05, 0.0, 0.0, -1.57, 1, "env");
+        geometry_msgs::Pose p;
+        p.position.x = 0.3;
+        p.position.y = 0.3;
+        p.position.z = -0.05;
+        p.orientation.w = 1.0;
+        visualization_msgs::Marker m = defineObj(p, 1, "env");
         obj_list.markers.push_back(m);
     }
 
@@ -761,7 +754,7 @@ public:
 
         for (int i = 0; i < msg->robotList.size(); i++) {
             //non articulated robot
-            visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.Pose.position.x, msg->robotList[i].meAgent.meEntity.Pose.position.y, msg->robotList[i].meAgent.meEntity.Pose.position.z, msg->robotList[i].meAgent.meEntity.orientationRoll, msg->robotList[i].meAgent.meEntity.orientationPitch, msg->robotList[i].meAgent.meEntity.orientationYaw,
+            visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.pose,
                     1.0, msg->robotList[i].meAgent.meEntity.name);
 
 
@@ -796,7 +789,7 @@ public:
 
         for (int i = 0; i < msg->humanList.size(); i++) {
             //non articulated human
-            visualization_msgs::Marker m = defineHuman(msg->humanList[i].meAgent.meEntity.Pose.position.x, msg->humanList[i].meAgent.meEntity.Pose.position.y, msg->humanList[i].meAgent.meEntity.Pose.position.z, msg->humanList[i].meAgent.meEntity.orientationRoll, msg->humanList[i].meAgent.meEntity.orientationPitch, msg->humanList[i].meAgent.meEntity.orientationYaw,
+            visualization_msgs::Marker m = defineHuman(msg->humanList[i].meAgent.meEntity.pose,
                     0.3, msg->humanList[i].meAgent.meEntity.name);
 
             visualization_msgs::Marker mn = defineName(m);
@@ -838,16 +831,13 @@ public:
                     //action
                     markerTempo.action = visualization_msgs::Marker::ADD;
 
-                    //position
-                    markerTempo = setPosition(markerTempo, joints[y].meEntity.Pose.position.x, joints[y].meEntity.Pose.position.y, joints[y].meEntity.Pose.position.z);
-
-                    //orientation
-                    markerTempo = setOrientation(markerTempo, joints[y].meEntity.orientationRoll, joints[y].meEntity.orientationPitch, joints[y].meEntity.orientationYaw);
+                    // Pose
+                    markerTempo.pose = joints[y].meEntity.pose;
 
                     //color
-                    markerTempo.color.r = 1.0f;
-                    markerTempo.color.g = 1.0f;
-                    markerTempo.color.b = 1.0f;
+                    markerTempo.color.r = 1.0;
+                    markerTempo.color.g = 1.0;
+                    markerTempo.color.b = 1.0;
                     markerTempo.color.a = 1.0;
 
                     //scale
