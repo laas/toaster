@@ -272,6 +272,31 @@ int main(int argc, char** argv) {
     ros::NodeHandle node;
 
 
+    //Set params to select input
+    if (node.hasParam("/pdg/morseHuman"))
+        node.getParam("/pdg/morseHuman", morseHuman_);
+    if (node.hasParam("/pdg/niutHuman"))
+        node.getParam("/pdg/niutHuman", niutHuman_);
+    if (node.hasParam("/pdg/groupHuman"))
+        node.getParam("/pdg/groupHuman", groupHuman_);
+    if (node.hasParam("/pdg/mocapHuman"))
+        node.getParam("/pdg/mocapHuman", mocapHuman_);
+    if (node.hasParam("/pdg/adreamMocapHuman"))
+        node.getParam("/pdg/adreamMocapHuman", adreamMocapHuman_);
+    if (node.hasParam("/pdg/toasterSimuHuman"))
+        node.getParam("/pdg/toasterSimuHuman", toasterSimuHuman_);
+
+    if (node.hasParam("/pdg/pr2Robot"))
+        node.getParam("/pdg/pr2Robot", pr2Robot_);
+    if (node.hasParam("/pdg/spencerRobot"))
+        node.getParam("/pdg/spencerRobot", spencerRobot_);
+    if (node.hasParam("/pdg/toasterSimuRobot"))
+        node.getParam("/pdg/toasterSimuRobot", toasterSimuRobot_);
+
+    if (node.hasParam("/pdg/toasterSimuObject"))
+        node.getParam("/pdg/toasterSimuObject", toasterSimuObject_);
+
+
     //Data reading
     GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
     MorseHumanReader morseHumanRd(node, humanFullConfig_);

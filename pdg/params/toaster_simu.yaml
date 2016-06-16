@@ -1,0 +1,5 @@
+---
+pdg:
+    toasterSimuHuman : true
+    toasterSimuRobot : true 
+    toasterSimuObject : true
