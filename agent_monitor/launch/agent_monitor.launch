@@ -1,0 +1,5 @@
+<launch>
+	<rosparam command="load" file="$(find agent_monitor)/params/agent_monitor_params1.yaml" />
+
+	<node name="agent_monitor" pkg="agent_monitor" type="agent_monitor" output="screen"/>  <!-- Launch agent_monitor -->
+</launch>
