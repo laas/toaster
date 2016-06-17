@@ -844,6 +844,8 @@ public:
 int main(int argc, char **argv) {
     ros::init(argc, argv, "Run");
 
+    ROS_INFO("visualization ready, you need to launch rviz to display");
+
     Run c = Run();
 
 
