@@ -10,14 +10,14 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Robot.h"
-#include "toaster_msgs/RobotList.h"
+#include "toaster_msgs/RobotListStamped.h"
 #include "pdg/RobotReader.h"
 
 class ToasterSimuRobotReader : public RobotReader {
 public:
     ToasterSimuRobotReader(ros::NodeHandle& node);
 private:
-    void robotJointStateCallBack(const toaster_msgs::RobotList::ConstPtr& msg);
+    void robotJointStateCallBack(const toaster_msgs::RobotListStamped::ConstPtr& msg);
     ros::Subscriber sub_;
 };
 

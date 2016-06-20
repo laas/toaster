@@ -15,7 +15,7 @@ ToasterSimuObjectReader::ToasterSimuObjectReader(ros::NodeHandle& node) {
     sub_ = node.subscribe("/toaster_simu/objectList", 1, &ToasterSimuObjectReader::objectStateCallBack, this);
 }
 
-void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectList::ConstPtr& msg) {
+void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for object received" << std::endl;
 
     MovableObject* curObject;

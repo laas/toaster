@@ -15,7 +15,7 @@ ToasterSimuRobotReader::ToasterSimuRobotReader(ros::NodeHandle& node) {
     sub_ = node.subscribe("/toaster_simu/robotList", 1, &ToasterSimuRobotReader::robotJointStateCallBack, this);
 }
 
-void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::ConstPtr& msg) {
+void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotListStamped::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for robot received" << std::endl;
 
     Robot* curRobot;

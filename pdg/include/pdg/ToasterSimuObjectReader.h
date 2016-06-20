@@ -10,7 +10,7 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Object.h"
-#include "toaster_msgs/ObjectList.h"
+#include "toaster_msgs/ObjectListStamped.h"
 #include "ObjectReader.h"
 
 class ToasterSimuObjectReader : public ObjectReader {
@@ -19,7 +19,7 @@ public:
 
 private:
     //Functions
-    void objectStateCallBack(const toaster_msgs::ObjectList::ConstPtr& msg);
+    void objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg);
     ros::Subscriber sub_;
 };
 

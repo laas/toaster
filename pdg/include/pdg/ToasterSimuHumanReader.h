@@ -10,7 +10,7 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
-#include "toaster_msgs/HumanList.h"
+#include "toaster_msgs/HumanListStamped.h"
 #include "pdg/HumanReader.h"
 
 class ToasterSimuHumanReader : public HumanReader {
@@ -18,7 +18,7 @@ public:
     ToasterSimuHumanReader(ros::NodeHandle& node);
 
 private:
-    void humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg);
+    void humanJointStateCallBack(const toaster_msgs::HumanListStamped::ConstPtr& msg);
     ros::Subscriber sub_;
 };
 

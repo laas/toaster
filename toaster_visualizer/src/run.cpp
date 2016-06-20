@@ -14,10 +14,10 @@
 #include "toaster_msgs/Object.h"
 #include "toaster_msgs/AreaList.h"
 #include "geometry_msgs/Point.h"
-#include "toaster_msgs/ObjectList.h"
-#include "toaster_msgs/HumanList.h"
+#include "toaster_msgs/ObjectListStamped.h"
+#include "toaster_msgs/HumanListStamped.h"
 #include "toaster_msgs/FactList.h"
-#include "toaster_msgs/RobotList.h"
+#include "toaster_msgs/RobotListStamped.h"
 #include "toaster_msgs/Joint.h"
 #include <map>
 #include <geometry_msgs/Polygon.h>
@@ -664,7 +664,7 @@ public:
      * @param msg			reference to receive toaster_msgs::ObjectList
      * @return 			void
      */
-    void chatterCallbackObjList(const toaster_msgs::ObjectList::ConstPtr& msg) //toaster object list reception
+    void chatterCallbackObjList(const toaster_msgs::ObjectListStamped::ConstPtr& msg) //toaster object list reception
     {
         obj_list.markers.clear();
 
@@ -749,7 +749,7 @@ public:
      * @param msg			reference to receive toaster_msgs::RobotList
      * @return 			void
      */
-    void chatterCallbackRobotList(const toaster_msgs::RobotList::ConstPtr& msg) {
+    void chatterCallbackRobotList(const toaster_msgs::RobotListStamped::ConstPtr& msg) {
         robot_list.markers.clear();
 
         for (int i = 0; i < msg->robotList.size(); i++) {
@@ -784,7 +784,7 @@ public:
      * @param msg			reference to receive toaster_msgs::HumanList
      * @return 			void
      */
-    void chatterCallbackHumanList(const toaster_msgs::HumanList::ConstPtr& msg) {
+    void chatterCallbackHumanList(const toaster_msgs::HumanListStamped::ConstPtr& msg) {
         human_list.markers.clear();
 
         for (int i = 0; i < msg->humanList.size(); i++) {

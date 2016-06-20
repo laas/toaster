@@ -8,9 +8,9 @@
 #include <toaster_msgs/Robot.h>
 #include <toaster_msgs/Human.h>
 #include <toaster_msgs/Object.h>
-#include <toaster_msgs/RobotList.h>
-#include <toaster_msgs/HumanList.h>
-#include <toaster_msgs/ObjectList.h>
+#include <toaster_msgs/RobotListStamped.h>
+#include <toaster_msgs/HumanListStamped.h>
+#include <toaster_msgs/ObjectListStamped.h>
 #include <boost/algorithm/string/predicate.hpp>
 
 
@@ -430,9 +430,9 @@ int main(int argc, char** argv) {
     ROS_INFO("[Request] Ready to control entity with keyboard.");
 
     //Data writing
-    ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("toaster_simu/objectList", 1000);
-    ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("toaster_simu/humanList", 1000);
-    ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotList>("toaster_simu/robotList", 1000);
+    ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectListStamped>("toaster_simu/objectList", 1000);
+    ros::Publisher human_pub = node.advertise<toaster_msgs::HumanListStamped>("toaster_simu/humanList", 1000);
+    ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotListStamped>("toaster_simu/robotList", 1000);
 
     ros::Rate loop_rate(30);
 
@@ -454,9 +454,9 @@ int main(int argc, char** argv) {
 
     while (node.ok()) {
 
-        toaster_msgs::ObjectList objectList_msg;
-        toaster_msgs::HumanList humanList_msg;
-        toaster_msgs::RobotList robotList_msg;
+        toaster_msgs::ObjectListStamped objectList_msg;
+        toaster_msgs::HumanListStamped humanList_msg;
+        toaster_msgs::RobotListStamped robotList_msg;
 
 
 

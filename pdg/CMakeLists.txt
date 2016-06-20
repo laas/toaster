@@ -54,10 +54,8 @@ find_package(Boost REQUIRED COMPONENTS)# system)
 #   Message1.msg
 #   Message2.msg
 # )
-#add_message_files(FILES Agent.msg     HumanList.msg
-#Entity.msg    Human.msg		      RobotList.msg
-#FactList.msg  Joint.msg		      Robot.msg
-#Fact.msg      ObjectList.msg          Object.msg)
+#add_message_files(FILES
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
