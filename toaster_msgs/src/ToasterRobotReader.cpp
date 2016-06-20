@@ -8,15 +8,15 @@
 #include "toaster_msgs/ToasterRobotReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterRobotReader::ToasterRobotReader(ros::NodeHandle& node, bool fullRobot) {
+ToasterRobotReader::ToasterRobotReader(ros::NodeHandle& node, bool fullRobot, std::string topic) {
     fullRobot_ = fullRobot;
     std::cout << "Initializing ToasterRobotReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/pdg/robotList", 1, &ToasterRobotReader::robotJointStateCallBack, this);
+    sub_ = node.subscribe(topic, 1, &ToasterRobotReader::robotJointStateCallBack, this);
 }
 
-void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotList::ConstPtr& msg) {
+void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotListStamped::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for robot received" << std::endl;
 
     double roll, pitch, yaw;

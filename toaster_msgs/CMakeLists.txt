@@ -25,12 +25,12 @@ add_message_files(
    Entity.msg
    FactList.msg
    Fact.msg
-   HumanList.msg
+   HumanListStamped.msg
    Human.msg
    Joint.msg
-   ObjectList.msg
+   ObjectListStamped.msg
    Object.msg
-   RobotList.msg
+   RobotListStamped.msg
    Robot.msg
 
    Property.msg

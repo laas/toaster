@@ -8,14 +8,14 @@
 #include "toaster_msgs/ToasterObjectReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterObjectReader::ToasterObjectReader(ros::NodeHandle& node) {
+ToasterObjectReader::ToasterObjectReader(ros::NodeHandle& node, std::string topic) {
     std::cout << " Initializing ToasterObjectReader" << std::endl;
 
     // Starts listening to the topic
-    sub_ = node.subscribe("/pdg/objectList", 1, &ToasterObjectReader::objectStateCallBack, this);
+    sub_ = node.subscribe(topic, 1, &ToasterObjectReader::objectStateCallBack, this);
 }
 
-void ToasterObjectReader::objectStateCallBack(const toaster_msgs::ObjectList::ConstPtr& msg) {
+void ToasterObjectReader::objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for object received" << std::endl;
 
     Object* curObject;

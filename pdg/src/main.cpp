@@ -19,22 +19,16 @@
 
 
 // Message generated class
-#include <toaster_msgs/Entity.h>
-#include <toaster_msgs/Agent.h>
-#include <toaster_msgs/Joint.h>
-#include <toaster_msgs/Robot.h>
-#include <toaster_msgs/Human.h>
-#include <toaster_msgs/Object.h>
-#include <toaster_msgs/Fact.h>
 #include <toaster_msgs/FactList.h>
-#include <toaster_msgs/RobotList.h>
-#include <toaster_msgs/HumanList.h>
-#include <toaster_msgs/ObjectList.h>
+#include <toaster_msgs/RobotListStamped.h>
+#include <toaster_msgs/HumanListStamped.h>
+#include <toaster_msgs/ObjectListStamped.h>
 #include <toaster_msgs/AddStream.h>
 #include <toaster_msgs/PutInHand.h>
 #include <toaster_msgs/RemoveFromHand.h>
 #include <toaster_msgs/SetEntityPose.h>
 #include "tf/transform_datatypes.h"
+#include "std_msgs/String.h"
 
 bool humanFullConfig_ = true; //If false we will use only position and orientation
 bool robotFullConfig_ = true; //If false we will use only position and orientation
@@ -101,7 +95,7 @@ bool updateToasterSimu(toaster_msgs::Entity& ent, std::string type) {
 }
 
 bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, std::string joint,
-        toaster_msgs::HumanList& humanList_msg, bool toastersimu) {
+        toaster_msgs::HumanListStamped& humanList_msg, bool toastersimu) {
 
     toaster_msgs::Entity jointEntity;
 
@@ -133,7 +127,7 @@ bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, st
 }
 
 bool putAtJointPosition(toaster_msgs::Entity& msgEntity, std::string agentId, std::string joint,
-        toaster_msgs::RobotList robotList_msg, bool toastersimu) {
+        toaster_msgs::RobotListStamped robotList_msg, bool toastersimu) {
 
     toaster_msgs::Entity jointEntity;
 
@@ -268,6 +262,7 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
 
 int main(int argc, char** argv) {
 
+    unsigned int seq = 0;
     ros::init(argc, argv, "pdg");
     ros::NodeHandle node;
 
@@ -325,9 +320,9 @@ int main(int argc, char** argv) {
     ROS_INFO("Ready to set Entity position.");
 
     //Data writing
-    ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectList>("pdg/objectList", 1000);
-    ros::Publisher human_pub = node.advertise<toaster_msgs::HumanList>("pdg/humanList", 1000);
-    ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotList>("pdg/robotList", 1000);
+    ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectListStamped>("pdg/objectList", 1000);
+    ros::Publisher human_pub = node.advertise<toaster_msgs::HumanListStamped>("pdg/humanList", 1000);
+    ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotListStamped>("pdg/robotList", 1000);
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("pdg/factList", 1000);
 
 
@@ -343,9 +338,9 @@ int main(int argc, char** argv) {
 
     while (node.ok()) {
 
-        toaster_msgs::ObjectList objectList_msg;
-        toaster_msgs::HumanList humanList_msg;
-        toaster_msgs::RobotList robotList_msg;
+        toaster_msgs::ObjectListStamped objectList_msg;
+        toaster_msgs::HumanListStamped humanList_msg;
+        toaster_msgs::RobotListStamped robotList_msg;
         toaster_msgs::FactList factList_msg;
         toaster_msgs::Fact fact_msg;
         toaster_msgs::Object object_msg;
@@ -690,7 +685,14 @@ int main(int argc, char** argv) {
 
         ////////////////////////////////////////////////////////////////////////
 
-
+        //header of messages
+        seq++;
+        objectList_msg.header.stamp = ros::Time::now();
+        objectList_msg.header.frame_id = 1;
+        
+        humanList_msg.header = objectList_msg.header;
+        robotList_msg.header =  objectList_msg.header;
+        
 
         //ROS_INFO("%s", msg.data.c_str());
 

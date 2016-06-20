@@ -11,7 +11,7 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Robot.h"
-#include "toaster_msgs/RobotList.h"
+#include "toaster_msgs/RobotListStamped.h"
 #include <map>
 
 class ToasterRobotReader{
@@ -22,10 +22,10 @@ class ToasterRobotReader{
 
        bool isPresent(std::string id);
 
-       ToasterRobotReader(ros::NodeHandle& node, bool fullRobot);
+       ToasterRobotReader(ros::NodeHandle& node, bool fullRobot, std::string topic="pdg/robotList");
 
     private:
-       void robotJointStateCallBack(const toaster_msgs::RobotList::ConstPtr& msg);
+       void robotJointStateCallBack(const toaster_msgs::RobotListStamped::ConstPtr& msg);
        ros::Subscriber sub_;
 
 };

@@ -15,7 +15,7 @@ ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, st
     sub_ = node.subscribe(topic, 1, &ToasterHumanReader::humanJointStateCallBack, this);
 }
 
-void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg) {
+void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanListStamped::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for human received with time " << msg->humanList[0].meAgent.meEntity.time  << std::endl;
 
     double roll, pitch, yaw;

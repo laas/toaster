@@ -13,7 +13,7 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
-#include "toaster_msgs/HumanList.h"
+#include "toaster_msgs/HumanListStamped.h"
 #include <map>
 
 class ToasterHumanReader {
@@ -26,7 +26,7 @@ public:
     ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic="pdg/humanList");
 
 private:
-    void humanJointStateCallBack(const toaster_msgs::HumanList::ConstPtr& msg);
+    void humanJointStateCallBack(const toaster_msgs::HumanListStamped::ConstPtr& msg);
     ros::Subscriber sub_;
 
 };

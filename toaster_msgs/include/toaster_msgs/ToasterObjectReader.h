@@ -10,7 +10,7 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Object.h"
-#include "toaster_msgs/ObjectList.h"
+#include "toaster_msgs/ObjectListStamped.h"
 #include <map>
 
 class ToasterObjectReader {
@@ -19,10 +19,10 @@ public:
 
     bool isPresent(std::string id);
 
-    ToasterObjectReader(ros::NodeHandle& node);
+    ToasterObjectReader(ros::NodeHandle& node, std::string topic="pdg/objectList");
 
 private:
-    void objectStateCallBack(const toaster_msgs::ObjectList::ConstPtr& msg);
+    void objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg);
     ros::Subscriber sub_;
 
 };

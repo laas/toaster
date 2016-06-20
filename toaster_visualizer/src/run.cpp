@@ -1028,7 +1028,8 @@ public:
  */
 int main(int argc, char **argv) {
     ros::init(argc, argv, "Run");
-
+    ROS_INFO("[toaster-visu] launched");
+    
     Run c = Run();
 
 
