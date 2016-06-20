@@ -688,6 +688,7 @@ int main(int argc, char** argv) {
         //header of messages
         seq++;
         objectList_msg.header.stamp = ros::Time::now();
+        objectList_msg.header.seq = seq;
         objectList_msg.header.frame_id = 1;
         
         humanList_msg.header = objectList_msg.header;
