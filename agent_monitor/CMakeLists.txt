@@ -6,7 +6,9 @@ project(agent_monitor)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   toaster_msgs
+  dynamic_reconfigure
 )
+
 
 ## System dependencies are found with CMake's conventions
 #find_package(Boost REQUIRED COMPONENTS system)
@@ -65,6 +67,10 @@ find_package(catkin REQUIRED COMPONENTS
 #   Action2.action
 # )
 
+generate_dynamic_reconfigure_options(
+  cfg/monitoring_dyn_param.cfg
+)
+
 ## Generate added messages and services with any dependencies listed here
 #generate_messages(
 #   DEPENDENCIES
@@ -98,6 +104,8 @@ include_directories(
   ${Boost_INCLUDE_DIRS}  $ENV{TOASTERLIB_DIR}/include
 )
 
+
+
 ## Declare a cpp library
 # add_library(agent_monitor
 #   src/${PROJECT_NAME}/agent_monitor.cpp
@@ -109,6 +117,8 @@ add_executable(agent_monitor src/main.cpp)
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(agent_monitor agent_monitor_generate_messages_cpp)
+
+add_dependencies(agent_monitor ${PROJECT_NAME}_gencfg)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(agent_monitor_node
