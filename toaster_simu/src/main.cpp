@@ -591,14 +591,14 @@ int main(int argc, char** argv) {
                         case (SDLK_LEFT):
                         {
                             if (pressed)
-                                y = 1.0;
+                                y = -1.0;
                             else y = 0.0;
                             break;
                         }
                         case (SDLK_RIGHT):
                         {
                             if (pressed)
-                                y = -1.0;
+                                y = 1.0;
                             else y = 0.0;
                             break;
                         }
