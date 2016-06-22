@@ -633,28 +633,28 @@ int main(int argc, char** argv) {
                         case (SDLK_a):
                         {
                             if (pressed)
-                                pitch = 1.0;
+                                pitch = -1.0;
                             else pitch = 0.0;
                             break;
                         }
                         case (SDLK_d):
                         {
                             if (pressed)
-                                pitch = -1.0;
+                                pitch = 1.0;
                             else pitch = 0.0;
                             break;
                         }
                         case (SDLK_q):
                         {
                             if (pressed)
-                                yaw = 1.0;
+                                yaw = -1.0;
                             else yaw = 0.0;
                             break;
                         }
                         case (SDLK_e):
                         {
                             if (pressed)
-                                yaw = -1.0;
+                                yaw = 1.0;
                             else yaw = 0.0;
                             break;
                         }
