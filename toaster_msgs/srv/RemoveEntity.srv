@@ -1,0 +1,5 @@
+string id
+string type
+string ownerId
+---
+bool answer

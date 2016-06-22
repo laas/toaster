@@ -44,6 +44,7 @@ add_service_files(
   FILES
   AddAgent.srv
   AddEntity.srv
+  RemoveEntity.srv
   AddJointToAgent.srv
   MonitorAll.srv
   Empty.srv

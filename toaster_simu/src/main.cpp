@@ -17,6 +17,7 @@
 //Services
 #include <toaster_msgs/SetEntityPose.h>
 #include <toaster_msgs/AddEntity.h>
+#include <toaster_msgs/RemoveEntity.h>
 #include <toaster_msgs/AddAgent.h>
 
 #include "toaster_simu/Keyboard.h"
@@ -108,7 +109,7 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
                 // find the joint
                 int index = -1;
                 for (int i = 0; i < itR->second.meAgent.skeletonJoint.size(); i++) {
-                    if (boost::iequals(itH->second.meAgent.skeletonJoint[i].meEntity.id, id))
+                    if (boost::iequals(itR->second.meAgent.skeletonJoint[i].meEntity.id, id))
                         index = i;
                 }
 
@@ -388,7 +389,7 @@ bool addEntity(toaster_msgs::AddEntity::Request &req,
             }
         } else {
             ROS_WARN("[toaster_simu][Request] request to set entity pose with "
-                    "type %s, please use \"object\", \"human\" or \"robot\" as a type", req.type.c_str());
+                    "type %s, please use \"object\", \"human\", \"robot\" or \"joint\"as a type", req.type.c_str());
             res.answer = false;
             return true;
         }
@@ -397,6 +398,110 @@ bool addEntity(toaster_msgs::AddEntity::Request &req,
     res.answer = true;
     return true;
 
+}
+
+bool removeEntity(toaster_msgs::RemoveEntity::Request &req,
+        toaster_msgs::RemoveEntity::Response & res) {
+    if (req.type == "" || req.id == "") {
+        ROS_WARN("[toaster_simu][Request] to remove entity you need to specify "
+                "the entity type and id");
+        res.answer = false;
+    } else {
+        // Is it an object?
+        if (boost::iequals(req.type, "object")) {
+            std::map<std::string, toaster_msgs::Object>::iterator it = object_map.find(req.id);
+            if (it != object_map.end()) {
+                object_map.erase(it);
+            } else {
+                ROS_WARN("[toaster_simu][Request] We couldn't find the object %s", req.id.c_str());
+                res.answer = false;
+                return false;
+            }
+
+            // Ok, not an object, mb a human?
+        } else if (boost::iequals(req.type, "human")) {
+            std::map<std::string, toaster_msgs::Human>::iterator itH = human_map.find(req.id);
+            if (itH != human_map.end()) {
+                human_map.erase(itH);
+            } else {
+                ROS_WARN("[toaster_simu][Request] We couldn't find the human %s", req.id.c_str());
+                res.answer = false;
+                return false;
+            }
+
+            // Ok, not a human, mb a robot??
+        } else if (boost::iequals(req.type, "robot")) {
+            std::map<std::string, toaster_msgs::Robot>::iterator itR = robot_map.find(req.id);
+            if (itR != robot_map.end()) {
+                robot_map.erase(itR);
+            } else {
+                ROS_WARN("[toaster_simu][Request] We couldn't find the robot %s", req.id.c_str());
+                res.answer = false;
+                return false;
+            }
+
+        } else if (boost::iequals(req.type, "joint")) {
+            ROS_DEBUG("Changing joint position");
+            std::map<std::string, toaster_msgs::Human>::iterator itH = human_map.find(req.ownerId);
+            if (itH != human_map.end()) {
+
+                ROS_DEBUG("remove joint: owner is a human");
+                toaster_msgs::Joint joint;
+
+                // find the joint
+                int index = -1;
+                for (int i = 0; i < itH->second.meAgent.skeletonJoint.size(); i++) {
+                    ROS_DEBUG("we compare %s and %s", itH->second.meAgent.skeletonJoint[i].meEntity.id.c_str(), req.id.c_str());
+                    if (boost::iequals(itH->second.meAgent.skeletonJoint[i].meEntity.id, req.id)) {
+                        index = i;
+                    }
+                }
+
+                if (index == -1) {
+                    ROS_WARN("We found the owner %s but he doesn't have a joint %s", req.ownerId.c_str(), req.id.c_str());
+                    res.answer = false;
+                    return false;
+                }
+
+                itH->second.meAgent.skeletonJoint.erase(itH->second.meAgent.skeletonJoint.begin() + index);
+                itH->second.meAgent.skeletonNames.erase(itH->second.meAgent.skeletonNames.begin() + index);
+
+
+            } else {
+                std::map<std::string, toaster_msgs::Robot>::iterator itR = robot_map.find(req.ownerId);
+                if (itR != robot_map.end()) {
+
+                    ROS_DEBUG("remove joint owner: is a robot");
+                    toaster_msgs::Joint joint;
+
+                    // find the joint
+                    int index = -1;
+                    for (int i = 0; i < itR->second.meAgent.skeletonJoint.size(); i++) {
+                        if (boost::iequals(itR->second.meAgent.skeletonJoint[i].meEntity.id, req.id))
+                            index = i;
+                    }
+
+                    if (index == -1) {
+
+                        ROS_WARN("We found the owner %s but he doesn't have a joint %s", req.ownerId.c_str(), req.id.c_str());
+                        res.answer = false;
+                        return false;
+                    }
+
+                    itR->second.meAgent.skeletonJoint.erase(itR->second.meAgent.skeletonJoint.begin() + index);
+                    itR->second.meAgent.skeletonNames.erase(itR->second.meAgent.skeletonNames.begin() + index);
+
+                } else {
+                    ROS_WARN("We did not found the owner %s ", req.ownerId.c_str());
+                    res.answer = false;
+                    return false;
+                }
+            }
+        }//joint
+    }
+
+    res.answer = true;
+    return true;
 }
 
 bool setEntityKeyboard(toaster_msgs::AddAgent::Request &req,
@@ -425,6 +530,10 @@ int main(int argc, char** argv) {
 
     ros::ServiceServer serviceAddEnt = node.advertiseService("toaster_simu/add_entity", addEntity);
     ROS_INFO("[Request] Ready to add entities.");
+
+
+    ros::ServiceServer serviceRmEnt = node.advertiseService("toaster_simu/remove_entity", removeEntity);
+    ROS_INFO("[Request] Ready to remove entities.");
 
     ros::ServiceServer serviceSetKeyb = node.advertiseService("toaster_simu/set_entity_keyboard", setEntityKeyboard);
     ROS_INFO("[Request] Ready to control entity with keyboard.");
