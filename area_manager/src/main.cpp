@@ -326,6 +326,13 @@ bool removeAllAreas(toaster_msgs::Empty::Request &req,
 bool printArea(toaster_msgs::PrintArea::Request &req,
         toaster_msgs::RemoveArea::Response & res) {
 
+    std::map<unsigned int, Area*>::iterator itArea = mapArea_.find(req.id);
+    if (itArea != mapArea_.end()) {
+        ROS_WARN("The requested area with id %d does not exist, please enter a valid id.\n "
+                "Alternatively, use the service /area_manager/print_all_areas", req.id);
+        res.answer = false;
+        return false;
+    }
     printMyArea(req.id);
     res.answer = true;
     return true;
