@@ -10,6 +10,7 @@
 #include "toaster_msgs/GetInfoDB.h"
 #include "toaster_msgs/SetInfoDB.h"
 #include "toaster_msgs/ExecuteDB.h"
+#include "toaster_msgs/PlotFactsDB.h"
 #include "toaster_msgs/Property.h"
 #include "toaster_msgs/Agent.h"
 #include "toaster_msgs/ToasterFactReader.h"
@@ -19,6 +20,10 @@
 #include "toaster_msgs/Fact.h"
 #include "toaster_msgs/Id.h"
 #include "toaster_msgs/FactList.h"
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <string>
 
 
 
