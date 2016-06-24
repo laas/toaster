@@ -1,0 +1,7 @@
+string subjectID
+string targetID
+string a
+string b
+string reqFact
+---
+bool boolAnswer
