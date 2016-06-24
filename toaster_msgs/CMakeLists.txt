@@ -71,6 +71,7 @@ add_service_files(
   RemoveFactToAgent.srv
   GetFactValue.srv
   GetFacts.srv
+  PlotFactsDB.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
