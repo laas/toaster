@@ -1854,6 +1854,97 @@ bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::
    return true;
 }
 
+////////////////////////////////////////////////
+//for graphical representation of facts/////////
+////////////////////////////////////////////////
+
+//for graphical representation
+
+bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFactsDB::Response &res){
+
+     std::string sql;
+     char **pazResult;
+      int pnRow;
+      int pnColumn ;
+      char *err_msg = NULL;
+      int ret;
+      long long int i;
+     sql = (std::string)"SELECT * from events_table where subject_id='"+ boost::lexical_cast<std::string>(req.subjectID) +"' and target_id='"+boost::lexical_cast<std::string>(req.targetID)+"' and time>='"+boost::lexical_cast<std::string>(req.a) +"' and time<='"+ boost::lexical_cast<std::string>(req.b) +"' and (predicate ='" + boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!"+boost::lexical_cast<std::string>(req.reqFact)+"');";
+     ret = sqlite3_get_table (database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
+	 if (ret != SQLITE_OK) 
+      {
+      fprintf (stderr, "Error: %s\n", err_msg);
+      sqlite3_free (err_msg);
+      res.boolAnswer = false;
+      return false;
+      }
+      else {
+		   std::map<long long int,int> fn ;
+		  std::vector<long long int> data(pnRow + 2);
+		  std::string aa = boost::lexical_cast<std::string>(req.a);
+		  data[0] = std::atoll(aa.c_str());
+		  long long int a = data[0];
+		  std::string bb = boost::lexical_cast<std::string>(req.b);
+		  std::string reqFact = boost::lexical_cast<std::string>(req.reqFact);
+		 long long int b = std::atoll(bb.c_str());
+		  if(pazResult[(1 * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(1 * ( pnColumn)) + 6])>=a)
+		   {fn[a] =  0; }
+		   else
+		   {fn[a] = 1 ;}
+		  if(pazResult[(pnRow * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(pnRow * ( pnColumn)) + 6])<=b)
+		   {fn[b] =  1; }
+		   else
+		   {fn[b] = 0 ;} 
+		   ROS_INFO("a is %lld \n", a);
+		   ROS_INFO("b is %lld \n", b);
+		  data[pnRow + 1] = b;
+		  ROS_INFO("%lld    %d", data[0],fn[data[0]]);
+      for (i = 1; i <= (pnRow); i++)
+       {
+        fprintf (stderr, "subject_id: %s \n predicate: %s \n propertyType: %s \n time: %s \n",
+        pazResult[(i * ( pnColumn)) + 0], pazResult[(i * ( pnColumn)) + 1], pazResult[(i * ( pnColumn)) + 2], pazResult[(i * ( pnColumn)) + 6]);
+        data[i] = atoll(pazResult[(i * ( pnColumn)) + 6]);
+        std::string status = pazResult[(i * ( pnColumn)) + 1];
+       
+        if(status.compare(reqFact))
+                fn[atoll(pazResult[(i * ( pnColumn)) + 6])]= 1 ;
+        else
+                fn[atoll(pazResult[(i * ( pnColumn)) + 6])]= 0 ;
+        
+        ROS_INFO("%lld    %d", data[i],fn[data[i]]);
+       }
+       ROS_INFO("%lld    %d", data[pnRow+1],fn[data[pnRow+1]]);
+       
+       std::ofstream myfile;
+       myfile.open ("fact.dat"); // you can mention the full complete path of file like "/home/jshipra/fact.dat"
+       long long int diff = b - a ;
+       for(i = 0 ; i< diff ; i=i+100000)
+      {  long long int x = a + i;
+		  int k = 0;
+        for(i = 0 ; i< diff ; i=i+100000)
+      {  long long int x = a + i;
+          int k = 0;
+          int flag = 0;
+       for(int j=0; j< pnRow + 2; j++)
+       { if(x<data[j])
+           {
+                k = j-1;
+                flag = 1;
+           }
+           if(flag==1)
+             break;
+        }
+       int y = fn[data[k]];
+       myfile << x <<"        "<< y<< "\n";
+       }
+         myfile.close();
+       res.boolAnswer = true;
+       return true;
+      }
+	 
+	} 
+}
+
 
 ///////////////////////////////////////////////////////////
 // UPDATE WORLD STATE ////////////
@@ -2122,6 +2213,7 @@ int main(int argc, char **argv) {
     ros::ServiceServer set_info_service;
     ros::ServiceServer get_info_service;
     ros::ServiceServer execute_service;
+    ros::ServiceServer plot_service;
     
 
     //////////////////////////////////////////////////////////////////////
@@ -2129,7 +2221,7 @@ int main(int argc, char **argv) {
     set_info_service = node.advertiseService("database/set_info", set_info_db);
     get_info_service = node.advertiseService("database/get_info", get_info_db);
     execute_service = node.advertiseService("database/execute", execute_db);
-
+    plot_service = node.advertiseService("database/plot_facts",plot_facts_db);
 
     ///////////////////////////////////////////////////////////////
 
