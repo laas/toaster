@@ -1,7 +1,7 @@
 string subjectID
 string targetID
-string a
-string b
+uint64 timeStart
+uint64 timeEnd
 string reqFact
 ---
 bool boolAnswer
