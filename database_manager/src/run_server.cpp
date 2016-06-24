@@ -10,15 +10,16 @@
 #include "toaster_msgs/GetInfoDB.h"
 #include "toaster_msgs/SetInfoDB.h"
 #include "toaster_msgs/ExecuteDB.h"
+#include "toaster_msgs/PlotFactsDB.h"
 #include "toaster_msgs/Property.h"
 #include "toaster_msgs/Agent.h"
 #include "toaster_msgs/ToasterFactReader.h"
 #include "toaster_msgs/ToasterObjectReader.h"
 #include "toaster_msgs/Event.h"
 #include "toaster_msgs/Ontology.h"
-#include "toaster_msgs/Fact.h"
 #include "toaster_msgs/Id.h"
 #include "toaster_msgs/FactList.h"
+#include <fstream>
 
 
 
@@ -750,20 +751,20 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
             //ROS_INFO("Fact successfully removed\n");
         }
 
-        for (std::vector<toaster_msgs::Fact>::iterator it = myFactList.begin(); it != myFactList.end(); it++) {
+        for (std::vector<toaster_msgs::Fact>::iterator itt = myFactList.begin(); itt != myFactList.end(); itt++) {
             //finally we add it into memory table
             sql = (std::string)"INSERT into memory_table_" + (std::string)agentId + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
-                    + boost::lexical_cast<std::string>(it->subjectId) + "','"
-                    + (std::string)it->property + "','"
-                    + (std::string)it->propertyType + "','"
-                    + boost::lexical_cast<std::string>(it->targetId) + "','"
-                    + boost::lexical_cast<std::string>((int)it->valueType) + "','"
-                    + (std::string)it->stringValue + "',"
-                    + boost::lexical_cast<std::string>(it->doubleValue) + ","
-                    + boost::lexical_cast<std::string>(it->factObservability) + ","
-                    + boost::lexical_cast<std::string>(it->confidence) + ","
-                    + boost::lexical_cast<std::string>(it->timeStart) + ","
-                    + boost::lexical_cast<std::string>(it->time) + ")";
+                    + boost::lexical_cast<std::string>(itt->subjectId) + "','"
+                    + (std::string)itt->property + "','"
+                    + (std::string)itt->propertyType + "','"
+                    + boost::lexical_cast<std::string>(itt->targetId) + "','"
+                    + boost::lexical_cast<std::string>((int)itt->valueType) + "','"
+                    + (std::string)itt->stringValue + "',"
+                    + boost::lexical_cast<std::string>(itt->doubleValue) + ","
+                    + boost::lexical_cast<std::string>(itt->factObservability) + ","
+                    + boost::lexical_cast<std::string>(itt->confidence) + ","
+                    + boost::lexical_cast<std::string>(itt->timeStart) + ","
+                    + boost::lexical_cast<std::string>(itt->time) + ")";
 
 
 
@@ -775,14 +776,15 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
             }
             //and add a new event
             if(agentId == mainAgent){
-               sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
-                       + boost::lexical_cast<std::string>(it->subjectId) + "','!"
-                       + (std::string)it->property + "','"
-                       + (std::string)it->propertyType + "','"
-                       + boost::lexical_cast<std::string>(it->targetId) + "',"
-                       + boost::lexical_cast<std::string>(it->factObservability) + ","
-                       + boost::lexical_cast<std::string>(it->confidence) + ","
-                       + boost::lexical_cast<std::string>(it->time) + ")";
+            ros::Time now = ros::Time::now() ;
+            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
+                    + boost::lexical_cast<std::string>(itt->subjectId) + "','!"
+                    + (std::string)itt->property + "','"
+                    + (std::string)itt->propertyType + "','"
+                    + boost::lexical_cast<std::string>(itt->targetId) + "',"
+                    + boost::lexical_cast<std::string>(itt->factObservability) + ","
+                    + boost::lexical_cast<std::string>(itt->confidence) + ","
+                    + boost::lexical_cast<std::string>(now.toNSec()) + ")";
 
                if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
                    ROS_INFO("SQL error4 : %s\n", zErrMsg);
@@ -1853,12 +1855,9 @@ bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::
    }
    return true;
 }
-
-////////////////////////////////////////////////
-//for graphical representation of facts/////////
-////////////////////////////////////////////////
-
-//for graphical representation
+//////////////////////////////////
+///for graphical representation///
+/////////////////////////////////
 
 bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFactsDB::Response &res){
 
@@ -1869,36 +1868,38 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
       char *err_msg = NULL;
       int ret;
       long long int i;
-     sql = (std::string)"SELECT * from events_table where subject_id='"+ boost::lexical_cast<std::string>(req.subjectID) +"' and target_id='"+boost::lexical_cast<std::string>(req.targetID)+"' and time>='"+boost::lexical_cast<std::string>(req.a) +"' and time<='"+ boost::lexical_cast<std::string>(req.b) +"' and (predicate ='" + boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!"+boost::lexical_cast<std::string>(req.reqFact)+"');";
-     ret = sqlite3_get_table (database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
-	 if (ret != SQLITE_OK) 
+     // sql query to get events related to the requested entity within the given time window and for the requested fact. 
+     sql = (std::string)"SELECT * from events_table where subject_id='"+ boost::lexical_cast<std::string>(req.subjectID) +"' and target_id='"+boost::lexical_cast<std::string>(req.targetID)+"' and time>='"+boost::lexical_cast<std::string>(req.timeStart) +"' and time<='"+boost::lexical_cast<std::string>(req.timeEnd) +"' and (predicate ='" + boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!"+boost::lexical_cast<std::string>(req.reqFact)+"');";
+     // results of the query are stored in the table
+    ret = sqlite3_get_table (database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
+     if (ret != SQLITE_OK) 
       {
       fprintf (stderr, "Error: %s\n", err_msg);
       sqlite3_free (err_msg);
       res.boolAnswer = false;
       return false;
       }
-      else {
-		   std::map<long long int,int> fn ;
-		  std::vector<long long int> data(pnRow + 2);
-		  std::string aa = boost::lexical_cast<std::string>(req.a);
-		  data[0] = std::atoll(aa.c_str());
-		  long long int a = data[0];
-		  std::string bb = boost::lexical_cast<std::string>(req.b);
-		  std::string reqFact = boost::lexical_cast<std::string>(req.reqFact);
-		 long long int b = std::atoll(bb.c_str());
-		  if(pazResult[(1 * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(1 * ( pnColumn)) + 6])>=a)
-		   {fn[a] =  0; }
-		   else
-		   {fn[a] = 1 ;}
-		  if(pazResult[(pnRow * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(pnRow * ( pnColumn)) + 6])<=b)
-		   {fn[b] =  1; }
-		   else
-		   {fn[b] = 0 ;} 
-		   ROS_INFO("a is %lld \n", a);
-		   ROS_INFO("b is %lld \n", b);
-		  data[pnRow + 1] = b;
-		  ROS_INFO("%lld    %d", data[0],fn[data[0]]);
+     else {
+      std::map<long long int,int> fn ;
+      std::vector<long long int> data(pnRow + 2);
+      std::string start = boost::lexical_cast<std::string>(req.timeStart);
+      data[0] = std::atoll(start.c_str());
+      long long int timeStart = data[0];
+      std::string end = boost::lexical_cast<std::string>(req.timeEnd);
+      std::string reqFact = boost::lexical_cast<std::string>(req.reqFact);
+      long long int timeEnd = std::atoll(end.c_str());
+      // interpreting state of fact at start time
+      if(pazResult[(1 * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(1 * ( pnColumn)) + 6])>=timeStart)
+        {fn[timeStart] =  0; } //if first event within the window is positive (like IsMoving) then state of fact should be false at starting point of window
+      else
+         {fn[timeStart] = 1 ;} //if first event within the window is negative (like !IsMoving) then state of fact should be false at starting point of window
+      // interpreting state of fact at end time
+      if(pazResult[(pnRow * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(pnRow * ( pnColumn)) + 6])<=timeEnd)
+	 {fn[timeEnd] =  1; } 
+      else
+	 {fn[timeEnd] = 0 ;} 
+      data[pnRow + 1] = timeEnd;
+      // allocation of the value to state of fact i.,e 0 or 1
       for (i = 1; i <= (pnRow); i++)
        {
         fprintf (stderr, "subject_id: %s \n predicate: %s \n propertyType: %s \n time: %s \n",
@@ -1910,19 +1911,16 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
                 fn[atoll(pazResult[(i * ( pnColumn)) + 6])]= 1 ;
         else
                 fn[atoll(pazResult[(i * ( pnColumn)) + 6])]= 0 ;
-        
-        ROS_INFO("%lld    %d", data[i],fn[data[i]]);
        }
-       ROS_INFO("%lld    %d", data[pnRow+1],fn[data[pnRow+1]]);
-       
-       std::ofstream myfile;
-       myfile.open ("fact.dat"); // you can mention the full complete path of file like "/home/jshipra/fact.dat"
-       long long int diff = b - a ;
-       for(i = 0 ; i< diff ; i=i+100000)
-      {  long long int x = a + i;
-		  int k = 0;
-        for(i = 0 ; i< diff ; i=i+100000)
-      {  long long int x = a + i;
+      std::ofstream myfile;
+      std::string myPath = ros::package::getPath("database_manager")+"/plot_fact/" + boost::lexical_cast<std::string>(req.reqFact)+".dat";
+      myfile.open(myPath.c_str());
+      ROS_INFO("file path is %s",myPath.c_str()); // open gnuplot terminal and plot the data in this file
+      long long int diff = timeEnd - timeStart ;
+     // writing data to fact with first column as time stamp and second column 0 or 1 (state of fact)
+      ROS_INFO("Writing to fact.dat file");
+      for(i = 0 ; i< diff ; i=i+100000)
+      {  long long int x = timeStart + i;
           int k = 0;
           int flag = 0;
        for(int j=0; j< pnRow + 2; j++)
@@ -1936,11 +1934,12 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
         }
        int y = fn[data[k]];
        myfile << x <<"        "<< y<< "\n";
-       }
-         myfile.close();
+      }
+      // closing the file
+       myfile.close();
        res.boolAnswer = true;
        return true;
-      }
+      
 	 
 	} 
 }
