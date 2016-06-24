@@ -1,0 +1,7 @@
+string subjectID
+string targetID
+uint64 timeStart
+uint64 timeEnd
+string reqFact
+---
+bool boolAnswer
