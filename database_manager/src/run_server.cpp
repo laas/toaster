@@ -17,13 +17,9 @@
 #include "toaster_msgs/ToasterObjectReader.h"
 #include "toaster_msgs/Event.h"
 #include "toaster_msgs/Ontology.h"
-#include "toaster_msgs/Fact.h"
 #include "toaster_msgs/Id.h"
 #include "toaster_msgs/FactList.h"
 #include <fstream>
-#include <vector>
-#include <algorithm>
-#include <string>
 
 
 
@@ -1861,12 +1857,9 @@ bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::
    }
    return true;
 }
-
-////////////////////////////////////////////////
-//for graphical representation of facts/////////
-////////////////////////////////////////////////
-
-//for graphical representation
+//////////////////////////////////
+///for graphical representation///
+/////////////////////////////////
 
 bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFactsDB::Response &res){
 
@@ -1877,36 +1870,38 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
       char *err_msg = NULL;
       int ret;
       long long int i;
-     sql = (std::string)"SELECT * from events_table where subject_id='"+ boost::lexical_cast<std::string>(req.subjectID) +"' and target_id='"+boost::lexical_cast<std::string>(req.targetID)+"' and time>='"+boost::lexical_cast<std::string>(req.a) +"' and time<='"+ boost::lexical_cast<std::string>(req.b) +"' and (predicate ='" + boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!"+boost::lexical_cast<std::string>(req.reqFact)+"');";
-     ret = sqlite3_get_table (database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
-	 if (ret != SQLITE_OK) 
+     // sql query to get events related to the requested entity within the given time window and for the requested fact. 
+     sql = (std::string)"SELECT * from events_table where subject_id='"+ boost::lexical_cast<std::string>(req.subjectID) +"' and target_id='"+boost::lexical_cast<std::string>(req.targetID)+"' and time>='"+boost::lexical_cast<std::string>(req.timeStart) +"' and time<='"+boost::lexical_cast<std::string>(req.timeEnd) +"' and (predicate ='" + boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!"+boost::lexical_cast<std::string>(req.reqFact)+"');";
+     // results of the query are stored in the table
+    ret = sqlite3_get_table (database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
+     if (ret != SQLITE_OK) 
       {
       fprintf (stderr, "Error: %s\n", err_msg);
       sqlite3_free (err_msg);
       res.boolAnswer = false;
       return false;
       }
-      else {
-		   std::map<long long int,int> fn ;
-		  std::vector<long long int> data(pnRow + 2);
-		  std::string aa = boost::lexical_cast<std::string>(req.a);
-		  data[0] = std::atoll(aa.c_str());
-		  long long int a = data[0];
-		  std::string bb = boost::lexical_cast<std::string>(req.b);
-		  std::string reqFact = boost::lexical_cast<std::string>(req.reqFact);
-		 long long int b = std::atoll(bb.c_str());
-		  if(pazResult[(1 * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(1 * ( pnColumn)) + 6])>=a)
-		   {fn[a] =  0; }
-		   else
-		   {fn[a] = 1 ;}
-		  if(pazResult[(pnRow * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(pnRow * ( pnColumn)) + 6])<=b)
-		   {fn[b] =  1; }
-		   else
-		   {fn[b] = 0 ;} 
-		   ROS_INFO("a is %lld \n", a);
-		   ROS_INFO("b is %lld \n", b);
-		  data[pnRow + 1] = b;
-		  ROS_INFO("%lld    %d", data[0],fn[data[0]]);
+     else {
+      std::map<long long int,int> fn ;
+      std::vector<long long int> data(pnRow + 2);
+      std::string start = boost::lexical_cast<std::string>(req.timeStart);
+      data[0] = std::atoll(start.c_str());
+      long long int timeStart = data[0];
+      std::string end = boost::lexical_cast<std::string>(req.timeEnd);
+      std::string reqFact = boost::lexical_cast<std::string>(req.reqFact);
+      long long int timeEnd = std::atoll(end.c_str());
+      // interpreting state of fact at start time
+      if(pazResult[(1 * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(1 * ( pnColumn)) + 6])>=timeStart)
+        {fn[timeStart] =  0; } //if first event within the window is positive (like IsMoving) then state of fact should be false at starting point of window
+      else
+         {fn[timeStart] = 1 ;} //if first event within the window is negative (like !IsMoving) then state of fact should be false at starting point of window
+      // interpreting state of fact at end time
+      if(pazResult[(pnRow * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(pnRow * ( pnColumn)) + 6])<=timeEnd)
+	 {fn[timeEnd] =  1; } 
+      else
+	 {fn[timeEnd] = 0 ;} 
+      data[pnRow + 1] = timeEnd;
+      // allocation of the value to state of fact i.,e 0 or 1
       for (i = 1; i <= (pnRow); i++)
        {
         fprintf (stderr, "subject_id: %s \n predicate: %s \n propertyType: %s \n time: %s \n",
@@ -1918,19 +1913,14 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
                 fn[atoll(pazResult[(i * ( pnColumn)) + 6])]= 1 ;
         else
                 fn[atoll(pazResult[(i * ( pnColumn)) + 6])]= 0 ;
-        
-        ROS_INFO("%lld    %d", data[i],fn[data[i]]);
        }
-       ROS_INFO("%lld    %d", data[pnRow+1],fn[data[pnRow+1]]);
-       
-       std::ofstream myfile;
-       myfile.open ("fact.dat"); // you can mention the full complete path of file like "/home/jshipra/fact.dat"
-       long long int diff = b - a ;
-       for(i = 0 ; i< diff ; i=i+100000)
-      {  long long int x = a + i;
-		  int k = 0;
-        for(i = 0 ; i< diff ; i=i+100000)
-      {  long long int x = a + i;
+      std::ofstream myfile;
+      myfile.open ("/home/jshipra/fact.dat");
+      long long int diff = timeEnd - timeStart ;
+     // writing data to fact with first column as time stamp and second column 0 or 1 (state of fact)
+      ROS_INFO("Writing to fact.dat file");
+      for(i = 0 ; i< diff ; i=i+100000)
+      {  long long int x = timeStart + i;
           int k = 0;
           int flag = 0;
        for(int j=0; j< pnRow + 2; j++)
@@ -1944,11 +1934,12 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
         }
        int y = fn[data[k]];
        myfile << x <<"        "<< y<< "\n";
-       }
-         myfile.close();
+      }
+      // closing the file
+       myfile.close();
        res.boolAnswer = true;
        return true;
-      }
+      
 	 
 	} 
 }
