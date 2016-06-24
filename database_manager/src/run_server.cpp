@@ -755,20 +755,20 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
             //ROS_INFO("Fact successfully removed\n");
         }
 
-        for (std::vector<toaster_msgs::Fact>::iterator it = myFactList.begin(); it != myFactList.end(); it++) {
+        for (std::vector<toaster_msgs::Fact>::iterator itt = myFactList.begin(); itt != myFactList.end(); itt++) {
             //finally we add it into memory table
             sql = (std::string)"INSERT into memory_table_" + (std::string)agentId + " (subject_id,predicate,propertyType,target_id,valueType,valueString,valueDouble,observability,confidence,start,end) VALUES ('"
-                    + boost::lexical_cast<std::string>(it->subjectId) + "','"
-                    + (std::string)it->property + "','"
-                    + (std::string)it->propertyType + "','"
-                    + boost::lexical_cast<std::string>(it->targetId) + "','"
-                    + boost::lexical_cast<std::string>((int)it->valueType) + "','"
-                    + (std::string)it->stringValue + "',"
-                    + boost::lexical_cast<std::string>(it->doubleValue) + ","
-                    + boost::lexical_cast<std::string>(it->factObservability) + ","
-                    + boost::lexical_cast<std::string>(it->confidence) + ","
-                    + boost::lexical_cast<std::string>(it->timeStart) + ","
-                    + boost::lexical_cast<std::string>(it->time) + ")";
+                    + boost::lexical_cast<std::string>(itt->subjectId) + "','"
+                    + (std::string)itt->property + "','"
+                    + (std::string)itt->propertyType + "','"
+                    + boost::lexical_cast<std::string>(itt->targetId) + "','"
+                    + boost::lexical_cast<std::string>((int)itt->valueType) + "','"
+                    + (std::string)itt->stringValue + "',"
+                    + boost::lexical_cast<std::string>(itt->doubleValue) + ","
+                    + boost::lexical_cast<std::string>(itt->factObservability) + ","
+                    + boost::lexical_cast<std::string>(itt->confidence) + ","
+                    + boost::lexical_cast<std::string>(itt->timeStart) + ","
+                    + boost::lexical_cast<std::string>(itt->time) + ")";
 
 
 
@@ -780,14 +780,17 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
             }
             //and add a new event
             if(agentId == mainAgent){
-               sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
-                       + boost::lexical_cast<std::string>(it->subjectId) + "','!"
-                       + (std::string)it->property + "','"
-                       + (std::string)it->propertyType + "','"
-                       + boost::lexical_cast<std::string>(it->targetId) + "',"
-                       + boost::lexical_cast<std::string>(it->factObservability) + ","
-                       + boost::lexical_cast<std::string>(it->confidence) + ","
-                       + boost::lexical_cast<std::string>(it->time) + ")";
+            timeval curTime;
+            gettimeofday(&curTime, NULL);
+            unsigned long now = curTime.tv_sec * pow(10,9) + curTime.tv_usec;
+            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
+                    + boost::lexical_cast<std::string>(itt->subjectId) + "','!"
+                    + (std::string)itt->property + "','"
+                    + (std::string)itt->propertyType + "','"
+                    + boost::lexical_cast<std::string>(itt->targetId) + "',"
+                    + boost::lexical_cast<std::string>(itt->factObservability) + ","
+                    + boost::lexical_cast<std::string>(itt->confidence) + ","
+                    + boost::lexical_cast<std::string>(now) + ")";
 
                if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
                    ROS_INFO("SQL error4 : %s\n", zErrMsg);
