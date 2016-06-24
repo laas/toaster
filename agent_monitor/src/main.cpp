@@ -1303,6 +1303,7 @@ int main(int argc, char** argv) {
                     fact_msg.time = mapTRBEntity_[(*itAgnt)].back()->getTime();
                     fact_msg.subjectOwnerId = "";
                     fact_msg.targetOwnerId = "";
+                    fact_msg.valueType = 1;
 
                     factList_msg.factList.push_back(fact_msg);
                 }
@@ -1314,7 +1315,7 @@ int main(int argc, char** argv) {
             if (speed > (motion2DBodySpeedThreshold_)) {
                 //printf("[AGENT_MONITOR][DEBUG] %s is moving %lu\n", mapTRBEntity_[(*itAgnt)].back()->getName().c_str(), mapTRBEntity_[(*itAgnt)].back()->getTime());
 
-                double confidence = speed * 3.6 / 20.0; // Confidence is 1 if speed is 20 km/h or above
+                double confidence = speed * 3.6 / 5.0; // Confidence is 1 if speed is 5 km/h or above
 
                 if (confidence > 1.0) {
                     confidence = 1.0;

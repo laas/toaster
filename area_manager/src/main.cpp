@@ -597,12 +597,13 @@ int main(int argc, char** argv) {
                                 //Fact Facing
                                 fact_msg.property = "IsFacing";
                                 fact_msg.propertyType = "posture";
-                                fact_msg.subProperty = "orientationAngle";
+                                fact_msg.subProperty = "angle";
                                 fact_msg.subjectId = itEntity->first;
                                 fact_msg.targetId = ownerEnt->getId();
                                 fact_msg.confidence = confidence;
+                                fact_msg.stringValue = true;
                                 fact_msg.doubleValue = angleResult;
-                                fact_msg.valueType = 1;
+                                fact_msg.valueType = 0;
                                 fact_msg.factObservability = 0.5;
                                 fact_msg.time = itEntity->second->getTime();
 
@@ -629,7 +630,7 @@ int main(int argc, char** argv) {
 
                     if (itArea->second->getAreaType() == "room") {
                         //Fact in Area
-                        fact_msg.property = "isIn";
+                        fact_msg.property = "IsInRoom";
                         fact_msg.propertyType = "position";
 
                         fact_msg.subProperty = itArea->second->getAreaType();
@@ -642,11 +643,13 @@ int main(int argc, char** argv) {
                         fact_msg.confidence = 1;
                         fact_msg.factObservability = 0.8;
                         fact_msg.time = itEntity->second->getTime();
+                        fact_msg.valueType = 0;
+                        fact_msg.stringValue = "true";
 
                         factList_msg.factList.push_back(fact_msg);
                     } else if (itArea->second->getAreaType() == "support") {
                         //Fact in Area
-                        fact_msg.property = "isAt";
+                        fact_msg.property = "IsAt";
                         fact_msg.propertyType = "position";
 
                         fact_msg.subProperty = "location";
@@ -659,6 +662,8 @@ int main(int argc, char** argv) {
                         fact_msg.confidence = 1;
                         fact_msg.factObservability = 0.8;
                         fact_msg.time = itEntity->second->getTime();
+                        fact_msg.valueType = 0;
+                        fact_msg.stringValue = "true";
 
                         factList_msg.factList.push_back(fact_msg);
 
