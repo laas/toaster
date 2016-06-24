@@ -1915,7 +1915,9 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
                 fn[atoll(pazResult[(i * ( pnColumn)) + 6])]= 0 ;
        }
       std::ofstream myfile;
-      myfile.open ("/home/jshipra/fact.dat");
+      std::string myPath = ros::package::getPath("database_manager")+"/plot_fact/" + boost::lexical_cast<std::string>(req.reqFact)+".dat";
+      myfile.open(myPath.c_str());
+      ROS_INFO("file path is %s",myPath.c_str()); // open gnuplot terminal and plot the data in this file
       long long int diff = timeEnd - timeStart ;
      // writing data to fact with first column as time stamp and second column 0 or 1 (state of fact)
       ROS_INFO("Writing to fact.dat file");
