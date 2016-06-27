@@ -776,9 +776,7 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
             }
             //and add a new event
             if(agentId == mainAgent){
-            timeval curTime;
-            gettimeofday(&curTime, NULL);
-            unsigned long now = curTime.tv_sec * pow(10,9) + curTime.tv_usec;
+            ros::Time now = ros::Time::now() ;
             sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
                     + boost::lexical_cast<std::string>(itt->subjectId) + "','!"
                     + (std::string)itt->property + "','"
@@ -786,7 +784,7 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
                     + boost::lexical_cast<std::string>(itt->targetId) + "',"
                     + boost::lexical_cast<std::string>(itt->factObservability) + ","
                     + boost::lexical_cast<std::string>(itt->confidence) + ","
-                    + boost::lexical_cast<std::string>(now) + ")";
+                    + boost::lexical_cast<std::string>(now.toNSec()) + ")";
 
                if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
                    ROS_INFO("SQL error4 : %s\n", zErrMsg);
