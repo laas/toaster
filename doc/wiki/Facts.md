@@ -32,3 +32,4 @@ The following sections describe spatial and temporal reasoning components that g
 The fact computation is detailed in the page of each module.
 To sum up, we give below a table which sums up where facts are computed.
 
+![](https://github.com/Greg8978/toaster/blob/master/doc/media/facts.jpg?raw=true)

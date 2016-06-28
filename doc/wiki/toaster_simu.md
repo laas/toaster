@@ -11,9 +11,11 @@ To start the toaster_simu ros node, run the following command on terminal -
 and provides the desired environment to TOASTER for situation assessment.
 This makes possible to quickly set up an interaction environment in order to test new features or new modules without requiring any robotic device or any real environment.
 
+**WARNING** toaster_simu is not a real simulator as it is only meant to add entities (human, robot, objects) to the environment in order to quickly test toaster modules. If you wish to simulate perception or to have further functionalities, please use a real simulator as [morse](https://www.openrobots.org/wiki/morse/).
+
 The following figure gives an idea of the implementation of services and topics in toaster_simu.
 
-![](https://writelatex.s3.amazonaws.com/rztjkrqdrypx/uploads/2526/6319112/1.jpg)
+![](https://github.com/Greg8978/toaster/blob/master/doc/LatexSource/img/toasterSimu.jpg)
 
 
 

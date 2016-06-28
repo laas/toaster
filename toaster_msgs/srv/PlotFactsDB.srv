@@ -1,7 +1,12 @@
 string subjectID
 string targetID
+<<<<<<< HEAD
 uint64 timeStart
 uint64 timeEnd
+=======
+string a
+string b
+>>>>>>> defined service file for plot_facts
 string reqFact
 ---
 bool boolAnswer

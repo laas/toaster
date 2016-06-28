@@ -1,6 +1,16 @@
 # FAQ
 
+## I have some errors while compiling toaster, `* was not declared in this scope`
 
+Please update toaster-lib:
+```shell
+> cd myPath/toaster-lib
+> git pull
+> cd build
+> make install
+```
+
+If you still have errors, please send a mail to the mailing list toaster-users@laas.fr
 
 ## I'm using indigo and the 3d models in rviz are white.
 
@@ -17,7 +27,7 @@ This is an issue with the last version of rviz. A work around consist in install
 
 It may be due to boost conflict. See [this topic](http://answers.ros.org/question/173940/compiling-with-dynamic_reconfigure-server-code-leads-to-deadlock/) for details.
 
-two solutions are possible: use hydro branch or go to `toaster/agent_monitor/src/main.cpp` and comment lines:
+Two solutions are possible: use toaster-hydro branch of toaster or go in `toaster/agent_monitor/src/main.cpp` and comment lines:
 
 ```javascript
 ParamServer_t monitoring_dyn_param_srv;

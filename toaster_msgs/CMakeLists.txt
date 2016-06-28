@@ -72,6 +72,7 @@ add_service_files(
   GetFactValue.srv
   GetFacts.srv
   PlotFactsDB.srv
+  LoadSaveDB.srv
 )
 
 ## Generate added messages and services with any dependencies listed here
