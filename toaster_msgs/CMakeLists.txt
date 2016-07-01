@@ -72,6 +72,10 @@ add_service_files(
   GetFactValue.srv
   GetFacts.srv
   PlotFactsDB.srv
+<<<<<<< HEAD
+=======
+  LoadSaveDB.srv
+>>>>>>> adding service load_save to database_manager
 )
 
 ## Generate added messages and services with any dependencies listed here
