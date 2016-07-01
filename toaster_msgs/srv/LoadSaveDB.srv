@@ -1,0 +1,4 @@
+string file_name
+bool toSave
+---
+int32 sqlstatus
