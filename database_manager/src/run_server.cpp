@@ -11,10 +11,7 @@
 #include "toaster_msgs/SetInfoDB.h"
 #include "toaster_msgs/ExecuteDB.h"
 #include "toaster_msgs/PlotFactsDB.h"
-<<<<<<< HEAD
-=======
 #include "toaster_msgs/LoadSaveDB.h"
->>>>>>> adding service load_save to database_manager
 #include "toaster_msgs/Property.h"
 #include "toaster_msgs/Agent.h"
 #include "toaster_msgs/ToasterFactReader.h"
