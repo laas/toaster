@@ -2243,14 +2243,16 @@ int main(int argc, char **argv) {
     ros::ServiceServer get_info_service;
     ros::ServiceServer execute_service;
     ros::ServiceServer plot_service;
+    ros::ServiceServer save_service;
     
 
     //////////////////////////////////////////////////////////////////////
     //// SERVICES INSTANCIATION  /////
-    set_info_service = node.advertiseService("database/set_info", set_info_db);
-    get_info_service = node.advertiseService("database/get_info", get_info_db);
-    execute_service = node.advertiseService("database/execute", execute_db);
-    plot_service = node.advertiseService("database/plot_facts",plot_facts_db);
+    set_info_service = node.advertiseService("database_manager/set_info", set_info_db);
+    get_info_service = node.advertiseService("database_manager/get_info", get_info_db);
+    execute_service = node.advertiseService("database_manager/execute", execute_db);
+    plot_service = node.advertiseService("database_manager/plot_facts", plot_facts_db);
+    save_service = node.advertiseService("database_manager/load_save", load_save_db);
 
     ///////////////////////////////////////////////////////////////
 
