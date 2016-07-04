@@ -56,4 +56,4 @@ database_manager :
 This node is an improvement of belief_manager node. It uses a sql database to store facts, static properties and onthology.
 It provide a set of services and also allow direct sql request.
 
-A [complete documentation](http://homepages.laas.fr/gmilliez/toaster/) is available.
+A [complete documentation](https://github.com/Greg8978/toaster/wiki) is available.
