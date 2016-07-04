@@ -13,7 +13,7 @@ However the set of inputs is easily extensible by adding a new sensor data reade
 
 The following graph sum up the messages and services of PDG.
 
-![](https://writelatex.s3.amazonaws.com/rztjkrqdrypx/uploads/2527/6319114/1.jpg)
+![](https://github.com/Greg8978/toaster/blob/master/doc/LatexSource/img/pdg.jpg)
 
 
 

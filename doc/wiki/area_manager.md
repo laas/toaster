@@ -13,7 +13,7 @@ We define an area as a bounded region in the environment with semantic meaning. 
 In the current implementation, an area is bi-dimensional (however the concept is still valid for tri-dimensional areas). Areas can be a polygon or a circle, static or dynamic. In TOASTER, areas have several parameters: `areaType`, `factType`, `entityType`, `owner`. The `areaType` defines the category of the area (such as room, escalator, television_area). As areas could be used for different situation, we use the `factType` to define what type of calculation needs to be done for entities inside the current area. This parameter is very linked to the semantic of the area. The `entityType` defines what kinds of entities are concerned by the area. Entities which are not in the category will be ignored. Finally, `owner` defines which entity "owns" this area. If set, the area is updated with the owner's position and orientation. For a clear relationship between pdg node with its topics, services and other nodes, refer to the figure below.
 
 
-![](https://writelatex.s3.amazonaws.com/rztjkrqdrypx/uploads/2533/6319141/1.jpg)
+![](https://github.com/Greg8978/toaster/blob/master/doc/LatexSource/img/areamanager.jpg)
 
 
 ## Facts computation

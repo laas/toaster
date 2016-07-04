@@ -490,7 +490,6 @@ bool add_entity_db(std::string id, std::string ownerId, std::string name, std::s
     return true;
 }
 
-
 /**
  * Add a fact in targeted agent's fact table
  */
@@ -525,7 +524,7 @@ bool add_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fact> 
             sql = (std::string)"UPDATE fact_table_" + (std::string)agentId +
                     +" set valueString='" + (std::string)it->stringValue
                     + "' , valueDouble=" + boost::lexical_cast<std::string>(it->doubleValue)
-                    + ", valueType=" + boost::lexical_cast<std::string>((int)it->valueType)
+                    + ", valueType=" + boost::lexical_cast<std::string>((int) it->valueType)
                     + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
                     + "' and predicate='" + (std::string)it->property
                     + "' and propertyType='" + (std::string)it->propertyType
@@ -545,7 +544,7 @@ bool add_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fact> 
                     + (std::string)it->property + "','"
                     + (std::string)it->propertyType + "','"
                     + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "','"
-                    + boost::lexical_cast<std::string>((int)it->valueType) + "','"
+                    + boost::lexical_cast<std::string>((int) it->valueType) + "','"
                     + (std::string)it->stringValue + "',"
                     + boost::lexical_cast<std::string>(it->doubleValue) + ","
                     + boost::lexical_cast<std::string>(it->factObservability) + ","
@@ -561,22 +560,22 @@ bool add_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fact> 
 
 
             //add a new event
-            if(agentId == mainAgent){
-               sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
-                       + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) + "','"
-                       + (std::string)it->property + "','"
-                       + (std::string)it->propertyType + "','"
-                       + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "',"
-                       + boost::lexical_cast<std::string>(it->factObservability) + ","
-                       + boost::lexical_cast<std::string>(it->confidence) + ","
-                       + boost::lexical_cast<std::string>(it->time) + ")";
+            if (agentId == mainAgent) {
+                sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
+                        + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) + "','"
+                        + (std::string)it->property + "','"
+                        + (std::string)it->propertyType + "','"
+                        + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "',"
+                        + boost::lexical_cast<std::string>(it->factObservability) + ","
+                        + boost::lexical_cast<std::string>(it->confidence) + ","
+                        + boost::lexical_cast<std::string>(it->time) + ")";
 
-               if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-                   ROS_INFO("SQL error4 : %s\n", zErrMsg);
-                   sqlite3_free(zErrMsg);
-               } else {
-                   //ROS_INFO("Event successfully added\n");
-               }
+                if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                    ROS_INFO("SQL error4 : %s\n", zErrMsg);
+                    sqlite3_free(zErrMsg);
+                } else {
+                    //ROS_INFO("Event successfully added\n");
+                }
             }
 
             //and we add into id_table some new unknown entity (id is unique so there should not be duplicates)
@@ -609,7 +608,7 @@ bool add_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fact> 
  */
 bool add_facts_planning_db(std::vector<toaster_msgs::Fact> facts) {
     //ROS_INFO("add_facts_to_agent");
-   
+
     for (std::vector<toaster_msgs::Fact>::iterator it = facts.begin(); it != facts.end(); it++) {
         std::string sql;
         char *zErrMsg = 0;
@@ -637,7 +636,7 @@ bool add_facts_planning_db(std::vector<toaster_msgs::Fact> facts) {
             sql = (std::string)"UPDATE planning_table" +
                     +" set valueString='" + (std::string)it->stringValue
                     + "' , valueDouble=" + boost::lexical_cast<std::string>(it->doubleValue)
-                    + ", valueType=" + boost::lexical_cast<std::string>((int)it->valueType)
+                    + ", valueType=" + boost::lexical_cast<std::string>((int) it->valueType)
                     + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
                     + "' and predicate='" + (std::string)it->property
                     + "' and propertyType='" + (std::string)it->propertyType
@@ -657,7 +656,7 @@ bool add_facts_planning_db(std::vector<toaster_msgs::Fact> facts) {
                     + (std::string)it->property + "','"
                     + (std::string)it->propertyType + "','"
                     + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "','"
-                    + boost::lexical_cast<std::string>((int)it->valueType) + "','"
+                    + boost::lexical_cast<std::string>((int) it->valueType) + "','"
                     + (std::string)it->stringValue + "',"
                     + boost::lexical_cast<std::string>(it->doubleValue) + ","
                     + boost::lexical_cast<std::string>(it->factObservability) + ","
@@ -694,11 +693,11 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
 
     for (std::vector<toaster_msgs::Fact>::iterator it = facts.begin(); it != facts.end(); it++) {
         //first we get all information of the fact from fact table
-        if(it->targetId == "NULL" && it->subjectId == "NULL") {
+        if (it->targetId == "NULL" && it->subjectId == "NULL") {
             sql = (std::string)"SELECT * from fact_table_" + (std::string)agentId +
                     " where predicate ='" + (std::string)it->property +
                     "' and propertyType ='" + (std::string)it->propertyType + "'";
-        }else if (it->targetId == "NULL") {
+        } else if (it->targetId == "NULL") {
             sql = (std::string)"SELECT * from fact_table_" + (std::string)agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
                     "' and predicate ='" + (std::string)it->property +
@@ -723,11 +722,11 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
         }
 
         //then we can delete it
-        if(it->targetId == "NULL" && it->subjectId == "NULL") {
+        if (it->targetId == "NULL" && it->subjectId == "NULL") {
             sql = "DELETE from fact_table_" + (std::string)agentId +
                     " where predicate ='" + (std::string)it->property +
                     "' and propertyType ='" + (std::string)it->propertyType + "'";
-        }else if (it->targetId == "NULL") {
+        } else if (it->targetId == "NULL") {
             sql = "DELETE from fact_table_" + (std::string)agentId +
                     " where subject_id ='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId) +
                     "' and predicate ='" + (std::string)it->property +
@@ -759,7 +758,7 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
                     + (std::string)itt->property + "','"
                     + (std::string)itt->propertyType + "','"
                     + boost::lexical_cast<std::string>(itt->targetId) + "','"
-                    + boost::lexical_cast<std::string>((int)itt->valueType) + "','"
+                    + boost::lexical_cast<std::string>((int) itt->valueType) + "','"
                     + (std::string)itt->stringValue + "',"
                     + boost::lexical_cast<std::string>(itt->doubleValue) + ","
                     + boost::lexical_cast<std::string>(itt->factObservability) + ","
@@ -776,24 +775,24 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
                 //ROS_INFO("Fact successfully added to memory table\n");
             }
             //and add a new event
-            if(agentId == mainAgent){
-            ros::Time now = ros::Time::now() ;
-            sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
-                    + boost::lexical_cast<std::string>(itt->subjectId) + "','!"
-                    + (std::string)itt->property + "','"
-                    + (std::string)itt->propertyType + "','"
-                    + boost::lexical_cast<std::string>(itt->targetId) + "',"
-                    + boost::lexical_cast<std::string>(itt->factObservability) + ","
-                    + boost::lexical_cast<std::string>(itt->confidence) + ","
-                    + boost::lexical_cast<std::string>(now.toNSec()) + ")";
+            if (agentId == mainAgent) {
+                ros::Time now = ros::Time::now();
+                sql = (std::string)"INSERT INTO events_table (subject_id,predicate,propertyType,target_id,observability,confidence,time) VALUES ('"
+                        + boost::lexical_cast<std::string>(itt->subjectId) + "','!"
+                        + (std::string)itt->property + "','"
+                        + (std::string)itt->propertyType + "','"
+                        + boost::lexical_cast<std::string>(itt->targetId) + "',"
+                        + boost::lexical_cast<std::string>(itt->factObservability) + ","
+                        + boost::lexical_cast<std::string>(itt->confidence) + ","
+                        + boost::lexical_cast<std::string>(now.toNSec()) + ")";
 
-               if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
-                   ROS_INFO("SQL error4 : %s\n", zErrMsg);
-                   sqlite3_free(zErrMsg);
-               } else {
-                   //ROS_INFO("Event successfully added\n");
-               }
-           }
+                if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+                    ROS_INFO("SQL error4 : %s\n", zErrMsg);
+                    sqlite3_free(zErrMsg);
+                } else {
+                    //ROS_INFO("Event successfully added\n");
+                }
+            }
         }
 
         myFactList = std::vector<toaster_msgs::Fact>();
@@ -842,15 +841,15 @@ void empty_database_planning_db() {
     const char* data = "Callback function called";
     std::string sql;
 
-   sql = (std::string)"DELETE from planning_table";
-                       
-   if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-           fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
-           sqlite3_free(zErrMsg);
-   } else {
-           // ROS_INFO("SQL order obtained successfully\n");
-   }
-  
+    sql = (std::string)"DELETE from planning_table";
+
+    if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+        fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    } else {
+        // ROS_INFO("SQL order obtained successfully\n");
+    }
+
 }
 
 /**
@@ -859,26 +858,26 @@ void empty_database_planning_db() {
  * @infoType: ENTITY, FACT or EVENT 
  */
 bool set_info_db(toaster_msgs::SetInfoDB::Request &req, toaster_msgs::SetInfoDB::Response &res) {
-    
-   if(req.infoType == "ENTITY"){
-      return add_entity_db(req.id, req.ownerId, req.name, req.type);
-   }else if(req.infoType == "FACT"){
-      if(req.add){
-         if(req.agentId == "PLANNING"){
-            return add_facts_planning_db(req.facts);
-         }else{
-            return add_facts_to_agent_db(req.agentId, req.facts);
-         }
-      }else{
-         return remove_facts_to_agent_db(req.agentId, req.facts);
-      }
-   }else if(req.infoType == "RESET_PLANNING"){
-      empty_database_planning_db();
-      return add_facts_planning_db(req.facts);
-   }else if(req.infoType == "EVENT"){
-      return add_event_db(req.event);
-   }
-   return false;
+
+    if (req.infoType == "ENTITY") {
+        return add_entity_db(req.id, req.ownerId, req.name, req.type);
+    } else if (req.infoType == "FACT") {
+        if (req.add) {
+            if (req.agentId == "PLANNING") {
+                return add_facts_planning_db(req.facts);
+            } else {
+                return add_facts_to_agent_db(req.agentId, req.facts);
+            }
+        } else {
+            return remove_facts_to_agent_db(req.agentId, req.facts);
+        }
+    } else if (req.infoType == "RESET_PLANNING") {
+        empty_database_planning_db();
+        return add_facts_planning_db(req.facts);
+    } else if (req.infoType == "EVENT") {
+        return add_event_db(req.event);
+    }
+    return false;
 }
 
 
@@ -1482,8 +1481,6 @@ std::pair<bool, std::vector<toaster_msgs::Ontology> > get_ontology_values_db(std
     return res;
 }
 
-
-
 /**
  * get information from the db
  * @type = FACT,PROPERTY,AGENT, ID, EVENT, ONTOLOGY
@@ -1491,84 +1488,82 @@ std::pair<bool, std::vector<toaster_msgs::Ontology> > get_ontology_values_db(std
  * 
  */
 bool get_info_db(toaster_msgs::GetInfoDB::Request &req, toaster_msgs::GetInfoDB::Response &res) {
-    
-   if(req.type == "FACT"){
-      if(req.subType == "ALL"){
-         std::pair<bool, toaster_msgs::FactList> answer = get_all_facts_from_agent_db(req.agentId);
-         res.boolAnswer = answer.first;
-         res.resFactList = answer.second;
-      }else if(req.subType == "VALUE"){
-         std::pair<bool, toaster_msgs::FactList> answer = get_fact_value_from_agent_db(req.agentId, req.reqFact);
-         res.boolAnswer = answer.first;
-         res.resFactList = answer.second;
-      }else if(req.subType == "CURRENT"){
-         std::pair<bool, toaster_msgs::FactList> answer = get_current_facts_from_agent_db(req.agentId);
-         res.boolAnswer = answer.first;
-         res.resFactList = answer.second;
-      }else if(req.subType == "OLD"){
-         std::pair<bool, toaster_msgs::FactList> answer = get_passed_facts_from_agent_db(req.agentId);
-         res.boolAnswer = answer.first;
-         res.resFactList = answer.second;
-      }else if(req.subType == "PLANNING"){
-         std::pair<bool, toaster_msgs::FactList> answer = get_all_facts_planning_db();
-         res.boolAnswer = answer.first;
-         res.resFactList = answer.second;
-      }
-   }else if(req.type == "PROPERTY"){
-      if(req.subType == "ALL"){
-         std::pair<bool, std::vector<toaster_msgs::Property> > answer = get_properties_db();
-         res.boolAnswer = answer.first;
-         res.resProperties = answer.second;
-      }else if(req.subType == "VALUE"){
-         std::pair<bool, std::vector<toaster_msgs::Property> > answer = get_property_value_db(req.id);
-         res.boolAnswer = answer.first;
-         res.resProperties = answer.second;
-      }
-   }else if(req.type == "AGENT"){
-         std::pair<bool, std::vector<toaster_msgs::Id> > answer = get_agents_db();
-         res.boolAnswer = answer.first;
-         res.resId = answer.second;
-   }else if(req.type == "ID"){
-      if(req.subType == "ALL"){
-         std::pair<bool, std::vector<toaster_msgs::Id> > answer = get_id_db();
-         res.boolAnswer = answer.first;
-         res.resId = answer.second;
-      }else if(req.subType == "VALUE"){
-         std::pair<bool, std::vector<toaster_msgs::Id> > answer = get_id_value_db(req.idString, req.name);
-         res.boolAnswer = answer.first;
-         res.resId = answer.second;
-      }
-   }else if(req.type == "EVENT"){
-      if(req.subType == "ALL"){
-         std::pair<bool, std::vector<toaster_msgs::Event> > answer = get_events_db();
-         res.boolAnswer = answer.first;
-         res.resEventList = answer.second;
-      }else if(req.subType == "VALUE"){
-         std::pair<bool, std::vector<toaster_msgs::Event> > answer = get_event_value_db(req.reqEvent);
-         res.boolAnswer = answer.first;
-         res.resEventList = answer.second;
-      }
-   }else if(req.type == "ONTOLOGY"){
-      if(req.subType == "ALL"){
-         std::pair<bool, std::vector<toaster_msgs::Ontology> > answer = get_ontologies_db();
-         res.boolAnswer = answer.first;
-         res.resOntology = answer.second;
-      }else if(req.subType == "VALUE"){
-         std::pair<bool, std::vector<toaster_msgs::Ontology> > answer = get_ontology_values_db(req.entityClass);
-         res.boolAnswer = answer.first;
-         res.resOntology = answer.second;
-      }else if(req.subType == "LEAVE"){
-         std::pair<bool, std::vector<toaster_msgs::Ontology> > answer = get_ontology_leaves_db(req.entityClass);
-         res.boolAnswer = answer.first;
-         res.resOntology = answer.second;
-      }
-   }
-   return true;
+
+    if (req.type == "FACT") {
+        if (req.subType == "ALL") {
+            std::pair<bool, toaster_msgs::FactList> answer = get_all_facts_from_agent_db(req.agentId);
+            res.boolAnswer = answer.first;
+            res.resFactList = answer.second;
+        } else if (req.subType == "VALUE") {
+            std::pair<bool, toaster_msgs::FactList> answer = get_fact_value_from_agent_db(req.agentId, req.reqFact);
+            res.boolAnswer = answer.first;
+            res.resFactList = answer.second;
+        } else if (req.subType == "CURRENT") {
+            std::pair<bool, toaster_msgs::FactList> answer = get_current_facts_from_agent_db(req.agentId);
+            res.boolAnswer = answer.first;
+            res.resFactList = answer.second;
+        } else if (req.subType == "OLD") {
+            std::pair<bool, toaster_msgs::FactList> answer = get_passed_facts_from_agent_db(req.agentId);
+            res.boolAnswer = answer.first;
+            res.resFactList = answer.second;
+        } else if (req.subType == "PLANNING") {
+            std::pair<bool, toaster_msgs::FactList> answer = get_all_facts_planning_db();
+            res.boolAnswer = answer.first;
+            res.resFactList = answer.second;
+        }
+    } else if (req.type == "PROPERTY") {
+        if (req.subType == "ALL") {
+            std::pair<bool, std::vector<toaster_msgs::Property> > answer = get_properties_db();
+            res.boolAnswer = answer.first;
+            res.resProperties = answer.second;
+        } else if (req.subType == "VALUE") {
+            std::pair<bool, std::vector<toaster_msgs::Property> > answer = get_property_value_db(req.id);
+            res.boolAnswer = answer.first;
+            res.resProperties = answer.second;
+        }
+    } else if (req.type == "AGENT") {
+        std::pair<bool, std::vector<toaster_msgs::Id> > answer = get_agents_db();
+        res.boolAnswer = answer.first;
+        res.resId = answer.second;
+    } else if (req.type == "ID") {
+        if (req.subType == "ALL") {
+            std::pair<bool, std::vector<toaster_msgs::Id> > answer = get_id_db();
+            res.boolAnswer = answer.first;
+            res.resId = answer.second;
+        } else if (req.subType == "VALUE") {
+            std::pair<bool, std::vector<toaster_msgs::Id> > answer = get_id_value_db(req.idString, req.name);
+            res.boolAnswer = answer.first;
+            res.resId = answer.second;
+        }
+    } else if (req.type == "EVENT") {
+        if (req.subType == "ALL") {
+            std::pair<bool, std::vector<toaster_msgs::Event> > answer = get_events_db();
+            res.boolAnswer = answer.first;
+            res.resEventList = answer.second;
+        } else if (req.subType == "VALUE") {
+            std::pair<bool, std::vector<toaster_msgs::Event> > answer = get_event_value_db(req.reqEvent);
+            res.boolAnswer = answer.first;
+            res.resEventList = answer.second;
+        }
+    } else if (req.type == "ONTOLOGY") {
+        if (req.subType == "ALL") {
+            std::pair<bool, std::vector<toaster_msgs::Ontology> > answer = get_ontologies_db();
+            res.boolAnswer = answer.first;
+            res.resOntology = answer.second;
+        } else if (req.subType == "VALUE") {
+            std::pair<bool, std::vector<toaster_msgs::Ontology> > answer = get_ontology_values_db(req.entityClass);
+            res.boolAnswer = answer.first;
+            res.resOntology = answer.second;
+        } else if (req.subType == "LEAVE") {
+            std::pair<bool, std::vector<toaster_msgs::Ontology> > answer = get_ontology_leaves_db(req.entityClass);
+            res.boolAnswer = answer.first;
+            res.resOntology = answer.second;
+        }
+    }
+    return true;
 }
 
 ////////////////EXECUTE SERVICE/////////////////////////////
-
-
 
 /**
  * Return true if a given list of fact is in the fact table of a given agent
@@ -1602,7 +1597,6 @@ bool are_in_table_db(std::string agent, std::vector<toaster_msgs::Fact> facts) {
 
     return true;
 }
-
 
 /**
  * Execute in selected table the SQl request casted in the Request.order field 
@@ -1638,8 +1632,6 @@ std::pair<bool, std::vector<std::string> > execute_SQL_db(std::string order) {
     return res;
 }
 
-
-
 /**
  * Empty the table of all agents
  */
@@ -1651,37 +1643,36 @@ void empty_database_db() {
     std::string sql;
 
 
-    for(std::vector<std::string>::iterator it = agentList.begin(); it != agentList.end(); it++){
-       sql = (std::string)"DELETE from fact_table_" + *it ;
-                       
-      if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-           fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
-           sqlite3_free(zErrMsg);
-       } else {
-           // ROS_INFO("SQL order obtained successfully\n");
-       }
+    for (std::vector<std::string>::iterator it = agentList.begin(); it != agentList.end(); it++) {
+        sql = (std::string)"DELETE from fact_table_" + *it;
 
-      sql = (std::string)"DELETE from memory_table_" + *it ;
-                          
-      if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-              fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
-              sqlite3_free(zErrMsg);
-      } else {
-              // ROS_INFO("SQL order obtained successfully\n");
-      }
-   }
-   
-   sql = (std::string)"DELETE from events_table";
-                          
-   if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-              fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
-              sqlite3_free(zErrMsg);
-   } else {
-              // ROS_INFO("SQL order obtained successfully\n");
-   }
+        if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+            fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        } else {
+            // ROS_INFO("SQL order obtained successfully\n");
+        }
+
+        sql = (std::string)"DELETE from memory_table_" + *it;
+
+        if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+            fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        } else {
+            // ROS_INFO("SQL order obtained successfully\n");
+        }
+    }
+
+    sql = (std::string)"DELETE from events_table";
+
+    if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+        fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    } else {
+        // ROS_INFO("SQL order obtained successfully\n");
+    }
 
 }
-
 
 /**
  * Empty the table of an agents
@@ -1693,51 +1684,46 @@ void empty_database_for_agent_db(std::string agent) {
     const char* data = "Callback function called";
     std::string sql;
 
-   sql = (std::string)"DELETE from fact_table_" + agent ;
-                       
-   if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-           fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
-           sqlite3_free(zErrMsg);
-   } else {
-           // ROS_INFO("SQL order obtained successfully\n");
-   }
+    sql = (std::string)"DELETE from fact_table_" + agent;
 
-   sql = (std::string)"DELETE from memory_table_" + agent ;
-                       
-   if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-           fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
-           sqlite3_free(zErrMsg);
-   } else {
-           // ROS_INFO("SQL order obtained successfully\n");
-   }
-  
+    if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+        fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    } else {
+        // ROS_INFO("SQL order obtained successfully\n");
+    }
+
+    sql = (std::string)"DELETE from memory_table_" + agent;
+
+    if (sqlite3_exec(database, sql.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+        fprintf(stderr, "SQL error l2205: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+    } else {
+        // ROS_INFO("SQL order obtained successfully\n");
+    }
+
 }
-
-
-
-
 
 /**
  * Set the topics the database should read
  */
 void set_topics(bool areaTopic, bool agentTopic, bool move3dTopic, bool pdgTopic) {
-    
-    factsReaders.clear();
-    if(areaTopic){
-       factsReaders.push_back(readerArea);
-    }
-    if(agentTopic){
-       factsReaders.push_back(readerAgent);
-    }
-    if(move3dTopic){
-       factsReaders.push_back(readerMove3d);
-    }
-    if(pdgTopic){
-       factsReaders.push_back(readerPdg);
-    }
-    
-}
 
+    factsReaders.clear();
+    if (areaTopic) {
+        factsReaders.push_back(readerArea);
+    }
+    if (agentTopic) {
+        factsReaders.push_back(readerAgent);
+    }
+    if (move3dTopic) {
+        factsReaders.push_back(readerMove3d);
+    }
+    if (pdgTopic) {
+        factsReaders.push_back(readerPdg);
+    }
+
+}
 
 /**
  * print the db in the console
@@ -1815,10 +1801,10 @@ void print_agent(std::string agent) {
     ROS_WARN("reading fact database");
 
     for (int i = 0; i < agentList.size(); i++) {
-        if((std::string)agentList[i] == agent){
-         std::cout << "\nfact_table_" << (std::string)agentList[i] << "\n";
-         sql = (std::string)"SELECT * from fact_table_" + (std::string)agentList[i];
-         sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg);
+        if ((std::string)agentList[i] == agent) {
+            std::cout << "\nfact_table_" << (std::string)agentList[i] << "\n";
+            sql = (std::string)"SELECT * from fact_table_" + (std::string)agentList[i];
+            sqlite3_exec(database, sql.c_str(), callback, (void*) data, &zErrMsg);
         }
     }
 
@@ -1830,173 +1816,172 @@ void print_agent(std::string agent) {
  * @type: ALL, AGENT 
  */
 bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::Response &res) {
-    
-   if(req.command == "ARE_IN_TABLE"){
-      res.boolAnswer =  are_in_table_db(req.agent, req.facts);
-   }else if(req.command == "SQL"){
-         std::pair<bool, std::vector<std::string> > answer = execute_SQL_db(req.order);
-         res.boolAnswer = answer.first;
-         res.results = answer.second;
-   }else if(req.command == "EMPTY"){
-      if(req.type == "ALL"){
-         empty_database_db();
-      }else if(req.type == "AGENT"){
-         empty_database_for_agent_db(req.agent);
-      }else if(req.type == "PLANNING"){
-         empty_database_planning_db();
-      }
-   }else if(req.command == "PRINT"){
-      if(req.type == "ALL"){
-         print();
-      }else if(req.type == "AGENT"){
-         print_agent(req.agent);
-      }
-   }else if(req.command == "SET_TOPICS"){
-       set_topics(req.areaTopic, req.agentTopic, req.move3dTopic, req.pdgTopic);
-   }
-   return true;
+
+    if (req.command == "ARE_IN_TABLE") {
+        res.boolAnswer = are_in_table_db(req.agent, req.facts);
+    } else if (req.command == "SQL") {
+        std::pair<bool, std::vector<std::string> > answer = execute_SQL_db(req.order);
+        res.boolAnswer = answer.first;
+        res.results = answer.second;
+    } else if (req.command == "EMPTY") {
+        if (req.type == "ALL") {
+            empty_database_db();
+        } else if (req.type == "AGENT") {
+            empty_database_for_agent_db(req.agent);
+        } else if (req.type == "PLANNING") {
+            empty_database_planning_db();
+        }
+    } else if (req.command == "PRINT") {
+        if (req.type == "ALL") {
+            print();
+        } else if (req.type == "AGENT") {
+            print_agent(req.agent);
+        }
+    } else if (req.command == "SET_TOPICS") {
+        set_topics(req.areaTopic, req.agentTopic, req.move3dTopic, req.pdgTopic);
+    }
+    return true;
 }
 //////////////////////////////////
 ///for graphical representation///
 /////////////////////////////////
 
-bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFactsDB::Response &res){
+bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFactsDB::Response &res) {
 
-     std::string sql;
-     char **pazResult;
-      int pnRow;
-      int pnColumn ;
-      char *err_msg = NULL;
-      int ret;
-      long long int i;
-     // sql query to get events related to the requested entity within the given time window and for the requested fact. 
-     sql = (std::string)"SELECT * from events_table where subject_id='"+ boost::lexical_cast<std::string>(req.subjectID) +"' and target_id='"+boost::lexical_cast<std::string>(req.targetID)+"' and time>='"+boost::lexical_cast<std::string>(req.timeStart) +"' and time<='"+boost::lexical_cast<std::string>(req.timeEnd) +"' and (predicate ='" + boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!"+boost::lexical_cast<std::string>(req.reqFact)+"');";
-     // results of the query are stored in the table
-    ret = sqlite3_get_table (database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
-     if (ret != SQLITE_OK) 
-      {
-      fprintf (stderr, "Error: %s\n", err_msg);
-      sqlite3_free (err_msg);
-      res.boolAnswer = false;
-      return false;
-      }
-     else {
-      std::map<long long int,int> fn ;
-      std::vector<long long int> data(pnRow + 2);
-      std::string start = boost::lexical_cast<std::string>(req.timeStart);
-      data[0] = std::atoll(start.c_str());
-      long long int timeStart = data[0];
-      std::string end = boost::lexical_cast<std::string>(req.timeEnd);
-      std::string reqFact = boost::lexical_cast<std::string>(req.reqFact);
-      long long int timeEnd = std::atoll(end.c_str());
-      // interpreting state of fact at start time
-      if(pazResult[(1 * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(1 * ( pnColumn)) + 6])>=timeStart)
-        {fn[timeStart] =  0; } //if first event within the window is positive (like IsMoving) then state of fact should be false at starting point of window
-      else
-         {fn[timeStart] = 1 ;} //if first event within the window is negative (like !IsMoving) then state of fact should be false at starting point of window
-      // interpreting state of fact at end time
-      if(pazResult[(pnRow * ( pnColumn)) + 1]==reqFact && atoll(pazResult[(pnRow * ( pnColumn)) + 6])<=timeEnd)
-	 {fn[timeEnd] =  1; } 
-      else
-	 {fn[timeEnd] = 0 ;} 
-      data[pnRow + 1] = timeEnd;
-      // allocation of the value to state of fact i.,e 0 or 1
-      for (i = 1; i <= (pnRow); i++)
-       {
-        fprintf (stderr, "subject_id: %s \n predicate: %s \n propertyType: %s \n time: %s \n",
-        pazResult[(i * ( pnColumn)) + 0], pazResult[(i * ( pnColumn)) + 1], pazResult[(i * ( pnColumn)) + 2], pazResult[(i * ( pnColumn)) + 6]);
-        data[i] = atoll(pazResult[(i * ( pnColumn)) + 6]);
-        std::string status = pazResult[(i * ( pnColumn)) + 1];
-       
-        if(status.compare(reqFact))
-                fn[atoll(pazResult[(i * ( pnColumn)) + 6])]= 1 ;
-        else
-                fn[atoll(pazResult[(i * ( pnColumn)) + 6])]= 0 ;
-       }
-      std::ofstream myfile;
-      std::string myPath = ros::package::getPath("database_manager")+"/plot_fact/" + boost::lexical_cast<std::string>(req.reqFact)+".dat";
-      myfile.open(myPath.c_str());
-      ROS_INFO("file path is %s",myPath.c_str()); // open gnuplot terminal and plot the data in this file
-      long long int diff = timeEnd - timeStart ;
-     // writing data to fact with first column as time stamp and second column 0 or 1 (state of fact)
-      ROS_INFO("Writing to fact.dat file");
-      for(i = 0 ; i< diff ; i=i+100000)
-      {  long long int x = timeStart + i;
-          int k = 0;
-          int flag = 0;
-       for(int j=0; j< pnRow + 2; j++)
-       { if(x<data[j])
-           {
-                k = j-1;
-                flag = 1;
-           }
-           if(flag==1)
-             break;
+    std::string sql;
+    char **pazResult;
+    int pnRow;
+    int pnColumn;
+    char *err_msg = NULL;
+    int ret;
+    long long int i;
+    // sql query to get events related to the requested entity within the given time window and for the requested fact. 
+    sql = (std::string)"SELECT * from events_table where subject_id='" + boost::lexical_cast<std::string>(req.subjectID) + "' and target_id='" + boost::lexical_cast<std::string>(req.targetID) + "' and time>='" + boost::lexical_cast<std::string>(req.timeStart) + "' and time<='" + boost::lexical_cast<std::string>(req.timeEnd) + "' and (predicate ='" + boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!" + boost::lexical_cast<std::string>(req.reqFact) + "');";
+    // results of the query are stored in the table
+    ret = sqlite3_get_table(database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
+    if (ret != SQLITE_OK) {
+        fprintf(stderr, "Error: %s\n", err_msg);
+        sqlite3_free(err_msg);
+        res.boolAnswer = false;
+        return false;
+    } else {
+        std::map<long long int, int> fn;
+        std::vector<long long int> data(pnRow + 2);
+        std::string start = boost::lexical_cast<std::string>(req.timeStart);
+        data[0] = std::atoll(start.c_str());
+        long long int timeStart = data[0];
+        std::string end = boost::lexical_cast<std::string>(req.timeEnd);
+        std::string reqFact = boost::lexical_cast<std::string>(req.reqFact);
+        long long int timeEnd = std::atoll(end.c_str());
+        // interpreting state of fact at start time
+        if (pazResult[(1 * (pnColumn)) + 1] == reqFact && atoll(pazResult[(1 * (pnColumn)) + 6]) >= timeStart) {
+            fn[timeStart] = 0;
+        }//if first event within the window is positive (like IsMoving) then state of fact should be false at starting point of window
+        else {
+            fn[timeStart] = 1;
+        } //if first event within the window is negative (like !IsMoving) then state of fact should be false at starting point of window
+        // interpreting state of fact at end time
+        if (pazResult[(pnRow * (pnColumn)) + 1] == reqFact && atoll(pazResult[(pnRow * (pnColumn)) + 6]) <= timeEnd) {
+            fn[timeEnd] = 1;
         }
-       int y = fn[data[k]];
-       myfile << x <<"        "<< y<< "\n";
-      }
-      // closing the file
-       myfile.close();
-       res.boolAnswer = true;
-       return true;
-      
-	 
-	} 
+        else {
+            fn[timeEnd] = 0;
+        }
+        data[pnRow + 1] = timeEnd;
+        // allocation of the value to state of fact i.,e 0 or 1
+        for (i = 1; i <= (pnRow); i++) {
+            fprintf(stderr, "subject_id: %s \n predicate: %s \n propertyType: %s \n time: %s \n",
+                    pazResult[(i * (pnColumn)) + 0], pazResult[(i * (pnColumn)) + 1], pazResult[(i * (pnColumn)) + 2], pazResult[(i * (pnColumn)) + 6]);
+            data[i] = atoll(pazResult[(i * (pnColumn)) + 6]);
+            std::string status = pazResult[(i * (pnColumn)) + 1];
+
+            if (status.compare(reqFact))
+                fn[atoll(pazResult[(i * (pnColumn)) + 6])] = 1;
+            else
+                fn[atoll(pazResult[(i * (pnColumn)) + 6])] = 0;
+        }
+        std::ofstream myfile;
+        std::string myPath = ros::package::getPath("database_manager") + "/plot_fact/" + boost::lexical_cast<std::string>(req.reqFact) + ".dat";
+        myfile.open(myPath.c_str());
+        ROS_INFO("file path is %s", myPath.c_str()); // open gnuplot terminal and plot the data in this file
+        long long int diff = timeEnd - timeStart;
+        // writing data to fact with first column as time stamp and second column 0 or 1 (state of fact)
+        ROS_INFO("Writing to fact.dat file");
+        for (i = 0; i < diff; i = i + 100000) {
+            long long int x = timeStart + i;
+            int k = 0;
+            int flag = 0;
+            for (int j = 0; j < pnRow + 2; j++) {
+                if (x < data[j]) {
+                    k = j - 1;
+                    flag = 1;
+                }
+                if (flag == 1)
+                    break;
+            }
+            int y = fn[data[k]];
+            myfile << x << "        " << y << "\n";
+        }
+        // closing the file
+        myfile.close();
+        res.boolAnswer = true;
+        return true;
+
+
+    }
 }
 
 ////////////////////////////////////////////
 /////////TO LOAD and SAVE the database///////
 ////////////////////////////////////////////
-bool load_save_db(toaster_msgs::LoadSaveDB::Request &req, toaster_msgs::LoadSaveDB::Response &res)
-{
-  int rc;                   /* Function return code */
-  sqlite3 *pFile;           /* Database connection opened on zFilename */
-  sqlite3_backup *pBackup;  /* Backup object used to copy data */
-  sqlite3 *pTo;             /* Database to copy to (pFile or pInMemory) */
-  sqlite3 *pFrom;           /* Database to copy from (pFile or pInMemory) */
-  std::string const fileName = boost::lexical_cast<std::string>(req.fileName);
-  rc = sqlite3_open(fileName.c_str(), &pFile);
-  if( rc==SQLITE_OK ){
 
-   pFrom = (req.toSave ? database : pFile);
-    pTo   = (req.toSave ? pFile     : database);
-	pBackup = sqlite3_backup_init(pTo, "main", pFrom, "main");
-    if( pBackup ){
-      (void)sqlite3_backup_step(pBackup, -1);
-      (void)sqlite3_backup_finish(pBackup);
+bool load_save_db(toaster_msgs::LoadSaveDB::Request &req, toaster_msgs::LoadSaveDB::Response &res) {
+    int rc; /* Function return code */
+    sqlite3 *pFile; /* Database connection opened on zFilename */
+    sqlite3_backup *pBackup; /* Backup object used to copy data */
+    sqlite3 *pTo; /* Database to copy to (pFile or pInMemory) */
+    sqlite3 *pFrom; /* Database to copy from (pFile or pInMemory) */
+    std::string const fileName = boost::lexical_cast<std::string>(req.fileName);
+    rc = sqlite3_open(fileName.c_str(), &pFile);
+    if (rc == SQLITE_OK) {
+
+        pFrom = (req.toSave ? database : pFile);
+        pTo = (req.toSave ? pFile : database);
+        pBackup = sqlite3_backup_init(pTo, "main", pFrom, "main");
+        if (pBackup) {
+            (void) sqlite3_backup_step(pBackup, -1);
+            (void) sqlite3_backup_finish(pBackup);
+        }
+        rc = sqlite3_errcode(pTo);
     }
-    rc = sqlite3_errcode(pTo);
-  }
-  (void)sqlite3_close(pFile);
-  res.sqlstatus = rc;
-  return true;
-	
-	
+    (void) sqlite3_close(pFile);
+    res.sqlstatus = rc;
+    return true;
+
+
 }
 
 ///////////////////////////////////////////////////////////
 // UPDATE WORLD STATE ////////////
 //////////////////////////////////////////////////////////
 
+bool isVisibleBy(std::string entity, std::string agent) {
 
-bool isVisibleBy(std::string entity, std::string agent){
+    if (entity == agent) {
+        return true;
+    }
 
-   if(entity == agent){
-      return true;
-   }
-   
-   std::vector<toaster_msgs::Fact> toTestVector;
+    std::vector<toaster_msgs::Fact> toTestVector;
 
-   toaster_msgs::Fact toTest;
-   toTest.subjectId = entity;
-   toTest.targetId = agent;
-   toTest.property = "isVisibleBy";
-   
-   toTestVector.push_back(toTest);
-   
-   return are_in_table_db(mainAgent, toTestVector);
-   
+    toaster_msgs::Fact toTest;
+    toTest.subjectId = entity;
+    toTest.targetId = agent;
+    toTest.property = "isVisibleBy";
+
+    toTestVector.push_back(toTest);
+
+    return are_in_table_db(mainAgent, toTestVector);
+
 }
 
 void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> factsReader) {
@@ -2006,17 +1991,17 @@ void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> 
 
     //We get the new state
     std::vector<toaster_msgs::Fact> newState;
-    for(std::vector<ToasterFactReader*>::iterator it = factsReader.begin(); it != factsReader.end(); it++){
+    for (std::vector<ToasterFactReader*>::iterator it = factsReader.begin(); it != factsReader.end(); it++) {
         if ((*it)->lastMsgFact.factList.size() > 0) {
             newState.insert(newState.end(), (*it)->lastMsgFact.factList.begin(), (*it)->lastMsgFact.factList.end());
-         } 
+        }
     }
     //If update, make modification to current db:
 
     std::vector<toaster_msgs::Fact> toAdd;
     bool find = false;
     for (int i = 0; i < newState.size(); ++i) {
-      for (int j = 0; j < previousFactsState.size(); ++j) {
+        for (int j = 0; j < previousFactsState.size(); ++j) {
             if ((previousFactsState[j].subjectId.compare(newState[i].subjectId) == 0)
                     && (previousFactsState[j].property.compare(newState[i].property) == 0)
                     && (previousFactsState[j].propertyType.compare(newState[i].propertyType) == 0)
@@ -2025,7 +2010,7 @@ void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> 
                     && (previousFactsState[j].targetId.compare(newState[i].targetId) == 0)
                     && (previousFactsState[j].targetOwnerId.compare(newState[i].targetOwnerId) == 0)
                     && (previousFactsState[j].targetId.compare(newState[i].targetId) == 0)) {
-                    
+
                 find = true;
                 break;
             } else
@@ -2037,10 +2022,10 @@ void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> 
         }
         find = false;
     }
-    if(toAdd.size() >0){
-      add_facts_to_agent_db(mainAgent, toAdd);
+    if (toAdd.size() > 0) {
+        add_facts_to_agent_db(mainAgent, toAdd);
     }
-    
+
     std::vector<toaster_msgs::Fact> toRemove;
     bool removedFact = true;
     for (int j = 0; j < previousFactsState.size(); ++j) {
@@ -2064,13 +2049,12 @@ void update_world_states(ros::NodeHandle& node, std::vector<ToasterFactReader*> 
         }
         removedFact = true;
     }
-    if(toRemove.size() >0){
-      remove_facts_to_agent_db(mainAgent, toRemove);
+    if (toRemove.size() > 0) {
+        remove_facts_to_agent_db(mainAgent, toRemove);
     }
-    
+
     previousFactsState = newState;
 }
-
 
 void conceptual_perspective_taking() {
 
@@ -2078,42 +2062,42 @@ void conceptual_perspective_taking() {
 
     //we get the main agent facts
     std::pair<bool, toaster_msgs::FactList> response = get_current_facts_from_agent_db(mainAgent);
-    
+
     //for all other agents we add all facts observable and where subject and target are visible.
     for (int i = 1; i < agentList.size(); i++) {
-       for (int y = 0; y < response.second.factList.size(); y++) {
-           if (response.second.factList[y].factObservability > 0.0) {
-               if(isVisibleBy(response.second.factList[y].subjectId, agentList[i]) && isVisibleBy(response.second.factList[y].targetId, agentList[i])){
-                  //check if the fact is already in the agent table
-                  toTest.push_back(response.second.factList[y]);
-                  if(!are_in_table_db(agentList[i], toTest)){
-                     toAdd.push_back(response.second.factList[y]);
-                  }
-                  toTest.clear();
-               }
-           }
-       }
-       if(toAdd.size() > 0){
-         add_facts_to_agent_db(agentList[i], toAdd);
-         toAdd.clear();
-       }
+        for (int y = 0; y < response.second.factList.size(); y++) {
+            if (response.second.factList[y].factObservability > 0.0) {
+                if (isVisibleBy(response.second.factList[y].subjectId, agentList[i]) && isVisibleBy(response.second.factList[y].targetId, agentList[i])) {
+                    //check if the fact is already in the agent table
+                    toTest.push_back(response.second.factList[y]);
+                    if (!are_in_table_db(agentList[i], toTest)) {
+                        toAdd.push_back(response.second.factList[y]);
+                    }
+                    toTest.clear();
+                }
+            }
+        }
+        if (toAdd.size() > 0) {
+            add_facts_to_agent_db(agentList[i], toAdd);
+            toAdd.clear();
+        }
     }
-    
+
     //for all other agents we check if the fact in their table are still in the robot table
     for (int i = 1; i < agentList.size(); i++) {
-      response = get_current_facts_from_agent_db(agentList[i]);
-      for (int y = 0; y < response.second.factList.size(); y++) {
-         if(!are_in_table_db(mainAgent, toTest)){
-            if(isVisibleBy(response.second.factList[y].subjectId, agentList[i]) && isVisibleBy(response.second.factList[y].targetId, agentList[i])){
-               toRm.push_back(response.second.factList[y]);
+        response = get_current_facts_from_agent_db(agentList[i]);
+        for (int y = 0; y < response.second.factList.size(); y++) {
+            if (!are_in_table_db(mainAgent, toTest)) {
+                if (isVisibleBy(response.second.factList[y].subjectId, agentList[i]) && isVisibleBy(response.second.factList[y].targetId, agentList[i])) {
+                    toRm.push_back(response.second.factList[y]);
+                }
             }
-         }
-         toTest.clear();
-      }
-      if(toRm.size() > 0){
-         remove_facts_to_agent_db(agentList[i], toRm);
-         toRm.clear();
-       }
+            toTest.clear();
+        }
+        if (toRm.size() > 0) {
+            remove_facts_to_agent_db(agentList[i], toRm);
+            toRm.clear();
+        }
     }
 }
 
@@ -2204,28 +2188,28 @@ void initServer() {
     } else {
         ROS_INFO("Opened events table successfully\n");
     }
-    
+
     //PLANNING TABLE CREATION
     sql = (std::string)"CREATE TABLE planning_table(" +
-                        "subject_id 				 	unsigned long," +
-                        "predicate         	            string," +
-                        "propertyType                          string," +
-                        "target_id        		     	unsigned long," +
-                        "valueType			  	        bit," +
-                        "valueString       	        	string," +
-                        "valueDouble       	        	double," +
-                        "observability   		   		unsinged short," +
-                        "confidence   		        	unsigned short," +
-                        "start   				        int," +
-                        "end 					        int," +
-                        "unique (subject_id,predicate,propertyType,target_id ,valueString ,observability,confidence ,end) );"; //unique fields are used to avoid doublons
-   if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+            "subject_id 				 	unsigned long," +
+            "predicate         	            string," +
+            "propertyType                          string," +
+            "target_id        		     	unsigned long," +
+            "valueType			  	        bit," +
+            "valueString       	        	string," +
+            "valueDouble       	        	double," +
+            "observability   		   		unsinged short," +
+            "confidence   		        	unsigned short," +
+            "start   				        int," +
+            "end 					        int," +
+            "unique (subject_id,predicate,propertyType,target_id ,valueString ,observability,confidence ,end) );"; //unique fields are used to avoid doublons
+    if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
         ROS_WARN_ONCE("SQL error l225: %s", zErrMsg);
         sqlite3_free(zErrMsg);
     } else {
         ROS_INFO("Opened planning table successfully\n");
     }
-    
+
 }
 
 /**
@@ -2244,7 +2228,7 @@ int main(int argc, char **argv) {
     ros::ServiceServer execute_service;
     ros::ServiceServer plot_service;
     ros::ServiceServer save_service;
-    
+
 
     //////////////////////////////////////////////////////////////////////
     //// SERVICES INSTANCIATION  /////
@@ -2260,7 +2244,7 @@ int main(int argc, char **argv) {
 
 
     initServer();
-    
+
     ToasterFactReader factRdAgent(node, "agent_monitor/factList");
     ToasterFactReader factRdArea(node, "area_manager/factList");
     ToasterFactReader factRdMove3D(node, "move3d_facts/factList");
@@ -2271,37 +2255,37 @@ int main(int argc, char **argv) {
     readerPdg = &factRdPdg;
 
 
-   if(node.hasParam("/database/mainAgent")){
-       node.getParam("/database/mainAgent", mainAgent);
-    }else{
-      mainAgent = "PR2_ROBOT";
+    if (node.hasParam("/database/mainAgent")) {
+        node.getParam("/database/mainAgent", mainAgent);
+    } else {
+        mainAgent = "PR2_ROBOT";
     }
-    
+
     //Get topics from params if exist
     bool activate;
-    if(node.hasParam("/database/area_manager")){
-       node.getParam("/database/area_manager", activate);
-       if(activate){
-         factsReaders.push_back(readerArea);
-       }
+    if (node.hasParam("/database/area_manager")) {
+        node.getParam("/database/area_manager", activate);
+        if (activate) {
+            factsReaders.push_back(readerArea);
+        }
     }
-    if(node.hasParam("/database/agent_monitor")){
-       node.getParam("/database/agent_monitor", activate);
-       if(activate){
-         factsReaders.push_back(readerAgent);
-       }
+    if (node.hasParam("/database/agent_monitor")) {
+        node.getParam("/database/agent_monitor", activate);
+        if (activate) {
+            factsReaders.push_back(readerAgent);
+        }
     }
-    if(node.hasParam("/database/move3d_facts")){
-       node.getParam("/database/move3d_facts", activate);
-       if(activate){
-         factsReaders.push_back(readerMove3d);
-       }
+    if (node.hasParam("/database/move3d_facts")) {
+        node.getParam("/database/move3d_facts", activate);
+        if (activate) {
+            factsReaders.push_back(readerMove3d);
+        }
     }
-    if(node.hasParam("/database/pdg_facts")){
-       node.getParam("/database/pdg_facts", activate);
-       if(activate){
-         factsReaders.push_back(readerPdg);
-       }
+    if (node.hasParam("/database/pdg_facts")) {
+        node.getParam("/database/pdg_facts", activate);
+        if (activate) {
+            factsReaders.push_back(readerPdg);
+        }
     }
 
 

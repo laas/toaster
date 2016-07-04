@@ -13,7 +13,7 @@ When the robot has to perform a task collaboratively with a human partner, it is
 To implement the desired functionality for this module, circular buffer data structure has been used. At all time, the module records the position of any entity, for a short period of time, in a time stamped circular buffer. This allow to access the entity position at a given time (supposed not too far in the past).
 
 
- ![](https://writelatex.s3.amazonaws.com/rztjkrqdrypx/uploads/2549/6319981/1.jpg)
+ ![](https://github.com/Greg8978/toaster/blob/master/doc/LatexSource/img/agentMonitor.jpg)
  
 ## Facts computation
 

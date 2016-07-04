@@ -10,6 +10,9 @@ This wiki contains a user manual for each component and a brief description.
 
 ### Installation
 [instructions](https://github.com/Greg8978/toaster/wiki/Installation)
+
+[scripts for testing](https://github.com/Greg8978/toaster/wiki/tools)
+
 ### Modules descriptions:
 [toaster_msgs](https://github.com/Greg8978/toaster/wiki/toaster_msgs)
 
