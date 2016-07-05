@@ -904,32 +904,32 @@ bool reset_tables(std::string newIDTable)
      return false;     
     }
     else {
-	 for (i = 1; i <= (pnRow); i++)
-     {	
+      for (i = 1; i <= (pnRow); i++)
+       {	
 	  std::string agentId = pazResult[(i*(pnColumn))+0]; 
 	  std::string type = pazResult[(i*(pnColumn))+2]; 
 	  boost::algorithm::to_lower(agentId);
-      if(!type.compare("robot") || !type.compare("human"))
-      { 
+          if(!type.compare("robot") || !type.compare("human"))
+          { 
 	   // removing fact_table and memory table for existing agents
 	   std::string sql1 = (std::string)"DROP TABLE fact_table_"+  agentId ;
 	   std::string sql2 = (std::string)"DROP TABLE memory_table_"+ agentId ;
 	   if (sqlite3_exec(database, sql1.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-        fprintf(stderr, "SQL error : %s\n", zErrMsg);
-        sqlite3_free(zErrMsg);
-        return false;
+             fprintf(stderr, "SQL error : %s\n", zErrMsg);
+             sqlite3_free(zErrMsg);
+             return false;
 	   } else
 	   {
         //ROS_INFO("fact table dropped successfully\n");
 	   }
-       if (sqlite3_exec(database, sql2.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-         fprintf(stderr, "SQL error : %s\n", zErrMsg);
-         sqlite3_free(zErrMsg);
-         return false;
-		} else {
+         if (sqlite3_exec(database, sql2.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+          fprintf(stderr, "SQL error : %s\n", zErrMsg);
+          sqlite3_free(zErrMsg);
+          return false;
+         } else {
          //ROS_INFO("memory table dropped successfully\n");
-		}
-       }
+	 }
+        }
       }
       // removing current id_table
       std::string sql3 = (std::string)"DROP TABLE id_table";
@@ -937,9 +937,9 @@ bool reset_tables(std::string newIDTable)
         fprintf(stderr, "SQL error : %s\n", zErrMsg);
         sqlite3_free(zErrMsg);
         return false;
-	  } else {
+	} else {
          //ROS_INFO("id table dropped successfully\n");
-	   }
+	}
  
        sql = (std::string)"CREATE TABLE id_table(" +
             "id 		 CHAR(50)," +
@@ -961,6 +961,7 @@ bool reset_tables(std::string newIDTable)
       }   		 		
 	return true ;
 }
+
 
 
 
