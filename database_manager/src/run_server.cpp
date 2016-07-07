@@ -287,14 +287,13 @@ void launchStaticPropertyDatabase() {
  * Get all information about agents and objects contained in the xml file
  * @return void
  */
-void launchIdList() {
+void launchIdList(std::string IDList) {
     char *zErrMsg = 0;
     std::string sql;
     std::stringstream s;
 
-    s << ros::package::getPath("database_manager") << "/database/id_list.xml"; //load xml file
+    s << ros::package::getPath("database_manager") << IDList.c_str(); //load xml file
     TiXmlDocument static_property(s.str());
-    //TiXmlDocument static_property("src/database_manager/database/id_list.xml"); //load xml file
 
     if (!static_property.LoadFile()) {
         ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
@@ -370,7 +369,6 @@ void launchIdList() {
         }
     }
 }
-
 /**
  * Get all information about ontology contained in the xml file
  * @return void
@@ -1704,6 +1702,101 @@ void empty_database_for_agent_db(std::string agent) {
 
 }
 
+/** removes the tables of all the agents, vacate event table and set new id table (i.e as an input) 
+and create new memory and fact tables accordingly. Save new id_list xml file in /database_manager/database and 
+in execute_db service use newIDTable as '/database/filename' where filename is name of xml file
+with new ID_table list **/
+
+bool reset_tables(std::string newIDTable)
+{   
+	char **pazResult;
+    int pnRow;
+    int pnColumn ;
+    char *err_msg = NULL;
+    int ret;
+    int i;
+    char *zErrMsg = 0;
+    const char* data = "Callback function called";
+    // reading current id_table
+	std::string sql = (std::string)"SELECT * from id_table";	
+	ret = sqlite3_get_table (database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
+    if (ret != SQLITE_OK) 
+    {
+		fprintf (stderr, "Error: %s\n", err_msg);
+		sqlite3_free (err_msg);
+		return false; 
+          
+    }
+    else 
+    {
+		for (i = 1; i <= (pnRow); i++)
+      {	
+		  std::string agentId = pazResult[(i*(pnColumn))+0]; 
+		  std::string type = pazResult[(i*(pnColumn))+2]; 
+	      boost::algorithm::to_lower(agentId);
+	  
+          if(!type.compare("robot") || !type.compare("human"))
+          { 
+			  // removing fact_table and memory table for existing agents
+				std::string sql1 = (std::string)"DROP TABLE fact_table_"+  agentId ;
+				std::string sql2 = (std::string)"DROP TABLE memory_table_"+ agentId ;
+				if (sqlite3_exec(database, sql1.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK)
+				{
+					fprintf(stderr, "SQL error : %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+					return false;
+				} else
+				{
+				//ROS_INFO("fact table dropped successfully\n");
+				}	
+				if (sqlite3_exec(database, sql2.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK)
+				{
+					fprintf(stderr, "SQL error : %s\n", zErrMsg);
+					sqlite3_free(zErrMsg);
+					return false;
+				} else {
+					//ROS_INFO("memory table dropped successfully\n");
+				}
+	   
+          }
+      }
+      // removing current id_table
+      std::string sql3 = (std::string)"DROP TABLE id_table";
+      if (sqlite3_exec(database, sql3.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) 
+      {
+		  fprintf(stderr, "SQL error : %s\n", zErrMsg);
+		  sqlite3_free(zErrMsg);
+          return false;
+        
+	  } else {
+         //ROS_INFO("id table dropped successfully\n");
+	  }
+ 
+       sql = (std::string)"CREATE TABLE id_table(" +
+            "id 		 CHAR(50)," +
+            "name        	 CHAR(50)," +
+            "type       	 CHAR(50)," +
+            "owner_id      	 INT," +
+            "unique(id) );";
+
+      if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK)
+       {
+        ROS_WARN_ONCE("SQL error l174: %s", zErrMsg);
+        sqlite3_free(zErrMsg);
+       } else {      
+		// clears current agentList
+        agentList.clear();
+        //get id informations form new id_list and create new id table and also fact_table and memory_table for agents in it 
+        launchIdList(newIDTable); 
+        //ROS_INFO("Opened id table successfully\n");
+       }
+     
+    }   
+    		 		
+	return true ;
+}
+
+
 /**
  * Set the topics the database should read
  */
@@ -1839,6 +1932,8 @@ bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::
         }
     } else if (req.command == "SET_TOPICS") {
         set_topics(req.areaTopic, req.agentTopic, req.move3dTopic, req.pdgTopic);
+    } else if (req.command=="RESET_TABLES"){
+	    res.boolAnswer = reset_tables(req.newIDList);   
     }
     return true;
 }
@@ -2133,8 +2228,9 @@ void initServer() {
         ROS_WARN_ONCE("SQL error l174: %s", zErrMsg);
         sqlite3_free(zErrMsg);
     } else {
-        ROS_INFO("Opened id table successfully\n");
-        launchIdList(); //get id informations form xml file
+        std:: string idList =  "/database/id_list.xml";
+        launchIdList(idList); //get id informations form xml file
+		ROS_INFO("Opened id table successfully\n");
     }
 
 

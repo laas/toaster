@@ -3,6 +3,7 @@ string type
 toaster_msgs/Fact[] facts
 string agent
 string order
+string newIDList
 bool areaTopic
 bool agentTopic
 bool move3dTopic
