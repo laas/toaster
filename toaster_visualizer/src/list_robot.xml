@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<list_robot>
+
+    <object name="Spencer"           mesh_ressource="package://toaster_visualizer/mesh/toaster_robots/spencer_robot_full.dae" />
+    <object name="spencer"           mesh_ressource="package://toaster_visualizer/mesh/toaster_robots/spencer_robot_full.dae" />
+
+
+
+	
+</list_robot>	
+

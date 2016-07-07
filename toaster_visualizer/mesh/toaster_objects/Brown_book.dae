@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 2.65.0 r52859</authoring_tool>
+    </contributor>
+    <created>2016-07-07T20:12:41</created>
+    <modified>2016-07-07T20:12:41</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_cameras>
+    <camera id="Camera-camera" name="Camera">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">49.13434</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">0.1</znear>
+            <zfar sid="zfar">100</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+    </camera>
+  </library_cameras>
+  <library_lights>
+    <light id="Lamp-light" name="Lamp">
+      <technique_common>
+        <point>
+          <color sid="color">1 1 1</color>
+          <constant_attenuation>1</constant_attenuation>
+          <linear_attenuation>0</linear_attenuation>
+          <quadratic_attenuation>0.00111109</quadratic_attenuation>
+        </point>
+      </technique_common>
+      <extra>
+        <technique profile="blender">
+          <adapt_thresh>0.000999987</adapt_thresh>
+          <area_shape>1</area_shape>
+          <area_size>0.1</area_size>
+          <area_sizey>0.1</area_sizey>
+          <area_sizez>1</area_sizez>
+          <atm_distance_factor>1</atm_distance_factor>
+          <atm_extinction_factor>1</atm_extinction_factor>
+          <atm_turbidity>2</atm_turbidity>
+          <att1>0</att1>
+          <att2>1</att2>
+          <backscattered_light>1</backscattered_light>
+          <bias>1</bias>
+          <blue>1</blue>
+          <buffers>1</buffers>
+          <bufflag>0</bufflag>
+          <bufsize>2880</bufsize>
+          <buftype>2</buftype>
+          <clipend>30.002</clipend>
+          <clipsta>1.000799</clipsta>
+          <compressthresh>0.04999995</compressthresh>
+          <dist sid="blender_dist">29.99998</dist>
+          <energy sid="blender_energy">1</energy>
+          <falloff_type>2</falloff_type>
+          <filtertype>0</filtertype>
+          <flag>0</flag>
+          <gamma sid="blender_gamma">1</gamma>
+          <green>1</green>
+          <halo_intensity sid="blnder_halo_intensity">1</halo_intensity>
+          <horizon_brightness>1</horizon_brightness>
+          <mode>8192</mode>
+          <ray_samp>1</ray_samp>
+          <ray_samp_method>1</ray_samp_method>
+          <ray_samp_type>0</ray_samp_type>
+          <ray_sampy>1</ray_sampy>
+          <ray_sampz>1</ray_sampz>
+          <red>1</red>
+          <samp>3</samp>
+          <shadhalostep>0</shadhalostep>
+          <shadow_b sid="blender_shadow_b">0</shadow_b>
+          <shadow_g sid="blender_shadow_g">0</shadow_g>
+          <shadow_r sid="blender_shadow_r">0</shadow_r>
+          <shadspotsize>45</shadspotsize>
+          <sky_colorspace>0</sky_colorspace>
+          <sky_exposure>1</sky_exposure>
+          <skyblendfac>1</skyblendfac>
+          <skyblendtype>1</skyblendtype>
+          <soft>3</soft>
+          <spotblend>0.15</spotblend>
+          <spotsize>75</spotsize>
+          <spread>1</spread>
+          <sun_brightness>1</sun_brightness>
+          <sun_effect_type>0</sun_effect_type>
+          <sun_intensity>1</sun_intensity>
+          <sun_size>1</sun_size>
+          <type>0</type>
+        </technique>
+      </extra>
+    </light>
+  </library_lights>
+  <library_images/>
+  <library_effects>
+    <effect id="Cover_Brown-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <color sid="diffuse">0.1791914 0.09707408 0.05752877 1</color>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">50</float>
+            </shininess>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+        <extra>
+          <technique profile="GOOGLEEARTH">
+            <double_sided>1</double_sided>
+          </technique>
+        </extra>
+      </profile_COMMON>
+      <extra><technique profile="MAX3D"><double_sided>1</double_sided></technique></extra>
+    </effect>
+    <effect id="Pages-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <phong>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <ambient>
+              <color sid="ambient">0 0 0 1</color>
+            </ambient>
+            <diffuse>
+              <color sid="diffuse">0.64 0.64 0.64 1</color>
+            </diffuse>
+            <specular>
+              <color sid="specular">0.5 0.5 0.5 1</color>
+            </specular>
+            <shininess>
+              <float sid="shininess">50</float>
+            </shininess>
+            <index_of_refraction>
+              <float sid="index_of_refraction">1</float>
+            </index_of_refraction>
+          </phong>
+        </technique>
+        <extra>
+          <technique profile="GOOGLEEARTH">
+            <double_sided>1</double_sided>
+          </technique>
+        </extra>
+      </profile_COMMON>
+      <extra><technique profile="MAX3D"><double_sided>1</double_sided></technique></extra>
+    </effect>
+  </library_effects>
+  <library_materials>
+    <material id="Cover_Brown-material" name="Cover_Brown">
+      <instance_effect url="#Cover_Brown-effect"/>
+    </material>
+    <material id="Pages-material" name="Pages">
+      <instance_effect url="#Pages-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="Cube_007-mesh" name="Cube.007">
+      <mesh>
+        <source id="Cube_007-mesh-positions">
+          <float_array id="Cube_007-mesh-positions-array" count="90">0.02631574 0.07773655 0.0949999 0.02631568 -0.05226325 0.0949999 0.02631568 -0.05226325 -0.09499996 0.02631568 0.07773655 -0.0949999 -0.02631568 0.07773649 0.09500002 -0.02631568 -0.05226331 0.0949999 -0.02631574 -0.05226325 -0.09499996 -0.02631568 0.07773655 -0.0949999 0.02343612 -0.04769074 -0.0949999 -0.02343618 -0.04769068 -0.09499996 0.02343618 -0.04769068 0.0949999 -0.02343612 -0.04769074 0.0949999 -0.02343612 0.07773649 0.09500002 -0.02343618 0.07773655 -0.0949999 0.02343612 0.07773655 -0.0949999 0.02343618 0.07773655 0.0949999 0.02343618 -0.04769068 0.08776891 0.02343618 0.07296299 0.08776891 0.02343612 0.07296299 -0.08776885 0.02343612 -0.04769074 -0.08776891 -0.02343612 -0.04769074 0.08776885 -0.02343612 0.07296299 0.08776897 -0.02343618 -0.04769068 -0.08776891 -0.02343612 0.07296299 -0.08776885 0 -0.05708503 0.0949999 0 -0.05708503 -0.09499996 0 -0.05224853 -0.09499996 0 -0.05224853 0.0949999 0 -0.05224853 0.08776885 0 -0.05224853 -0.08776891</float_array>
+          <technique_common>
+            <accessor source="#Cube_007-mesh-positions-array" count="30" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Cube_007-mesh-normals">
+          <float_array id="Cube_007-mesh-normals-array" count="111">0.5773492 0.5773492 0.5773492 0.6216315 -0.5180822 0.5874813 0.6216315 -0.5180822 -0.5874813 0.5773187 0.5773492 -0.5773492 -0.5773492 0.5773492 0.5773492 -0.5773492 0.5773492 -0.5773492 -0.6216315 -0.5180822 -0.5874813 -0.6216315 -0.5180822 0.5874813 0.5773492 0.5773492 0.5773492 0.5773187 0.5773492 -0.5773492 0.3646962 0.3005768 -0.8812525 0.3646962 0.3005768 0.8812525 -0.3646962 0.3006073 -0.8812525 -0.5773492 0.5773187 -0.5773187 -0.5773492 0.5773492 0.5773492 -0.3646962 0.3005768 0.8812525 -0.9045076 0.3014923 0.3014923 -0.624073 0.5143895 0.5881222 -0.9045076 0.3014923 -0.3014923 -0.624073 0.5143895 -0.5881222 0.624073 0.5143895 0.5881222 0.9045076 0.3014923 0.3014923 0.9045076 0.3014923 -0.3014923 0.624073 0.5143895 -0.5881222 0 -0.7435225 0.668691 0 -0.7435225 -0.668691 0 0.6583453 0.752678 0 0.7454451 0.6665548 0 0.6583453 -0.752678 0 0.7454451 -0.6665548 0 1 0 1.27164e-6 -7.14047e-7 1 -1.92148e-7 -9.88028e-7 1 -2.54327e-6 0 1 0 4.76031e-7 -1 0 4.94014e-7 -1 0 4.94014e-7 -1</float_array>
+          <technique_common>
+            <accessor source="#Cube_007-mesh-normals-array" count="37" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Cube_007-mesh-vertices">
+          <input semantic="POSITION" source="#Cube_007-mesh-positions"/>
+        </vertices>
+        <polylist material="Cover_Brown-material" count="28">
+          <input semantic="VERTEX" source="#Cube_007-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Cube_007-mesh-normals" offset="1"/>
+          <vcount>4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 4 3 3 3 3 4 4 4 4 3 3 3 3 </vcount>
+          <p>0 0 1 1 2 2 3 3 4 4 7 5 6 6 5 7 7 5 4 4 12 8 13 9 6 6 7 5 13 9 9 10 4 4 5 7 11 11 12 8 3 3 2 2 8 12 14 13 0 0 3 3 14 13 15 14 1 1 0 0 15 14 10 15 10 15 15 14 17 16 16 17 15 14 14 13 18 18 17 16 14 13 8 12 19 19 18 18 12 8 11 11 20 20 21 21 9 10 13 9 23 22 22 23 13 9 12 8 21 21 23 22 1 1 24 24 25 25 2 2 24 24 5 7 6 6 25 25 2 2 25 25 8 12 25 25 6 6 9 10 5 7 24 24 11 11 24 24 1 1 10 15 11 11 27 26 28 27 20 20 27 26 10 15 16 17 28 27 8 12 26 28 29 29 19 19 26 28 9 10 22 23 29 29 9 10 26 28 25 25 26 28 8 12 25 25 10 15 27 26 24 24 27 26 11 11 24 24</p>
+        </polylist>
+        <polylist material="Pages-material" count="7">
+          <input semantic="VERTEX" source="#Cube_007-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Cube_007-mesh-normals" offset="1"/>
+          <vcount>4 3 3 3 3 3 3 </vcount>
+          <p>21 30 17 30 18 30 23 30 28 31 17 31 21 31 20 32 28 32 21 32 28 33 16 33 17 33 29 34 23 34 18 34 19 35 29 35 18 35 29 36 22 36 23 36</p>
+        </polylist>
+      </mesh>
+      <extra><technique profile="MAYA"><double_sided>1</double_sided></technique></extra>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="Camera" name="Camera" type="NODE">
+        <translate sid="location">7.481132 -6.50764 5.343665</translate>
+        <rotate sid="rotationZ">0 0 1 46.69194</rotate>
+        <rotate sid="rotationY">0 1 0 0.619768</rotate>
+        <rotate sid="rotationX">1 0 0 63.5593</rotate>
+        <scale sid="scale">1 1 1</scale>
+        <instance_camera url="#Camera-camera"/>
+      </node>
+      <node id="Lamp" name="Lamp" type="NODE">
+        <translate sid="location">4.076245 1.005454 5.903862</translate>
+        <rotate sid="rotationZ">0 0 1 106.9363</rotate>
+        <rotate sid="rotationY">0 1 0 3.163707</rotate>
+        <rotate sid="rotationX">1 0 0 37.26105</rotate>
+        <scale sid="scale">1 1 1</scale>
+        <instance_light url="#Lamp-light"/>
+      </node>
+      <node id="Book_Brown_medium" name="Book_Brown_medium" type="NODE">
+        <translate sid="location">1.99316e-4 -0.009704452 0.09499995</translate>
+        <rotate sid="rotationZ">0 0 1 0</rotate>
+        <rotate sid="rotationY">0 1 0 0</rotate>
+        <rotate sid="rotationX">1 0 0 0</rotate>
+        <scale sid="scale">0.95 1 1</scale>
+        <instance_geometry url="#Cube_007-mesh">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="Cover_Brown-material" target="#Cover_Brown-material"/>
+              <instance_material symbol="Pages-material" target="#Pages-material"/>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

@@ -59,8 +59,9 @@ class Run {
     ros::Publisher pub_movingTwrd;
 
     TiXmlDocument listObj;
-    TiXmlDocument listMemb;
-    //TiXmlDocument listRob;
+    TiXmlDocument listHuman;
+    TiXmlDocument listJoint;
+    TiXmlDocument listRobot;
 
 public:
 
@@ -109,27 +110,39 @@ public:
             ROS_WARN_ONCE("%s", listObj.ErrorDesc());
         }
 
+
         // Humans
         std::stringstream pathHuman;
-        pathHuman << ros::package::getPath("toaster_visualizer") << "/src/list_human_joints.xml";
-        listMemb = TiXmlDocument(pathHuman.str());
+        pathHuman << ros::package::getPath("toaster_visualizer") << "/src/list_human.xml";
+        listHuman = TiXmlDocument(pathHuman.str());
 
-        if (!listMemb.LoadFile()) {
+        if (!listHuman.LoadFile()) {
             ROS_WARN_ONCE("Error while loading xml file");
-            ROS_WARN_ONCE("error # %d", listMemb.ErrorId());
-            ROS_WARN_ONCE("%s", listMemb.ErrorDesc());
+            ROS_WARN_ONCE("error # %d", listHuman.ErrorId());
+            ROS_WARN_ONCE("%s", listHuman.ErrorDesc());
         }
 
-        // Robots        
-        /*path.flush();
-        path << ros::package::getPath("toaster_visualizer") << "/src/list_robots.xml";
-        listRob = TiXmlDocument(path.str());
+        // Humans
+        std::stringstream pathHumanJoint;
+        pathHumanJoint << ros::package::getPath("toaster_visualizer") << "/src/list_human_joints.xml";
+        listJoint = TiXmlDocument(pathHumanJoint.str());
 
-        if (!listRob.LoadFile()) {
-            ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
-            ROS_WARN_ONCE("error # %d", listRob.ErrorId());
-            ROS_WARN_ONCE("%s", listRob.ErrorDesc());
-        }*/
+        if (!listJoint.LoadFile()) {
+            ROS_WARN_ONCE("Error while loading xml file");
+            ROS_WARN_ONCE("error # %d", listJoint.ErrorId());
+            ROS_WARN_ONCE("%s", listJoint.ErrorDesc());
+        }
+
+        // Robots
+        std::stringstream pathRobot;
+        pathRobot << ros::package::getPath("toaster_visualizer") << "/src/list_robot.xml";
+        listRobot = TiXmlDocument(pathRobot.str());
+
+        if (!listRobot.LoadFile()) {
+            ROS_WARN_ONCE("Error while loading xml file");
+            ROS_WARN_ONCE("error # %d", listRobot.ErrorId());
+            ROS_WARN_ONCE("%s", listRobot.ErrorDesc());
+        }
 
     }
 
@@ -147,7 +160,7 @@ public:
      * @return marker 	circle marker with input property
      */
     visualization_msgs::Marker defineCircle(geometry_msgs::Point p, double rayon, std::string name) {
-        //declarration 
+        //declaration 
         visualization_msgs::Marker marker;
 
         //frame id
@@ -200,7 +213,7 @@ public:
      * @return marker 	line marker representating input polygon
      */
     visualization_msgs::Marker definePolygon(geometry_msgs::Polygon poly, double scale, std::string name) {
-        //declarration
+        //declaration
         visualization_msgs::Marker marker;
 
         //frame id
@@ -427,10 +440,37 @@ public:
         marker.scale.y = 1 * scale;
         marker.scale.z = 1 * scale;
 
-        //type de marker
+        //type of marker
         marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-        marker.mesh_resource = "package://toaster_visualizer/mesh/vincent.dae"; //using 3d human model
-        marker.mesh_use_embedded_materials = true;
+
+
+
+        TiXmlHandle hdl(&listHuman);
+        TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
+
+        std::string name_obj;
+        std::string mesh_r;
+
+        while (elem) //for each element of the xml file
+        {
+            name_obj = elem->Attribute("name");
+            mesh_r = elem->Attribute("mesh_ressource");
+            elem = elem->NextSiblingElement();
+
+            if (name_obj.compare(name) == 0) //if there is a 3d model relative to this human
+            {
+                marker.mesh_resource = mesh_r;
+                marker.mesh_use_embedded_materials = true;
+
+                elem = NULL;
+            } else {
+                marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/vincent.dae"; //using 3d human model
+                marker.mesh_use_embedded_materials = true;
+
+            }
+
+
+        }
 
         marker.lifetime = ros::Duration();
 
@@ -448,7 +488,7 @@ public:
      */
     visualization_msgs::Marker defineRobot(geometry_msgs::Pose pose, double scale, std::string name) {
 
-        //declarration
+        //declaration
         visualization_msgs::Marker marker;
 
         //frame id
@@ -480,10 +520,38 @@ public:
         marker.scale.y = 1 * scale;
         marker.scale.z = 1 * scale;
 
-        //type de marker
+        //type of marker
         marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-        marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_robots/pr2.dae"; //using 3d robot model
-        marker.mesh_use_embedded_materials = true;
+
+        TiXmlHandle hdl(&listRobot);
+        TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
+
+        std::string name_obj;
+        std::string mesh_r;
+
+        while (elem) //for each element of the xml file
+        {
+            name_obj = elem->Attribute("name");
+            mesh_r = elem->Attribute("mesh_ressource");
+            elem = elem->NextSiblingElement();
+
+            if (name_obj.compare(name) == 0) //if there is a 3d model relativ to this robot
+            {
+                marker.mesh_resource = mesh_r;
+                marker.mesh_use_embedded_materials = true;
+
+                elem = NULL;
+            } else {
+                marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_robots/pr2.dae"; //using default 3d robot model
+                marker.mesh_use_embedded_materials = true;
+
+            }
+
+
+        }
+
+
+
 
         marker.lifetime = ros::Duration();
 
@@ -545,7 +613,7 @@ public:
         marker.scale.y = 0.2;
         marker.scale.z = 0.3;
 
-        //type de marker
+        //type of marker
         marker.type = visualization_msgs::Marker::ARROW;
         marker.mesh_use_embedded_materials = true;
 
@@ -790,7 +858,7 @@ public:
         for (int i = 0; i < msg->humanList.size(); i++) {
             //non articulated human
             visualization_msgs::Marker m = defineHuman(msg->humanList[i].meAgent.meEntity.pose,
-                    0.3, msg->humanList[i].meAgent.meEntity.name);
+                    1.0, msg->humanList[i].meAgent.meEntity.name);
 
             visualization_msgs::Marker mn = defineName(m);
             mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
@@ -845,10 +913,10 @@ public:
                     markerTempo.scale.y = 0.1 * scale;
                     markerTempo.scale.z = 0.1 * scale;
 
-                    //type de marker
+                    //type of marker
                     markerTempo.type = 3;
 
-                    TiXmlHandle hdl(&listMemb);
+                    TiXmlHandle hdl(&listJoint);
                     TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
 
                     std::string name_obj;
@@ -1029,7 +1097,7 @@ public:
 int main(int argc, char **argv) {
     ros::init(argc, argv, "Run");
     ROS_INFO("[toaster-visu] launched");
-    
+
     Run c = Run();
 
 

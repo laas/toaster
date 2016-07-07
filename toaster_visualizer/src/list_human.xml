@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<list_human>
+
+    <object name="Alexia"           mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/alexia/alexia.dae" />
+    <object name="Lara"             mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/Lara/Lara_Croft.dae" />
+
+
+
+	
+</list_human>	
+
