@@ -287,14 +287,13 @@ void launchStaticPropertyDatabase() {
  * Get all information about agents and objects contained in the xml file
  * @return void
  */
-void launchIdList() {
+void launchIdList(std::string IDList) {
     char *zErrMsg = 0;
     std::string sql;
     std::stringstream s;
 
-    s << ros::package::getPath("database_manager") << "/database/id_list.xml"; //load xml file
+    s << ros::package::getPath("database_manager") << IDList.c_str(); //load xml file
     TiXmlDocument static_property(s.str());
-    //TiXmlDocument static_property("src/database_manager/database/id_list.xml"); //load xml file
 
     if (!static_property.LoadFile()) {
         ROS_WARN_ONCE("Erreur lors du chargement du fichier xml");
@@ -1704,6 +1703,89 @@ void empty_database_for_agent_db(std::string agent) {
 
 }
 
+/** removes the tables of all the agents, vacate event table and set new id table (i.e as an input) 
+and create new memory and fact tables accordingly. Save new id_list xml file in /database_manager/database and 
+in execute_db service use newIDTable as '/database/filename' where filename is name of xml file
+with new ID_table list **/
+
+bool reset_tables(std::string newIDTable) {
+    char **pazResult;
+    int pnRow;
+    int pnColumn;
+    char *err_msg = NULL;
+    int ret;
+    int i;
+    char *zErrMsg = 0;
+    const char* data = "Callback function called";
+    // reading current id_table
+    std::string sql = (std::string)"SELECT * from id_table";
+    ret = sqlite3_get_table(database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
+    if (ret != SQLITE_OK) {
+        fprintf(stderr, "Error: %s\n", err_msg);
+        sqlite3_free(err_msg);
+        return false;
+
+    } else {
+        for (i = 1; i <= (pnRow); i++) {
+            std::string agentId = pazResult[(i * (pnColumn)) + 0];
+            std::string type = pazResult[(i * (pnColumn)) + 2];
+            boost::algorithm::to_lower(agentId);
+
+            if (!type.compare("robot") || !type.compare("human")) {
+                // removing fact_table and memory table for existing agents
+                std::string sql1 = (std::string)"DROP TABLE fact_table_" + agentId;
+                std::string sql2 = (std::string)"DROP TABLE memory_table_" + agentId;
+                if (sqlite3_exec(database, sql1.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+                    fprintf(stderr, "SQL error : %s\n", zErrMsg);
+                    sqlite3_free(zErrMsg);
+                    return false;
+                } else {
+                    //ROS_INFO("fact table dropped successfully\n");
+                }
+                if (sqlite3_exec(database, sql2.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+                    fprintf(stderr, "SQL error : %s\n", zErrMsg);
+                    sqlite3_free(zErrMsg);
+                    return false;
+                } else {
+                    //ROS_INFO("memory table dropped successfully\n");
+                }
+
+            }
+        }
+        // removing current id_table
+        std::string sql3 = (std::string)"DROP TABLE id_table";
+        if (sqlite3_exec(database, sql3.c_str(), sql_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+            fprintf(stderr, "SQL error : %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+            return false;
+
+        } else {
+            //ROS_INFO("id table dropped successfully\n");
+        }
+
+        sql = (std::string)"CREATE TABLE id_table(" +
+                "id 		 CHAR(50)," +
+                "name        	 CHAR(50)," +
+                "type       	 CHAR(50)," +
+                "owner_id      	 INT," +
+                "unique(id) );";
+
+        if (sqlite3_exec(database, sql.c_str(), callback, 0, &zErrMsg) != SQLITE_OK) {
+            ROS_WARN_ONCE("SQL error l174: %s", zErrMsg);
+            sqlite3_free(zErrMsg);
+        } else {
+            // clears current agentList
+            agentList.clear();
+            //get id informations form new id_list and create new id table and also fact_table and memory_table for agents in it 
+            launchIdList(newIDTable);
+            //ROS_INFO("Opened id table successfully\n");
+        }
+
+    }
+
+    return true;
+}
+
 /**
  * Set the topics the database should read
  */
@@ -1839,6 +1921,8 @@ bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::
         }
     } else if (req.command == "SET_TOPICS") {
         set_topics(req.areaTopic, req.agentTopic, req.move3dTopic, req.pdgTopic);
+    } else if (req.command == "RESET_TABLES") {
+        res.boolAnswer = reset_tables(req.newIDList);
     }
     return true;
 }
@@ -1846,6 +1930,9 @@ bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::
 ///for graphical representation///
 /////////////////////////////////
 
+/**
+ * plot facts transitions in file package/plot_fact/req.reqFact.dat
+ */
 bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFactsDB::Response &res) {
 
     std::string sql;
@@ -1855,10 +1942,21 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
     char *err_msg = NULL;
     int ret;
     long long int i;
-    // sql query to get events related to the requested entity within the given time window and for the requested fact. 
-    sql = (std::string)"SELECT * from events_table where subject_id='" + boost::lexical_cast<std::string>(req.subjectID) + "' and target_id='" + boost::lexical_cast<std::string>(req.targetID) + "' and time>='" + boost::lexical_cast<std::string>(req.timeStart) + "' and time<='" + boost::lexical_cast<std::string>(req.timeEnd) + "' and (predicate ='" + boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!" + boost::lexical_cast<std::string>(req.reqFact) + "');";
+
+
+    // sql query to get events related to the requested entity
+    // within the given time window and for the requested fact.
+    sql = (std::string)"SELECT * from events_table where subject_id='" +
+            boost::lexical_cast<std::string>(req.subjectID) + "' and target_id='" +
+            boost::lexical_cast<std::string>(req.targetID) + "' and time>='" +
+            boost::lexical_cast<std::string>(req.timeStart) + "' and time<='" +
+            boost::lexical_cast<std::string>(req.timeEnd) + "' and (predicate ='" +
+            boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!" +
+            boost::lexical_cast<std::string>(req.reqFact) + "');";
+
     // results of the query are stored in the table
     ret = sqlite3_get_table(database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
+
     if (ret != SQLITE_OK) {
         fprintf(stderr, "Error: %s\n", err_msg);
         sqlite3_free(err_msg);
@@ -1873,6 +1971,7 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
         std::string end = boost::lexical_cast<std::string>(req.timeEnd);
         std::string reqFact = boost::lexical_cast<std::string>(req.reqFact);
         long long int timeEnd = std::atoll(end.c_str());
+
         // interpreting state of fact at start time
         if (pazResult[(1 * (pnColumn)) + 1] == reqFact && atoll(pazResult[(1 * (pnColumn)) + 6]) >= timeStart) {
             fn[timeStart] = 0;
@@ -1880,14 +1979,16 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
         else {
             fn[timeStart] = 1;
         } //if first event within the window is negative (like !IsMoving) then state of fact should be false at starting point of window
+
         // interpreting state of fact at end time
         if (pazResult[(pnRow * (pnColumn)) + 1] == reqFact && atoll(pazResult[(pnRow * (pnColumn)) + 6]) <= timeEnd) {
             fn[timeEnd] = 1;
-        }
-        else {
+        } else {
             fn[timeEnd] = 0;
         }
+
         data[pnRow + 1] = timeEnd;
+
         // allocation of the value to state of fact i.,e 0 or 1
         for (i = 1; i <= (pnRow); i++) {
             fprintf(stderr, "subject_id: %s \n predicate: %s \n propertyType: %s \n time: %s \n",
@@ -1900,11 +2001,13 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
             else
                 fn[atoll(pazResult[(i * (pnColumn)) + 6])] = 0;
         }
+
         std::ofstream myfile;
         std::string myPath = ros::package::getPath("database_manager") + "/plot_fact/" + boost::lexical_cast<std::string>(req.reqFact) + ".dat";
         myfile.open(myPath.c_str());
         ROS_INFO("file path is %s", myPath.c_str()); // open gnuplot terminal and plot the data in this file
         long long int diff = timeEnd - timeStart;
+
         // writing data to fact with first column as time stamp and second column 0 or 1 (state of fact)
         ROS_INFO("Writing to fact.dat file");
         for (i = 0; i < diff; i = i + 100000) {
@@ -1935,6 +2038,9 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
 /////////TO LOAD and SAVE the database///////
 ////////////////////////////////////////////
 
+/**
+ * uses sql functions to load and save the current state of the db
+ */
 bool load_save_db(toaster_msgs::LoadSaveDB::Request &req, toaster_msgs::LoadSaveDB::Response &res) {
     int rc; /* Function return code */
     sqlite3 *pFile; /* Database connection opened on zFilename */
@@ -2133,8 +2239,9 @@ void initServer() {
         ROS_WARN_ONCE("SQL error l174: %s", zErrMsg);
         sqlite3_free(zErrMsg);
     } else {
+        std::string idList = "/database/id_list.xml";
+        launchIdList(idList); //get id informations form xml file
         ROS_INFO("Opened id table successfully\n");
-        launchIdList(); //get id informations form xml file
     }
 
 
