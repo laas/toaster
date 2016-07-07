@@ -4,6 +4,8 @@
     <object name="Alexia"           mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/alexia/alexia.dae" />
     <object name="Lara"             mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/Lara/Lara_Croft.dae" />
     <object name="Greg"             mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/humanMorse.dae" />
+    <object name="Dan"              mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/oldMale.dae" />
+    <object name="Micky"            mesh_ressource="package://toaster_visualizer/mesh/toaster_humans/male.dae" />
 
 
 
