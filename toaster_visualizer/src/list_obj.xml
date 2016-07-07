@@ -13,6 +13,8 @@
     <object name="IKEA_chair_STEFAN"                    mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_STEFAN.dae"/>
     <object name="IKEA_console_HEMNES"                  mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_console_HEMNES.dae" />
     <object name="IKEA_SHELF_LIGHT_1"                   mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_shelf.dae" />
+    <object name="IKEA_SHELF_LIGHT"                   mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_shelf.dae" />
+    <object name="IKEA_SHELF_DARK"                      mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_shelf_dark.dae" />
     <object name="IKEA_low_table_LACK_1"                mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_1.dae" />
     <object name="LOW_TABLE_SMALL_1"                    mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_1.dae" />
     <object name="LOW_TABLE_LARGE"                      mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_2.dae" />
@@ -25,6 +27,8 @@
     <object name="Rolling_Chair"                        mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Rolling_Chair.dae" />
     <object name="Self_3" 				mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Self_3.dae" />
     <object name="whiteboard"                           mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/whiteboard.dae" />
+    <object name="PINK_TRASHBIN"                        mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Pink_trashbin.dae" />
+    <object name="BLUE_TRASHBIN"                        mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/Blue_trashbin.dae" />
     <object name="YELLOW_CUBE"                          mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/cube_yellow.3ds" />
     <object name="RED_CUBE"      			mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/cube_red.3ds" />
     <object name="BLUE_CUBE"            		mesh_ressource="package://toaster_visualizer/mesh/toaster_objects/cube_blue.3ds" />
