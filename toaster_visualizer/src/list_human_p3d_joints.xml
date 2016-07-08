@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <list_members>
 
-    <object name="head-polyhedre1"                              mesh_ressource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre1.dae" />
-    <object name="head-polyhedre2"			  	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre2.dae" />
-    <object name="head-polyhedre3" 			 	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre3.dae" />
-    <object name="head-polyhedre4" 			  	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre4.dae" />
-    <object name="head-polyhedre5" 				mesh_ressource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre5.dae" />
-    <object name="head-polyhedre6"                              mesh_ressource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre6.dae" />
-    <object name="lFemur-polyhedre1" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lFemur-polyhedre1.dae "/>
-    <object name="lFoot-polyhedre1"				mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre1.dae" />
-    <object name="lFoot-polyhedre2" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre2.dae" />
-    <object name="lFoot-polyhedre3"				mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre3.dae" />
-    <object name="lFoot-polyhedre4"				mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre4.dae" />
-    <object name="lFoot-polyhedre5" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre5.dae"/>
-    <object name="lHand-polyhedre1" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lHand-polyhedre1.dae" />
-    <object name="lHumerus-polyhedre1"			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lHumerus-polyhedre1.dae" />
-    <object name="lHumerus-polyhedre2" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lHumerus-polyhedre2.dae"/>
-    <object name="lRadius-polyhedre1" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lRadius-polyhedre1.dae" />
-    <object name="lTibia-polyhedre1" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/lTibia-polyhedre1.dae" />
-    <object name="pelvis-polyhedre1" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre1.dae" />
-    <object name="pelvis-polyhedre2" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre2.dae" />
-    <object name="pelvis-polyhedre3" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre3.dae" />
-    <object name="pelvis-polyhedre4" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre4.dae" />
-    <object name="pelvis-polyhedre5" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre5.dae"/>
-    <object name="pelvis-polyhedre6" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre6.dae" />
-    <object name="rFemur-polyhedre1"			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rFemur-polyhedre1.dae" />
-    <object name="rFoot-polyhedre1" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre1.dae"/>
-    <object name="rFoot-polyhedre2" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre2.dae" />
-    <object name="rFoot-polyhedre3" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre3.dae" />
-    <object name="rFoot-polyhedre4" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre4.dae" />
-    <object name="rFoot-polyhedre5" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre5.dae" />
-    <object name="rHand-polyhedre1" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rHand-polyhedre1.dae"/>
-    <object name="rHumerus-polyhedre1" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rHumerus-polyhedre1.dae" />
-    <object name="rHumerus-polyhedre2"		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rHumerus-polyhedre2.dae" />
-    <object name="rRadius-polyhedre1" 			        mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rRadius-polyhedre1.dae"/>
-    <object name="rTibia-polyhedre1" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/rTibia-polyhedre1.dae" />
-    <object name="torso-polyhedre2" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre2.dae" />
-    <object name="torso-polyhedre3" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre3.dae" />
-    <object name="torso-polyhedre4" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre4.dae" />
-    <object name="torso-polyhedre5" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre5.dae" />
-    <object name="torso-polyhedre6" 		         	mesh_ressource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre6.dae" />
+    <object name="head-polyhedre1"                              mesh_resource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre1.dae" />
+    <object name="head-polyhedre2"			  	mesh_resource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre2.dae" />
+    <object name="head-polyhedre3" 			 	mesh_resource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre3.dae" />
+    <object name="head-polyhedre4" 			  	mesh_resource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre4.dae" />
+    <object name="head-polyhedre5" 				mesh_resource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre5.dae" />
+    <object name="head-polyhedre6"                              mesh_resource="package://toaster_visualizer/mesh/toaster_members/head-polyhedre6.dae" />
+    <object name="lFemur-polyhedre1" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/lFemur-polyhedre1.dae "/>
+    <object name="lFoot-polyhedre1"				mesh_resource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre1.dae" />
+    <object name="lFoot-polyhedre2" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre2.dae" />
+    <object name="lFoot-polyhedre3"				mesh_resource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre3.dae" />
+    <object name="lFoot-polyhedre4"				mesh_resource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre4.dae" />
+    <object name="lFoot-polyhedre5" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/lFoot-polyhedre5.dae"/>
+    <object name="lHand-polyhedre1" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/lHand-polyhedre1.dae" />
+    <object name="lHumerus-polyhedre1"			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/lHumerus-polyhedre1.dae" />
+    <object name="lHumerus-polyhedre2" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/lHumerus-polyhedre2.dae"/>
+    <object name="lRadius-polyhedre1" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/lRadius-polyhedre1.dae" />
+    <object name="lTibia-polyhedre1" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/lTibia-polyhedre1.dae" />
+    <object name="pelvis-polyhedre1" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre1.dae" />
+    <object name="pelvis-polyhedre2" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre2.dae" />
+    <object name="pelvis-polyhedre3" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre3.dae" />
+    <object name="pelvis-polyhedre4" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre4.dae" />
+    <object name="pelvis-polyhedre5" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre5.dae"/>
+    <object name="pelvis-polyhedre6" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/pelvis-polyhedre6.dae" />
+    <object name="rFemur-polyhedre1"			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/rFemur-polyhedre1.dae" />
+    <object name="rFoot-polyhedre1" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre1.dae"/>
+    <object name="rFoot-polyhedre2" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre2.dae" />
+    <object name="rFoot-polyhedre3" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre3.dae" />
+    <object name="rFoot-polyhedre4" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre4.dae" />
+    <object name="rFoot-polyhedre5" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/rFoot-polyhedre5.dae" />
+    <object name="rHand-polyhedre1" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/rHand-polyhedre1.dae"/>
+    <object name="rHumerus-polyhedre1" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/rHumerus-polyhedre1.dae" />
+    <object name="rHumerus-polyhedre2"		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/rHumerus-polyhedre2.dae" />
+    <object name="rRadius-polyhedre1" 			        mesh_resource="package://toaster_visualizer/mesh/toaster_members/rRadius-polyhedre1.dae"/>
+    <object name="rTibia-polyhedre1" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/rTibia-polyhedre1.dae" />
+    <object name="torso-polyhedre2" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre2.dae" />
+    <object name="torso-polyhedre3" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre3.dae" />
+    <object name="torso-polyhedre4" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre4.dae" />
+    <object name="torso-polyhedre5" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre5.dae" />
+    <object name="torso-polyhedre6" 		         	mesh_resource="package://toaster_visualizer/mesh/toaster_members/torso-polyhedre6.dae" />
 	
 </list_members>	
 

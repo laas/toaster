@@ -210,7 +210,7 @@ public:
      * @param poly 		polygon from geometry library
      * @param scale 		thickness of the line
      * @param name 		polygon's name
-     * @return marker 	line marker representating input polygon
+     * @return marker 	line marker representing input polygon
      */
     visualization_msgs::Marker definePolygon(geometry_msgs::Polygon poly, double scale, std::string name) {
         //declaration
@@ -311,7 +311,7 @@ public:
         marker.scale.z = 0.2;
 
         //type
-        marker.type = visualization_msgs::Marker::CUBE; //marker by defaut
+        marker.type = visualization_msgs::Marker::CUBE; //marker by default
 
         //std::stringstream s;
         //s << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
@@ -329,7 +329,7 @@ public:
         while (elem) //for each element of the xml file
         {
             name_obj = elem->Attribute("name");
-            mesh_r = elem->Attribute("mesh_ressource");
+            mesh_r = elem->Attribute("mesh_resource");
             elem = elem->NextSiblingElement();
 
             if (name_obj.compare(name) == 0) //if there is a 3d model relativ to this object
@@ -454,7 +454,7 @@ public:
         while (elem) //for each element of the xml file
         {
             name_obj = elem->Attribute("name");
-            mesh_r = elem->Attribute("mesh_ressource");
+            mesh_r = elem->Attribute("mesh_resource");
             elem = elem->NextSiblingElement();
 
             if (name_obj.compare(name) == 0) //if there is a 3d model relative to this human
@@ -464,7 +464,7 @@ public:
 
                 elem = NULL;
             } else {
-                marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/vincent.dae"; //using 3d human model
+                marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/male.dae"; //using 3d human model
                 marker.mesh_use_embedded_materials = true;
 
             }
@@ -532,10 +532,10 @@ public:
         while (elem) //for each element of the xml file
         {
             name_obj = elem->Attribute("name");
-            mesh_r = elem->Attribute("mesh_ressource");
+            mesh_r = elem->Attribute("mesh_resource");
             elem = elem->NextSiblingElement();
 
-            if (name_obj.compare(name) == 0) //if there is a 3d model relativ to this robot
+            if (name_obj.compare(name) == 0) //if there is a 3d model relative to this robot
             {
                 marker.mesh_resource = mesh_r;
                 marker.mesh_use_embedded_materials = true;
@@ -626,9 +626,9 @@ public:
     // ******************************************************** id generator for markers  ********************************************************
 
     /**
-     * In our context names are initialy identifier so we need to create an unique identifier for each input name
+     * In our context names are identifier so we need to create an unique identifier for each input name
      * @param name		name of target 
-     * @return id		new identifier or target's identifier if his name allready have been assigned to an identifier
+     * @return id		new identifier or target's identifier if his name already have been assigned to an identifier
      */
     int id_generator(std::string name) {
         if (std::find(name_list.begin(), name_list.end(), name) != name_list.end()) {
@@ -761,7 +761,7 @@ public:
 
     /**
      * CallBack creating markers based on received toaster_msgs and adding then to area_list
-     * There is two differents types of area markers so this function manages both circle and polygon types
+     * There is two different types of area markers so this function manages both circle and polygon types
      * @param msg			reference to receive toaster_msgs::AreaList
      * @return 			void
      */
@@ -813,7 +813,7 @@ public:
 
     /**
      * CallBack creating markers based on received toaster_msgs and adding then to robot_list
-     * Robots can be representated by a single unarticulated mesh or by mutiple meshs for an articulated model
+     * Robots can be represented by a single unarticulated mesh or by multiple meshs for an articulated model
      * @param msg			reference to receive toaster_msgs::RobotList
      * @return 			void
      */
@@ -848,7 +848,7 @@ public:
 
     /**
      * CallBack creating markers based on received toaster_msgs and adding then to human_list
-     * Humans can be representated by a single unarticulated mesh or by mutiple meshs for an articulated model
+     * Humans can be represented by a single unarticulated mesh or by multiple meshs for an articulated model
      * @param msg			reference to receive toaster_msgs::HumanList
      * @return 			void
      */
@@ -925,7 +925,7 @@ public:
                     while (elem) //for each element of the xml file
                     {
                         name_obj = elem->Attribute("name");
-                        mesh_r = elem->Attribute("mesh_ressource");
+                        mesh_r = elem->Attribute("mesh_resource");
                         elem = elem->NextSiblingElement();
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
