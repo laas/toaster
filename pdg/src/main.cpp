@@ -748,8 +748,9 @@ int main(int argc, char** argv) {
         objectList_msg.header.seq = seq;
         objectList_msg.header.frame_id = "/map";
         
-        humanList_msg.header = objectList_msg.header;
+        humanList_msg.header = objsectList_msg.header;
         robotList_msg.header =  objectList_msg.header;
+
 
         //ROS_INFO("%s", msg.data.c_str());
 
