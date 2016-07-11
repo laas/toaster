@@ -6,15 +6,15 @@
  */
 
 #ifndef AROBJECTREADER
-#define	AROBJECTREADER
+#define AROBJECTREADER
 
 //This class reads topic from Ar_track_alvar and converts data into toaster-lib type.
 
 #include "ObjectReader.h"
 #include <ros/ros.h>
-#include "tf/transform_listener.h"
 #include <string>
 #include "geometry_msgs/PoseStamped.h"
+#include "tf/transform_listener.h"
 #include <math.h>
 #include <sys/time.h>
 #include <ostream>

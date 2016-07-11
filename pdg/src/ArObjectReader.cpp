@@ -19,9 +19,7 @@ ArObjectReader::ArObjectReader(ros::NodeHandle& node, std::string topicAR) {
 
 void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg) {
 
-    tf::TransformListener listener;
 	ros::Time now = ros::Time::now();
-	tf::StampedTransform transform;
 	MovableObject* curObject;
 
 	//create a new object with the same id as the message
@@ -33,29 +31,24 @@ void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg
 	}
 
 
-    listener.waitForTransform("/map", msg->header.frame_id,
-                              now, ros::Duration(0.0));
-    listener.lookupTransform("/map", msg->header.frame_id,
-                             now, transform);
-
-
 	//set object position
 	bg::model::point<double, 3, bg::cs::cartesian> objectPosition;
-	objectPosition.set<0>(transform.getOrigin().x());
-	objectPosition.set<1>(transform.getOrigin().y());
-	objectPosition.set<2>(transform.getOrigin().z());
+	objectPosition.set<0>(msg->pose.position.x);
+	objectPosition.set<1>(msg->pose.position.y);
+	objectPosition.set<2>(msg->pose.position.z);
 
 	//set the object orientation
 	std::vector<double> objectOrientation;
 
-	objectOrientation.push_back(0.0);
-	objectOrientation.push_back(0.0);
+
 
 	tf::Quaternion q(msg->pose.orientation.x, msg->pose.orientation.y, msg->pose.orientation.z, msg->pose.orientation.w);
 	double roll, pitch, yaw;
 	tf::Matrix3x3 m(q);
 	m.getEulerYPR(yaw,pitch,roll);
 
+	objectOrientation.push_back(roll);
+	objectOrientation.push_back(pitch);
 	objectOrientation.push_back(yaw);
 
 	//put the data in the object
