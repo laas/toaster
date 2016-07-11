@@ -4,9 +4,10 @@
     <object name="Alexia"           mesh_resource="package://toaster_visualizer/mesh/toaster_humans/alexia/alexia.dae" />
     <object name="Lara"             mesh_resource="package://toaster_visualizer/mesh/toaster_humans/Lara/Lara_Croft.dae" />
     <object name="Greg"             mesh_resource="package://toaster_visualizer/mesh/toaster_humans/humanMorse.dae" />
-    <object name="Dan"              mesh_resource="package://toaster_visualizer/mesh/toaster_humans/oldMale.dae" />
-    <object name="Micky"            mesh_resource="package://toaster_visualizer/mesh/toaster_humans/male.dae" />
-    <object name="Vincent"            mesh_resource="package://toaster_visualizer/mesh/toaster_humans/vincent.dae" />
+    <object name="Dan"              mesh_resource="package://toaster_visualizer/mesh/toaster_humans/Dan/oldMale.dae" />
+    <object name="Micky"            mesh_resource="package://toaster_visualizer/mesh/toaster_humans/Micky/male.dae" />
+    <object name="Vincent"          mesh_resource="package://toaster_visualizer/mesh/toaster_humans/vincent.dae" />
+    <object name="Bob"              mesh_resource="package://toaster_visualizer/mesh/toaster_humans/human.dae" />
 
 
 

@@ -58,6 +58,7 @@ if __name__=="__main__":
   rospy.wait_for_service("/toaster_simu/add_entity")
 
   #Human
+  set_pose_client("Bob", "Bob", "human","", 0.0, 0.0,0.0,0.0,0.0,0.0)
   set_pose_client("Vincent", "Vincent", "human","", 0.0, 1.0,0.0,0.0,0.0,0.0)
   set_pose_client("Greg", "Greg","human","", 0.0, 6.5,0.0,0.0,0.0,0.0)
   set_pose_client("Alexia", "Alexia", "human","", 0.0, 3.0,0.0,0.0,0.0,0.0)

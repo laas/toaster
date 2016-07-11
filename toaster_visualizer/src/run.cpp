@@ -464,7 +464,7 @@ public:
 
                 elem = NULL;
             } else {
-                marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/male.dae"; //using 3d human model
+                marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/human.dae"; //using 3d human model
                 marker.mesh_use_embedded_materials = true;
 
             }
