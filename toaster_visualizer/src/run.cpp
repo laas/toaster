@@ -187,9 +187,9 @@ public:
         marker.pose.orientation.w = 1.0;
 
         //color
-        marker.color.r = 0.0f;
-        marker.color.g = 1.0f;
-        marker.color.b = 0.0f;
+        marker.color.r = 0.0;
+        marker.color.g = 1.0;
+        marker.color.b = 0.0;
         marker.color.a = 1.0;
 
         //dimemsion
@@ -232,9 +232,9 @@ public:
         marker.pose.orientation.w = 1.0;
 
         //color
-        marker.color.r = 0.0f;
-        marker.color.g = 1.0f;
-        marker.color.b = 0.0f;
+        marker.color.r = 0.0;
+        marker.color.g = 1.0;
+        marker.color.b = 0.0;
         marker.color.a = 1.0;
 
         //points
@@ -334,13 +334,13 @@ public:
 
             if (name_obj.compare(name) == 0) //if there is a 3d model relativ to this object
             {
-                marker.scale.x = 1 * scale;
-                marker.scale.y = 1 * scale;
-                marker.scale.z = 1 * scale;
+                marker.scale.x = scale;
+                marker.scale.y = scale;
+                marker.scale.z = scale;
 
-                marker.color.r = 0.0f;
-                marker.color.g = 0.0f;
-                marker.color.b = 0.0f;
+                marker.color.r = 0.0;
+                marker.color.g = 0.0;
+                marker.color.b = 0.0;
                 marker.color.a = 0.0;
 
                 marker.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh
@@ -369,9 +369,9 @@ public:
         nameMarker.pose.position.z = nameMarker.pose.position.z + marker.scale.x * 1.25; //put the name marker above target marker
 
         //color
-        nameMarker.color.r = marker.color.r * 0.7f; //add some contrast between name marker and input marker
-        nameMarker.color.g = marker.color.g * 0.7f;
-        nameMarker.color.b = marker.color.b * 0.7f;
+        nameMarker.color.r = marker.color.r * 0.7; //add some contrast between name marker and input marker
+        nameMarker.color.g = marker.color.g * 0.7;
+        nameMarker.color.b = marker.color.b * 0.7;
         nameMarker.color.a = 1.0;
 
 
@@ -430,15 +430,15 @@ public:
         marker.pose = pose;
 
         //color
-        marker.color.r = 0.0f;
-        marker.color.g = 0.0f;
-        marker.color.b = 0.0f;
+        marker.color.r = 0.0;
+        marker.color.g = 0.0;
+        marker.color.b = 0.0;
         marker.color.a = 0.0;
 
         //scale
-        marker.scale.x = 1 * scale;
-        marker.scale.y = 1 * scale;
-        marker.scale.z = 1 * scale;
+        marker.scale.x = scale;
+        marker.scale.y = scale;
+        marker.scale.z = scale;
 
         //type of marker
         marker.type = visualization_msgs::Marker::MESH_RESOURCE;
@@ -510,15 +510,15 @@ public:
         //marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
 
         //color
-        marker.color.r = 0.0f;
-        marker.color.g = 0.0f;
-        marker.color.b = 0.0f;
+        marker.color.r = 0.0;
+        marker.color.g = 0.0;
+        marker.color.b = 0.0;
         marker.color.a = 0.0;
 
         //scale
-        marker.scale.x = 1 * scale;
-        marker.scale.y = 1 * scale;
-        marker.scale.z = 1 * scale;
+        marker.scale.x = scale;
+        marker.scale.y = scale;
+        marker.scale.z = scale;
 
         //type of marker
         marker.type = visualization_msgs::Marker::MESH_RESOURCE;
@@ -779,7 +779,7 @@ public:
 
                 visualization_msgs::Marker mn = defineName(m);
                 mn = setSize(mn, 0.0, 0.0, 0.3);
-                mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 1);
+                mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
 
                 area_list.markers.push_back(m);
                 area_list.markers.push_back(mn);
@@ -801,7 +801,7 @@ public:
                     posy = posy + m.points[i].y;
                 }
 
-                mn = setPosition(mn, posx / m.points.size(), posy / m.points.size(), 1);
+                mn = setPosition(mn, posx / m.points.size(), posy / m.points.size(), mn.pose.position.z + 0.5);
 
                 area_list.markers.push_back(m);
                 area_list.markers.push_back(mn);
@@ -827,7 +827,7 @@ public:
 
 
             visualization_msgs::Marker mn = defineName(m);
-            mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
+            mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
             mn = setSize(mn, 0, 0, 0.3);
 
             //If the robot is moving, we intensify its name color
@@ -861,7 +861,7 @@ public:
                     1.0, msg->humanList[i].meAgent.meEntity.name);
 
             visualization_msgs::Marker mn = defineName(m);
-            mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, 3);
+            mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
             mn = setSize(mn, 0, 0, 0.3);
 
             //If the human is moving, we intensify its color
@@ -935,14 +935,14 @@ public:
                                 markerTempo.scale.y = 0.25 * scale;
                                 markerTempo.scale.z = 0.25 * scale;
                             } else {
-                                markerTempo.scale.x = 1 * scale;
-                                markerTempo.scale.y = 1 * scale;
-                                markerTempo.scale.z = 1 * scale;
+                                markerTempo.scale.x = scale;
+                                markerTempo.scale.y = scale;
+                                markerTempo.scale.z = scale;
                             }
 
-                            markerTempo.color.r = 0.0f;
-                            markerTempo.color.g = 0.0f;
-                            markerTempo.color.b = 0.0f;
+                            markerTempo.color.r = 0.0;
+                            markerTempo.color.g = 0.0;
+                            markerTempo.color.b = 0.0;
                             markerTempo.color.a = 0.0;
 
                             markerTempo.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh

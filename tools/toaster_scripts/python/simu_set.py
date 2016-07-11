@@ -58,12 +58,14 @@ if __name__=="__main__":
   rospy.wait_for_service("/toaster_simu/add_entity")
 
   #Human
-  set_pose_client("Bob", "Bob", "human","",8.3,4.4,0.0,0.0,0.0,-1.6)
-  set_pose_client("Greg", "Greg","human","",0.0,0.0,0.0,0.0,0.0,1.6)
-  #set_pose_client("Alexia", "Alexia", "human","",5.3,4.0,0.0,0.0,0.0,0.0)
-  #set_pose_client("Lara", "Lara", "human","",4.3,2.4,0.0,0.0,0.0,-1.0)
-  #set_pose_client("Dan", "Dan", "human","",2.3,3.4,0.0,0.0,0.0,0.0)
-  set_pose_client("Micky", "Micky", "human","",1.3,2.4,0.0,0.0,0.0,0.0)
+  set_pose_client("Vincent", "Vincent", "human","", 0.0, 1.0,0.0,0.0,0.0,0.0)
+  set_pose_client("Greg", "Greg","human","", 0.0, 6.5,0.0,0.0,0.0,0.0)
+  set_pose_client("Alexia", "Alexia", "human","", 0.0, 3.0,0.0,0.0,0.0,0.0)
+  set_pose_client("Lara", "Lara", "human","", 0.0, 4.0,0.0,0.0,0.0,0.0)
+  set_pose_client("Dan", "Dan", "human","", 0.0, 5.0,0.0,0.0,0.0,0.0)
+  set_pose_client("Micky", "Micky", "human","", 0.0, 2.0,0.0,0.0,0.0,0.0)
+  set_pose_client("PR2_ROBOT", "PR2_ROBOT", "robot","", 0.0, 8,0.0,0.0,0.0,0.0)
+  set_pose_client("Spencer", "Spencer", "robot","", 0.0, 9.5,0.0,0.0,0.0,0.0)
 
 
   #keyboard

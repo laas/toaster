@@ -6,6 +6,7 @@
     <object name="Greg"             mesh_resource="package://toaster_visualizer/mesh/toaster_humans/humanMorse.dae" />
     <object name="Dan"              mesh_resource="package://toaster_visualizer/mesh/toaster_humans/oldMale.dae" />
     <object name="Micky"            mesh_resource="package://toaster_visualizer/mesh/toaster_humans/male.dae" />
+    <object name="Vincent"            mesh_resource="package://toaster_visualizer/mesh/toaster_humans/vincent.dae" />
 
 
 
