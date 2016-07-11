@@ -1948,12 +1948,8 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
 
    if(req.tillNow == true)
     { 
-		// if the request is to plot the status of given fact from starting till now.
-		std::string timeStart = boost::lexical_cast<std::string>(begin.toNSec());
-		std::string timeEnd = boost::lexical_cast<std::string>(now.toNSec());
-		ROS_INFO("timeStart is %s", timeStart.c_str());
-		ROS_INFO("timeEnd is %s", timeEnd.c_str());
-		sql = (std::string)"SELECT * from events_table where subject_id='" +
+	// if the request is to plot the status of given fact from starting till now.
+	sql = (std::string)"SELECT * from events_table where subject_id='" +
             boost::lexical_cast<std::string>(req.subjectID) + "' and target_id='" +
             boost::lexical_cast<std::string>(req.targetID) + "' and time>='"+ 
             boost::lexical_cast<std::string>(begin.toNSec()) + "' and time<='" +
@@ -1963,13 +1959,8 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
 	}
 	else
 	{
-		// if the request is to plot the status of given fact for given time window
-		/*if(std::atoll(boost::lexical_cast<std::string>(req.timeStart).c_str()) < begin.toNSec() || std::atoll(boost::lexical_cast<std::string>(req.timeEnd).c_str()) > now.toNSec())
-		{
-		  res.boolAnswer = false;
-		  return false ;	
-		} */
-		sql = (std::string)"SELECT * from events_table where subject_id='" +
+	// if the request is to plot the status of given fact for given time window
+	sql = (std::string)"SELECT * from events_table where subject_id='" +
             boost::lexical_cast<std::string>(req.subjectID) + "' and target_id='" +
             boost::lexical_cast<std::string>(req.targetID) + "' and time>='" +
             boost::lexical_cast<std::string>(req.timeStart) + "' and time<='" +
