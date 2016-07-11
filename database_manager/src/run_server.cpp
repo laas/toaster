@@ -22,10 +22,8 @@
 #include "toaster_msgs/FactList.h"
 #include <fstream>
 
-
-
 std::vector<std::string> agentList;
-
+ros::Time begin ;
 std::vector<toaster_msgs::Fact> myFactList;
 std::vector<toaster_msgs::Property> myPropertyList;
 std::vector<toaster_msgs::Id> myEntityList;
@@ -1942,18 +1940,34 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
     char *err_msg = NULL;
     int ret;
     long long int i;
-
-
+    
+    ros::Time now = ros::Time::now();
     // sql query to get events related to the requested entity
     // within the given time window and for the requested fact.
-    sql = (std::string)"SELECT * from events_table where subject_id='" +
+    
+
+   if(req.tillNow == true)
+    { 
+	// if the request is to plot the status of given fact from starting till now.
+	sql = (std::string)"SELECT * from events_table where subject_id='" +
+            boost::lexical_cast<std::string>(req.subjectID) + "' and target_id='" +
+            boost::lexical_cast<std::string>(req.targetID) + "' and time>='"+ 
+            boost::lexical_cast<std::string>(begin.toNSec()) + "' and time<='" +
+            boost::lexical_cast<std::string>(now.toNSec()) + "' and (predicate ='" +
+            boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!" +
+            boost::lexical_cast<std::string>(req.reqFact) + "');";
+	}
+	else
+	{
+	// if the request is to plot the status of given fact for given time window
+	sql = (std::string)"SELECT * from events_table where subject_id='" +
             boost::lexical_cast<std::string>(req.subjectID) + "' and target_id='" +
             boost::lexical_cast<std::string>(req.targetID) + "' and time>='" +
             boost::lexical_cast<std::string>(req.timeStart) + "' and time<='" +
             boost::lexical_cast<std::string>(req.timeEnd) + "' and (predicate ='" +
             boost::lexical_cast<std::string>(req.reqFact) + "' or predicate='!" +
-            boost::lexical_cast<std::string>(req.reqFact) + "');";
-
+            boost::lexical_cast<std::string>(req.reqFact) + "');";		
+	}
     // results of the query are stored in the table
     ret = sqlite3_get_table(database, sql.c_str(), &pazResult, &pnRow, &pnColumn, &err_msg);
 
@@ -1965,10 +1979,20 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
     } else {
         std::map<long long int, int> fn;
         std::vector<long long int> data(pnRow + 2);
-        std::string start = boost::lexical_cast<std::string>(req.timeStart);
+        std::string start;
+        std::string end;
+   if(req.tillNow == false)
+    {   
+        start = boost::lexical_cast<std::string>(req.timeStart);
+        end = boost::lexical_cast<std::string>(req.timeEnd);
+	}
+	else
+	{
+		start = boost::lexical_cast<std::string>(begin.toNSec());
+		end = boost::lexical_cast<std::string>(now.toNSec());		
+	}
         data[0] = std::atoll(start.c_str());
         long long int timeStart = data[0];
-        std::string end = boost::lexical_cast<std::string>(req.timeEnd);
         std::string reqFact = boost::lexical_cast<std::string>(req.reqFact);
         long long int timeEnd = std::atoll(end.c_str());
 
@@ -2033,6 +2057,7 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
 
     }
 }
+
 
 ////////////////////////////////////////////
 /////////TO LOAD and SAVE the database///////
@@ -2326,8 +2351,7 @@ void initServer() {
 int main(int argc, char **argv) {
     ros::init(argc, argv, "database_server");
     ros::NodeHandle node;
-
-
+    begin = ros::Time::now();
     //// SERVICES DECLARATION  /////
 
     ros::ServiceServer set_info_service;

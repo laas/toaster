@@ -2,6 +2,7 @@ string subjectID
 string targetID
 uint64 timeStart
 uint64 timeEnd
+bool tillNow
 string reqFact
 ---
 bool boolAnswer
