@@ -64,16 +64,36 @@ To get full instructions to install TOASTER, please refer to the wiki at
 toaster-lib is a C++ library which defines data structures used in TOASTER. The structures are:
 \begin{itemize}
 \item \textbf{Entity}: this class defines a physical element of the world. It can be an agent or a joint or an object.
+
+\begin{itemize}
+\setlength{\itemindent}{+.0in}
 \item \textbf{Agent}: this class defines an entity which has a set of joints. This agent can be a Human or a Robot.
+
+\begin{itemize}
 \item \textbf{Human}: this class represents a human agent.
 \item \textbf{Robot}: this class represents a robotic agent.
+\end{itemize}
+
+
 \item \textbf{Joint}: this class defines an entity which belongs to an agent.
+Despite its name, this can be any part of the agent's body: head, wrist, hand, gripper...
 \item \textbf{Object}: this class defines an object. This object can be a MovableObjet or a StaticObject.
+
+\begin{itemize}
 \item \textbf{MovableObject}: this class defines objects that may move during the interaction.
+
 \item \textbf{StaticObject}: this class defines objects that can't move.
+\end{itemize}
+\end{itemize}
+
+
+
 \item \textbf{Area}: this class defines an area. An area is a defined location of the environment.
+
+\begin{itemize}
 \item \textbf{PolygonArea}: this class defines a polygonal area.
 \item \textbf{CircleArea}: this class defines a circular area.
+\end{itemize}
 \end{itemize}
 
 The attributes and links between these class are shown in the UML diagram at the figure \ref{fig:umltoasterlib}.
@@ -120,7 +140,7 @@ This repository also provides shell scripts. As an example the script \textit{/s
  \begin{tabular}{cc}
   \includegraphics[width=0.9\textwidth]{img/toaster_spencer.jpg}
  \end{tabular}
- \caption{TOASTER architecture and interactions of the situation assessment components}
+ \caption{Areas are created and attached to the robot to assess the situation of the following group.}
  \label{fig:areaspencer}
  \end{figure}
 
@@ -544,7 +564,7 @@ The \textit{property} is \textit{IsMovingToward}, the \textit{propertyType} is \
 
 \end{itemize}
 
-Examples of IsMovingToward fact representation are shown in \ref{mvTwd}
+Examples of IsMovingToward fact representation are shown in \ref{fig:mvTwd}
 
 
  \begin{figure}[ht!]
@@ -696,7 +716,7 @@ move3dTopic: false
 pdgTopic: false" 
 }
 
-Set the areaTopic, agentTopic, move3dTopic, pdgTopic as per your requirement. Using command "ARE\_IN\_TABLE" with agent and facts, it checks if the given facts are present in agent's fact table. "SQL" command with the query in order request message, executes the SQL query in database and displays the results. The command "EMPTY" with type "AGENT" for a given agent removed that agent from ID table and other tables related to this agent. With "ALL" type, it does the same for all agents. Using command "PRINT" with type "AGENT" prints tables of the given agent, while type "ALL" prints all tables in database.
+Set the \textit{areaTopic, agentTopic, move3dTopic, pdgTopic} as per your requirement. Using command "ARE\_IN\_TABLE" with agent and facts, it checks if the given facts are present in agent's fact table. "SQL" command with the query in order request message, executes the SQL query in database and displays the results. The command "EMPTY" with type "AGENT" for a given agent removed that agent from ID table and other tables related to this agent. With "ALL" type, it does the same for all agents. Using command "PRINT" with type "AGENT" prints tables of the given agent, while type "ALL" prints all tables in database.
 
 \item \textbf {get\_info} - This service helps to get data from any given table. With the combination of type as "FACT" and subType as "ALL", it displays all the facts in the given agent's table at current time and before that also. While subType "VALUE", shows value of the given fact for the specified agent at current time. The subType "CURRENT" gives all the current facts of the given agent while "OLD" displays older facts. Similarly, combination of "ALL" subType with type as "EVENT", "ONTOLOGY", "ID" and "PROPERTY" displays respective tables from database. While subtype "VALUE" with all possible type gives values from respective tables. The request message looks like this :
 
@@ -768,12 +788,10 @@ Fig.~\ref{fig:visualizer}  explains the implementation of this module. To use rv
 
  \centering
  \begin{tabular}{cc}
-  \includegraphics[width=0.9\textwidth]{img/visualizer.png}
+  \includegraphics[width=0.9\textwidth]{img/visualizer.jpg}
  \end{tabular}
-   \vspace{-8pt}
  \caption{Implementation of toaster\_visualizer module}
  \label{fig:visualizer}
-  \vspace{-10pt}
  \end{figure}
 \subsection{Inputs}
 It uses the position of the entities published by the data gathering component and the areas published by the area manager component Toaster\_visualizer use informations taken form toaster\_msgs published on specifics ros topics to create markerArray.
@@ -788,10 +806,8 @@ It publishes markerArray on topics like /toaster\_visualizer/marker\_area, marke
  \begin{tabular}{cc}
   \includegraphics[width=0.9\textwidth]{img/tosaster.jpg}
  \end{tabular}
-   \vspace{-8pt}
  \caption{Data from simulated sensors in MORSE (right) and its representation in TOASTER (left)}
  \label{fig:simu}
-  \vspace{-10pt}
  \end{figure}
  
  \begin{figure}[ht!]
@@ -802,7 +818,6 @@ It publishes markerArray on topics like /toaster\_visualizer/marker\_area, marke
  \end{tabular}
  \caption{Spencer robot and its attached areas for guiding humans, in TOASTER (left) and in the real world (right)}
  \label{fig:spencer}
-   \vspace{-10pt}
  \end{figure}
 \subsection{Services}
 This node has no services.
