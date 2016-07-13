@@ -14,6 +14,7 @@
 
 // Objects
 #include "pdg/ToasterSimuObjectReader.h"
+#include "pdg/ArObjectReader.h"
 
 // Facts
 
@@ -46,6 +47,7 @@ bool spencerRobot_ = false;
 bool toasterSimuRobot_ = false;
 
 bool toasterSimuObject_ = false;
+bool arObject_ = false;
 
 std::map<std::string, std::string> objectInAgent_;
 std::map<std::string, std::string> objectInHand_;
@@ -178,6 +180,7 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     toasterSimuRobot_ = req.toasterSimuRobot;
 
     toasterSimuObject_ = req.toasterSimuObject;
+    arObject_ = req.arObject;
 
     ROS_INFO("[pdg] setting pdg input");
 
@@ -291,6 +294,9 @@ int main(int argc, char** argv) {
     if (node.hasParam("/pdg/toasterSimuObject"))
         node.getParam("/pdg/toasterSimuObject", toasterSimuObject_);
 
+    if (node.hasParam("/pdg/arObjectReader"))
+        node.getParam("/pdg/arObjectReader", arObject_);
+
 
     //Data reading
     GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
@@ -304,6 +310,7 @@ int main(int argc, char** argv) {
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
     ToasterSimuRobotReader toasterSimuRobotRd(node);
 
+	ArObjectReader arObjectRd(node, "ar_visualization_marker");
     ToasterSimuObjectReader toasterSimuObjectRd(node);
 
     //Services
@@ -632,6 +639,56 @@ int main(int argc, char** argv) {
         // Objects //
         /////////////
 
+
+          if (arObject_)
+            for (std::map<std::string, MovableObject*>::iterator it = arObjectRd.lastConfig_.begin(); it != arObjectRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first) {
+                    updateEntity(newPoseEnt_, it->second);
+                    //Reset newPoseEnt_
+                    newPoseEnt_.setId("");
+                    ROS_INFO("got true");
+                }
+
+                //Message for object
+                fillEntity(it->second, object_msg.meEntity);
+
+                // If in hand, modify position:
+                if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
+                    bool addFactHand = true;
+                    if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg, true))
+                        if (!putAtJointPosition(object_msg.meEntity, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg, true)) {
+                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
+                            addFactHand = false;
+                        }
+
+                    if (addFactHand) {
+
+                        //Fact message
+                        fact_msg.property = "IsInHand";
+                        fact_msg.propertyType = "position";
+                        fact_msg.subProperty = "object";
+                        fact_msg.subjectId = it->first;
+                        fact_msg.targetId = objectInAgent_[it->first];
+                        fact_msg.targetOwnerId = objectInAgent_[it->first];
+                        fact_msg.confidence = 1.0;
+                        fact_msg.factObservability = 0.8;
+                        fact_msg.time = it->second->getTime();
+                        fact_msg.valueType = 0;
+                        fact_msg.stringValue = "true";
+
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
+
+                }
+
+                objectList_msg.objectList.push_back(object_msg);
+            }
+
+
+
+
+
         if (toasterSimuObject_)
             for (std::map<std::string, MovableObject*>::iterator it = toasterSimuObjectRd.lastConfig_.begin(); it != toasterSimuObjectRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first) {
@@ -691,9 +748,9 @@ int main(int argc, char** argv) {
         objectList_msg.header.seq = seq;
         objectList_msg.header.frame_id = "/map";
         
-        humanList_msg.header = objectList_msg.header;
+        humanList_msg.header = objsectList_msg.header;
         robotList_msg.header =  objectList_msg.header;
-        
+
 
         //ROS_INFO("%s", msg.data.c_str());
 
