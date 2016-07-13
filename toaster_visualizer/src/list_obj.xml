@@ -29,6 +29,7 @@
     <object name="whiteboard"                           mesh_resource="package://toaster_visualizer/mesh/toaster_objects/whiteboard.dae" />
     <object name="PINK_TRASHBIN"                        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/Pink_trashbin.dae" />
     <object name="BLUE_TRASHBIN"                        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/Blue_trashbin.dae" />
+    <object name="GREEN_TRASHBIN"                        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/Green_trashbin.dae" />
     <object name="YELLOW_CUBE"                          mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_yellow.3ds" />
     <object name="RED_CUBE"      			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_red.3ds" />
     <object name="BLUE_CUBE"            		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_blue.3ds" />
