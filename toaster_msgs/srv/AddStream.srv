@@ -8,4 +8,5 @@ bool pr2Robot
 bool spencerRobot
 bool toasterSimuRobot
 bool toasterSimuObject
+bool arObject
 ---
