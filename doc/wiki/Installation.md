@@ -33,7 +33,14 @@ Alternatively, you may want to put this variable into your `.bashrc`
 
 Once you installed toaster-lib, you will need to install toaster.
 To do so, go to your [catkin workspace](http://wiki.ros.org/catkin/Tutorials/create_a_workspace).
-You may need first to get catkin [cmake_module](http://wiki.ros.org/cmake_modules). Then use the following commands :
+You may need first to get catkin [cmake_module](http://wiki.ros.org/cmake_modules).  
+You may also need to install SDL library:
+
+```shell
+> sudo apt-get install libsdl1.2-dev
+```
+
+Then use the following commands :
 
 ```shell
 > cd ${CATKIN_PATH}/src

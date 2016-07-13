@@ -9,30 +9,21 @@ TOASTER is a framework composed by several ROS modules and based on C++ library:
 This wiki contains a user manual for each component and a brief description.
 
 ### Installation
-[instructions](https://github.com/Greg8978/toaster/wiki/Installation)
-
+[instructions](https://github.com/Greg8978/toaster/wiki/Installation)  
 [scripts for testing](https://github.com/Greg8978/toaster/wiki/tools)
 
 ### Modules descriptions:
-[toaster_msgs](https://github.com/Greg8978/toaster/wiki/toaster_msgs)
-
-[toaster_simu](https://github.com/Greg8978/toaster/wiki/toaster_simu)
-
-[PDG](https://github.com/Greg8978/toaster/wiki/PDG)
-
-[area_manager](https://github.com/Greg8978/toaster/wiki/area_manager)
-
-[agent_monitor](https://github.com/Greg8978/toaster/wiki/agent_monitor)
-
-[move3d_facts](https://github.com/Greg8978/toaster/wiki/move3d_facts)
-
-[belief_manager](https://github.com/Greg8978/toaster/wiki/belief_manager)
-
-[database_manager](https://github.com/Greg8978/toaster/wiki/database_manager)
+[toaster_msgs](https://github.com/Greg8978/toaster/wiki/toaster_msgs)  
+[toaster_simu](https://github.com/Greg8978/toaster/wiki/toaster_simu)  
+[PDG](https://github.com/Greg8978/toaster/wiki/PDG)  
+[area_manager](https://github.com/Greg8978/toaster/wiki/area_manager)  
+[agent_monitor](https://github.com/Greg8978/toaster/wiki/agent_monitor)  
+[move3d_facts](https://github.com/Greg8978/toaster/wiki/move3d_facts)  
+[belief_manager](https://github.com/Greg8978/toaster/wiki/belief_manager)  
+[database_manager](https://github.com/Greg8978/toaster/wiki/database_manager)  
 
 ### Other
-[toaster-lib](https://github.com/Greg8978/toaster/wiki/toaster-lib)
-
+[toaster-lib](https://github.com/Greg8978/toaster/wiki/toaster-lib)  
 [FAQ](https://github.com/Greg8978/toaster/wiki/FAQ)
 
 

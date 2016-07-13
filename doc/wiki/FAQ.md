@@ -1,5 +1,25 @@
 # FAQ
 
+
+## When compiling toaster, I have an error: SDL library missing
+
+If you have the error message: `Could NOT find SDL (missing: SDL_LIBRARY SDL_INCLUDE_DIR)`  
+it means you should install SDL library.
+
+toaster_simu is using SDL to position entity with the keyboard.
+Please install SDL to proceed.
+
+``` shell
+> sudo apt-get install libsdl1.2-dev
+```
+You can also visit the [sdl installation page](https://ensiwiki.ensimag.fr/index.php/Projet_C_-_IG_-_Installation_de_SDL).
+
+Alternatively, if you don't wish to use toaster_simu you can just black list it in catkin when compiling:
+``` shell
+> catkin_make -DCATKIN_BLACKLIST_PACKAGES="toaster_simu"
+```
+
+
 ## I have some errors while compiling toaster, `* was not declared in this scope`
 
 Please update toaster-lib:
