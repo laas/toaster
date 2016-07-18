@@ -10,7 +10,7 @@
 // A human reader is a class that will read data from human(s)
 
 AdreamMocapHumanReader::AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicTorso = "/optitrack/bodies/Rigid_Body_3",
-        std::string topicHead = "/optitrack/bodies/Rigid_Body_1", std::string topicHand = "/optitrack/bodies/Rigid_Body_1") {
+        std::string topicHead = "/optitrack/bodies/Rigid_Body_1", std::string topicHand = "/optitrack/bodies/Rigid_Body_2") {
 
     std::cout << "Initializing AdreamMocapHumanReader" << std::endl;
     // ******************************************
@@ -19,7 +19,7 @@ AdreamMocapHumanReader::AdreamMocapHumanReader(ros::NodeHandle& node, std::strin
 
     // Starts listening to the joint_states
     fullHuman_ = false;
-    subTorso_ = node.subscribe(topicTorso, 1, &AdreamMocapHumanReader::optitrackCallbackHand, this);
+    subTorso_ = node.subscribe(topicTorso, 1, &AdreamMocapHumanReader::optitrackCallbackTorso, this);
     subHead_ = node.subscribe(topicHead, 1, &AdreamMocapHumanReader::optitrackCallbackHead, this);
     subHand_ = node.subscribe(topicHand, 1, &AdreamMocapHumanReader::optitrackCallbackHand, this);
     std::cout << "Done\n";
@@ -180,10 +180,11 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
 }
 
 void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_estimator_state::ConstPtr & msg) {
-
-    ros::Time now = ros::Time::now();
+    
+   ros::Time now = ros::Time::now();
     Human* curHuman;
     Joint* curJoint;
+    Joint* jointBase;
 
     try {
 
@@ -213,7 +214,7 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
             bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
             humanPosition.set<0>(msg->pos[0].x + 6.03);
             humanPosition.set<1>(msg->pos[0].y + 3.01);
-            humanPosition.set<2>(msg->pos[0].z - 1.18);
+            humanPosition.set<2>(msg->pos[0].z - 1.31);
 
             //set the human orientation
             std::vector<double> humanOrientation;
@@ -237,20 +238,20 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
             lastConfig_[humId] = curHuman;
 
             //update the base
-            std::string jointName = "base";
+            std::string jointBaseName = "base";
 
-            if (curHuman->skeleton_.find(jointName) == curHuman->skeleton_.end()) {
-                curJoint = new Joint(jointName, humId);
-                curJoint->setName(jointName);
+            if (curHuman->skeleton_.find(jointBaseName) == curHuman->skeleton_.end()) {
+                jointBase = new Joint(jointBaseName, humId);
+                jointBase->setName(jointBaseName);
             } else {
-                curJoint = curHuman->skeleton_[jointName];
+                jointBase = curHuman->skeleton_[jointBaseName];
             }
 
-            curJoint->setPosition(humanPosition);
-            curJoint->setOrientation(humanOrientation);
-            curJoint->setTime(now.toNSec());
+            jointBase->setPosition(humanPosition);
+            jointBase->setOrientation(humanOrientation);
+            jointBase->setTime(now.toNSec());
 
-            lastConfig_[humId]->skeleton_[jointName] = curJoint;
+            lastConfig_[humId]->skeleton_[jointBaseName] = jointBase;
 
 
 
