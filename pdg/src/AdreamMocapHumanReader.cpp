@@ -241,9 +241,9 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
             std::string jointBaseName = "base";
             std::vector<double> baseOrientation;
 
-            humanOrientation.push_back(0.0);
-            humanOrientation.push_back(0.0);
-            humanOrientation.push_back(yaw);
+            baseOrientation.push_back(0.0);
+            baseOrientation.push_back(0.0);
+            baseOrientation.push_back(yaw);
 
 
             if (curHuman->skeleton_.find(jointBaseName) == curHuman->skeleton_.end()) {
