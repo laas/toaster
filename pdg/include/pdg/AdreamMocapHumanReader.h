@@ -24,11 +24,13 @@
 
 class AdreamMocapHumanReader : public HumanReader {
 public:
-    AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicHead, std::string topicHand);
+    AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicTorso, std::string topicHead, std::string topicHand);
 
 private:
+    ros::Subscriber subTorso_;
     ros::Subscriber subHead_;
     ros::Subscriber subHand_;
+    void optitrackCallbackTorso(const optitrack::or_pose_estimator_state::ConstPtr& msg);
     void optitrackCallbackHead(const optitrack::or_pose_estimator_state::ConstPtr& msg);
     void optitrackCallbackHand(const optitrack::or_pose_estimator_state::ConstPtr& msg);
 };

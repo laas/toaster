@@ -303,7 +303,7 @@ int main(int argc, char** argv) {
     MorseHumanReader morseHumanRd(node, humanFullConfig_);
     //NiutHumanReader niutHumanRd()
     MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
-    AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
+    AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
     ToasterSimuHumanReader toasterSimuHumanRd(node);
 
     Pr2RobotReader pr2RobotRd(node, robotFullConfig_);
