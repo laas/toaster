@@ -25,6 +25,7 @@
 
 
 
+    <object name="torso" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocap/torso.dae" />
     <object name="base" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocap/base.dae" />
     <object name="head"                         mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocap/head.dae" />
 

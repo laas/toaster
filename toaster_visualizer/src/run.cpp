@@ -200,7 +200,7 @@ public:
         //type
         marker.type = 3;
 
-        marker.lifetime = ros::Duration();
+        marker.lifetime = ros::Duration(1.0);
 
         return marker;
     }
@@ -261,7 +261,7 @@ public:
         //type
         marker.type = visualization_msgs::Marker::LINE_STRIP;
 
-        marker.lifetime = ros::Duration();
+        marker.lifetime = ros::Duration(1.0);
 
         return marker;
     }
@@ -351,7 +351,7 @@ public:
             }
         }
 
-        marker.lifetime = ros::Duration();
+        marker.lifetime = ros::Duration(1.0);
 
         return marker;
     }
@@ -472,7 +472,7 @@ public:
 
         }
 
-        marker.lifetime = ros::Duration();
+        marker.lifetime = ros::Duration(1.0);
 
         return marker;
     }
@@ -553,7 +553,7 @@ public:
 
 
 
-        marker.lifetime = ros::Duration();
+        marker.lifetime = marker.lifetime = ros::Duration(1.0);
 
         return marker;
     }
@@ -930,7 +930,7 @@ public:
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
-                            if (name_obj == "base" || name_obj == "rightHand" || name_obj == "head") {
+                            if (name_obj == "base" || name_obj == "rightHand" || name_obj == "torso" || name_obj == "head") {
                                 markerTempo.scale.x = 0.25 * scale;
                                 markerTempo.scale.y = 0.25 * scale;
                                 markerTempo.scale.z = 0.25 * scale;
@@ -953,7 +953,7 @@ public:
                         }
                     }
 
-                    markerTempo.lifetime = ros::Duration();
+                    markerTempo.lifetime = ros::Duration(1.0);
 
                     human_list.markers.push_back(markerTempo);
                 }
