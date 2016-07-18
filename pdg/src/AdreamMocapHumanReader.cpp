@@ -14,6 +14,9 @@ AdreamMocapHumanReader::AdreamMocapHumanReader(ros::NodeHandle& node, std::strin
 
     std::cout << "Initializing AdreamMocapHumanReader" << std::endl;
     // ******************************************
+
+    torso_ = false;
+
     // Starts listening to the joint_states
     fullHuman_ = false;
     subTorso_ = node.subscribe(topicTorso, 1, &AdreamMocapHumanReader::optitrackCallbackHand, this);
@@ -39,48 +42,52 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
         }
 
         if (msg->pos.size() != 0) {
-            //set human position
-            bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
-            humanPosition.set<0>(msg->pos[0].x + 6.03);
-            humanPosition.set<1>(msg->pos[0].y + 3.01);
-            humanPosition.set<2>(msg->pos[0].z - 1.48);
-
-            //set the human orientation
-            std::vector<double> humanOrientation;
-
-            //transform the pose message
-            humanOrientation.push_back(0.0);
-            humanOrientation.push_back(0.0);
 
             tf::Quaternion q(msg->pos[0].qx, msg->pos[0].qy, msg->pos[0].qz, msg->pos[0].qw);
             double roll, pitch, yaw;
             tf::Matrix3x3 m(q);
             m.getEulerYPR(yaw, pitch, roll);
 
-            humanOrientation.push_back(yaw);
+            if (!torso_) {
+                //set human position
+                bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
+                humanPosition.set<0>(msg->pos[0].x + 6.03);
+                humanPosition.set<1>(msg->pos[0].y + 3.01);
+                humanPosition.set<2>(msg->pos[0].z - 1.48);
 
-            //put the data in the human
-            curHuman->setOrientation(humanOrientation);
-            curHuman->setPosition(humanPosition);
-            curHuman->setTime(now.toNSec());
+                //set the human orientation
+                std::vector<double> humanOrientation;
 
-            lastConfig_[humId] = curHuman;
+                //transform the pose message
+                humanOrientation.push_back(0.0);
+                humanOrientation.push_back(0.0);
 
-            //update the base
-            std::string jointName = "base";
 
-            if (curHuman->skeleton_.find(jointName) == curHuman->skeleton_.end()) {
-                curJoint = new Joint(jointName, humId);
-                curJoint->setName(jointName);
-            } else {
-                curJoint = curHuman->skeleton_[jointName];
+                humanOrientation.push_back(yaw);
+
+                //put the data in the human
+                curHuman->setOrientation(humanOrientation);
+                curHuman->setPosition(humanPosition);
+                curHuman->setTime(now.toNSec());
+
+                lastConfig_[humId] = curHuman;
+
+                //update the base
+                std::string jointName = "base";
+
+                if (curHuman->skeleton_.find(jointName) == curHuman->skeleton_.end()) {
+                    curJoint = new Joint(jointName, humId);
+                    curJoint->setName(jointName);
+                } else {
+                    curJoint = curHuman->skeleton_[jointName];
+                }
+
+                curJoint->setPosition(humanPosition);
+                curJoint->setOrientation(humanOrientation);
+                curJoint->setTime(now.toNSec());
+
+                lastConfig_[humId]->skeleton_[jointName] = curJoint;
             }
-
-            curJoint->setPosition(humanPosition);
-            curJoint->setOrientation(humanOrientation);
-            curJoint->setTime(now.toNSec());
-
-            lastConfig_[humId]->skeleton_[jointName] = curJoint;
 
             //update the head
             std::string jointNameHead = "head";
@@ -127,7 +134,7 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
         std::string jointName = "rightHand";
 
         if (lastConfig_.find(humId) == lastConfig_.end()) {
-           // We wait that head is detected so that the human is created
+            // We wait that head is detected so that the human is created
             return;
         } else {
             curHuman = lastConfig_[humId];
@@ -184,10 +191,12 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
         std::string jointName = "torso";
 
         if (lastConfig_.find(humId) == lastConfig_.end()) {
-           // We wait that head is detected so that the human is created
+            // We wait that head is detected so that the human is created
             return;
         } else {
             curHuman = lastConfig_[humId];
+            if (!torso_)
+                torso_ = true;
         }
 
         if (curHuman->skeleton_.find(jointName) == curHuman->skeleton_.end()) {
@@ -198,26 +207,62 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
         }
 
         if (msg->pos.size() != 0) {
-            bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
-            jointPosition.set<0>(msg->pos[0].x + 6.03);
-            jointPosition.set<1>(msg->pos[0].y + 3.01);
-            jointPosition.set<2>(msg->pos[0].z);
 
-            std::vector<double> jointOrientation;
 
+            //set human position
+            bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
+            humanPosition.set<0>(msg->pos[0].x + 6.03);
+            humanPosition.set<1>(msg->pos[0].y + 3.01);
+            humanPosition.set<2>(msg->pos[0].z - 1.18);
+
+            //set the human orientation
+            std::vector<double> humanOrientation;
+
+            //transform the pose message
 
             tf::Quaternion q(msg->pos[0].qx, msg->pos[0].qy, msg->pos[0].qz, msg->pos[0].qw);
             double roll, pitch, yaw;
             tf::Matrix3x3 m(q);
             m.getEulerYPR(yaw, pitch, roll);
 
-            jointOrientation.push_back(roll);
-            jointOrientation.push_back(pitch);
-            jointOrientation.push_back(yaw);
+            humanOrientation.push_back(roll);
+            humanOrientation.push_back(pitch);
+            humanOrientation.push_back(yaw);
+
+            //put the data in the human
+            curHuman->setOrientation(humanOrientation);
+            curHuman->setPosition(humanPosition);
+            curHuman->setTime(now.toNSec());
+
+            lastConfig_[humId] = curHuman;
+
+            //update the base
+            std::string jointName = "base";
+
+            if (curHuman->skeleton_.find(jointName) == curHuman->skeleton_.end()) {
+                curJoint = new Joint(jointName, humId);
+                curJoint->setName(jointName);
+            } else {
+                curJoint = curHuman->skeleton_[jointName];
+            }
+
+            curJoint->setPosition(humanPosition);
+            curJoint->setOrientation(humanOrientation);
+            curJoint->setTime(now.toNSec());
+
+            lastConfig_[humId]->skeleton_[jointName] = curJoint;
+
+
+
+            bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
+            jointPosition.set<0>(msg->pos[0].x + 6.03);
+            jointPosition.set<1>(msg->pos[0].y + 3.01);
+            jointPosition.set<2>(msg->pos[0].z);
+
 
 
             curJoint->setPosition(jointPosition);
-            curJoint->setOrientation(jointOrientation);
+            curJoint->setOrientation(humanOrientation);
             curJoint->setTime(now.toNSec());
 
             lastConfig_[humId]->skeleton_[jointName] = curJoint;

@@ -27,6 +27,7 @@ public:
     AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicTorso, std::string topicHead, std::string topicHand);
 
 private:
+    bool torso_;
     ros::Subscriber subTorso_;
     ros::Subscriber subHead_;
     ros::Subscriber subHand_;
