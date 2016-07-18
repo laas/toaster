@@ -19,6 +19,7 @@
 #include "toaster_msgs/FactList.h"
 #include "toaster_msgs/RobotListStamped.h"
 #include "toaster_msgs/Joint.h"
+#include "toaster_msgs/Empty.h"
 #include <map>
 #include <geometry_msgs/Polygon.h>
 #include <geometry_msgs/Quaternion.h>
@@ -38,6 +39,7 @@ class Run {
     //a vector to store allready treated marker's name and an id counter
     std::vector<std::string> name_list;
     int id_cpt;
+    bool printNames_;
 
     //a vector to store marker's color
     std::map<std::string, std::vector<float> > color_map;
@@ -66,14 +68,12 @@ class Run {
 public:
 
     /**
-     * Constructor of the run class for toaster_vizualiser
+     * Constructor of the run class for toaster_visualizer
      */
-    Run() {
+    Run(ros::NodeHandle& node) {
         name_list = std::vector<std::string>();
         id_cpt = 1;
-
-        ros::NodeHandle reception_node;
-        ros::NodeHandle emission_node;
+        printNames_ = true;
 
         area_list = visualization_msgs::MarkerArray();
         obj_list = visualization_msgs::MarkerArray();
@@ -82,18 +82,22 @@ public:
         arrow_list = visualization_msgs::MarkerArray();
 
         //definition of subscribers
-        sub_objList = reception_node.subscribe("/pdg/objectList", 1000, &Run::chatterCallbackObjList, this);
-        sub_areaList = reception_node.subscribe("/area_manager/areaList", 1000, &Run::chatterCallbackAreaList, this);
-        sub_humanList = reception_node.subscribe("/pdg/humanList", 1000, &Run::chatterCallbackHumanList, this);
-        sub_robotList = reception_node.subscribe("/pdg/robotList", 1000, &Run::chatterCallbackRobotList, this);
-        sub_agentFactList = reception_node.subscribe("/agent_monitor/factList", 1000, &Run::chatterCallbackAgentFactList, this);
+        sub_objList = node.subscribe("/pdg/objectList", 1000, &Run::chatterCallbackObjList, this);
+        sub_areaList = node.subscribe("/area_manager/areaList", 1000, &Run::chatterCallbackAreaList, this);
+        sub_humanList = node.subscribe("/pdg/humanList", 1000, &Run::chatterCallbackHumanList, this);
+        sub_robotList = node.subscribe("/pdg/robotList", 1000, &Run::chatterCallbackRobotList, this);
+        sub_agentFactList = node.subscribe("/agent_monitor/factList", 1000, &Run::chatterCallbackAgentFactList, this);
 
         //definition of publishers
-        pub_obj = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_object", 1000);
-        pub_area = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_area", 1000);
-        pub_human = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_human", 1000);
-        pub_robot = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_robot", 1000);
-        pub_movingTwrd = emission_node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_motion", 1000);
+        pub_obj = node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_object", 1000);
+        pub_area = node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_area", 1000);
+        pub_human = node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_human", 1000);
+        pub_robot = node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_robot", 1000);
+        pub_movingTwrd = node.advertise<visualization_msgs::MarkerArray>("/toaster_visualizer/marker_motion", 1000);
+
+
+        // ********************************** Services ****************************************//
+
 
         // **************************************** definition function of rviz markers ********************************************************
 
@@ -146,7 +150,13 @@ public:
 
     }
 
+    bool switchNamePrint(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res) {
+        ROS_INFO("[toaster_visu] switching name prints");
+        printNames_ = !printNames_;
 
+        return true;
+
+    }
 
 
 
@@ -382,6 +392,7 @@ public:
         nameMarker.type = 9;
 
         //text field
+
         nameMarker.text = marker.ns;
 
         //scale
@@ -740,11 +751,13 @@ public:
             visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.pose,
                     1, msg->objectList[i].meEntity.name);
 
-            visualization_msgs::Marker mn = defineName(m);
-            mn = setColor(mn, 0.0, 0.0, 1.0);
-            mn = setSize(mn, 0, 0, 0.2);
+            if (printNames_) {
+                visualization_msgs::Marker mn = defineName(m);
+                mn = setColor(mn, 0.0, 0.0, 1.0);
+                mn = setSize(mn, 0, 0, 0.2);
 
-            obj_list.markers.push_back(mn);
+                obj_list.markers.push_back(mn);
+            }
             obj_list.markers.push_back(m);
 
             ROS_DEBUG("obj %d", m.id);
@@ -777,12 +790,15 @@ public:
 
                 m = setRandomColor(m);
 
-                visualization_msgs::Marker mn = defineName(m);
-                mn = setSize(mn, 0.0, 0.0, 0.3);
-                mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
+                if (printNames_) {
+                    visualization_msgs::Marker mn = defineName(m);
+                    mn = setSize(mn, 0.0, 0.0, 0.3);
+                    mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
+
+                    area_list.markers.push_back(mn);
+                }
 
                 area_list.markers.push_back(m);
-                area_list.markers.push_back(mn);
 
                 ROS_DEBUG("circle %d", m.id);
             } else // polygon case
@@ -790,21 +806,24 @@ public:
                 visualization_msgs::Marker m = definePolygon(msg->areaList[i].poly, 0.2, msg->areaList[i].name);
                 m = setRandomColor(m);
 
-                visualization_msgs::Marker mn = defineName(m);
-                mn = setSize(mn, 0.0, 0.0, 0.3);
+                if (printNames_) {
+                    visualization_msgs::Marker mn = defineName(m);
+                    mn = setSize(mn, 0.0, 0.0, 0.3);
 
-                double posx = 0.0;
-                double posy = 0.0;
+                    double posx = 0.0;
+                    double posy = 0.0;
 
-                for (int i = 0; i < m.points.size(); i++) {
-                    posx = posx + m.points[i].x;
-                    posy = posy + m.points[i].y;
+                    for (int i = 0; i < m.points.size(); i++) {
+                        posx = posx + m.points[i].x;
+                        posy = posy + m.points[i].y;
+                    }
+
+                    mn = setPosition(mn, posx / m.points.size(), posy / m.points.size(), mn.pose.position.z + 0.5);
+
+                    area_list.markers.push_back(mn);
                 }
 
-                mn = setPosition(mn, posx / m.points.size(), posy / m.points.size(), mn.pose.position.z + 0.5);
-
                 area_list.markers.push_back(m);
-                area_list.markers.push_back(mn);
 
                 ROS_DEBUG("poly %d", m.id);
             }
@@ -825,20 +844,21 @@ public:
             visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.pose,
                     1.0, msg->robotList[i].meAgent.meEntity.name);
 
+            if (printNames_) {
+                visualization_msgs::Marker mn = defineName(m);
+                mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
+                mn = setSize(mn, 0, 0, 0.3);
 
-            visualization_msgs::Marker mn = defineName(m);
-            mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
-            mn = setSize(mn, 0, 0, 0.3);
-
-            //If the robot is moving, we intensify its name color
-            std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->robotList[i].meAgent.meEntity.id);
-            if (it != agentMoving_map.end())
-                mn = setColor(mn, 0.4 + it->second * 0.6, 0.0, 0.0);
-            else
-                mn = setColor(mn, 0.2, 0.0, 0.0);
+                //If the robot is moving, we intensify its name color
+                std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->robotList[i].meAgent.meEntity.id);
+                if (it != agentMoving_map.end())
+                    mn = setColor(mn, 0.4 + it->second * 0.6, 0.0, 0.0);
+                else
+                    mn = setColor(mn, 0.2, 0.0, 0.0);
 
 
-            robot_list.markers.push_back(mn);
+                robot_list.markers.push_back(mn);
+            }
 
             robot_list.markers.push_back(m);
 
@@ -860,18 +880,20 @@ public:
             visualization_msgs::Marker m = defineHuman(msg->humanList[i].meAgent.meEntity.pose,
                     1.0, msg->humanList[i].meAgent.meEntity.name);
 
-            visualization_msgs::Marker mn = defineName(m);
-            mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
-            mn = setSize(mn, 0, 0, 0.3);
+            if (printNames_) {
+                visualization_msgs::Marker mn = defineName(m);
+                mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
+                mn = setSize(mn, 0, 0, 0.3);
 
-            //If the human is moving, we intensify its color
-            std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->humanList[i].meAgent.meEntity.id);
-            if (it != agentMoving_map.end())
-                mn = setColor(mn, 0.0, 0.4 + it->second * 0.6, 0.0);
-            else
-                mn = setColor(mn, 0.0, 0.2, 0.0);
+                //If the human is moving, we intensify its color
+                std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->humanList[i].meAgent.meEntity.id);
+                if (it != agentMoving_map.end())
+                    mn = setColor(mn, 0.0, 0.4 + it->second * 0.6, 0.0);
+                else
+                    mn = setColor(mn, 0.0, 0.2, 0.0);
 
-            human_list.markers.push_back(mn);
+                human_list.markers.push_back(mn);
+            }
 
             if (msg->humanList[i].meAgent.skeletonJoint.size() == 0) {
                 human_list.markers.push_back(m);
@@ -1096,12 +1118,19 @@ public:
  */
 int main(int argc, char **argv) {
     ros::init(argc, argv, "Run");
+    ros::NodeHandle node;
     ROS_INFO("[toaster-visu] launched");
 
-    Run c = Run();
+
+
+    Run c = Run(node);
 
 
     ros::Rate loop_rate(30);
+
+    ros::ServiceServer switch_name_print;
+    switch_name_print = node.advertiseService("toaster_visualizer/switch_name_print", &Run::switchNamePrint, &c);
+
 
     while (ros::ok()) {
         c.send();
