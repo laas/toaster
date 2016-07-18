@@ -61,6 +61,7 @@ add_service_files(
   Pointing.srv
   PutInHand.srv
   RemoveFromHand.srv
+  Scale.srv
   SetEntityPose.srv
   GetInfoDB.srv
   SetInfoDB.srv

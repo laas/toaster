@@ -20,6 +20,7 @@
 #include "toaster_msgs/RobotListStamped.h"
 #include "toaster_msgs/Joint.h"
 #include "toaster_msgs/Empty.h"
+#include "toaster_msgs/Scale.h"
 #include <map>
 #include <geometry_msgs/Polygon.h>
 #include <geometry_msgs/Quaternion.h>
@@ -39,6 +40,10 @@ class Run {
     //a vector to store allready treated marker's name and an id counter
     std::vector<std::string> name_list;
     int id_cpt;
+    float objectNameScale_;
+    float humanNameScale_;
+    float robotNameScale_;
+    float areaNameScale_;
     bool printNames_;
 
     //a vector to store marker's color
@@ -74,6 +79,12 @@ public:
         name_list = std::vector<std::string>();
         id_cpt = 1;
         printNames_ = true;
+
+
+        objectNameScale_ = 0.2;
+        humanNameScale_ = 0.3;
+        robotNameScale_ = 0.3;
+        areaNameScale_ = 0.3;
 
         area_list = visualization_msgs::MarkerArray();
         obj_list = visualization_msgs::MarkerArray();
@@ -151,8 +162,20 @@ public:
     }
 
     bool switchNamePrint(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res) {
-        ROS_INFO("[toaster_visu] switching name prints");
+        ROS_INFO("[toaster_visu] switching name print");
         printNames_ = !printNames_;
+
+        return true;
+
+    }
+
+    bool scaleName(toaster_msgs::Scale::Request &req, toaster_msgs::Scale::Response &res) {
+        ROS_INFO("[toaster_visu] scaling printed names");
+
+        objectNameScale_ = req.objectScale;
+        humanNameScale_ = req.humanScale;
+        robotNameScale_ = req.robotScale;
+        areaNameScale_ = req.areaScale;
 
         return true;
 
@@ -757,7 +780,7 @@ public:
             if (printNames_) {
                 visualization_msgs::Marker mn = defineName(m);
                 mn = setColor(mn, 0.0, 0.0, 1.0);
-                mn = setSize(mn, 0, 0, 0.2);
+                mn = setSize(mn, 0, 0, objectNameScale_);
 
                 obj_list.markers.push_back(mn);
             }
@@ -795,7 +818,7 @@ public:
 
                 if (printNames_) {
                     visualization_msgs::Marker mn = defineName(m);
-                    mn = setSize(mn, 0.0, 0.0, 0.3);
+                    mn = setSize(mn, 0.0, 0.0, areaNameScale_);
                     mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
 
                     area_list.markers.push_back(mn);
@@ -811,7 +834,7 @@ public:
 
                 if (printNames_) {
                     visualization_msgs::Marker mn = defineName(m);
-                    mn = setSize(mn, 0.0, 0.0, 0.3);
+                    mn = setSize(mn, 0.0, 0.0, areaNameScale_);
 
                     double posx = 0.0;
                     double posy = 0.0;
@@ -850,7 +873,7 @@ public:
             if (printNames_) {
                 visualization_msgs::Marker mn = defineName(m);
                 mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
-                mn = setSize(mn, 0, 0, 0.3);
+                mn = setSize(mn, 0, 0, robotNameScale_);
 
                 //If the robot is moving, we intensify its name color
                 std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->robotList[i].meAgent.meEntity.id);
@@ -886,7 +909,7 @@ public:
             if (printNames_) {
                 visualization_msgs::Marker mn = defineName(m);
                 mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
-                mn = setSize(mn, 0, 0, 0.3);
+                mn = setSize(mn, 0, 0, humanNameScale_);
 
                 //If the human is moving, we intensify its color
                 std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->humanList[i].meAgent.meEntity.id);
@@ -1133,6 +1156,10 @@ int main(int argc, char **argv) {
 
     ros::ServiceServer switch_name_print;
     switch_name_print = node.advertiseService("toaster_visualizer/switch_name_print", &Run::switchNamePrint, &c);
+
+
+    ros::ServiceServer name_scale;
+    name_scale = node.advertiseService("toaster_visualizer/scale_name", &Run::scaleName, &c);
 
 
     while (ros::ok()) {

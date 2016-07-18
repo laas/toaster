@@ -1,0 +1,5 @@
+float64 objectScale
+float64 humanScale
+float64 robotScale
+float64 areaScale
+---
