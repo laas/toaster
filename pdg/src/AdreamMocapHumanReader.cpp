@@ -180,8 +180,8 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
 }
 
 void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_estimator_state::ConstPtr & msg) {
-    
-   ros::Time now = ros::Time::now();
+
+    ros::Time now = ros::Time::now();
     Human* curHuman;
     Joint* curJoint;
     Joint* jointBase;
@@ -239,6 +239,12 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
 
             //update the base
             std::string jointBaseName = "base";
+            std::vector<double> baseOrientation;
+
+            humanOrientation.push_back(0.0);
+            humanOrientation.push_back(0.0);
+            humanOrientation.push_back(yaw);
+
 
             if (curHuman->skeleton_.find(jointBaseName) == curHuman->skeleton_.end()) {
                 jointBase = new Joint(jointBaseName, humId);
@@ -248,7 +254,7 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
             }
 
             jointBase->setPosition(humanPosition);
-            jointBase->setOrientation(humanOrientation);
+            jointBase->setOrientation(baseOrientation);
             jointBase->setTime(now.toNSec());
 
             lastConfig_[humId]->skeleton_[jointBaseName] = jointBase;
