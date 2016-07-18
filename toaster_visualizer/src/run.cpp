@@ -373,6 +373,7 @@ public:
      */
     visualization_msgs::Marker defineName(visualization_msgs::Marker marker) {
         //declaration
+        std::stringstream ss;
         visualization_msgs::Marker nameMarker = marker;
 
         //position
@@ -392,8 +393,10 @@ public:
         nameMarker.type = 9;
 
         //text field
-
         nameMarker.text = marker.ns;
+
+        ss << nameMarker.text << "_name";
+        nameMarker.ns = ss.str();
 
         //scale
         nameMarker.scale.z = 0.5 * marker.scale.x;
