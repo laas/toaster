@@ -20,8 +20,8 @@
 
 
 
-    <object name="baseAndHead" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocap/humanMocap.dae" />
-    <object name="rightHand"                    mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocap/rightHand.dae" />
+    <object name="baseAndHead" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/humanMocap.dae" />
+    <object name="rightHand"                    mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/rightHand.dae" />
 
 
 
