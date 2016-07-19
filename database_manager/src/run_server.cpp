@@ -1946,6 +1946,7 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
     // within the given time window and for the requested fact.
     
 
+
    if(req.fullTime)
     { 
 	// if the request is to plot the status of given fact from starting till now.
@@ -1959,6 +1960,7 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
 	}
 	else
 	{
+
 	// if the request is to plot the status of given fact for given time window
 	sql = (std::string)"SELECT * from events_table where subject_id='" +
             boost::lexical_cast<std::string>(req.subjectID) + "' and target_id='" +
@@ -1981,7 +1983,9 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
         std::vector<long long int> data(pnRow + 2);
         std::string start;
         std::string end;
+
    if(!req.fullTime)
+
     {   
         start = boost::lexical_cast<std::string>(req.timeStart);
         end = boost::lexical_cast<std::string>(req.timeEnd);
