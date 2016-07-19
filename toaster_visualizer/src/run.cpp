@@ -978,15 +978,11 @@ public:
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
-                            if (name_obj == "base" || name_obj == "rightHand" || name_obj == "torso" || name_obj == "head") {
-                                markerTempo.scale.x = 0.25 * scale;
-                                markerTempo.scale.y = 0.25 * scale;
-                                markerTempo.scale.z = 0.25 * scale;
-                            } else {
-                                markerTempo.scale.x = scale;
-                                markerTempo.scale.y = scale;
-                                markerTempo.scale.z = scale;
-                            }
+
+                            markerTempo.scale.x = scale;
+                            markerTempo.scale.y = scale;
+                            markerTempo.scale.z = scale;
+
 
                             markerTempo.color.r = 0.0;
                             markerTempo.color.g = 0.0;

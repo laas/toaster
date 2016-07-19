@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.65.0 r52859</authoring_tool>
     </contributor>
-    <created>2016-07-18T18:20:13</created>
-    <modified>2016-07-18T18:20:13</modified>
+    <created>2016-07-19T08:39:07</created>
+    <modified>2016-07-19T08:39:07</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -59,7 +59,19 @@
         </technique_common>
       </optics>
     </camera>
-    <camera id="Camera_001_001-camera" name="Camera.004">
+    <camera id="Camera_001_001-camera" name="Camera.005">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">49.13434</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">0.1</znear>
+            <zfar sid="zfar">100</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+    </camera>
+    <camera id="Camera_001_001_001-camera" name="Camera.005">
       <optics>
         <technique_common>
           <perspective>
@@ -73,7 +85,7 @@
     </camera>
   </library_cameras>
   <library_lights>
-    <light id="Lamp_001-light" name="Lamp.001">
+    <light id="Lamp-light" name="Lamp">
       <technique_common>
         <point>
           <color sid="color">1 1 1</color>
@@ -84,7 +96,7 @@
       </technique_common>
       <extra>
         <technique profile="blender">
-          <adapt_thresh>9.99987e-4</adapt_thresh>
+          <adapt_thresh>0.000999987</adapt_thresh>
           <area_shape>1</area_shape>
           <area_size>0.1</area_size>
           <area_sizey>0.1</area_sizey>
@@ -349,6 +361,75 @@
         </technique>
       </extra>
     </light>
+    <light id="Lamp_001_001_001-light" name="Lamp.004">
+      <technique_common>
+        <point>
+          <color sid="color">1 1 1</color>
+          <constant_attenuation>1</constant_attenuation>
+          <linear_attenuation>0</linear_attenuation>
+          <quadratic_attenuation>0.00111109</quadratic_attenuation>
+        </point>
+      </technique_common>
+      <extra>
+        <technique profile="blender">
+          <adapt_thresh>9.99987e-4</adapt_thresh>
+          <area_shape>1</area_shape>
+          <area_size>0.1</area_size>
+          <area_sizey>0.1</area_sizey>
+          <area_sizez>1</area_sizez>
+          <atm_distance_factor>1</atm_distance_factor>
+          <atm_extinction_factor>1</atm_extinction_factor>
+          <atm_turbidity>2</atm_turbidity>
+          <att1>0</att1>
+          <att2>1</att2>
+          <backscattered_light>1</backscattered_light>
+          <bias>1</bias>
+          <blue>1</blue>
+          <buffers>1</buffers>
+          <bufflag>0</bufflag>
+          <bufsize>2880</bufsize>
+          <buftype>2</buftype>
+          <clipend>30.002</clipend>
+          <clipsta>1.000799</clipsta>
+          <compressthresh>0.04999995</compressthresh>
+          <dist sid="blender_dist">29.99998</dist>
+          <energy sid="blender_energy">1</energy>
+          <falloff_type>2</falloff_type>
+          <filtertype>0</filtertype>
+          <flag>0</flag>
+          <gamma sid="blender_gamma">1</gamma>
+          <green>1</green>
+          <halo_intensity sid="blnder_halo_intensity">1</halo_intensity>
+          <horizon_brightness>1</horizon_brightness>
+          <mode>8192</mode>
+          <ray_samp>1</ray_samp>
+          <ray_samp_method>1</ray_samp_method>
+          <ray_samp_type>0</ray_samp_type>
+          <ray_sampy>1</ray_sampy>
+          <ray_sampz>1</ray_sampz>
+          <red>1</red>
+          <samp>3</samp>
+          <shadhalostep>0</shadhalostep>
+          <shadow_b sid="blender_shadow_b">0</shadow_b>
+          <shadow_g sid="blender_shadow_g">0</shadow_g>
+          <shadow_r sid="blender_shadow_r">0</shadow_r>
+          <shadspotsize>45</shadspotsize>
+          <sky_colorspace>0</sky_colorspace>
+          <sky_exposure>1</sky_exposure>
+          <skyblendfac>1</skyblendfac>
+          <skyblendtype>1</skyblendtype>
+          <soft>3</soft>
+          <spotblend>0.15</spotblend>
+          <spotsize>75</spotsize>
+          <spread>1</spread>
+          <sun_brightness>1</sun_brightness>
+          <sun_effect_type>0</sun_effect_type>
+          <sun_intensity>1</sun_intensity>
+          <sun_size>1</sun_size>
+          <type>0</type>
+        </technique>
+      </extra>
+    </light>
   </library_lights>
   <library_images/>
   <library_effects>
@@ -363,10 +444,10 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0.2402987 0.2415837 0.2415837 1</color>
+              <color sid="diffuse">0.192239 0.193267 0.193267 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -398,7 +479,7 @@
               <color sid="diffuse">0 0 0 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -430,7 +511,7 @@
               <color sid="diffuse">0 0 0 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -459,10 +540,10 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0.001285019 0.001285019 0.001285019 1</color>
+              <color sid="diffuse">0.001028015 0.001028015 0.001028015 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -491,10 +572,10 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0.001285019 0.001285019 0.001285019 1</color>
+              <color sid="diffuse">0.001028015 0.001028015 0.001028015 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -526,7 +607,7 @@
               <color sid="diffuse">0 0 0 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -558,7 +639,7 @@
               <color sid="diffuse">0 0 0 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -587,10 +668,10 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0.001285019 0.001285019 0.001285019 1</color>
+              <color sid="diffuse">0.001028015 0.001028015 0.001028015 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -619,10 +700,10 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0.001285019 0.001285019 0.001285019 1</color>
+              <color sid="diffuse">0.001028015 0.001028015 0.001028015 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -651,10 +732,10 @@
               <color sid="ambient">0 0 0 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0.001285019 0.001285019 0.001285019 1</color>
+              <color sid="diffuse">0.001028015 0.001028015 0.001028015 1</color>
             </diffuse>
             <specular>
-              <color sid="specular">0.03125 0.03125 0.03125 1</color>
+              <color sid="specular">0.015625 0.015625 0.015625 1</color>
             </specular>
             <shininess>
               <float sid="shininess">50</float>
@@ -1057,76 +1138,92 @@
         <scale sid="scale">1 1 1</scale>
         <instance_camera url="#Camera-camera"/>
       </node>
+      <node id="Lamp" name="Lamp" type="NODE">
+        <translate sid="location">4.076245 1.005454 5.903862</translate>
+        <rotate sid="rotationZ">0 0 1 106.9363</rotate>
+        <rotate sid="rotationY">0 1 0 3.163707</rotate>
+        <rotate sid="rotationX">1 0 0 37.26105</rotate>
+        <scale sid="scale">1 1 1</scale>
+        <instance_light url="#Lamp-light"/>
+      </node>
       <node id="Camera_001" name="Camera_001" type="NODE">
-        <translate sid="location">7.481132 -6.50764 5.343665</translate>
+        <translate sid="location">1.873612 -1.618875 1.396621</translate>
         <rotate sid="rotationZ">0 0 1 46.69194</rotate>
         <rotate sid="rotationY">0 1 0 0.6197676</rotate>
         <rotate sid="rotationX">1 0 0 63.5593</rotate>
-        <scale sid="scale">1 1 0.9999999</scale>
+        <scale sid="scale">0.2500746 0.2500746 0.2500745</scale>
         <instance_camera url="#Camera_001-camera"/>
       </node>
-      <node id="Lamp_001" name="Lamp_001" type="NODE">
-        <translate sid="location">4.076245 1.005454 5.903862</translate>
-        <rotate sid="rotationZ">0 0 1 106.9363</rotate>
-        <rotate sid="rotationY">0 1 0 3.163709</rotate>
-        <rotate sid="rotationX">1 0 0 37.26106</rotate>
-        <scale sid="scale">1 1 1</scale>
-        <instance_light url="#Lamp_001-light"/>
-      </node>
       <node id="Camera_001" name="Camera_001" type="NODE">
-        <translate sid="location">7.481132 -6.50764 5.343665</translate>
+        <translate sid="location">1.873612 -1.618875 1.396621</translate>
         <rotate sid="rotationZ">0 0 1 46.69194</rotate>
         <rotate sid="rotationY">0 1 0 0.619768</rotate>
         <rotate sid="rotationX">1 0 0 63.55931</rotate>
-        <scale sid="scale">0.9999999 0.9999999 0.9999999</scale>
+        <scale sid="scale">0.2500745 0.2500745 0.2500745</scale>
         <instance_camera url="#Camera_001-camera"/>
       </node>
       <node id="Lamp_001" name="Lamp_001" type="NODE">
-        <translate sid="location">4.076245 1.005454 5.903862</translate>
+        <translate sid="location">1.022136 0.2599586 1.536712</translate>
         <rotate sid="rotationZ">0 0 1 106.9363</rotate>
         <rotate sid="rotationY">0 1 0 3.163707</rotate>
         <rotate sid="rotationX">1 0 0 37.26106</rotate>
-        <scale sid="scale">1 0.9999998 0.9999998</scale>
+        <scale sid="scale">0.2500746 0.2500746 0.2500746</scale>
         <instance_light url="#Lamp_001-light"/>
       </node>
       <node id="Camera_001_001" name="Camera_001_001" type="NODE">
-        <translate sid="location">7.481132 -6.50764 5.343665</translate>
+        <translate sid="location">1.873612 -1.618875 1.396621</translate>
         <rotate sid="rotationZ">0 0 1 46.69194</rotate>
         <rotate sid="rotationY">0 1 0 0.6197676</rotate>
         <rotate sid="rotationX">1 0 0 63.55931</rotate>
-        <scale sid="scale">0.9999998 0.9999996 0.9999997</scale>
+        <scale sid="scale">0.2500746 0.2500745 0.2500745</scale>
         <instance_camera url="#Camera_001_001-camera"/>
       </node>
       <node id="Lamp_001_001" name="Lamp_001_001" type="NODE">
-        <translate sid="location">4.076245 1.005454 5.903862</translate>
+        <translate sid="location">1.022136 0.2599586 1.536712</translate>
         <rotate sid="rotationZ">0 0 1 106.9363</rotate>
         <rotate sid="rotationY">0 1 0 3.163709</rotate>
         <rotate sid="rotationX">1 0 0 37.26106</rotate>
-        <scale sid="scale">1 0.9999998 0.9999999</scale>
+        <scale sid="scale">0.2500747 0.2500746 0.2500745</scale>
         <instance_light url="#Lamp_001_001-light"/>
       </node>
       <node id="Camera_001_001" name="Camera_001_001" type="NODE">
-        <translate sid="location">7.481132 -6.50764 5.343665</translate>
-        <rotate sid="rotationZ">0 0 1 46.69196</rotate>
-        <rotate sid="rotationY">0 1 0 0.6197636</rotate>
-        <rotate sid="rotationX">1 0 0 63.55931</rotate>
-        <scale sid="scale">0.9999997 0.9999996 0.9999998</scale>
+        <translate sid="location">1.873612 -1.618875 1.396621</translate>
+        <rotate sid="rotationZ">0 0 1 46.69193</rotate>
+        <rotate sid="rotationY">0 1 0 0.6197652</rotate>
+        <rotate sid="rotationX">1 0 0 63.5593</rotate>
+        <scale sid="scale">0.2500745 0.2500744 0.2500744</scale>
         <instance_camera url="#Camera_001_001-camera"/>
       </node>
       <node id="Lamp_001_001" name="Lamp_001_001" type="NODE">
-        <translate sid="location">4.076245 1.005454 5.903862</translate>
+        <translate sid="location">1.022136 0.2599586 1.536712</translate>
+        <rotate sid="rotationZ">0 0 1 106.9363</rotate>
+        <rotate sid="rotationY">0 1 0 3.163712</rotate>
+        <rotate sid="rotationX">1 0 0 37.26106</rotate>
+        <scale sid="scale">0.2500747 0.2500745 0.2500745</scale>
+        <instance_light url="#Lamp_001_001-light"/>
+      </node>
+      <node id="Camera_001_001_001" name="Camera_001_001_001" type="NODE">
+        <translate sid="location">1.873612 -1.618875 1.396621</translate>
+        <rotate sid="rotationZ">0 0 1 46.69196</rotate>
+        <rotate sid="rotationY">0 1 0 0.6197636</rotate>
+        <rotate sid="rotationX">1 0 0 63.55931</rotate>
+        <scale sid="scale">0.2500744 0.2500744 0.2500745</scale>
+        <instance_camera url="#Camera_001_001_001-camera"/>
+      </node>
+      <node id="Lamp_001_001_001" name="Lamp_001_001_001" type="NODE">
+        <translate sid="location">1.022136 0.2599586 1.536712</translate>
         <rotate sid="rotationZ">0 0 1 106.9363</rotate>
         <rotate sid="rotationY">0 1 0 3.163707</rotate>
         <rotate sid="rotationX">1 0 0 37.26106</rotate>
-        <scale sid="scale">1 0.9999994 0.9999998</scale>
-        <instance_light url="#Lamp_001_001-light"/>
+        <scale sid="scale">0.2500746 0.2500744 0.2500746</scale>
+        <instance_light url="#Lamp_001_001_001-light"/>
       </node>
       <node id="vtbuckle" name="vtbuckle" type="NODE">
-        <translate sid="location">0.01171877 -0.003173373 -6.70558e-4</translate>
+        <translate sid="location">0.00570184 0.007726669 0.06013894</translate>
         <rotate sid="rotationZ">0 0 1 90.00001</rotate>
         <rotate sid="rotationY">0 1 0 0</rotate>
         <rotate sid="rotationX">1 0 0 0</rotate>
-        <scale sid="scale">0.1 0.1 0.09999999</scale>
+        <scale sid="scale">0.02500746 0.02500746 0.02500745</scale>
         <instance_geometry url="#vtbuckle-mesh">
           <bind_material>
             <technique_common>
@@ -1136,11 +1233,11 @@
         </instance_geometry>
       </node>
       <node id="Pelvis" name="Pelvis" type="NODE">
-        <translate sid="location">0 0 0</translate>
+        <translate sid="location">0.002771437 0.008520126 0.06030655</translate>
         <rotate sid="rotationZ">0 0 1 90.00001</rotate>
         <rotate sid="rotationY">0 1 0 0</rotate>
         <rotate sid="rotationX">1 0 0 0</rotate>
-        <scale sid="scale">0.1 0.1 0.09999999</scale>
+        <scale sid="scale">0.02500746 0.02500746 0.02500745</scale>
         <instance_geometry url="#Pelvis-mesh">
           <bind_material>
             <technique_common>
@@ -1154,7 +1251,7 @@
           <rotate sid="rotationZ">0 0 1 90.00001</rotate>
           <rotate sid="rotationY">0 1 0 0</rotate>
           <rotate sid="rotationX">1 0 0 0</rotate>
-          <scale sid="scale">0.1 0.1 0.09999999</scale>
+          <scale sid="scale">0.1 0.1 0.09999996</scale>
           <instance_geometry url="#RThigh-mesh">
             <bind_material>
               <technique_common>
@@ -1163,12 +1260,12 @@
             </bind_material>
           </instance_geometry>
           <node id="RKnee" name="RKnee" type="NODE">
-            <matrix sid="parentinverse">-1.62921e-6 10 0 0.09585447 -10 -1.62921e-6 0 -6.11171e-4 0 0 10 0.1990068 0 0 0 1</matrix>
-            <translate sid="location">-5.38682e-4 -0.009936635 -0.0555125</translate>
+            <matrix sid="parentinverse">-1.62921e-6 10 0 0.09585447 -10 -1.62921e-6 0 -6.1117e-4 0 0 10 0.1990069 0 0 0 1</matrix>
+            <translate sid="location">-5.38682e-4 -0.009936635 -0.05551248</translate>
             <rotate sid="rotationZ">0 0 1 90.00001</rotate>
             <rotate sid="rotationY">0 1 0 0</rotate>
             <rotate sid="rotationX">1 0 0 0</rotate>
-            <scale sid="scale">0.1 0.1 0.09999999</scale>
+            <scale sid="scale">0.1 0.1 0.09999993</scale>
             <instance_geometry url="#RKnee-mesh">
               <bind_material>
                 <technique_common>
@@ -1177,12 +1274,12 @@
               </bind_material>
             </instance_geometry>
             <node id="RFoot" name="RFoot" type="NODE">
-              <matrix sid="parentinverse">-1.62921e-6 10 0 0.09936635 -10 -1.62921e-6 0 -0.00538684 0 0 10 0.555125 0 0 0 1</matrix>
-              <translate sid="location">-0.001055336 -0.008490008 -0.0908642</translate>
+              <matrix sid="parentinverse">-1.62921e-6 10 0 0.09936635 -10 -1.62921e-6 0 -0.005386836 0 0 10.00001 0.5551252 0 0 0 1</matrix>
+              <translate sid="location">-0.001055336 -0.008490008 -0.09086415</translate>
               <rotate sid="rotationZ">0 0 1 90.00001</rotate>
               <rotate sid="rotationY">0 1 0 0</rotate>
               <rotate sid="rotationX">1 0 0 0</rotate>
-              <scale sid="scale">0.1 0.1 0.09999999</scale>
+              <scale sid="scale">0.1 0.1 0.09999991</scale>
               <instance_geometry url="#RFoot-mesh">
                 <bind_material>
                   <technique_common>
@@ -1191,12 +1288,12 @@
                 </bind_material>
               </instance_geometry>
               <node id="RToe" name="RToe" type="NODE">
-                <matrix sid="parentinverse">-1.62921e-6 10 0 0.08490008 -10 -1.62921e-6 0 -0.01055337 0 0 10 0.9086421 0 0 0 1</matrix>
-                <translate sid="location">0.01103434 -0.008490006 -0.09820067</translate>
+                <matrix sid="parentinverse">-1.62921e-6 10 0 0.08490008 -10 -1.62921e-6 0 -0.01055337 0 0 10.00001 0.9086423 0 0 0 1</matrix>
+                <translate sid="location">0.01103434 -0.008490006 -0.0982006</translate>
                 <rotate sid="rotationZ">0 0 1 90.00001</rotate>
                 <rotate sid="rotationY">0 1 0 0</rotate>
                 <rotate sid="rotationX">1 0 0 0</rotate>
-                <scale sid="scale">0.1 0.1 0.09999999</scale>
+                <scale sid="scale">0.1 0.1 0.09999989</scale>
                 <instance_geometry url="#RToe-mesh">
                   <bind_material>
                     <technique_common>
@@ -1214,7 +1311,7 @@
           <rotate sid="rotationZ">0 0 1 90.00001</rotate>
           <rotate sid="rotationY">0 1 0 0</rotate>
           <rotate sid="rotationX">1 0 0 0</rotate>
-          <scale sid="scale">0.1 0.1 0.09999999</scale>
+          <scale sid="scale">0.1 0.1 0.09999996</scale>
           <instance_geometry url="#LThigh-mesh">
             <bind_material>
               <technique_common>
@@ -1223,12 +1320,12 @@
             </bind_material>
           </instance_geometry>
           <node id="LKnee" name="LKnee" type="NODE">
-            <matrix sid="parentinverse">-1.62921e-6 10 0 -0.087662 -10 -1.62921e-6 0 -6.11201e-4 0 0 10 0.1987611 0 0 0 1</matrix>
-            <translate sid="location">-5.38685e-4 0.009076191 -0.05552517</translate>
+            <matrix sid="parentinverse">-1.62921e-6 10 0 -0.087662 -10 -1.62921e-6 0 -6.11201e-4 0 0 10 0.1987612 0 0 0 1</matrix>
+            <translate sid="location">-5.38685e-4 0.009076191 -0.05552515</translate>
             <rotate sid="rotationZ">0 0 1 90.00001</rotate>
             <rotate sid="rotationY">0 1 0 0</rotate>
             <rotate sid="rotationX">1 0 0 0</rotate>
-            <scale sid="scale">0.1 0.1 0.09999999</scale>
+            <scale sid="scale">0.1 0.1 0.09999993</scale>
             <instance_geometry url="#LKnee-mesh">
               <bind_material>
                 <technique_common>
@@ -1237,12 +1334,12 @@
               </bind_material>
             </instance_geometry>
             <node id="LFoot" name="LFoot" type="NODE">
-              <matrix sid="parentinverse">-1.62921e-6 10 0 -0.09076191 -10 -1.62921e-6 0 -0.00538684 0 0 10 0.5552517 0 0 0 1</matrix>
-              <translate sid="location">-0.001055338 0.007629563 -0.09086423</translate>
+              <matrix sid="parentinverse">-1.62921e-6 10 0 -0.09076191 -10 -1.62921e-6 0 -0.005386834 0 0 10.00001 0.5552519 0 0 0 1</matrix>
+              <translate sid="location">-0.001055337 0.007629563 -0.0908642</translate>
               <rotate sid="rotationZ">0 0 1 90.00001</rotate>
               <rotate sid="rotationY">0 1 0 0</rotate>
               <rotate sid="rotationX">1 0 0 0</rotate>
-              <scale sid="scale">0.1 0.1 0.09999999</scale>
+              <scale sid="scale">0.1 0.1 0.09999991</scale>
               <instance_geometry url="#LFoot-mesh">
                 <bind_material>
                   <technique_common>
@@ -1251,12 +1348,12 @@
                 </bind_material>
               </instance_geometry>
               <node id="LToe" name="LToe" type="NODE">
-                <matrix sid="parentinverse">-1.62921e-6 10 0 -0.07629562 -10 -1.62921e-6 0 -0.01055337 0 0 10 0.9086424 0 0 0 1</matrix>
-                <translate sid="location">0.01103434 0.007629564 -0.09820068</translate>
+                <matrix sid="parentinverse">-1.62921e-6 10 0 -0.07629562 -10 -1.62921e-6 0 -0.01055336 0 0 10.00001 0.9086428 0 0 0 1</matrix>
+                <translate sid="location">0.01103434 0.007629565 -0.09820063</translate>
                 <rotate sid="rotationZ">0 0 1 90.00001</rotate>
                 <rotate sid="rotationY">0 1 0 0</rotate>
                 <rotate sid="rotationX">1 0 0 0</rotate>
-                <scale sid="scale">0.1 0.1 0.09999999</scale>
+                <scale sid="scale">0.1 0.1 0.09999989</scale>
                 <instance_geometry url="#LToe-mesh">
                   <bind_material>
                     <technique_common>
