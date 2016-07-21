@@ -192,7 +192,7 @@ public:
      * @param name 		marker's name
      * @return marker 	circle marker with input property
      */
-    visualization_msgs::Marker defineCircle(geometry_msgs::Point p, double rayon, std::string name) {
+     visualization_msgs::Marker defineCircle(geometry_msgs::Point p, double rayon, double height, std::string name) {
         //declaration 
         visualization_msgs::Marker marker;
 
@@ -223,20 +223,20 @@ public:
         marker.color.r = 0.0;
         marker.color.g = 1.0;
         marker.color.b = 0.0;
-        marker.color.a = 1.0;
+        marker.color.a = 0.1;
 
         //dimemsion
         marker.scale.x = rayon * 2;
         marker.scale.y = rayon * 2;
-        marker.scale.z = 0.01;
+        marker.scale.z = height;
 
         //type
         marker.type = 3;
-
-        marker.lifetime = ros::Duration(1.0);
+        marker.lifetime = ros::Duration();
 
         return marker;
     }
+
 
     /**
      * create a polygon marker based on line marker
@@ -245,60 +245,92 @@ public:
      * @param name 		polygon's name
      * @return marker 	line marker representing input polygon
      */
-    visualization_msgs::Marker definePolygon(geometry_msgs::Polygon poly, double scale, std::string name) {
-        //declaration
-        visualization_msgs::Marker marker;
-
+  
+    visualization_msgs::MarkerArray definePolygon(geometry_msgs::Polygon poly, std::string name, double zmin, double zmax){
+		//declaration
+		visualization_msgs::Marker line_strip1, line_strip2, line_list;
+      
         //frame id
-        marker.header.frame_id = "map";
+       
+		 line_strip1.header.frame_id = line_strip2.header.frame_id = line_list.header.frame_id = "map";
 
         //namespace
         std::ostringstream nameSpace;
         nameSpace << name;
-        marker.ns = nameSpace.str();
-        marker.id = id_generator(name); //creation of an unique id based on marker's name
+       
+        line_strip1.ns = line_strip2.ns = line_list.ns = nameSpace.str();
+        line_strip1.id = 1;
+        line_strip2.id = 2;
+        line_list.id = 3;
 
         //action
-        marker.action = visualization_msgs::Marker::ADD;
+
+		line_strip1.action = line_strip2.action = line_list.action = visualization_msgs::Marker::ADD;
 
         //orientation
-        marker.pose.orientation.w = 1.0;
+      
+		line_strip1.pose.orientation.w = line_strip2.pose.orientation.w = line_list.pose.orientation.w = 1.0;
+		
+		// marker type
+        line_strip1.type = visualization_msgs::Marker::LINE_STRIP;
+        line_strip2.type = visualization_msgs::Marker::LINE_STRIP;
+        line_list.type = visualization_msgs::Marker::LINE_LIST;
 
-        //color
-        marker.color.r = 0.0;
-        marker.color.g = 1.0;
-        marker.color.b = 0.0;
-        marker.color.a = 1.0;
+		line_strip1.scale.x = 0.2;
+		line_strip2.scale.x = 0.2;
+		line_list.scale.x = 0.2;
+		
 
-        //points
-        geometry_msgs::Point p;
-        for (int i = 0; i < poly.points.size(); i++) {
-            geometry_msgs::Point p;
+		// assigning colour
+		line_strip1.color.b = 1.0;
+		line_strip1.color.a = 1.0;
+		line_strip2.color.b = 1.0;
+		line_strip2.color.a = 1.0;
+		line_list.color.b = 1.0;
+		line_list.color.a = 1.0;
+		geometry_msgs::Point p2;
+		geometry_msgs::Point p1;
+    
+		for (int i = 0; i < poly.points.size(); i++) {
 
-            p.x = poly.points[i].x;
-            p.y = poly.points[i].y;
-            p.z = poly.points[i].z;
+			p1.x = poly.points[i].x;
+			p1.y = poly.points[i].y;
+			p1.z = zmin;
+			p2.x = poly.points[i].x;
+			p2.y = poly.points[i].y;
+			p2.z = zmax;
+			line_list.points.push_back(p1);
+			line_list.points.push_back(p2);
+			line_strip1.points.push_back(p1);
+			line_strip2.points.push_back(p2);
+		}
+	
+        p1.x = poly.points[0].x;
+        p1.y = poly.points[0].y;
+        p1.z = zmin;
+        
+        p2.x = poly.points[0].x;
+        p2.y = poly.points[0].y;
+        p2.z = zmax; 
+        
+        line_strip1.points.push_back(p1);
+        line_strip2.points.push_back(p2);
+       // line_strip1 gives bottom polygonal face while line_strip2 gives upper polygonal face
+       // line_list gives vertical edges 
 
-            marker.points.push_back(p);
-        }
+        line_strip1.lifetime = ros::Duration();
+        line_strip2.lifetime = ros::Duration();
+        line_list.lifetime = ros::Duration();
 
-        p.x = poly.points[0].x;
-        p.y = poly.points[0].y;
-        p.z = poly.points[0].z;
+        visualization_msgs::MarkerArray markersarray;
 
-        marker.points.push_back(p);
+        // mymarkers.markers[0] = points ; 
+        markersarray.markers.push_back(line_strip1);
+        markersarray.markers.push_back(line_strip2);
+        markersarray.markers.push_back(line_list);
 
-        //scale
-        marker.scale.x = scale;
-
-        //type
-        marker.type = visualization_msgs::Marker::LINE_STRIP;
-
-        marker.lifetime = ros::Duration(1.0);
-
-        return marker;
-    }
-
+        return markersarray;
+}
     /**
      * create an object marker
      * @param x  		coordinates of object's base in thx x direction
@@ -833,50 +865,51 @@ public:
             if (msg->areaList[i].isCircle == true) //circle case
             {
                 visualization_msgs::Marker m = defineCircle(msg->areaList[i].center,
-                        msg->areaList[i].ray, msg->areaList[i].name);
+                        msg->areaList[i].ray, msg->areaList[i].height, msg->areaList[i].name);
 
                 m = setRandomColor(m);
 
-                if (printNames_) {
-                    visualization_msgs::Marker mn = defineName(m);
-                    mn = setSize(mn, 0.0, 0.0, areaNameScale_);
-                    mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
-
-                    area_list.markers.push_back(mn);
-                }
+                visualization_msgs::Marker mn = defineName(m);
+                mn = setSize(mn, 0.0, 0.0, 0.3);
+                mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
 
                 area_list.markers.push_back(m);
+                area_list.markers.push_back(mn);
 
                 ROS_DEBUG("circle %d", m.id);
             } else // polygon case
             {
-                visualization_msgs::Marker m = definePolygon(msg->areaList[i].poly, 0.2, msg->areaList[i].name);
-                m = setRandomColor(m);
+                visualization_msgs::MarkerArray m = definePolygon(msg->areaList[i].poly, msg->areaList[i].name, msg->areaList[i].zmin, msg->areaList[i].zmax);
 
-                if (printNames_) {
-                    visualization_msgs::Marker mn = defineName(m);
-                    mn = setSize(mn, 0.0, 0.0, areaNameScale_);
+               for(int i =0 ; i<3 ; i++)
+                m.markers[i] = setRandomColor(m.markers[i]);
 
-                    double posx = 0.0;
-                    double posy = 0.0;
+                visualization_msgs::MarkerArray mn ;
+                for(int i =0 ; i<3 ; i++)
+                { mn.markers.push_back(defineName(m.markers[i]));
+                mn.markers.push_back(setSize(mn.markers[i], 0.0, 0.0, 0.1));}
 
-                    for (int i = 0; i < m.points.size(); i++) {
-                        posx = posx + m.points[i].x;
-                        posy = posy + m.points[i].y;
-                    }
-
-                    mn = setPosition(mn, posx / m.points.size(), posy / m.points.size(), mn.pose.position.z + 0.5);
-
-                    area_list.markers.push_back(mn);
+                double posx = 0.0;
+                double posy = 0.0;
+                double posz = 0.0;
+				for (int j = 0; j<3; j++)
+               { for (int i = 0; i < m.markers[j].points.size(); i++) {
+                    posx = posx + m.markers[j].points[i].x;
+                    posy = posy + m.markers[j].points[i].y;
+                    posz = posz + msg->areaList[i].zmin;
                 }
-
-                area_list.markers.push_back(m);
-
-                ROS_DEBUG("poly %d", m.id);
+               
+                mn.markers[j] = setPosition(mn.markers[j], posx / m.markers[j].points.size(), posy / m.markers[j].points.size(),  + posz / m.markers[j].points.size());
+			
+                area_list.markers.push_back(m.markers[j]);
+                area_list.markers.push_back(mn.markers[j]);
+              }
+               // ROS_DEBUG("poly %d", m.id);
             }
-        }
-    }
 
+        }
+        
+    }
     /**
      * CallBack creating markers based on received toaster_msgs and adding then to robot_list
      * Robots can be represented by a single unarticulated mesh or by multiple meshs for an articulated model

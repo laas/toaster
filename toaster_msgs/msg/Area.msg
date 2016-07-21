@@ -7,5 +7,8 @@ string entityType
 bool isCircle
 geometry_msgs/Point center
 float64 ray
+float64 height
 geometry_msgs/Polygon poly
 uint32[] insideEntities
+float64 zmin
+float64 zmax
