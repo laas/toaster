@@ -1668,6 +1668,8 @@ void empty_database_db() {
     } else {
         // ROS_INFO("SQL order obtained successfully\n");
     }
+    
+    empty_database_planning_db();
 
 }
 
