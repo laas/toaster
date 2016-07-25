@@ -1,0 +1,4 @@
+---
+pdg:
+    pr2Robot : true
+    spencerRobot : false
