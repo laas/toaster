@@ -9,6 +9,11 @@ geometry_msgs/Point center
 float64 ray
 float64 height
 geometry_msgs/Polygon poly
-uint32[] insideEntities
 float64 zmin
 float64 zmax
+float64 enterHysteresis
+float64 leaveHysteresis
+uint32[] insideEntities_
+uint32[] upcomingEntities_
+uint32[] leavingEntities_
+

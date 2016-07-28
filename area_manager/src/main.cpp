@@ -191,6 +191,7 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
     }
 }
 
+/**
 void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
 	//ROS_INFO("Inside the function");
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
@@ -214,6 +215,43 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
                 printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                 ent->inArea_.push_back(it->second->getId());
                 it->second->insideEntities_.push_back(ent->getId());
+
+                //User has to be in a room. May it be a "global room".
+                if (it->second->getAreaType() == "room")
+                    ent->setRoomId(it->second->getId());
+            } else {
+                //printf("[area_manager][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
+                continue;
+            }
+        } else {
+            continue;
+        }
+    }
+}
+**/
+
+void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
+	//ROS_INFO("Inside the function");
+    for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
+        // if the entity is actually concerned, and is not the owner
+        //ROS_INFO("entity's type : %s, area's type : %s",areaCompatible(it->second->getEntityType().ToString("") ,ent->getEntityType().ToString(""));
+        if (areaCompatible(it->second->getEntityType(), ent->getEntityType()) && it->second->getMyOwner() != ent->getId()) {
+
+            // If we already know that entity is in Area, we update if needed.
+            if (ent->isInArea(it->second->getId()))
+                if (it->second->isPointInArea(ent->getPosition(), ent->getId()))
+                    continue;
+                else {
+                    printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
+                    ent->removeInArea(it->second->getId());
+                    it->second->removeInsideEntity(ent->getId());
+                    if (it->second->getAreaType() == "room")
+                        ent->setRoomId(0);
+                }// Same if entity is not in Area
+            else
+                if (it->second->isPointInArea(ent->getPosition(),ent->getId())) {
+                printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
+                ent->inArea_.push_back(it->second->getId());
 
                 //User has to be in a room. May it be a "global room".
                 if (it->second->getAreaType() == "room")
@@ -285,7 +323,7 @@ bool addArea(toaster_msgs::AddArea::Request &req,
     //If it is a circle area
     if (req.myArea.isCircle) {
         bg::model::point<double, 3, bg::cs::cartesian> center(req.myArea.center.x, req.myArea.center.y, req.myArea.center.z);
-        CircleArea* myCircle = new CircleArea(id, center, req.myArea.ray, req.myArea.height);
+        CircleArea* myCircle = new CircleArea(id, center, req.myArea.ray, req.myArea.height, req.myArea.enterHysteresis, req.myArea.leaveHysteresis);
         curArea = myCircle;
     } else {
         //If it is a polygon
@@ -295,7 +333,7 @@ bool addArea(toaster_msgs::AddArea::Request &req,
             pointsPoly[i][1] = req.myArea.poly.points[i].y;
         }
 
-        PolygonArea* myPoly = new PolygonArea(id, pointsPoly, req.myArea.poly.points.size(), req.myArea.zmin, req.myArea.zmax);
+        PolygonArea* myPoly = new PolygonArea(id, pointsPoly, req.myArea.poly.points.size(), req.myArea.zmin, req.myArea.zmax, req.myArea.enterHysteresis, req.myArea.leaveHysteresis);
         
         curArea = myPoly;
     }
@@ -603,8 +641,8 @@ int main(int argc, char** argv) {
                             double angleResult = 0.0;
                             confidence = isFacing(itEntity->second, ownerEnt, 0.5, angleResult);
                             if (confidence > 0.0) {
-                                printf("[area_manager][DEBUG] %s is facing %s with confidence %f, angleResult %f\n",
-                                        itEntity->second->getName().c_str(), ownerEnt->getName().c_str(), confidence, angleResult);
+                                //printf("[area_manager][DEBUG] %s is facing %s with confidence %f, angleResult %f\n",
+                                       // itEntity->second->getName().c_str(), ownerEnt->getName().c_str(), confidence, angleResult);
 
                                 //Fact Facing
                                 fact_msg.property = "IsFacing";
