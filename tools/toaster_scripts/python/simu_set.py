@@ -62,11 +62,13 @@ if __name__=="__main__":
   set_pose_client("Vincent", "Vincent", "human","", 0.0, 1.0,0.0,0.0,0.0,0.0)
   set_pose_client("Greg", "Greg","human","", 0.0, 6.5,0.0,0.0,0.0,0.0)
   set_pose_client("Alexia", "Alexia", "human","", 0.0, 3.0,0.0,0.0,0.0,0.0)
-  set_pose_client("Lara", "Lara", "human","", 0.0, 4.0,0.0,0.0,0.0,0.0)
+  #set_pose_client("Lara", "Lara", "human","", 0.0, 4.0,0.0,0.0,0.0,0.0)
   set_pose_client("Dan", "Dan", "human","", 0.0, 5.0,0.0,0.0,0.0,0.0)
   set_pose_client("Micky", "Micky", "human","", 0.0, 2.0,0.0,0.0,0.0,0.0)
   set_pose_client("PR2_ROBOT", "PR2_ROBOT", "robot","", 0.0, 8,0.0,0.0,0.0,0.0)
   set_pose_client("Spencer", "Spencer", "robot","", 0.0, 9.5,0.0,0.0,0.0,0.0)
+  set_pose_client("Seat", "Seat", "human","", 0.0, 9.5,0.0,0.0,0.0,0.0)
+
 
 
   #keyboard

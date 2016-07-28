@@ -8,6 +8,7 @@
     <object name="Micky"            mesh_resource="package://toaster_visualizer/mesh/toaster_humans/Micky/male.dae" />
     <object name="Vincent"          mesh_resource="package://toaster_visualizer/mesh/toaster_humans/vincent.dae" />
     <object name="Bob"              mesh_resource="package://toaster_visualizer/mesh/toaster_humans/human.dae" />
+    <object name="Seat"             mesh_resource="package://toaster_visualizer/mesh/toaster_humans/humanSeat.dae" />
 
 
 
