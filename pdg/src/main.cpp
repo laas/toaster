@@ -15,6 +15,7 @@
 // Objects
 #include "pdg/ToasterSimuObjectReader.h"
 #include "pdg/ArObjectReader.h"
+#include "pdg/OM2MObjectReader.h"
 
 // Facts
 
@@ -48,6 +49,7 @@ bool toasterSimuRobot_ = false;
 
 bool toasterSimuObject_ = false;
 bool arObject_ = false;
+bool om2mObject_ = false;
 
 std::map<std::string, std::string> objectInAgent_;
 std::map<std::string, std::string> objectInHand_;
@@ -216,6 +218,7 @@ bool addStream(toaster_msgs::AddStream::Request &req,
 
     toasterSimuObject_ = req.toasterSimuObject;
     arObject_ = req.arObject;
+    om2mObject_ = req.om2mObject;
 
     ROS_INFO("[pdg] setting pdg input");
 
@@ -247,7 +250,6 @@ bool putInHand(toaster_msgs::PutInHand::Request &req,
         ROS_INFO("[pdg][Request][put_in_hand][WARNING] joint name is empty %s\n", req.jointName.c_str());
         return false;
     }
-    return true;
 }
 
 bool removeFromHand(toaster_msgs::RemoveFromHand::Request &req,
@@ -331,6 +333,9 @@ int main(int argc, char** argv) {
 
     if (node.hasParam("/pdg/arObjectReader"))
         node.getParam("/pdg/arObjectReader", arObject_);
+    if (node.hasParam("/pdg/OM2MObjectReader"))
+        node.getParam("/pdg/OM2MObjectReader", om2mObject_);
+
 
 
     //Data reading
@@ -346,7 +351,9 @@ int main(int argc, char** argv) {
     ToasterSimuRobotReader toasterSimuRobotRd(node);
 
     ArObjectReader arObjectRd(node, "ar_visualization_marker");
+    OM2MObjectReader om2mObjectRd(node, "/iot_updates");
     ToasterSimuObjectReader toasterSimuObjectRd(node);
+
 
     //Services
     ros::ServiceServer addStreamServ = node.advertiseService("pdg/manage_stream", addStream);
@@ -379,7 +386,6 @@ int main(int argc, char** argv) {
 
 
     while (node.ok()) {
-
         toaster_msgs::ObjectListStamped objectList_msg;
         toaster_msgs::HumanListStamped humanList_msg;
         toaster_msgs::RobotListStamped robotList_msg;
@@ -413,8 +419,8 @@ int main(int argc, char** argv) {
         // Humans //
         ////////////
 
-        if (morseHuman_)
-            for (std::map<std::string, Human*>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it) {
+        if (morseHuman_) {
+            for (std::map<std::string, Human *>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 if (morseHumanRd.isPresent(it->first)) {
@@ -437,6 +443,7 @@ int main(int argc, char** argv) {
 
                 }
             }
+        }
 
         if (mocapHuman_) {
             for (std::map<std::string, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
@@ -498,8 +505,9 @@ int main(int argc, char** argv) {
             }
         }
 
-        if (groupHuman_)
-            for (std::map<std::string, Human*>::iterator it = groupHumanRd.lastConfig_.begin(); it != groupHumanRd.lastConfig_.end(); ++it) {
+        if (groupHuman_) {
+            for (std::map<std::string, Human *>::iterator it = groupHumanRd.lastConfig_.begin();
+                 it != groupHumanRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 if (groupHumanRd.isPresent(it->first)) {
@@ -520,6 +528,7 @@ int main(int argc, char** argv) {
                     humanList_msg.humanList.push_back(human_msg);
                 }
             }
+        }
 
         if (toasterSimuHuman_) {
             for (std::map<std::string, Human*>::iterator it = toasterSimuHumanRd.lastConfig_.begin(); it != toasterSimuHumanRd.lastConfig_.end(); ++it) {
@@ -550,8 +559,9 @@ int main(int argc, char** argv) {
         //Robots//
         //////////
 
-        if (pr2Robot_)
-            for (std::map<std::string, Robot*>::iterator it = pr2RobotRd.lastConfig_.begin(); it != pr2RobotRd.lastConfig_.end(); ++it) {
+        if (pr2Robot_) {
+            for (std::map<std::string, Robot *>::iterator it = pr2RobotRd.lastConfig_.begin();
+                 it != pr2RobotRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 //if (pr2RobotRd.isPresent(it->first)) {
@@ -575,7 +585,8 @@ int main(int argc, char** argv) {
                 fillEntity(pr2RobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
                 if (robotFullConfig_) {
-                    for (std::map<std::string, Joint*>::iterator itJoint = pr2RobotRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != pr2RobotRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                    for (std::map<std::string, Joint *>::iterator itJoint = pr2RobotRd.lastConfig_[it->first]->skeleton_.begin();
+                         itJoint != pr2RobotRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
                         robot_msg.meAgent.skeletonNames.push_back(itJoint->first);
                         fillEntity((itJoint->second), joint_msg.meEntity);
 
@@ -588,7 +599,7 @@ int main(int argc, char** argv) {
                 robotList_msg.robotList.push_back(robot_msg);
                 //}
             }
-
+        }
 
         if (spencerRobot_) {
             for (std::map<std::string, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
@@ -629,8 +640,9 @@ int main(int argc, char** argv) {
             }
         }
 
-        if (toasterSimuRobot_)
-            for (std::map<std::string, Robot*>::iterator it = toasterSimuRobotRd.lastConfig_.begin(); it != toasterSimuRobotRd.lastConfig_.end(); ++it) {
+        if (toasterSimuRobot_) {
+            for (std::map<std::string, Robot *>::iterator it = toasterSimuRobotRd.lastConfig_.begin();
+                 it != toasterSimuRobotRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 //if (toasterSimuRobotRd.isPresent(it->first)) {
@@ -654,7 +666,8 @@ int main(int argc, char** argv) {
                 fillEntity(toasterSimuRobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
                 if (robotFullConfig_) {
-                    for (std::map<std::string, Joint*>::iterator itJoint = toasterSimuRobotRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != toasterSimuRobotRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                    for (std::map<std::string, Joint *>::iterator itJoint = toasterSimuRobotRd.lastConfig_[it->first]->skeleton_.begin();
+                         itJoint != toasterSimuRobotRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
                         robot_msg.meAgent.skeletonNames.push_back(itJoint->first);
                         fillEntity((itJoint->second), joint_msg.meEntity);
 
@@ -667,6 +680,7 @@ int main(int argc, char** argv) {
                 robotList_msg.robotList.push_back(robot_msg);
                 //}
             }
+        }
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -675,8 +689,9 @@ int main(int argc, char** argv) {
         /////////////
 
 
-        if (arObject_)
-            for (std::map<std::string, MovableObject*>::iterator it = arObjectRd.lastConfig_.begin(); it != arObjectRd.lastConfig_.end(); ++it) {
+        if (arObject_) {
+            for (std::map<std::string, MovableObject *>::iterator it = arObjectRd.lastConfig_.begin();
+                 it != arObjectRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first) {
                     updateEntity(newPoseEnt_, it->second);
                     //Reset newPoseEnt_
@@ -684,14 +699,15 @@ int main(int argc, char** argv) {
                     ROS_INFO("got true");
                 }
 
-
-
                 // If in hand, modify position:
                 if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
                     bool addFactHand = true;
-                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg, true))
-                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg, true)) {
-                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
+                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
+                                            humanList_msg, true))
+                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
+                                                robotList_msg, true)) {
+                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n",
+                                     objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
                             addFactHand = false;
                         }
 
@@ -719,13 +735,12 @@ int main(int argc, char** argv) {
                 fillEntity(it->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
             }
+        }
 
-
-
-
-
-        if (toasterSimuObject_)
-            for (std::map<std::string, MovableObject*>::iterator it = toasterSimuObjectRd.lastConfig_.begin(); it != toasterSimuObjectRd.lastConfig_.end(); ++it) {
+        if (om2mObject_) {
+            ROS_INFO("om2mObject_ is true");
+            for (std::map<std::string, MovableObject *>::iterator it = om2mObjectRd.lastConfig_.begin();
+                 it != om2mObjectRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first) {
                     updateEntity(newPoseEnt_, it->second);
                     //Reset newPoseEnt_
@@ -733,13 +748,63 @@ int main(int argc, char** argv) {
                     ROS_INFO("got true");
                 }
 
+                // If in hand, modify position:
+                if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
+                    bool addFactHand = true;
+                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
+                                            humanList_msg, true))
+                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
+                                                robotList_msg, true)) {
+                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n",
+                                     objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
+                            addFactHand = false;
+                        }
+
+                    if (addFactHand) {
+
+                        //Fact message
+                        fact_msg.property = "IsInHand";
+                        fact_msg.propertyType = "position";
+                        fact_msg.subProperty = "object";
+                        fact_msg.subjectId = it->first;
+                        fact_msg.targetId = objectInAgent_[it->first];
+                        fact_msg.targetOwnerId = objectInAgent_[it->first];
+                        fact_msg.confidence = 1.0;
+                        fact_msg.factObservability = 0.8;
+                        fact_msg.time = it->second->getTime();
+                        fact_msg.valueType = 0;
+                        fact_msg.stringValue = "true";
+
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
+
+                }
+                //Message for object
+                fillEntity(it->second, object_msg.meEntity);
+                objectList_msg.objectList.push_back(object_msg);
+            }
+        }
+
+        if (toasterSimuObject_) {
+            for (std::map<std::string, MovableObject *>::iterator it = toasterSimuObjectRd.lastConfig_.begin();
+                 it != toasterSimuObjectRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first) {
+                    updateEntity(newPoseEnt_, it->second);
+                    //Reset newPoseEnt_
+                    newPoseEnt_.setId("");
+                    ROS_INFO("got true");
+                }
 
                 // If in hand, modify position:
                 if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
                     bool addFactHand = true;
-                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first], humanList_msg, true))
-                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first], robotList_msg, true)) {
-                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n", objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
+                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
+                                            humanList_msg, true))
+                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
+                                                robotList_msg, true)) {
+                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n",
+                                     objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
                             addFactHand = false;
                         }
 
@@ -773,7 +838,7 @@ int main(int argc, char** argv) {
                 //printf("[PDG] object %d named %s is seen\n", toasterSimuObjectRd.objectIdOffset_ + i, toasterSimuObjectRd.lastConfig_[toasterSimuObjectRd.objectIdOffset_ + i]->getName().c_str());
                 //}
             }
-
+        }
 
         ////////////////////////////////////////////////////////////////////////
 
