@@ -738,7 +738,6 @@ int main(int argc, char** argv) {
         }
 
         if (om2mObject_) {
-            ROS_INFO("om2mObject_ is true");
             for (std::map<std::string, MovableObject *>::iterator it = om2mObjectRd.lastConfig_.begin();
                  it != om2mObjectRd.lastConfig_.end(); ++it) {
                 if (newPoseEnt_.getId() == it->first) {
