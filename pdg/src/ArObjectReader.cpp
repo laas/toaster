@@ -1,10 +1,9 @@
 /*
- * File:   ArObjectReader.h
+ * File:   ArObjectReader.cpp
  * Author: JPaul Marcade
  *
  * Created on July, 2016
  */
-
 
 #include "pdg/ArObjectReader.h"
 

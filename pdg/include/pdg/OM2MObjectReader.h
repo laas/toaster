@@ -1,6 +1,9 @@
-//
-// Created by dkurzaj on 8/23/16.
-//
+/*
+ * File:   OM2MObjectReader.h
+ * Author: Dorian Kurzaj
+ *
+ * Created on August, 2016
+ */
 
 #ifndef PDG_OM2MOBJECTREADER_H
 #define PDG_OM2MOBJECTREADER_H
@@ -9,7 +12,7 @@
 #include <string>
 #include "ObjectReader.h"
 #include "toaster-lib/MovableIoTObject.h"
-#include "iot_bridge/IoTData.h"
+#include "iot_bridge/IoTDataWithCoordinates.h"
 
 
 class OM2MObjectReader : public ObjectReader {
@@ -19,7 +22,7 @@ public:
 
 private:
     ros::Subscriber sub_;
-    void newValueCallBack(const iot_bridge::IoTData::ConstPtr& msg);
+    void newValueCallBack(const iot_bridge::IoTDataWithCoordinates::ConstPtr& msg);
 };
 
 #endif //PDG_OM2MOBJECTREADER_H

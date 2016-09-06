@@ -351,7 +351,7 @@ int main(int argc, char** argv) {
     ToasterSimuRobotReader toasterSimuRobotRd(node);
 
     ArObjectReader arObjectRd(node, "ar_visualization_marker");
-    OM2MObjectReader om2mObjectRd(node, "/iot_updates");
+    OM2MObjectReader om2mObjectRd(node, "/iot_updates_with_coordinates");
     ToasterSimuObjectReader toasterSimuObjectRd(node);
 
 
