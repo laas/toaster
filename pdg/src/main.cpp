@@ -60,6 +60,11 @@ Entity newPoseEnt_("");
 // Service client
 ros::ServiceClient* setPoseClient_;
 
+void fillValue(MovableIoTObject* srcObject, toaster_msgs::Object& msgObject) {
+    ROS_INFO("[pdg][main] New value from %s: %s", (srcObject->getId()).c_str(), (srcObject->getValue()).c_str());
+    msgObject.value = srcObject->getValue();
+}
+
 void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
     msgEntity.id = srcEntity->getId();
     msgEntity.time = srcEntity->getTime();
@@ -699,6 +704,7 @@ int main(int argc, char** argv) {
                     ROS_INFO("got true");
                 }
 
+
                 // If in hand, modify position:
                 if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
                     bool addFactHand = true;
@@ -747,39 +753,8 @@ int main(int argc, char** argv) {
                     ROS_INFO("got true");
                 }
 
-                // If in hand, modify position:
-                if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
-                    bool addFactHand = true;
-                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
-                                            humanList_msg, true))
-                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
-                                                robotList_msg, true)) {
-                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n",
-                                     objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
-                            addFactHand = false;
-                        }
-
-                    if (addFactHand) {
-
-                        //Fact message
-                        fact_msg.property = "IsInHand";
-                        fact_msg.propertyType = "position";
-                        fact_msg.subProperty = "object";
-                        fact_msg.subjectId = it->first;
-                        fact_msg.targetId = objectInAgent_[it->first];
-                        fact_msg.targetOwnerId = objectInAgent_[it->first];
-                        fact_msg.confidence = 1.0;
-                        fact_msg.factObservability = 0.8;
-                        fact_msg.time = it->second->getTime();
-                        fact_msg.valueType = 0;
-                        fact_msg.stringValue = "true";
-
-
-                        factList_msg.factList.push_back(fact_msg);
-                    }
-
-                }
                 //Message for object
+                fillValue(static_cast<MovableIoTObject*>(it->second), object_msg);
                 fillEntity(it->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
             }

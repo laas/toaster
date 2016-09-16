@@ -8,7 +8,7 @@
 
 # spark (branch genom / mardi_dev2)
 rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: false, pr2Robot: false,
-  spencerRobot: false, toasterSimuObject: true, arObject: true, om2mObject: true}"
+  spencerRobot: false, toasterSimuHuman: true, toasterSimuObject: true, arObject: true, om2mObject: true}"
 
 # no genom (branch master)
 #rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: true, pr2Robot: true,

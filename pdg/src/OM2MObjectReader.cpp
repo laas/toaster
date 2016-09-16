@@ -27,7 +27,6 @@ void OM2MObjectReader::newValueCallBack(const iot_bridge::IoTDataWithCoordinates
         curObject = new MovableIoTObject(msg->iot_data.data.key);
         curObject->setName(msg->iot_data.data.key);
     } else {
-        ROS_INFO("[pdg][OM2MObjectReader] New value from existing %s", (msg->iot_data.data.key).c_str());
         curObject = (MovableIoTObject*)lastConfig_[msg->iot_data.data.key];
     }
 
