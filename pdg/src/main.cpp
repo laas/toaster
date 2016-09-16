@@ -61,7 +61,6 @@ Entity newPoseEnt_("");
 ros::ServiceClient* setPoseClient_;
 
 void fillValue(MovableIoTObject* srcObject, toaster_msgs::Object& msgObject) {
-    ROS_INFO("[pdg][main] New value from %s: %s", (srcObject->getId()).c_str(), (srcObject->getValue()).c_str());
     msgObject.value = srcObject->getValue();
 }
 
