@@ -52,8 +52,8 @@ void OM2MObjectReader::newValueCallBack(const iot_bridge::IoTDataWithCoordinates
     curObject->setValue(msg->iot_data.data.value);
 
     // set the time
-    unsigned long milli_sec = msg->iot_data.header.stamp.sec * 1000;
-    curObject->setTime(milli_sec);
+    unsigned long micro_sec = msg->iot_data.header.stamp.sec * 1000000;
+    curObject->setTime(micro_sec);
 
 
     lastConfig_[msg->iot_data.data.key]=curObject;
