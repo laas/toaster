@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<objects>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHG_FAN_11">
+        <fact name="FanON">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHG_LMP_10">
+        <fact name="LampON">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHL_LMP_01">
+        <fact name="LampON">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+        <fact name="LightColor">
+            <value object_value_name="color" operation="equals" object_value="YELLOW" fact_value="Yellow" />
+            <value object_value_name="color" operation="equals" object_value="RED" fact_value="Red" />
+            <value object_value_name="color" operation="equals" object_value="25500" fact_value="Green" />
+            <value object_value_name="color" operation="equals" object_value="BLUE" fact_value="Blue" />
+            <value object_value_name="color" operation="equals" object_value="PURPLE" fact_value="Purple" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHL_LMP_02">
+        <fact name="LampON">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+        <fact name="LightColor">
+            <value object_value_name="color" operation="equals" object_value="YELLOW" fact_value="Yellow" />
+            <value object_value_name="color" operation="equals" object_value="RED" fact_value="Red" />
+            <value object_value_name="color" operation="equals" object_value="25500" fact_value="Green" />
+            <value object_value_name="color" operation="equals" object_value="BLUE" fact_value="Blue" />
+            <value object_value_name="color" operation="equals" object_value="PURPLE" fact_value="Purple" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHG_TMP_00">
+        <fact name="Temperature">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHG_TMP_05">
+        <fact name="Temperature">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHG_TMP_06">
+        <fact name="Temperature">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHG_LUM_02">
+        <fact name="Luminosity">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHG_PRS_04">
+        <fact name="Pressure">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHG_WGH_03">
+        <fact name="Weight">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+    </object>
+    <object id="/BBB_ADREAM_1/ETH_GW/PHG_HUM_01">
+        <fact name="Humidity">
+            <value object_value_name="data" operation="copy" />
+        </fact>
+    </object>
+</objects>

@@ -13,10 +13,14 @@ find_package(catkin REQUIRED COMPONENTS
   niut_msgs
   toaster_msgs
   tf
+  cmake_modules
+  roslib
 )
+find_package(cmake_modules REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 find_package(Boost REQUIRED COMPONENTS)# system)
+find_package(TinyXML REQUIRED)
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -91,7 +95,7 @@ find_package(Boost REQUIRED COMPONENTS)# system)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES pdg
-  CATKIN_DEPENDS roscpp rospy std_msgs spencer_tracking_msgs niut_msgs toaster_msgs message_generation message_runtime tf
+  CATKIN_DEPENDS roscpp rospy std_msgs spencer_tracking_msgs niut_msgs toaster_msgs message_generation message_runtime tf roslib
 #  DEPENDS system_lib
 )
 
@@ -109,6 +113,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   $ENV{TOASTERLIB_DIR}/include
+  ${TinyXML_INCLUDE_DIRS}
 #  $ENV{ROBOTPKG_BASE}/include
 )
 
@@ -118,7 +123,7 @@ include_directories(
 # )
 
 ## Declare a cpp executable
- add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/AdreamMocapHumanReader.cpp src/GroupHumanReader.cpp src/ToasterSimuHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ToasterSimuRobotReader.cpp src/ObjectReader.cpp src/ToasterSimuObjectReader.cpp src/ArObjectReader.cpp src/FactReader.cpp src/main.cpp)
+add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/AdreamMocapHumanReader.cpp src/GroupHumanReader.cpp src/ToasterSimuHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ToasterSimuRobotReader.cpp src/ObjectReader.cpp src/ToasterSimuObjectReader.cpp src/ArObjectReader.cpp src/OM2MObjectReader.cpp src/FactReader.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
@@ -129,7 +134,7 @@ include_directories(
 #   ${catkin_LIBRARIES}
 # )
 target_link_libraries(pdg $ENV{TOASTERLIB_DIR}/lib/libtoaster.so
-                          ${catkin_LIBRARIES})
+                          ${catkin_LIBRARIES}  ${TinyXML_LIBRARIES})
 
 #add_executable(simu_input src/input_simu.cpp)
 #target_link_libraries(simu_input ${catkin_LIBRARIES})

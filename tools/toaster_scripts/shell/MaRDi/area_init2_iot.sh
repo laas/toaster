@@ -7,8 +7,8 @@
 #  spencerRobot: false, vimanObject: true, sparkObject: false, sparkFact: false}"
 
 # spark (branch genom / mardi_dev2)
-rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: false, pr2Robot: true,
-  spencerRobot: false, vimanObject: true, sparkObject: true, sparkFact: true}"
+rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: false, pr2Robot: false,
+  spencerRobot: false, toasterSimuHuman: true, toasterSimuObject: true, arObject: true, om2mObject: true}"
 
 # no genom (branch master)
 #rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: true, pr2Robot: true,
@@ -168,7 +168,29 @@ rosservice call /area_manager/add_area "myArea:
     - {x: 2, y: 2, z: 0}
     - {x: 0, y: 1, z: 0}
     - {x: 0, y: -1, z: 0}
-  insideEntities: [0]" 
+  insideEntities: [0]"
+  
+  
+# IoT part:
 
+rosservice call /area_manager/add_area "myArea:
+  id: 0
+  name: 'Readingroom'
+  myOwner: ''
+  areaType: 'room'
+  factType: ''
+  entityType: 'entities'
+  isCircle: false
+  center: {x: 0.0, y: 0.0, z: 0.0}
+  ray: 0.0
+  poly:
+    points:
+    - {x: 6.5, y: 9.3, z: 0.0}
+    - {x: 6.5, y: 13.3, z: 0.0}
+    - {x: 9.4, y: 13.3, z: 0.0}
+    - {x: 9.4, y: 9.3, z: 0.0}
+    - {x: 6.5, y: 9.3, z: 0.0}
+  insideEntities: [0]"
+    
 rosservice call /area_manager/publish_all_areas
 

@@ -23,7 +23,7 @@ void ToasterObjectReader::objectStateCallBack(const toaster_msgs::ObjectListStam
 
     for (unsigned int i = 0; i < msg->objectList.size(); i++) {
 
-        // If this human is not assigned we have to allocate data.
+        // If this object is not assigned we have to allocate data.
         if (lastConfig_.find(msg->objectList[i].meEntity.id) == lastConfig_.end()) {
             curObject = new Object(msg->objectList[i].meEntity.id);
             curObject->setRoomId(0);
