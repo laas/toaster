@@ -14,6 +14,7 @@ find_package(catkin REQUIRED COMPONENTS
   toaster_msgs
   tf
   cmake_modules
+  roslib
 )
 find_package(cmake_modules REQUIRED)
 
@@ -94,7 +95,7 @@ find_package(TinyXML REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
 #  LIBRARIES pdg
-  CATKIN_DEPENDS roscpp rospy std_msgs spencer_tracking_msgs niut_msgs toaster_msgs message_generation message_runtime tf
+  CATKIN_DEPENDS roscpp rospy std_msgs spencer_tracking_msgs niut_msgs toaster_msgs message_generation message_runtime tf roslib
 #  DEPENDS system_lib
 )
 

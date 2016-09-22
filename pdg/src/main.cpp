@@ -34,6 +34,7 @@
 
 // Parse XML
 #include <tinyxml.h>
+#include "ros/package.h"
 
 bool humanFullConfig_ = true; //If false we will use only position and orientation
 bool robotFullConfig_ = true; //If false we will use only position and orientation
@@ -62,6 +63,110 @@ Entity newPoseEnt_("");
 
 // Service client
 ros::ServiceClient* setPoseClient_;
+
+std::vector<std::string> loadPropertiesFromXml(std::string objectID) {
+    std::vector<std::string> ret;
+
+    std::stringstream pathIoTObj;
+    TiXmlDocument listIoTObj;
+    pathIoTObj << ros::package::getPath("pdg") << "/params/iot_objects.xml";
+    listIoTObj = TiXmlDocument(pathIoTObj.str());
+
+    if (!listIoTObj.LoadFile()) {
+        ROS_WARN_ONCE("Error while loading xml file");
+        ROS_WARN_ONCE("error #%d: %s", listIoTObj.ErrorId(), listIoTObj.ErrorDesc());
+    }
+
+    TiXmlHandle hdl(&listIoTObj);
+    TiXmlElement *object_elem = hdl.FirstChild("objects").FirstChild("object").Element();
+
+    std::string id;
+    while (object_elem) { //for each element object
+        id = object_elem->Attribute("id");
+        if (id == objectID) {
+            TiXmlHandle hdl(object_elem);
+            TiXmlElement *fact_elem = hdl.FirstChild("fact").Element();
+
+            std::string fact_name;
+
+            while (fact_elem) { // for each fact
+                fact_name = fact_elem->Attribute("name");
+                // we add the fact name to the returned vector
+                ret.push_back(fact_name);
+                fact_elem = fact_elem->NextSiblingElement();
+            }
+        }
+        object_elem = object_elem->NextSiblingElement();
+    }
+    return ret;
+}
+
+std::string loadValueFromXmlAsString(std::string objectID, std::string factName, std::string objectValueName, std::string objectValue) {
+    ROS_INFO("loadValueFromXmlAsString objectID:%s factName:%s objectValueName:%s objectValue:%s", objectID.c_str(), factName.c_str(), objectValueName.c_str(), objectValue.c_str());
+    std::string ret;
+
+    std::stringstream pathIoTObj;
+    TiXmlDocument listIoTObj;
+    pathIoTObj << ros::package::getPath("pdg") << "/params/iot_objects.xml";
+    listIoTObj = TiXmlDocument(pathIoTObj.str());
+
+    if (!listIoTObj.LoadFile()) {
+        ROS_WARN_ONCE("Error while loading xml file");
+        ROS_WARN_ONCE("error #%d: %s", listIoTObj.ErrorId(), listIoTObj.ErrorDesc());
+    }
+
+    TiXmlHandle hdl(&listIoTObj);
+    TiXmlElement *object_elem = hdl.FirstChild("objects").FirstChild("object").Element();
+
+    std::string id;
+
+    while (object_elem) { //for each element object
+        id = object_elem->Attribute("id");
+        if (id == objectID) {
+            TiXmlHandle hdl(object_elem);
+            TiXmlElement *fact_elem = hdl.FirstChild("fact").Element();
+
+            std::string fact_name;
+
+            while (fact_elem) { // for each fact
+                fact_name = fact_elem->Attribute("name");
+                if (fact_name == factName) {
+                    TiXmlHandle hdl(fact_elem);
+                    TiXmlElement *value_elem = hdl.FirstChild("value").Element();
+
+                    std::string object_value_name;
+                    std::string operation;
+                    std::string object_value;
+                    std::string fact_value;
+                    while (value_elem) { // for each value
+                        object_value_name = value_elem->Attribute("object_value_name");
+                        operation = value_elem->Attribute("operation");
+                        if (value_elem->Attribute("object_value")) {
+                            object_value = value_elem->Attribute("object_value");
+                        }
+                        if (value_elem->Attribute("fact_value")) {
+                            fact_value = value_elem->Attribute("fact_value");
+                        }
+                        if (objectValueName == object_value_name) {
+                            if (operation == "copy") {
+                                ret = objectValue;
+                            }
+                            else if (operation == "equals") {
+                                if (object_value == objectValue) {
+                                    ret = fact_value;
+                                }
+                            }
+                        }
+                        value_elem = value_elem->NextSiblingElement();
+                    }
+                }
+                fact_elem = fact_elem->NextSiblingElement();
+            }
+        }
+        object_elem = object_elem->NextSiblingElement();
+    }
+    return ret;
+}
 
 void fillValue(MovableIoTObject* srcObject, toaster_msgs::Object& msgObject) {
     msgObject.value = srcObject->getValue();
@@ -755,7 +860,7 @@ int main(int argc, char** argv) {
                     ROS_INFO("got true");
                 }
 
-
+                // Parser for the oBIX XML received from OM2M
                 TiXmlDocument XMLDoc;
                 XMLDoc.Parse((static_cast<MovableIoTObject*>(it->second))->getValue().c_str(), 0, TIXML_ENCODING_UTF8);
 
@@ -766,425 +871,48 @@ int main(int argc, char** argv) {
                     return -1;
                 }
 
-
                 TiXmlHandle hdl(&XMLDoc);
                 TiXmlElement *elem = hdl.FirstChild("obj").FirstChildElement().Element();
 
                 std::string value_name;
                 std::string value_value;
 
+                // The names of the facts related to the current object
+                std::vector<std::string> factNames;
+                factNames = loadPropertiesFromXml(it->first);
 
-                // If it is the fan
-                if (it->first == "/BBB_ADREAM_1/ETH_GW/PHG_FAN_11") {
-                    while (elem) { //for each element of the xml file
+                // For each fact we determine its value according to the oBIX XML received from OM2M
+                for (std::vector<std::string>::iterator ite = factNames.begin(); ite != factNames.end(); ++ite) {
+                    //Fact message
+                    fact_msg.property = *ite;
+                    fact_msg.propertyType = "iot";
+                    fact_msg.subjectId = it->first;
+                    fact_msg.confidence = 1.0;
+                    // We can not know if the human has seen the value of the iot object
+                    fact_msg.factObservability = 0.5;
+                    fact_msg.time = it->second->getTime();
+                    fact_msg.valueType = 0;
+
+                    bool value_found = false;
+                    while (elem && !value_found) { //for each element of the xml file
                         value_name = elem->Attribute("name");
                         value_value = elem->Attribute("val");
+
+                        // We fetch the corresponding value as described the configuration file rules
+                        fact_msg.stringValue = loadValueFromXmlAsString(it->first, *ite, value_name, value_value);
+
+                        // When there is a match we stop parsing
+                        if (!fact_msg.stringValue.empty()) {
+                            value_found = true;
+
+                        }
                         elem = elem->NextSiblingElement();
-                        // When we reach the tag with the name data we test its value
-                        if (value_name == "data") {
-                            if (value_value == "true") {
-                                //Fact message
-                                fact_msg.property = "FanON";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (value_value == "false") {
-                                //Fact message
-                                fact_msg.property = "FanOFF";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                        }
                     }
+
+                    // We add the fact to the list
+                    factList_msg.factList.push_back(fact_msg);
+
                 }
-
-
-                // If it is the reading lamp
-                if (it->first == "/BBB_ADREAM_1/ETH_GW/PHG_LMP_10") {
-                    while (elem) { //for each element of the xml file
-                        value_name = elem->Attribute("name");
-                        value_value = elem->Attribute("val");
-                        elem = elem->NextSiblingElement();
-                        // When we reach the tag with the name data we test its value
-                        if (value_name == "data") {
-                            if (value_value == "true") {
-                                //Fact message
-                                fact_msg.property = "LampON";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            } else if (value_value == "false") {
-                                //Fact message
-                                fact_msg.property = "LampOFF";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                        }
-                    }
-                }
-
-
-                // If it is one of the ambiance lamps
-                if ((it->first == "/BBB_ADREAM_1/ETH_GW/PHL_LMP_01") ||
-                    (it->first == "/BBB_ADREAM_1/ETH_GW/PHL_LMP_02")) {
-                    while (elem) { //for each element of the xml file
-                        value_name = elem->Attribute("name");
-                        value_value = elem->Attribute("val");
-                        elem = elem->NextSiblingElement();
-                        // When we reach the tag with the name data we test its value
-                        if (value_name == "data") {
-                            if (value_value == "true") {
-                                //Fact message
-                                fact_msg.property = "LampON";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (value_value == "false") {
-                                //Fact message
-                                fact_msg.property = "LampOFF";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                        }
-                        if (value_name == "color") {
-                            if (value_value == "YELLOW") {
-                                //Fact message
-                                fact_msg.property = "LampIsYellow";
-                                fact_msg.propertyType = "color";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (value_value == "RED") {
-                                //Fact message
-                                fact_msg.property = "LampIsRed";
-                                fact_msg.propertyType = "color";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (value_value == "25500") {
-                                //Fact message
-                                fact_msg.property = "LampIsGreen";
-                                fact_msg.propertyType = "color";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (value_value == "BLUE") {
-                                //Fact message
-                                fact_msg.property = "LampIsBlue";
-                                fact_msg.propertyType = "color";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (value_value == "PURPLE") {
-                                //Fact message
-                                fact_msg.property = "LampIsPurple";
-                                fact_msg.propertyType = "color";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                        }
-                    }
-                }
-
-
-                // If it is one of the thermometers
-                if ((it->first == "/BBB_ADREAM_1/ETH_GW/PHG_TMP_00") ||
-                    (it->first == "/BBB_ADREAM_1/ETH_GW/PHG_TMP_05") ||
-                    (it->first == "/BBB_ADREAM_1/ETH_GW/PHG_TMP_06")) {
-                    while (elem) { //for each element of the xml file
-                        value_name = elem->Attribute("name");
-                        value_value = elem->Attribute("val");
-                        elem = elem->NextSiblingElement();
-                        // When we reach the tag with the name data we test its value
-                        if (value_name == "data") {
-                            if (std::atoi(value_value.c_str()) < 20) {
-                                //Fact message
-                                fact_msg.property = "TooCold";
-                                fact_msg.propertyType = "temperature";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (std::atoi(value_value.c_str()) > 27) {
-                                //Fact message
-                                fact_msg.property = "TooWarm";
-                                fact_msg.propertyType = "temperature";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                        }
-                    }
-                }
-
-
-                // If it is the luminosity sensor
-                if (it->first == "/BBB_ADREAM_1/ETH_GW/PHG_LUM_02") {
-                    while (elem) { //for each element of the xml file
-                        value_name = elem->Attribute("name");
-                        value_value = elem->Attribute("val");
-                        elem = elem->NextSiblingElement();
-                        // When we reach the tag with the name data we test its value
-                        if (value_name == "data") {
-                            if (std::atoi(value_value.c_str()) <= 100) {
-                                //Fact message
-                                fact_msg.property = "TheLuminosityIsLow";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (std::atoi(value_value.c_str()) > 100) {
-                                //Fact message
-                                fact_msg.property = "TheLuminosityIsHigh";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                        }
-                    }
-                }
-
-
-                // If it is the pressure sensor (for the book in the shelf)
-                if (it->first == "/BBB_ADREAM_1/ETH_GW/PHG_PRS_04") {
-                    while (elem) { //for each element of the xml file
-                        value_name = elem->Attribute("name");
-                        value_value = elem->Attribute("val");
-                        elem = elem->NextSiblingElement();
-                        // When we reach the tag with the name data we test its value
-                        if (value_name == "data") {
-                            if (std::atoi(value_value.c_str()) <= 5) {
-                                //Fact message
-                                fact_msg.property = "NoBookOnTheShelf";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (std::atoi(value_value.c_str()) > 5) {
-                                //Fact message
-                                fact_msg.property = "BookOnTheShelf";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                        }
-                    }
-                }
-
-
-                // If it is the weight sensor (for the human sitting in the armchair)
-                if (it->first == "/BBB_ADREAM_1/ETH_GW/PHG_WGH_03") {
-                    while (elem) { //for each element of the xml file
-                        value_name = elem->Attribute("name");
-                        value_value = elem->Attribute("val");
-                        elem = elem->NextSiblingElement();
-                        // When we reach the tag with the name data we test its value
-                        if (value_name == "data") {
-                            if (std::atoi(value_value.c_str()) <= 5) {
-                                //Fact message
-                                fact_msg.property = "SomeoneIsSitting";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (std::atoi(value_value.c_str()) > 5) {
-                                //Fact message
-                                fact_msg.property = "NoOneIsSitting";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                        }
-                    }
-                }
-
-
-                // If it is the humidity sensor
-                if (it->first == "/BBB_ADREAM_1/ETH_GW/PHG_HUM_01") {
-                    while (elem) { //for each element of the xml file
-                        value_name = elem->Attribute("name");
-                        value_value = elem->Attribute("val");
-                        elem = elem->NextSiblingElement();
-                        // When we reach the tag with the name data we test its value
-                        if (value_name == "data") {
-                            if (std::atoi(value_value.c_str()) <= 30) {
-                                //Fact message
-                                fact_msg.property = "HumidityTooLowForHumans";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                            else if (std::atoi(value_value.c_str()) > 70) {
-                                //Fact message
-                                fact_msg.property = "HumidityTooHighForHumans";
-                                fact_msg.propertyType = "state";
-                                fact_msg.subProperty = "room";
-                                fact_msg.subjectId = it->first;
-                                fact_msg.confidence = 1.0;
-                                // We can not know if the human has seen the value of the iot object
-                                fact_msg.factObservability = 0.5;
-                                fact_msg.time = it->second->getTime();
-                                fact_msg.valueType = 0;
-                                fact_msg.stringValue = value_value.c_str();
-
-                                factList_msg.factList.push_back(fact_msg);
-                            }
-                        }
-                    }
-                }
-
 
                 //Message for object
                 fillValue(static_cast<MovableIoTObject*>(it->second), object_msg);
