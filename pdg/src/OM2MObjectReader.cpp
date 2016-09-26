@@ -16,7 +16,7 @@ OM2MObjectReader::OM2MObjectReader(ros::NodeHandle& node, std::string topicOM2M)
     ROS_INFO("[pdg][OM2MObjectReader] done");
 }
 
-void OM2MObjectReader::newValueCallBack(const iot_bridge::IoTDataWithCoordinates::ConstPtr& msg) {
+void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTDataWithCoordinates::ConstPtr& msg) {
 
     ros::Time now = ros::Time::now();
     // OM2M objects are by convention considered movable

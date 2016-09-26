@@ -12,7 +12,7 @@
 #include <string>
 #include "ObjectReader.h"
 #include "toaster-lib/MovableIoTObject.h"
-#include "iot_bridge/IoTDataWithCoordinates.h"
+#include "toaster_msgs/IoTDataWithCoordinates.h"
 
 
 class OM2MObjectReader : public ObjectReader {
@@ -22,7 +22,7 @@ public:
 
 private:
     ros::Subscriber sub_;
-    void newValueCallBack(const iot_bridge::IoTDataWithCoordinates::ConstPtr& msg);
+    void newValueCallBack(const toaster_msgs::IoTDataWithCoordinates::ConstPtr& msg);
 };
 
 #endif //PDG_OM2MOBJECTREADER_H
