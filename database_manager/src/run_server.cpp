@@ -1601,13 +1601,13 @@ bool are_in_table_db(std::string agent, std::vector<toaster_msgs::Fact> facts) {
  * @param facts the facts to check
  * @return a vector of bool representing if each fact is in the table
  */
-std::vector<bool> are_in_table_indiv_db(std::string agent, std::vector<toaster_msgs::Fact> facts) {
+std::vector<std::string> are_in_table_indiv_db(std::string agent, std::vector<toaster_msgs::Fact> facts) {
 
     std::string sql;
     char *zErrMsg = 0;
     const char* data = "Callback function called";
 
-    std::vector<bool> res;
+    std::vector<std::string> res;
 
     for (std::vector<toaster_msgs::Fact>::iterator it = facts.begin(); it != facts.end(); it++) {
         sql = (std::string)"SELECT * from fact_table_" + agent
@@ -1624,9 +1624,9 @@ std::vector<bool> are_in_table_indiv_db(std::string agent, std::vector<toaster_m
 
         //return informations from table
         if (myFactList.empty()) {
-            res.push_back(false);
+            res.push_back("false");
         }else{
-            res.push_back(true);
+            res.push_back("true");
 	}
         myFactList = std::vector<toaster_msgs::Fact>(); //empty myFactList
     }
@@ -1939,8 +1939,7 @@ bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::
 
     if (req.command == "ARE_IN_TABLE") {
 	if (req.type == "INDIV") {
-	    std::vector<bool> res = are_in_table_indiv_db(req.agent, req.facts);
-            res.boolResults = res;
+            res.results = are_in_table_indiv_db(req.agent, req.facts);
         }else{
 	    res.boolAnswer = are_in_table_db(req.agent, req.facts);
 	}
