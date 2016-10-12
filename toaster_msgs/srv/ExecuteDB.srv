@@ -11,3 +11,4 @@ bool pdgTopic
 ---
 bool boolAnswer
 string[] results
+bool[] boolResults
