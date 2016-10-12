@@ -501,7 +501,12 @@ public:
 
                 elem = NULL;
             } else {
-                marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/human.dae"; //using 3d human model
+                if (pose.position.z < -0.4) {
+                    //human is seating
+                    marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/humanSeat.dae"; //using 3d human model
+                } else {
+                    marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/human.dae"; //using 3d human model
+                }
                 marker.mesh_use_embedded_materials = true;
 
             }
@@ -676,7 +681,23 @@ public:
         }
     }
 
-
+    bool isSeating(const toaster_msgs::Human hum) {
+        //Find the head:
+        unsigned int i = 0;
+        for (i = 0; i < hum.meAgent.skeletonNames.size(); i++) {
+            if (hum.meAgent.skeletonNames[i] == "head") {
+                break;
+            }
+        }
+        if (i == hum.meAgent.skeletonNames.size()) {
+            return false;
+        } else {
+            if (hum.meAgent.skeletonJoint[i].meEntity.pose.position.z < 1.4)
+                return true;
+            else
+                return false;
+        }
+    }
 
 
     // ******************************************************** adjustment functions ********************************************************
@@ -979,6 +1000,7 @@ public:
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
 
+
                             markerTempo.scale.x = scale;
                             markerTempo.scale.y = scale;
                             markerTempo.scale.z = scale;
@@ -990,7 +1012,12 @@ public:
                             markerTempo.color.a = 0.0;
 
                             markerTempo.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh
-                            markerTempo.mesh_resource = mesh_r;
+
+                            if (isSeating(msg->humanList[i]) && name == "base") {
+                                markerTempo.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/mocapMorse/baseSeat.dae"; //using 3d human model
+                            } else {
+                                markerTempo.mesh_resource = mesh_r;
+                            }
                             markerTempo.mesh_use_embedded_materials = true;
 
                             elem = NULL;

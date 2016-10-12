@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(toaster_msgs)
 
 find_package(catkin REQUIRED COMPONENTS
+  diagnostic_msgs
   roscpp
   rospy
   std_msgs
@@ -32,6 +33,9 @@ add_message_files(
    Object.msg
    RobotListStamped.msg
    Robot.msg
+
+   IoTData.msg
+   IoTDataWithCoordinates.msg
 
    Property.msg
    Event.msg
@@ -81,6 +85,7 @@ generate_messages(
    DEPENDENCIES
    geometry_msgs
    std_msgs
+   diagnostic_msgs
 )
 
 
