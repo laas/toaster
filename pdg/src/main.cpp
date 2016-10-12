@@ -6,6 +6,7 @@
 #include "pdg/MocapHumanReader.h"
 #include "pdg/AdreamMocapHumanReader.h"
 #include "pdg/ToasterSimuHumanReader.h"
+#include "pdg/AdaptationHumanReader.h"
 
 // Robots
 #include "pdg/Pr2RobotReader.h"
@@ -46,6 +47,7 @@ bool groupHuman_ = false;
 bool mocapHuman_ = false;
 bool adreamMocapHuman_ = false;
 bool toasterSimuHuman_ = false;
+bool adaptationHuman_ = false;
 
 bool pr2Robot_ = false;
 bool spencerRobot_ = false;
@@ -323,6 +325,7 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     mocapHuman_ = req.mocapHuman;
     adreamMocapHuman_ = req.adreamMocapHuman;
     toasterSimuHuman_ = req.toasterSimuHuman;
+    adaptationHuman_ = req.adaptationHuman;
 
     pr2Robot_ = req.pr2Robot;
     spencerRobot_ = req.spencerRobot;
@@ -432,6 +435,8 @@ int main(int argc, char** argv) {
         node.getParam("/pdg/adreamMocapHuman", adreamMocapHuman_);
     if (node.hasParam("/pdg/toasterSimuHuman"))
         node.getParam("/pdg/toasterSimuHuman", toasterSimuHuman_);
+    if (node.hasParam("/pdg/adaptationHuman"))
+        node.getParam("/pdg/adaptationHuman", adaptationHuman_);
 
     if (node.hasParam("/pdg/pr2Robot"))
         node.getParam("/pdg/pr2Robot", pr2Robot_);
@@ -457,6 +462,7 @@ int main(int argc, char** argv) {
     MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
     AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
     ToasterSimuHumanReader toasterSimuHumanRd(node);
+	AdaptationHumanReader adaptationHumanRd(node, "adaptation_node/humanList");
 
     Pr2RobotReader pr2RobotRd(node, robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
@@ -483,6 +489,7 @@ int main(int argc, char** argv) {
     //Data writing
     ros::Publisher object_pub = node.advertise<toaster_msgs::ObjectListStamped>("pdg/objectList", 1000);
     ros::Publisher human_pub = node.advertise<toaster_msgs::HumanListStamped>("pdg/humanList", 1000);
+    ros::Publisher human_sensors_pub = node.advertise<toaster_msgs::HumanListStamped>("pdg/humanListSensors", 1000);
     ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotListStamped>("pdg/robotList", 1000);
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("pdg/factList", 1000);
 
@@ -500,6 +507,7 @@ int main(int argc, char** argv) {
     while (node.ok()) {
         toaster_msgs::ObjectListStamped objectList_msg;
         toaster_msgs::HumanListStamped humanList_msg;
+        toaster_msgs::HumanListStamped humanListSensors_msg;
         toaster_msgs::RobotListStamped robotList_msg;
         toaster_msgs::FactList factList_msg;
         toaster_msgs::Fact fact_msg;
@@ -551,7 +559,11 @@ int main(int argc, char** argv) {
 
                     //Human
                     fillEntity(it->second, human_msg.meAgent.meEntity);
-                    humanList_msg.humanList.push_back(human_msg);
+                    if(adaptationHuman_){
+						humanListSensors_msg.humanList.push_back(human_msg);
+					}else{
+						humanList_msg.humanList.push_back(human_msg);
+					}
 
                 }
             }
@@ -576,7 +588,11 @@ int main(int argc, char** argv) {
 
                     //Human
                     fillEntity(it->second, human_msg.meAgent.meEntity);
-                    humanList_msg.humanList.push_back(human_msg);
+                    if(adaptationHuman_){
+						humanListSensors_msg.humanList.push_back(human_msg);
+					}else{
+						humanList_msg.humanList.push_back(human_msg);
+					}
 
                 }
             }
@@ -612,7 +628,11 @@ int main(int argc, char** argv) {
 
                     }
                     //}
-                    humanList_msg.humanList.push_back(human_msg);
+                    if(adaptationHuman_){
+						humanListSensors_msg.humanList.push_back(human_msg);
+					}else{
+						humanList_msg.humanList.push_back(human_msg);
+					}
                 }
             }
         }
@@ -637,7 +657,11 @@ int main(int argc, char** argv) {
 
                     //Human
                     fillEntity(it->second, human_msg.meAgent.meEntity);
-                    humanList_msg.humanList.push_back(human_msg);
+                    if(adaptationHuman_){
+						humanListSensors_msg.humanList.push_back(human_msg);
+					}else{
+						humanList_msg.humanList.push_back(human_msg);
+					}
                 }
             }
         }
@@ -653,6 +677,33 @@ int main(int argc, char** argv) {
                 fillEntity(it->second, human_msg.meAgent.meEntity);
 
                 for (std::map<std::string, Joint*>::iterator itJoint = toasterSimuHumanRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != toasterSimuHumanRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                    human_msg.meAgent.skeletonNames.push_back(itJoint->first);
+                    fillEntity((itJoint->second), joint_msg.meEntity);
+                    joint_msg.jointOwner = it->first;
+
+                    human_msg.meAgent.skeletonJoint.push_back(joint_msg);
+
+                }
+				if(adaptationHuman_){
+					humanListSensors_msg.humanList.push_back(human_msg);
+				}else{
+					humanList_msg.humanList.push_back(human_msg);
+				}
+
+            }
+        }
+
+        if (adaptationHuman_) {
+            for (std::map<std::string, Human*>::iterator it = adaptationHumanRd.lastConfig_.begin(); it != adaptationHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
+
+
+
+                //Human
+                fillEntity(it->second, human_msg.meAgent.meEntity);
+
+                for (std::map<std::string, Joint*>::iterator itJoint = adaptationHumanRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != adaptationHumanRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
                     human_msg.meAgent.skeletonNames.push_back(itJoint->first);
                     fillEntity((itJoint->second), joint_msg.meEntity);
                     joint_msg.jointOwner = it->first;
@@ -984,12 +1035,14 @@ int main(int argc, char** argv) {
         objectList_msg.header.frame_id = "/map";
 
         humanList_msg.header = objectList_msg.header;
+        humanListSensors_msg.header = objectList_msg.header;
         robotList_msg.header = objectList_msg.header;
 
 
         //ROS_INFO("%s", msg.data.c_str());
 
         object_pub.publish(objectList_msg);
+        human_sensors_pub.publish(humanListSensors_msg);
         human_pub.publish(humanList_msg);
         robot_pub.publish(robotList_msg);
         fact_pub.publish(factList_msg);

@@ -1,0 +1,8 @@
+---
+pdg:
+    morseHuman : false
+    niutHuman : false
+    groupHuman : false
+    mocapHuman : false
+    adreamMocapHuman : true
+    adaptationHuman : false
