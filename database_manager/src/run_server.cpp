@@ -1708,6 +1708,7 @@ void empty_database_db() {
     }
     
     empty_database_planning_db();
+    previousFactsState.clear();
 
 }
 
