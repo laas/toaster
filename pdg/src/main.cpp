@@ -36,6 +36,9 @@
 #include <tinyxml.h>
 #include "ros/package.h"
 
+//tf
+#include <tf/transform_broadcaster.h>
+
 bool humanFullConfig_ = true; //If false we will use only position and orientation
 bool robotFullConfig_ = true; //If false we will use only position and orientation
 
@@ -419,11 +422,35 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
     return true;
 }
 
+//////////////////
+// TF broadcast //
+//////////////////
+void broadcastTfEntity(tf::TransformBroadcaster &tf_br,toaster_msgs::Entity &entity,const std::string &prefix,ros::Time &stamp){
+    geometry_msgs::Pose &pose=entity.pose;
+    tf::Transform transform;
+    transform.setOrigin(tf::Vector3(pose.position.x,pose.position.y,pose.position.z));
+    transform.setRotation(tf::Quaternion(pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w));
+    tf_br.sendTransform(tf::StampedTransform(transform,stamp,"map",prefix+"/"+entity.id));
+}
+void broadcastTfAgent(tf::TransformBroadcaster &tf_br,toaster_msgs::Agent &agent,const std::string &prefix,ros::Time &stamp){
+    geometry_msgs::Pose &pose=agent.meEntity.pose;
+    tf::Transform transform;
+    transform.setOrigin(tf::Vector3(pose.position.x,pose.position.y,pose.position.z));
+    transform.setRotation(tf::Quaternion(pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w));
+    tf_br.sendTransform(tf::StampedTransform(transform,stamp,"map",prefix+agent.meEntity.id+"/base"));
+
+    for(uint i_jnt=0;i_jnt<agent.skeletonJoint.size();++i_jnt){
+        broadcastTfEntity(tf_br,agent.skeletonJoint[i_jnt].meEntity,prefix+"/"+agent.meEntity.id,stamp);
+    }
+}
+
 int main(int argc, char** argv) {
 
     unsigned int seq = 0;
     ros::init(argc, argv, "pdg");
     ros::NodeHandle node;
+
+    tf::TransformBroadcaster tf_br;
 
 
     //Set params to select input
@@ -992,6 +1019,17 @@ int main(int argc, char** argv) {
 
         humanList_msg.header = objectList_msg.header;
         robotList_msg.header = objectList_msg.header;
+
+        for(typeof(objectList_msg.objectList.begin()) it=objectList_msg.objectList.begin(); it!= objectList_msg.objectList.end();++it){
+            broadcastTfEntity(tf_br,it->meEntity,"",objectList_msg.header.stamp);
+        }
+
+        for(typeof(humanList_msg.humanList.begin()) it=humanList_msg.humanList.begin(); it!= humanList_msg.humanList.end();++it){
+            broadcastTfAgent(tf_br,it->meAgent,"",humanList_msg.header.stamp);
+        }
+        for(typeof(robotList_msg.robotList.begin()) it=robotList_msg.robotList.begin(); it!= robotList_msg.robotList.end();++it){
+            broadcastTfAgent(tf_br,it->meAgent,"",robotList_msg.header.stamp);
+        }
 
 
         //ROS_INFO("%s", msg.data.c_str());
