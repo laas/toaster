@@ -1,5 +1,8 @@
 <launch>
 	<rosparam command="load" file="$(find pdg)/params/toaster_simu.yaml" />
+	<rosparam command="load" file="$(find pdg)/params/objects.yaml" />
+	<rosparam command="load" file="$(find pdg)/params/humans.yaml" />
+	<rosparam command="load" file="$(find pdg)/params/robots.yaml" />
 
 	<node name="pdg" pkg="pdg" type="pdg" output="screen"/>  <!-- Launch pdg -->
 </launch>

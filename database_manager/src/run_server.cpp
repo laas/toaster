@@ -1596,10 +1596,48 @@ bool are_in_table_db(std::string agent, std::vector<toaster_msgs::Fact> facts) {
 }
 
 /**
+ * Look if each fact is in a table agent
+ * @param agent the name of the agent owner of the table
+ * @param facts the facts to check
+ * @return a vector of bool representing if each fact is in the table
+ */
+std::vector<std::string> are_in_table_indiv_db(std::string agent, std::vector<toaster_msgs::Fact> facts) {
+
+    std::string sql;
+    char *zErrMsg = 0;
+    const char* data = "Callback function called";
+
+    std::vector<std::string> res;
+
+    for (std::vector<toaster_msgs::Fact>::iterator it = facts.begin(); it != facts.end(); it++) {
+        sql = (std::string)"SELECT * from fact_table_" + agent
+                + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
+                + "' and predicate='" + boost::lexical_cast<std::string>(it->property)
+                + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
+
+        if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+            fprintf(stderr, "SQL error l1857: %s\n", zErrMsg);
+            sqlite3_free(zErrMsg);
+        } else {
+            // fprintf(stdout, "Current fact value from robot obtained successfully\n");
+        }
+
+        //return informations from table
+        if (myFactList.empty()) {
+            res.push_back("false");
+        }else{
+            res.push_back("true");
+	}
+        myFactList = std::vector<toaster_msgs::Fact>(); //empty myFactList
+    }
+
+    return res;
+}
+
+/**
  * Execute in selected table the SQl request casted in the Request.order field 
- * @param reference to request
- * @param reference to response
- * @return true 
+ * @param order the sql order to execute
+ * @return result of the request
  */
 std::pair<bool, std::vector<std::string> > execute_SQL_db(std::string order) {
     //ROS_INFO("sql order");
@@ -1668,6 +1706,9 @@ void empty_database_db() {
     } else {
         // ROS_INFO("SQL order obtained successfully\n");
     }
+    
+    empty_database_planning_db();
+    previousFactsState.clear();
 
 }
 
@@ -1898,7 +1939,11 @@ void print_agent(std::string agent) {
 bool execute_db(toaster_msgs::ExecuteDB::Request &req, toaster_msgs::ExecuteDB::Response &res) {
 
     if (req.command == "ARE_IN_TABLE") {
-        res.boolAnswer = are_in_table_db(req.agent, req.facts);
+	if (req.type == "INDIV") {
+            res.results = are_in_table_indiv_db(req.agent, req.facts);
+        }else{
+	    res.boolAnswer = are_in_table_db(req.agent, req.facts);
+	}
     } else if (req.command == "SQL") {
         std::pair<bool, std::vector<std::string> > answer = execute_SQL_db(req.order);
         res.boolAnswer = answer.first;
