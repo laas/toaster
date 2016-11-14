@@ -1572,24 +1572,59 @@ bool are_in_table_db(std::string agent, std::vector<toaster_msgs::Fact> facts) {
     const char* data = "Callback function called";
 
     for (std::vector<toaster_msgs::Fact>::iterator it = facts.begin(); it != facts.end(); it++) {
-        sql = (std::string)"SELECT * from fact_table_" + agent
-                + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
-                + "' and predicate='" + boost::lexical_cast<std::string>(it->property)
-                + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
+	if(it->subjectId == "NULL"){
+		sql = (std::string)"SELECT * from fact_table_" + agent
+		        + " where predicate='" + boost::lexical_cast<std::string>(it->property)
+		        + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
 
-        if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error l1857: %s\n", zErrMsg);
-            sqlite3_free(zErrMsg);
-        } else {
-            // fprintf(stdout, "Current fact value from robot obtained successfully\n");
-        }
+		if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+		    fprintf(stderr, "SQL error l1857: %s\n", zErrMsg);
+		    sqlite3_free(zErrMsg);
+		} else {
+		    // fprintf(stdout, "Current fact value from robot obtained successfully\n");
+		}
 
-        //return informations from table
-        if (myFactList.empty()) {
-            return false;
+		//return informations from table
+		if (!myFactList.empty()) {
+		    return false;
+		}
 
-        }
-        myFactList = std::vector<toaster_msgs::Fact>(); //empty myFactList
+	}else if(it->targetId == "NULL"){
+		sql = (std::string)"SELECT * from fact_table_" + agent
+		        + " where predicate='" + boost::lexical_cast<std::string>(it->property)
+		        + "' and subject_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
+
+		if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+		    fprintf(stderr, "SQL error l1857: %s\n", zErrMsg);
+		    sqlite3_free(zErrMsg);
+		} else {
+		    // fprintf(stdout, "Current fact value from robot obtained successfully\n");
+		}
+
+		//return informations from table
+		if (!myFactList.empty()) {
+		    return false;
+		}
+
+	}else{
+		sql = (std::string)"SELECT * from fact_table_" + agent
+		        + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
+		        + "' and predicate='" + boost::lexical_cast<std::string>(it->property)
+		        + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
+
+		if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+		    fprintf(stderr, "SQL error l1857: %s\n", zErrMsg);
+		    sqlite3_free(zErrMsg);
+		} else {
+		    // fprintf(stdout, "Current fact value from robot obtained successfully\n");
+		}
+
+		//return informations from table
+		if (myFactList.empty()) {
+		    return false;
+		}
+	}
+	myFactList = std::vector<toaster_msgs::Fact>(); //empty myFactList
     }
 
     return true;
