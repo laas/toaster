@@ -30,7 +30,7 @@ void GazeboReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg) {
 
 	for (int i = 0; i < objectsName.size(); i++) {
 
-		if(objectsName[i] == "pr2" || objectsName[i] == "groud_plane"){
+		if(objectsName[i] == "pr2" || objectsName[i] == "ground_plane"){
 			//we ignore these objects
 			break;
 		}
