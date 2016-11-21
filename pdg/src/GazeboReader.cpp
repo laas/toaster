@@ -13,7 +13,7 @@ GazeboReader::GazeboReader(ros::NodeHandle& node, std::string topic) {
 
     sub_ = node.subscribe(topic, 1, &GazeboReader::CallbackObj, this);
 
-    ROS_INFO("[GazeboReader] done");
+    ROS_INFO("[GazeboReader] Initialized");
 }
 
 void GazeboReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg) {
@@ -32,7 +32,7 @@ void GazeboReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg) {
 
 		if(objectsName[i] == "pr2" || objectsName[i] == "ground_plane"){
 			//we ignore these objects
-			break;
+			continue;
 		}
 
 		// If this object is not assigned we have to allocate data.
