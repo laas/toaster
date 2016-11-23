@@ -193,6 +193,7 @@ void updateEntity(Entity& newPoseEnt, Entity* storedEntity) {
     ROS_INFO("UPDATE entity");
     storedEntity->position_ = newPoseEnt.getPosition();
     storedEntity->orientation_ = newPoseEnt.getOrientation();
+    storedEntity->setTime(newPoseEnt.getTime());
 }
 
 bool updateToasterSimu(Entity* storedEntity, std::string type) {
@@ -250,6 +251,8 @@ bool putAtJointPosition(Entity* storedEntity, std::string agentId, std::string j
                 storedEntity->orientation_[0] = roll;
                 storedEntity->orientation_[1] = pitch;
                 storedEntity->orientation_[2] = yaw;
+                
+                storedEntity->setTime(jointEntity.time);
 
                 (*itAgent).meAgent.hasObjects.push_back(storedEntity->getId());
                 (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
@@ -284,6 +287,8 @@ bool putAtJointPosition(Entity* storedEntity, std::string agentId, std::string j
                 storedEntity->position_.set<0>(jointEntity.pose.position.x);
                 storedEntity->position_.set<1>(jointEntity.pose.position.y);
                 storedEntity->position_.set<2>(jointEntity.pose.position.z);
+                
+                storedEntity->setTime(jointEntity.time);
 
                 tf::Quaternion q(jointEntity.pose.orientation.x, jointEntity.pose.orientation.y, jointEntity.pose.orientation.z, jointEntity.pose.orientation.w);
                 double roll, pitch, yaw;
@@ -395,6 +400,8 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
         tf::quaternionMsgToTF(req.pose.orientation, q);
         tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
 
+	     ros::Time now = ros::Time::now();
+	     newPoseEnt_.setTime(now.toNSec());
 
         newPoseEnt_.orientation_[0] = roll;
         newPoseEnt_.orientation_[1] = pitch;
