@@ -28,6 +28,9 @@ public:
 
 private:
     bool torso_;
+    double offset_x;
+    double offset_y;
+    double offset_z;
     ros::Subscriber subTorso_;
     ros::Subscriber subHead_;
     ros::Subscriber subHand_;

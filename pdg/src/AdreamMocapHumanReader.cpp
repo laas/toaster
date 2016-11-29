@@ -31,6 +31,16 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
     Human* curHuman;
     Joint* curJoint;
 
+    if (ros::param::get("mocap_calib_world_x",offset_x))
+    {
+        if (ros::param::get("mocap_calib_world_y",offset_y));
+            if (ros::param::get("mocap_calib_world_z",offset_z));
+    } else {
+        offset_x=0;
+        offset_y=0;
+        offset_z=0;
+    }
+
     try {
         std::string humId = "HERAKLES_HUMAN1";
         //create a new human with the same id as the message
@@ -51,9 +61,9 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
             if (!torso_) {
                 //set human position
                 bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
-                humanPosition.set<0>(msg->pos[0].x + 6.03);
-                humanPosition.set<1>(msg->pos[0].y + 3.01);
-                humanPosition.set<2>(msg->pos[0].z - 1.48);
+                humanPosition.set<0>(msg->pos[0].x + offset_x);
+                humanPosition.set<1>(msg->pos[0].y + offset_y);
+                humanPosition.set<2>(msg->pos[0].z + offset_z - 0.17);
 
                 //set the human orientation
                 std::vector<double> humanOrientation;
@@ -100,9 +110,9 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
             }
 
             bg::model::point<double, 3, bg::cs::cartesian> headPosition;
-            headPosition.set<0>(msg->pos[0].x + 6.03);
-            headPosition.set<1>(msg->pos[0].y + 3.01);
-            headPosition.set<2>(msg->pos[0].z);
+            headPosition.set<0>(msg->pos[0].x + offset_x);
+            headPosition.set<1>(msg->pos[0].y + offset_y);
+            headPosition.set<2>(msg->pos[0].z + offset_z);
             std::vector<double> headOrientation;
             headOrientation.push_back(roll);
             headOrientation.push_back(pitch);
@@ -128,6 +138,16 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
     Human* curHuman;
     Joint* curJoint;
 
+    if (ros::param::get("mocap_calib_world_x",offset_x))
+    {
+        if (ros::param::get("mocap_calib_world_y",offset_y));
+            if (ros::param::get("mocap_calib_world_z",offset_z));
+    } else {
+        offset_x=0;
+        offset_y=0;
+        offset_z=0;
+    }
+
     try {
 
         std::string humId = "HERAKLES_HUMAN1";
@@ -149,9 +169,9 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
 
         if (msg->pos.size() != 0) {
             bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
-            jointPosition.set<0>(msg->pos[0].x + 6.03);
-            jointPosition.set<1>(msg->pos[0].y + 3.01);
-            jointPosition.set<2>(msg->pos[0].z);
+            jointPosition.set<0>(msg->pos[0].x + offset_x);
+            jointPosition.set<1>(msg->pos[0].y + offset_y);
+            jointPosition.set<2>(msg->pos[0].z + offset_z);
 
             std::vector<double> jointOrientation;
 
@@ -185,7 +205,15 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
     Human* curHuman;
     Joint* curJoint;
     Joint* jointBase;
-
+    if (ros::param::get("mocap_calib_world_x",offset_x))
+    {
+        if (ros::param::get("mocap_calib_world_y",offset_y));
+            if (ros::param::get("mocap_calib_world_z",offset_z));
+    } else {
+        offset_x=0;
+        offset_y=0;
+        offset_z=0;
+    }
     try {
 
         std::string humId = "HERAKLES_HUMAN1";
@@ -212,9 +240,9 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
 
             //set human position
             bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
-            humanPosition.set<0>(msg->pos[0].x + 6.03);
-            humanPosition.set<1>(msg->pos[0].y + 3.01);
-            humanPosition.set<2>(msg->pos[0].z - 1.31);
+            humanPosition.set<0>(msg->pos[0].x + offset_x);
+            humanPosition.set<1>(msg->pos[0].y + offset_y);
+            humanPosition.set<2>(msg->pos[0].z + offset_z);
 
             //set the human orientation
             std::vector<double> humanOrientation;
@@ -262,9 +290,9 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
 
 
             bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
-            jointPosition.set<0>(msg->pos[0].x + 6.03);
-            jointPosition.set<1>(msg->pos[0].y + 3.01);
-            jointPosition.set<2>(msg->pos[0].z);
+            jointPosition.set<0>(msg->pos[0].x + offset_x);
+            jointPosition.set<1>(msg->pos[0].y + offset_y);
+            jointPosition.set<2>(msg->pos[0].z + offset_z);
 
 
 
