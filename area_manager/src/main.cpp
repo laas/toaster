@@ -441,7 +441,7 @@ bool publishAllAreas(toaster_msgs::Empty::Request &req,
 
 int main(int argc, char** argv) {
     // Set this in a ros service
-    const bool AGENT_FULL_CONFIG = false; //If false we will use only position and orientation
+    const bool AGENT_FULL_CONFIG = true; //If false we will use only position and orientation
 
     ros::init(argc, argv, "area_manager");
     ros::NodeHandle node;
@@ -510,6 +510,8 @@ int main(int argc, char** argv) {
         // Humans
         for (std::map<std::string, Human*>::iterator it = humanRd.lastConfig_.begin(); it != humanRd.lastConfig_.end(); ++it) {
             // We update area with human center
+            for(std::map<std::string, Joint*>::iterator it2 = it->second->skeleton_.begin() ; it2 != it->second->skeleton_.end() ; ++it2)
+                mapEntities_[it2->first]=it2->second;
             mapEntities_[it->first] = it->second;
             updateEntityArea(mapArea_, it->second);
         }
