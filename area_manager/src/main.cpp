@@ -15,6 +15,7 @@
 #include "toaster-lib/PolygonArea.h"
 #include "toaster-lib/MathFunctions.h"
 #include "toaster-lib/Object.h"
+#include "toaster-lib/Entity.h"
 #include <toaster_msgs/Fact.h>
 #include <toaster_msgs/FactList.h>
 #include <geometry_msgs/PolygonStamped.h>
@@ -24,7 +25,8 @@
 
 
 //namespace trans = bg::strategy::transform;
-typedef bg::model::point<double, 2, bg::cs::cartesian> point_type;
+typedef bg::model::point<double, 2, bg::cs::cartesian> point_type2d;
+typedef bg::model::point<double, 3, bg::cs::cartesian> point_type3d;
 //namespace bn = boost::numeric;
 
 // Vector of Area
@@ -59,11 +61,14 @@ void setAreaMsg(toaster_msgs::AreaList& areaList_msg) {
         if (it->second->getIsCircle()) {
             area.center.x = ((CircleArea*) it->second)->getCenter().get<0>();
             area.center.y = ((CircleArea*) it->second)->getCenter().get<1>();
+            area.center.z = ((CircleArea*) it->second)->getCenter().get<2>();
             area.ray = ((CircleArea*) it->second)->getRay();
-
+            area.height = ((CircleArea*) it->second)->getHeight();
         } else {
             //If it is a polygon
             area.poly = polygonToRos(it->first);
+            area.zmin = ((PolygonArea*) it->second)->z.get<0>();
+            area.zmax = ((PolygonArea*) it->second)->z.get<1>(); 
         }
 
         area.isCircle = it->second->getIsCircle();
@@ -136,13 +141,13 @@ bool areaCompatible(std::string areaEntType, EntityType entType) {
 void rotateTranslate(Entity* rotEnt, CircleArea* circleArea) {
 
     double theta = rotEnt->getOrientation()[2];
-    point_type newCenter;
-
+    point_type3d newCenter;
+    
     newCenter.set<0>(cos(theta) * circleArea->getCenterRelative().get<0>() - sin(theta) * circleArea->getCenterRelative().get<1>());
     newCenter.set<1>(sin(theta) * circleArea->getCenterRelative().get<0>() + cos(theta) * circleArea->getCenterRelative().get<1>());
-
     newCenter.set<0>(newCenter.get<0>() + rotEnt->getPosition().get<0>());
     newCenter.set<1>(newCenter.get<1>() + rotEnt->getPosition().get<1>());
+    newCenter.set<2>(circleArea->getCenterRelative().get<2>() + rotEnt->getPosition().get<2>());
     circleArea->setCenter(newCenter);
 }
 
@@ -161,13 +166,16 @@ void rotateTranslate(Entity* rotEnt, PolygonArea* polyArea) {
 
         polyPoints[i].set<0>(cos(theta) * polyPointsRelative[i].get<0>() - sin(theta) * polyPointsRelative[i].get<1>());
         polyPoints[i].set<1>(sin(theta) * polyPointsRelative[i].get<0>() + cos(theta) * polyPointsRelative[i].get<1>());
-
         polyPoints[i].set<0>(polyPoints[i].get<0>() + rotEnt->getPosition().get<0>());
         polyPoints[i].set<1>(polyPoints[i].get<1>() + rotEnt->getPosition().get<1>());
         bg::append(newPoly, polyPoints[i]);
 
     }
     polyArea->poly_ = newPoly;
+    double zmin = polyArea->getZRelative().get<0>() + rotEnt->getPosition().get<2>();
+    double zmax = polyArea->getZRelative().get<1>() + rotEnt->getPosition().get<2>();
+    polyArea->z = boost::make_tuple(zmin , zmax);
+    
 }
 
 void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
@@ -183,14 +191,17 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
     }
 }
 
+/**
 void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
+	//ROS_INFO("Inside the function");
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
         // if the entity is actually concerned, and is not the owner
+        //ROS_INFO("entity's type : %s, area's type : %s",areaCompatible(it->second->getEntityType().ToString("") ,ent->getEntityType().ToString(""));
         if (areaCompatible(it->second->getEntityType(), ent->getEntityType()) && it->second->getMyOwner() != ent->getId()) {
 
             // If we already know that entity is in Area, we update if needed.
             if (ent->isInArea(it->second->getId()))
-                if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition())))
+                if (it->second->isPointInArea(ent->getPosition()))
                     continue;
                 else {
                     printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
@@ -200,7 +211,7 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
                         ent->setRoomId(0);
                 }// Same if entity is not in Area
             else
-                if (it->second->isPointInArea(MathFunctions::convert3dTo2d(ent->getPosition()))) {
+                if (it->second->isPointInArea(ent->getPosition())) {
                 printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                 ent->inArea_.push_back(it->second->getId());
                 it->second->insideEntities_.push_back(ent->getId());
@@ -217,7 +228,43 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
         }
     }
 }
+**/
 
+void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
+	//ROS_INFO("Inside the function");
+    for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
+        // if the entity is actually concerned, and is not the owner
+        //ROS_INFO("entity's type : %s, area's type : %s",areaCompatible(it->second->getEntityType().ToString("") ,ent->getEntityType().ToString(""));
+        if (areaCompatible(it->second->getEntityType(), ent->getEntityType()) && it->second->getMyOwner() != ent->getId()) {
+
+            // If we already know that entity is in Area, we update if needed.
+            if (ent->isInArea(it->second->getId()))
+                if (it->second->isPointInArea(ent->getPosition(), ent->getId()))
+                    continue;
+                else {
+                    printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
+                    ent->removeInArea(it->second->getId());
+                    it->second->removeInsideEntity(ent->getId());
+                    if (it->second->getAreaType() == "room")
+                        ent->setRoomId(0);
+                }// Same if entity is not in Area
+            else
+                if (it->second->isPointInArea(ent->getPosition(),ent->getId())) {
+                printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
+                ent->inArea_.push_back(it->second->getId());
+
+                //User has to be in a room. May it be a "global room".
+                if (it->second->getAreaType() == "room")
+                    ent->setRoomId(it->second->getId());
+            } else {
+                //printf("[area_manager][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
+                continue;
+            }
+        } else {
+            continue;
+        }
+    }
+}
 // Return confidence: 0.0 if not facing 1.0 if facing
 
 double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold, double& angleResult) {
@@ -227,13 +274,15 @@ double isFacing(Entity* entFacing, Entity* entSubject, double angleThreshold, do
 void printMyArea(unsigned int id) {
     if (mapArea_[id]->getIsCircle())
         printf("Area name: %s, id: %d, owner id: %s, type %s, factType: %s \n"
-            "entityType: %s, isCircle: true, center: %f, %f, ray: %f\n", mapArea_[id]->getName().c_str(),
+            "entityType: %s, isCircle: true, center: %f, %f, %f, ray: %f, height: %f\n", mapArea_[id]->getName().c_str(),
             id, mapArea_[id]->getMyOwner().c_str(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str(),
-            ((CircleArea*) mapArea_[id])->getCenter().get<0>(), ((CircleArea*) mapArea_[id])->getCenter().get<1>(), ((CircleArea*) mapArea_[id])->getRay());
+            ((CircleArea*) mapArea_[id])->getCenter().get<0>(), ((CircleArea*) mapArea_[id])->getCenter().get<1>(),((CircleArea*) mapArea_[id])->getCenter().get<2>(),
+            ((CircleArea*) mapArea_[id])->getRay(), ((CircleArea*) mapArea_[id])->getHeight());
     else
         printf("Area name: %s, id: %d, owner id: %s, type %s, factType: %s \n"
-            "entityType: %s, isCircle: false\n", mapArea_[id]->getName().c_str(),
-            id, mapArea_[id]->getMyOwner().c_str(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str());
+            "entityType: %s, isCircle: false, zmin: %f, zmax: %f\n", mapArea_[id]->getName().c_str(),
+            id, mapArea_[id]->getMyOwner().c_str(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str(), 
+            ((PolygonArea*) mapArea_[id])->getZmin(), ((PolygonArea*) mapArea_[id])->getZmax());
 
     printf("inside entities: ");
     for (int i = 0; i < mapArea_[id]->insideEntities_.size(); i++)
@@ -241,6 +290,7 @@ void printMyArea(unsigned int id) {
 
     printf("\n--------------------------\n");
 }
+
 
 unsigned int getFreeId(std::map<unsigned int, Area*>& map) {
     unsigned int i = 1;
@@ -272,9 +322,8 @@ bool addArea(toaster_msgs::AddArea::Request &req,
 
     //If it is a circle area
     if (req.myArea.isCircle) {
-        bg::model::point<double, 2, bg::cs::cartesian> center(req.myArea.center.x, req.myArea.center.y);
-
-        CircleArea* myCircle = new CircleArea(id, center, req.myArea.ray);
+        bg::model::point<double, 3, bg::cs::cartesian> center(req.myArea.center.x, req.myArea.center.y, req.myArea.center.z);
+        CircleArea* myCircle = new CircleArea(id, center, req.myArea.ray, req.myArea.height, req.myArea.enterHysteresis, req.myArea.leaveHysteresis);
         curArea = myCircle;
     } else {
         //If it is a polygon
@@ -284,7 +333,8 @@ bool addArea(toaster_msgs::AddArea::Request &req,
             pointsPoly[i][1] = req.myArea.poly.points[i].y;
         }
 
-        PolygonArea* myPoly = new PolygonArea(id, pointsPoly, req.myArea.poly.points.size());
+        PolygonArea* myPoly = new PolygonArea(id, pointsPoly, req.myArea.poly.points.size(), req.myArea.zmin, req.myArea.zmax, req.myArea.enterHysteresis, req.myArea.leaveHysteresis);
+        
         curArea = myPoly;
     }
 
@@ -593,8 +643,8 @@ int main(int argc, char** argv) {
                             double angleResult = 0.0;
                             confidence = isFacing(itEntity->second, ownerEnt, 0.5, angleResult);
                             if (confidence > 0.0) {
-                                printf("[area_manager][DEBUG] %s is facing %s with confidence %f, angleResult %f\n",
-                                        itEntity->second->getName().c_str(), ownerEnt->getName().c_str(), confidence, angleResult);
+                                //printf("[area_manager][DEBUG] %s is facing %s with confidence %f, angleResult %f\n",
+                                       // itEntity->second->getName().c_str(), ownerEnt->getName().c_str(), confidence, angleResult);
 
                                 //Fact Facing
                                 fact_msg.property = "IsFacing";
