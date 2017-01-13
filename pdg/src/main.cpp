@@ -536,13 +536,6 @@ int main(int argc, char** argv) {
         toaster_msgs::HumanListStamped humanList_msg;
         toaster_msgs::RobotListStamped robotList_msg;
         toaster_msgs::FactList factList_msg;
-        toaster_msgs::Fact fact_msg;
-        toaster_msgs::Object object_msg;
-        toaster_msgs::Human human_msg;
-        toaster_msgs::Robot robot_msg;
-        toaster_msgs::Joint joint_msg;
-
-
 
         //update data
 
@@ -570,6 +563,7 @@ int main(int argc, char** argv) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 if (morseHumanRd.isPresent(it->first)) {
+                    toaster_msgs::Fact fact_msg;
 
                     //Fact
                     fact_msg.property = "isPresent";
@@ -584,6 +578,7 @@ int main(int argc, char** argv) {
 
 
                     //Human
+                    toaster_msgs::Human human_msg;
                     fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
 
@@ -596,6 +591,7 @@ int main(int argc, char** argv) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 if (mocapHumanRd.isPresent(it->first)) {
+                    toaster_msgs::Fact fact_msg;
 
                     //Fact
                     fact_msg.property = "isPresent";
@@ -609,6 +605,7 @@ int main(int argc, char** argv) {
                     factList_msg.factList.push_back(fact_msg);
 
                     //Human
+                    toaster_msgs::Human human_msg;
                     fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
 
@@ -621,6 +618,7 @@ int main(int argc, char** argv) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 if (adreamMocapHumanRd.isPresent(it->first)) {
+                    toaster_msgs::Fact fact_msg;
 
                     //Fact
                     fact_msg.property = "isPresent";
@@ -634,10 +632,12 @@ int main(int argc, char** argv) {
                     factList_msg.factList.push_back(fact_msg);
 
                     //Human
+                    toaster_msgs::Human human_msg;
                     fillEntity(it->second, human_msg.meAgent.meEntity);
 
                     //if (humanFullConfig_) {
                     for (std::map<std::string, Joint*>::iterator itJoint = adreamMocapHumanRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != adreamMocapHumanRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                        toaster_msgs::Joint joint_msg;
                         human_msg.meAgent.skeletonNames.push_back(itJoint->first);
                         fillEntity((itJoint->second), joint_msg.meEntity);
                         joint_msg.jointOwner = it->first;
@@ -657,6 +657,7 @@ int main(int argc, char** argv) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 if (groupHumanRd.isPresent(it->first)) {
+                    toaster_msgs::Fact fact_msg;
 
                     //Fact
                     fact_msg.property = "isPresent";
@@ -670,6 +671,7 @@ int main(int argc, char** argv) {
                     factList_msg.factList.push_back(fact_msg);
 
                     //Human
+                    toaster_msgs::Human human_msg;
                     fillEntity(it->second, human_msg.meAgent.meEntity);
                     humanList_msg.humanList.push_back(human_msg);
                 }
@@ -684,9 +686,14 @@ int main(int argc, char** argv) {
 
 
                 //Human
+                toaster_msgs::Human human_msg;
                 fillEntity(it->second, human_msg.meAgent.meEntity);
 
+                human_msg.meAgent.skeletonJoint.clear();
+                human_msg.meAgent.skeletonNames.clear();
+
                 for (std::map<std::string, Joint*>::iterator itJoint = toasterSimuHumanRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != toasterSimuHumanRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                    toaster_msgs::Joint joint_msg;
                     human_msg.meAgent.skeletonNames.push_back(itJoint->first);
                     fillEntity((itJoint->second), joint_msg.meEntity);
                     joint_msg.jointOwner = it->first;
@@ -712,6 +719,7 @@ int main(int argc, char** argv) {
                     updateEntity(newPoseEnt_, it->second);
                 //if (pr2RobotRd.isPresent(it->first)) {
 
+                toaster_msgs::Fact fact_msg;
 
                 //Fact
                 fact_msg.property = "isPresent";
@@ -727,12 +735,14 @@ int main(int argc, char** argv) {
 
 
                 //Robot
+                toaster_msgs::Robot robot_msg;
                 robot_msg.meAgent.mobility = 0;
                 fillEntity(pr2RobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
                 if (robotFullConfig_) {
                     for (std::map<std::string, Joint *>::iterator itJoint = pr2RobotRd.lastConfig_[it->first]->skeleton_.begin();
                          itJoint != pr2RobotRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                        toaster_msgs::Joint joint_msg;
                         robot_msg.meAgent.skeletonNames.push_back(itJoint->first);
                         fillEntity((itJoint->second), joint_msg.meEntity);
 
@@ -752,6 +762,7 @@ int main(int argc, char** argv) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 //if (spencerRobotRd.isPresent(it->first)) {
+                toaster_msgs::Fact fact_msg;
 
                 //Fact
                 fact_msg.property = "isPresent";
@@ -766,6 +777,7 @@ int main(int argc, char** argv) {
                 factList_msg.factList.push_back(fact_msg);
 
                 //Robot
+                toaster_msgs::Robot robot_msg;
                 robot_msg.meAgent.mobility = 0;
                 fillEntity(spencerRobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
@@ -792,6 +804,7 @@ int main(int argc, char** argv) {
                 if (newPoseEnt_.getId() == it->first)
                     updateEntity(newPoseEnt_, it->second);
                 //if (toasterSimuRobotRd.isPresent(it->first)) {
+                toaster_msgs::Fact fact_msg;
 
 
                 //Fact
@@ -808,12 +821,14 @@ int main(int argc, char** argv) {
 
 
                 //Robot
+                toaster_msgs::Robot robot_msg;
                 robot_msg.meAgent.mobility = 0;
                 fillEntity(toasterSimuRobotRd.lastConfig_[it->first], robot_msg.meAgent.meEntity);
 
                 if (robotFullConfig_) {
                     for (std::map<std::string, Joint *>::iterator itJoint = toasterSimuRobotRd.lastConfig_[it->first]->skeleton_.begin();
                          itJoint != toasterSimuRobotRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                        toaster_msgs::Joint joint_msg;
                         robot_msg.meAgent.skeletonNames.push_back(itJoint->first);
                         fillEntity((itJoint->second), joint_msg.meEntity);
 
@@ -859,6 +874,7 @@ int main(int argc, char** argv) {
                         }
 
                     if (addFactHand) {
+                        toaster_msgs::Fact fact_msg;
 
                         //Fact message
                         fact_msg.property = "IsInHand";
@@ -879,6 +895,7 @@ int main(int argc, char** argv) {
 
                 }
                 //Message for object
+                toaster_msgs::Object object_msg;
                 fillEntity(it->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
             }
@@ -918,6 +935,7 @@ int main(int argc, char** argv) {
                 // For each fact we determine its value according to the oBIX XML received from OM2M
                 for (std::vector<std::string>::iterator ite = factNames.begin(); ite != factNames.end(); ++ite) {
                     //Fact message
+                    toaster_msgs::Fact fact_msg;
                     fact_msg.property = *ite;
                     fact_msg.propertyType = "iot";
                     fact_msg.subjectId = it->first;
@@ -949,6 +967,7 @@ int main(int argc, char** argv) {
                 }
 
                 //Message for object
+                toaster_msgs::Object object_msg;
                 fillValue(static_cast<MovableIoTObject*>(it->second), object_msg);
                 fillEntity(it->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
@@ -979,6 +998,7 @@ int main(int argc, char** argv) {
 
                     if (addFactHand) {
 
+                        toaster_msgs::Fact fact_msg;
                         //Fact message
                         fact_msg.property = "IsInHand";
                         fact_msg.propertyType = "position";
@@ -999,6 +1019,7 @@ int main(int argc, char** argv) {
                 }
 
                 //Message for object
+                toaster_msgs::Object object_msg;
                 fillEntity(it->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
 
