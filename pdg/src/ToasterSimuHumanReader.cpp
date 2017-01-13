@@ -54,6 +54,7 @@ void ToasterSimuHumanReader::humanJointStateCallBack(const toaster_msgs::HumanLi
         curHuman->setOrientation(humanOrientation);
 
         lastConfig_[curHuman->getId()] = curHuman;
+        lastConfig_[curHuman->getId()]->skeleton_.clear();
 
         //TODO: fullHuman
         if (msg->humanList[i].meAgent.skeletonJoint.size() > 0) {
