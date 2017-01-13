@@ -5,6 +5,7 @@
 #include "pdg/GroupHumanReader.h"
 #include "pdg/MocapHumanReader.h"
 #include "pdg/AdreamMocapHumanReader.h"
+#include "pdg/PepperPeoplePerceptionHumanReader.h"
 #include "pdg/ToasterSimuHumanReader.h"
 
 // Robots
@@ -48,6 +49,7 @@ bool niutHuman_ = false;
 bool groupHuman_ = false;
 bool mocapHuman_ = false;
 bool adreamMocapHuman_ = false;
+bool pepperPeopleHuman_ = true;
 bool toasterSimuHuman_ = false;
 
 bool pr2Robot_ = false;
@@ -425,22 +427,31 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
 //////////////////
 // TF broadcast //
 //////////////////
-void broadcastTfEntity(tf::TransformBroadcaster &tf_br,toaster_msgs::Entity &entity,const std::string &prefix,ros::Time &stamp){
+void broadcastTfEntity(tf::TransformBroadcaster &tf_br,toaster_msgs::Entity &entity,const std::string &prefix,ros::Time &stamp,tf::StampedTransform *parent=NULL){
     geometry_msgs::Pose &pose=entity.pose;
     tf::Transform transform;
+    std::string base_name="map";
     transform.setOrigin(tf::Vector3(pose.position.x,pose.position.y,pose.position.z));
     transform.setRotation(tf::Quaternion(pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w));
-    tf_br.sendTransform(tf::StampedTransform(transform,stamp,"map",prefix+"/"+entity.id));
+    if(parent){
+        transform = parent->inverse() * transform;
+        base_name = parent->child_frame_id_;
+    }
+    tf_br.sendTransform(tf::StampedTransform(transform,stamp,base_name,prefix+"/"+entity.id));
 }
 void broadcastTfAgent(tf::TransformBroadcaster &tf_br,toaster_msgs::Agent &agent,const std::string &prefix,ros::Time &stamp){
     geometry_msgs::Pose &pose=agent.meEntity.pose;
+    std::string base_name;
     tf::Transform transform;
+    tf::StampedTransform stamped;
     transform.setOrigin(tf::Vector3(pose.position.x,pose.position.y,pose.position.z));
     transform.setRotation(tf::Quaternion(pose.orientation.x,pose.orientation.y,pose.orientation.z,pose.orientation.w));
-    tf_br.sendTransform(tf::StampedTransform(transform,stamp,"map",prefix+agent.meEntity.id+"/base"));
+    base_name=prefix+agent.meEntity.id+"/base";
+    stamped=tf::StampedTransform(transform,stamp,"map",base_name);
+    tf_br.sendTransform(stamped);
 
     for(uint i_jnt=0;i_jnt<agent.skeletonJoint.size();++i_jnt){
-        broadcastTfEntity(tf_br,agent.skeletonJoint[i_jnt].meEntity,prefix+"/"+agent.meEntity.id,stamp);
+        broadcastTfEntity(tf_br,agent.skeletonJoint[i_jnt].meEntity,prefix+"/sonof/"+agent.meEntity.id,stamp,&stamped);
     }
 }
 
@@ -451,6 +462,7 @@ int main(int argc, char** argv) {
     ros::NodeHandle node;
 
     tf::TransformBroadcaster tf_br;
+    std::string tf_br_prefix;
 
 
     //Set params to select input
@@ -464,6 +476,8 @@ int main(int argc, char** argv) {
         node.getParam("/pdg/mocapHuman", mocapHuman_);
     if (node.hasParam("/pdg/adreamMocapHuman"))
         node.getParam("/pdg/adreamMocapHuman", adreamMocapHuman_);
+    if (node.hasParam("/pdg/pepperPeopleHuman"))
+        node.getParam("/pdg/pepperPeopleHuman", pepperPeopleHuman_);
     if (node.hasParam("/pdg/toasterSimuHuman"))
         node.getParam("/pdg/toasterSimuHuman", toasterSimuHuman_);
 
@@ -483,6 +497,8 @@ int main(int argc, char** argv) {
         node.getParam("/pdg/OM2MObjectReader", om2mObject_);
 
 
+    tf_br_prefix = node.param<std::string>("/pdg/tfPubPrefix","");
+
 
     //Data reading
     GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
@@ -490,7 +506,9 @@ int main(int argc, char** argv) {
     //NiutHumanReader niutHumanRd()
     MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
     AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
+    PepperPeoplePerceptionHumanReader pepperPeopleHumanRd(node);
     ToasterSimuHumanReader toasterSimuHumanRd(node);
+
 
     Pr2RobotReader pr2RobotRd(node, robotFullConfig_);
     SpencerRobotReader spencerRobotRd(robotFullConfig_);
@@ -647,6 +665,47 @@ int main(int argc, char** argv) {
                     }
                     //}
                     humanList_msg.humanList.push_back(human_msg);
+                }
+            }
+        }
+
+        if(pepperPeopleHuman_){
+            for (std::map<std::string, Human*>::iterator it = pepperPeopleHumanRd.lastConfig_.begin(); it != pepperPeopleHumanRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first)
+                    updateEntity(newPoseEnt_, it->second);
+                if (pepperPeopleHumanRd.isPresent(it->first)) {
+                    toaster_msgs::Fact fact_msg;
+
+                    //Fact
+                    fact_msg.property = "isPresent";
+                    fact_msg.subjectId = it->first;
+                    fact_msg.stringValue = "true";
+                    fact_msg.confidence = 0.90;
+                    fact_msg.factObservability = 1.0;
+                    fact_msg.time = it->second->getTime();
+                    fact_msg.valueType = 0;
+
+                    factList_msg.factList.push_back(fact_msg);
+
+                    //Human
+                    toaster_msgs::Human human_msg;
+                    fillEntity(it->second, human_msg.meAgent.meEntity);
+
+                    //if (humanFullConfig_) {
+                    for (std::map<std::string, Joint*>::iterator itJoint = it->second->skeleton_.begin();
+                         itJoint != it->second->skeleton_.end(); ++itJoint)
+                    {
+                        toaster_msgs::Joint joint_msg;
+                        human_msg.meAgent.skeletonNames.push_back(itJoint->first);
+                        fillEntity((itJoint->second), joint_msg.meEntity);
+                        joint_msg.jointOwner = it->first;
+
+                        human_msg.meAgent.skeletonJoint.push_back(joint_msg);
+                    }
+                    //}
+                    humanList_msg.humanList.push_back(human_msg);
+                }else{
+                    ROS_DEBUG("not present");
                 }
             }
         }

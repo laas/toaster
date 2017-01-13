@@ -46,6 +46,7 @@
   <build_depend> spencer_tracking_msgs </build_depend>
   <build_depend> niut_msgs </build_depend>
   <build_depend> toaster_msgs </build_depend>
+  <build_depend> nao_interaction_msgs</build_depend>
   <build_depend> message_generation </build_depend>
   <build_depend> tf </build_depend>
   <build_depend>tinyxml</build_depend>
@@ -58,6 +59,7 @@
   <run_depend> message_generation </run_depend>
   <run_depend> niut_msgs </run_depend>
   <run_depend> toaster_msgs </run_depend>
+  <run_depend> nao_interaction_msgs</run_depend>
   <run_depend> message_runtime </run_depend>
   <run_depend> tf </run_depend>
   <run_depend>tinyxml</run_depend>
