@@ -2142,6 +2142,35 @@ bool plot_facts_db(toaster_msgs::PlotFactsDB::Request &req, toaster_msgs::PlotFa
     }
 }
 
+////////////////////////////////////////////
+/////////TO LOAD and SAVE the database///////
+////////////////////////////////////////////
+bool load_save_db(toaster_msgs::LoadSaveDB::Request &req, toaster_msgs::LoadSaveDB::Response &res)
+{
+  int rc;                   /* Function return code */
+  sqlite3 *pFile;           /* Database connection opened on zFilename */
+  sqlite3_backup *pBackup;  /* Backup object used to copy data */
+  sqlite3 *pTo;             /* Database to copy to (pFile or pInMemory) */
+  sqlite3 *pFrom;           /* Database to copy from (pFile or pInMemory) */
+  std::string const fileName = boost::lexical_cast<std::string>(req.fileName);
+  rc = sqlite3_open(fileName.c_str(), &pFile);
+  if( rc==SQLITE_OK ){
+
+   pFrom = (req.toSave ? database : pFile);
+    pTo   = (req.toSave ? pFile     : database);
+	pBackup = sqlite3_backup_init(pTo, "main", pFrom, "main");
+    if( pBackup ){
+      (void)sqlite3_backup_step(pBackup, -1);
+      (void)sqlite3_backup_finish(pBackup);
+    }
+    rc = sqlite3_errcode(pTo);
+  }
+  (void)sqlite3_close(pFile);
+  res.sqlstatus = rc;
+  return true;
+	
+	
+}
 
 ////////////////////////////////////////////
 /////////TO LOAD and SAVE the database///////
