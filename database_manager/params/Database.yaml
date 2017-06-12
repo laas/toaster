@@ -1,7 +1,8 @@
 ---
 database:
    area_manager: true
-   agent_monitor: true
+   agent_monitor: false
    move3d_facts: true
-   pdg_facts: true
+   pdg_facts: false
    mainAgent: 'PR2_ROBOT'
+   publishInTopic: true

@@ -1,3 +1,5 @@
 ---
 pdg:
-    arObject : true
+    arObjectReader : true
+    gazeboObjectReader: true
+    OM2MObjectReader: false

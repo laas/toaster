@@ -41,6 +41,8 @@ add_message_files(
    Event.msg
    Ontology.msg
    Id.msg
+   DatabaseTable.msg
+   DatabaseTables.msg
 )
 
 # Generate services in the 'srv' folder
