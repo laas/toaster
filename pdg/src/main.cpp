@@ -16,7 +16,7 @@
 #include "pdg/ToasterSimuObjectReader.h"
 #include "pdg/ArObjectReader.h"
 #include "pdg/OM2MObjectReader.h"
-#include "pdg/GazeboReader.h"
+#include "pdg/GazeboObjectReader.h"
 
 // Facts
 
@@ -476,7 +476,7 @@ int main(int argc, char** argv) {
 
     ArObjectReader arObjectRd(node, "ar_visualization_marker");
     OM2MObjectReader om2mObjectRd(node, "/iot_updates_with_coordinates");
-    GazeboReader gazeboRd(node, "/gazebo/model_states");
+    GazeboObjectReader gazeboRd(node, "/gazebo/model_states");
     ToasterSimuObjectReader toasterSimuObjectRd(node);
 
 

@@ -1,12 +1,12 @@
 /* 
- * File:   GazeboReader.h
+ * File:   GazeboObjectReader.h
  * Author: Sandra Devin
  *
  * Created on November, 2016
  */
 
-#ifndef GAZEBOREADER
-#define GAZEBOREADER
+#ifndef GAZEBOOBJECTREADER
+#define GAZEBOOBJECTREADER
 
 //This class reads topic from Ar_track_alvar and converts data into toaster-lib type.
 
@@ -19,10 +19,10 @@
 #include <sys/time.h>
 #include <ostream>
 
-class GazeboReader : public ObjectReader {
+class GazeboObjectReader : public ObjectReader {
 	
 public:
-    GazeboReader(ros::NodeHandle& node, std::string topic);
+    GazeboObjectReader(ros::NodeHandle& node, std::string topic);
 
 private:
     ros::Subscriber sub_;
@@ -30,5 +30,5 @@ private:
     void CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg);   
 };
 
-#endif	/* GAZEBOREADER */
+#endif	/* GAZEBOOBJECTREADER */
 

@@ -1,22 +1,22 @@
 /*
- * File:   GazeboReader.cpp
+ * File:   GazeboObjectReader.cpp
  * Author: Sandra Devin
  *
  * Created on November, 2016
  */
 
-#include "pdg/GazeboReader.h"
+#include "pdg/GazeboObjectReader.h"
 
-GazeboReader::GazeboReader(ros::NodeHandle& node, std::string topic) {
+GazeboObjectReader::GazeboObjectReader(ros::NodeHandle& node, std::string topic) {
 
-    ROS_INFO("[GazeboReader] Initializing");
+    ROS_INFO("[GazeboObjectReader] Initializing");
 
-    sub_ = node.subscribe(topic, 1, &GazeboReader::CallbackObj, this);
+    sub_ = node.subscribe(topic, 1, &GazeboObjectReader::CallbackObj, this);
 
-    ROS_INFO("[GazeboReader] Initialized");
+    ROS_INFO("[GazeboObjectReader] Initialized");
 }
 
-void GazeboReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg) {
+void GazeboObjectReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg) {
 
 	ros::Time now = ros::Time::now();
 	MovableObject* curObject;
@@ -24,7 +24,7 @@ void GazeboReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg) {
 	std::vector<geometry_msgs::Pose> objectsPose = msg->pose;
 
 	if(objectsName.size() != objectsPose.size()){
-		ROS_ERROR("[GazeboReader] Topic msg invalid: nb of objects diff from nb of poses!");
+		ROS_ERROR("[GazeboObjectReader] Topic msg invalid: nb of objects diff from nb of poses!");
 		return;
 	}
 
