@@ -2376,8 +2376,10 @@ void conceptual_perspective_taking() {
     for (int i = 1; i < agentList.size(); i++) {
         response = get_current_facts_from_agent_db(agentList[i]);
         for (int y = 0; y < response.second.factList.size(); y++) {
+            toTest.push_back(response.second.factList[y]);
             if (!are_in_table_db(mainAgent, toTest)) {
-                if (isVisibleBy(response.second.factList[y].subjectId, agentList[i]) && isVisibleBy(response.second.factList[y].targetId, agentList[i])) {
+                if ((response.second.factList[y].property == "isVisibleBy" && response.second.factList[y].targetId == agentList[i]) 
+                || (isVisibleBy(response.second.factList[y].subjectId, agentList[i]) && isVisibleBy(response.second.factList[y].targetId, agentList[i]))) {
                     toRm.push_back(response.second.factList[y]);
                 }
             }
