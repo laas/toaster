@@ -256,7 +256,7 @@ bool putAtJointPosition(Entity* storedEntity, std::string agentId, std::string j
                 storedEntity->orientation_[0] = roll;
                 storedEntity->orientation_[1] = pitch;
                 storedEntity->orientation_[2] = yaw;
-                
+
                 storedEntity->setTime(jointEntity.time);
 
                 (*itAgent).meAgent.hasObjects.push_back(storedEntity->getId());
@@ -292,7 +292,7 @@ bool putAtJointPosition(Entity* storedEntity, std::string agentId, std::string j
                 storedEntity->position_.set<0>(jointEntity.pose.position.x);
                 storedEntity->position_.set<1>(jointEntity.pose.position.y);
                 storedEntity->position_.set<2>(jointEntity.pose.position.z);
-                
+
                 storedEntity->setTime(jointEntity.time);
 
                 tf::Quaternion q(jointEntity.pose.orientation.x, jointEntity.pose.orientation.y, jointEntity.pose.orientation.z, jointEntity.pose.orientation.w);
@@ -907,62 +907,55 @@ int main(int argc, char** argv) {
         }
 
         if (om2mObject_) {
-            for (std::map<std::string, MovableObject *>::iterator it = om2mObjectRd.lastConfig_.begin();
-                 it != om2mObjectRd.lastConfig_.end(); ++it) {
-                if (newPoseEnt_.getId() == it->first) {
-                    updateEntity(newPoseEnt_, it->second);
+            for (std::map<std::string, MovableObject *>::iterator it_obj = om2mObjectRd.lastConfig_.begin();
+                 it_obj != om2mObjectRd.lastConfig_.end(); ++it_obj)
+            {
+                if (newPoseEnt_.getId() == it_obj->first)
+                {
+                    updateEntity(newPoseEnt_, it_obj->second);
                     //Reset newPoseEnt_
                     newPoseEnt_.setId("");
                 }
-
-                // Parser for the oBIX XML received from OM2M
-                TiXmlDocument XMLDoc;
-                XMLDoc.Parse((static_cast<MovableIoTObject*>(it->second))->getValue().c_str(), 0, TIXML_ENCODING_UTF8);
-
-                if(XMLDoc.Error())
-                {
-                    ROS_WARN_ONCE("Error while loading xml");
-                    ROS_WARN_ONCE("error #%d: %s", XMLDoc.ErrorId(), XMLDoc.ErrorDesc());
-                    return -1;
-                }
-
-                TiXmlHandle hdl(&XMLDoc);
-                TiXmlElement *elem = hdl.FirstChild("obj").FirstChildElement().Element();
 
                 std::string value_name;
                 std::string value_value;
 
                 // The names of the facts related to the current object
                 std::vector<std::string> factNames;
-                factNames = loadPropertiesFromXml(it->first);
+                factNames = loadPropertiesFromXml(it_obj->first);
+
+                std::string ae_data = (static_cast<MovableIoTObject*>(it_obj->second))->getValue().c_str();
 
                 // For each fact we determine its value according to the oBIX XML received from OM2M
-                for (std::vector<std::string>::iterator ite = factNames.begin(); ite != factNames.end(); ++ite) {
+                for (std::vector<std::string>::iterator it_fact = factNames.begin(); it_fact != factNames.end(); ++it_fact)
+                {
                     //Fact message
                     toaster_msgs::Fact fact_msg;
-                    fact_msg.property = *ite;
+                    fact_msg.property = *it_fact;
                     fact_msg.propertyType = "iot";
-                    fact_msg.subjectId = it->first;
+                    fact_msg.subjectId = it_obj->first;
                     fact_msg.confidence = 1.0;
                     // We can not know if the human has seen the value of the iot object
                     fact_msg.factObservability = 0.5;
-                    fact_msg.time = it->second->getTime();
+                    fact_msg.time = it_obj->second->getTime();
                     fact_msg.valueType = 0;
 
                     bool value_found = false;
-                    while (elem && !value_found) { //for each element of the xml file
-                        value_name = elem->Attribute("name");
-                        value_value = elem->Attribute("val");
+                    size_t ref_pos = 0;
+                    while((ae_data.find(" : ", ref_pos) != std::string::npos) && !value_found)
+                    {
+                      size_t begin_pos = ae_data.find(" : ", ref_pos);
+                      size_t middle_pos = ae_data.find("=", begin_pos);
+                      size_t end_pos = ae_data.find(" / ", middle_pos);
+                      value_name = ae_data.substr(begin_pos + 3, middle_pos - begin_pos - 3);
+                      value_value = ae_data.substr(middle_pos + 1, end_pos - middle_pos - 1);
+                      ref_pos = end_pos;
 
-                        // We fetch the corresponding value as described the configuration file rules
-                        fact_msg.stringValue = loadValueFromXmlAsString(it->first, *ite, value_name, value_value);
+                      fact_msg.stringValue = loadValueFromXmlAsString(it_obj->first, *it_fact, value_name, value_value);
 
-                        // When there is a match we stop parsing
-                        if (!fact_msg.stringValue.empty()) {
-                            value_found = true;
-
-                        }
-                        elem = elem->NextSiblingElement();
+                      // When there is a match we stop parsing
+                      if (!fact_msg.stringValue.empty())
+                          value_found = true;
                     }
 
                     // We add the fact to the list
@@ -972,8 +965,8 @@ int main(int argc, char** argv) {
 
                 //Message for object
                 toaster_msgs::Object object_msg;
-                fillValue(static_cast<MovableIoTObject*>(it->second), object_msg);
-                fillEntity(it->second, object_msg.meEntity);
+                fillValue(static_cast<MovableIoTObject*>(it_obj->second), object_msg);
+                fillEntity(it_obj->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
             }
         }
@@ -1004,6 +997,7 @@ int main(int argc, char** argv) {
                     if (addFactHand) {
 
                         //Fact message
+                        toaster_msgs::Fact fact_msg;
                         fact_msg.property = "IsInHand";
                         fact_msg.propertyType = "position";
                         fact_msg.subProperty = "object";
@@ -1022,6 +1016,7 @@ int main(int argc, char** argv) {
 
                 }
                 //Message for object
+                toaster_msgs::Object object_msg;
                 fillEntity(it->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
             }
