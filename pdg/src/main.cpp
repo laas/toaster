@@ -997,6 +997,7 @@ int main(int argc, char** argv) {
                     if (addFactHand) {
 
                         //Fact message
+                        toaster_msgs::Fact fact_msg;
                         fact_msg.property = "IsInHand";
                         fact_msg.propertyType = "position";
                         fact_msg.subProperty = "object";
@@ -1015,6 +1016,7 @@ int main(int argc, char** argv) {
 
                 }
                 //Message for object
+                toaster_msgs::Object object_msg;
                 fillEntity(it->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
             }
