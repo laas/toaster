@@ -10,4 +10,5 @@ bool toasterSimuRobot
 bool toasterSimuObject
 bool arObject
 bool om2mObject
+bool gazeboObject
 ---

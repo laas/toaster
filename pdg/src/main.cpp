@@ -16,6 +16,7 @@
 #include "pdg/ToasterSimuObjectReader.h"
 #include "pdg/ArObjectReader.h"
 #include "pdg/OM2MObjectReader.h"
+#include "pdg/GazeboObjectReader.h"
 
 // Facts
 
@@ -57,6 +58,7 @@ bool toasterSimuRobot_ = false;
 bool toasterSimuObject_ = false;
 bool arObject_ = false;
 bool om2mObject_ = false;
+bool gazeboObject_ = false;
 
 std::map<std::string, std::string> objectInAgent_;
 std::map<std::string, std::string> objectInHand_;
@@ -339,6 +341,7 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     toasterSimuObject_ = req.toasterSimuObject;
     arObject_ = req.arObject;
     om2mObject_ = req.om2mObject;
+    gazeboObject_ = req.gazeboObject;
 
     ROS_INFO("[pdg] setting pdg input");
 
@@ -481,6 +484,8 @@ int main(int argc, char** argv) {
         node.getParam("/pdg/arObjectReader", arObject_);
     if (node.hasParam("/pdg/OM2MObjectReader"))
         node.getParam("/pdg/OM2MObjectReader", om2mObject_);
+    if (node.hasParam("/pdg/gazeboObjectReader"))
+        node.getParam("/pdg/gazeboObjectReader", gazeboObject_);
 
 
 
@@ -498,6 +503,7 @@ int main(int argc, char** argv) {
 
     ArObjectReader arObjectRd(node, "ar_visualization_marker");
     OM2MObjectReader om2mObjectRd(node, "/iot_updates_with_coordinates");
+    GazeboObjectReader gazeboRd(node, "/gazebo/model_states");
     ToasterSimuObjectReader toasterSimuObjectRd(node);
 
 
@@ -857,7 +863,6 @@ int main(int argc, char** argv) {
                     updateEntity(newPoseEnt_, it->second);
                     //Reset newPoseEnt_
                     newPoseEnt_.setId("");
-                    ROS_INFO("got true");
                 }
 
 
@@ -910,7 +915,6 @@ int main(int argc, char** argv) {
                     updateEntity(newPoseEnt_, it_obj->second);
                     //Reset newPoseEnt_
                     newPoseEnt_.setId("");
-                    ROS_INFO("got true");
                 }
 
                 std::string value_name;
@@ -963,6 +967,55 @@ int main(int argc, char** argv) {
                 toaster_msgs::Object object_msg;
                 fillValue(static_cast<MovableIoTObject*>(it_obj->second), object_msg);
                 fillEntity(it_obj->second, object_msg.meEntity);
+                objectList_msg.objectList.push_back(object_msg);
+            }
+        }
+
+
+        if (gazeboObject_) {
+            for (std::map<std::string, MovableObject *>::iterator it = gazeboRd.lastConfig_.begin();
+                 it != gazeboRd.lastConfig_.end(); ++it) {
+                if (newPoseEnt_.getId() == it->first) {
+                    updateEntity(newPoseEnt_, it->second);
+                    //Reset newPoseEnt_
+                    newPoseEnt_.setId("");
+                }
+
+
+                // If in hand, modify position:
+                if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
+                    bool addFactHand = true;
+                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
+                                            humanList_msg, true))
+                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
+                                                robotList_msg, true)) {
+                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n",
+                                     objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
+                            addFactHand = false;
+                        }
+
+                    if (addFactHand) {
+
+                        //Fact message
+                        fact_msg.property = "IsInHand";
+                        fact_msg.propertyType = "position";
+                        fact_msg.subProperty = "object";
+                        fact_msg.subjectId = it->first;
+                        fact_msg.targetId = objectInAgent_[it->first];
+                        fact_msg.targetOwnerId = objectInAgent_[it->first];
+                        fact_msg.confidence = 1.0;
+                        fact_msg.factObservability = 0.8;
+                        fact_msg.time = it->second->getTime();
+                        fact_msg.valueType = 0;
+                        fact_msg.stringValue = "true";
+
+
+                        factList_msg.factList.push_back(fact_msg);
+                    }
+
+                }
+                //Message for object
+                fillEntity(it->second, object_msg.meEntity);
                 objectList_msg.objectList.push_back(object_msg);
             }
         }

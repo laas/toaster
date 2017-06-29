@@ -20,6 +20,7 @@
 #include "toaster_msgs/Ontology.h"
 #include "toaster_msgs/Id.h"
 #include "toaster_msgs/FactList.h"
+#include "toaster_msgs/DatabaseTables.h"
 #include <fstream>
 
 std::vector<std::string> agentList;
@@ -40,6 +41,8 @@ ToasterFactReader* readerMove3d;
 ToasterFactReader* readerPdg;
 
 int nb_agents;
+
+toaster_msgs::DatabaseTables tables;
 
 //sqlite database's pointer
 sqlite3 *database;
@@ -308,6 +311,11 @@ void launchIdList(std::string IDList) {
             if (!testAgent.compare("'human'") || !testAgent.compare("'robot'")) //for each human or robot
             {
                 agentList.push_back((std::string)elem->Attribute("id"));
+                
+                toaster_msgs::DatabaseTable agentTable;
+                agentTable.agentName = (std::string)elem->Attribute("id");
+                agentTable.changed = true;
+                tables.tables.push_back(agentTable);
 
                 //we create one fact table
                 sql = (std::string)"CREATE TABLE fact_table_" + (std::string)elem->Attribute("id") + " (" +
@@ -480,6 +488,10 @@ bool add_entity_db(std::string id, std::string ownerId, std::string name, std::s
         } else {
             agentList.push_back(id);
             nb_agents++;
+            toaster_msgs::DatabaseTable agentTable;
+             agentTable.agentName = id;
+             agentTable.changed = true;
+             tables.tables.push_back(agentTable);
         }
     }
     sqlite3_free(zErrMsg);
@@ -597,6 +609,13 @@ bool add_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fact> 
         }
         myFactList = std::vector<toaster_msgs::Fact>();
     }
+    
+    for(std::vector<toaster_msgs::DatabaseTable>::iterator it = tables.tables.begin(); it != tables.tables.end(); it++){
+      if(it->agentName == agentId){
+         it->changed = true;
+      }
+    }
+    
     return true;
 }
 
@@ -793,6 +812,12 @@ bool remove_facts_to_agent_db(std::string agentId, std::vector<toaster_msgs::Fac
         }
 
         myFactList = std::vector<toaster_msgs::Fact>();
+    }
+    
+    for(std::vector<toaster_msgs::DatabaseTable>::iterator it = tables.tables.begin(); it != tables.tables.end(); it++){
+      if(it->agentName == agentId){
+         it->changed = true;
+      }
     }
 
     return true;
@@ -1645,25 +1670,64 @@ std::vector<std::string> are_in_table_indiv_db(std::string agent, std::vector<to
     std::vector<std::string> res;
 
     for (std::vector<toaster_msgs::Fact>::iterator it = facts.begin(); it != facts.end(); it++) {
-        sql = (std::string)"SELECT * from fact_table_" + agent
-                + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
-                + "' and predicate='" + boost::lexical_cast<std::string>(it->property)
-                + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
+         if(it->subjectId == "NULL"){
+		      sql = (std::string)"SELECT * from fact_table_" + agent
+		              + " where predicate='" + boost::lexical_cast<std::string>(it->property)
+		              + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
 
-        if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
-            fprintf(stderr, "SQL error l1857: %s\n", zErrMsg);
-            sqlite3_free(zErrMsg);
-        } else {
-            // fprintf(stdout, "Current fact value from robot obtained successfully\n");
-        }
+		      if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+		          fprintf(stderr, "SQL error l1857: %s\n", zErrMsg);
+		          sqlite3_free(zErrMsg);
+		      } else {
+		          // fprintf(stdout, "Current fact value from robot obtained successfully\n");
+		      }
 
-        //return informations from table
-        if (myFactList.empty()) {
+		      //return informations from table
+		      if (myFactList.empty()) {
+               res.push_back("true");
+           }else{
+               res.push_back("false");
+            }
+
+	   }else if(it->targetId == "NULL"){
+		   sql = (std::string)"SELECT * from fact_table_" + agent
+		           + " where predicate='" + boost::lexical_cast<std::string>(it->property)
+		           + "' and subject_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
+
+		   if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+		       fprintf(stderr, "SQL error l1857: %s\n", zErrMsg);
+		       sqlite3_free(zErrMsg);
+		   } else {
+		       // fprintf(stdout, "Current fact value from robot obtained successfully\n");
+		   }
+
+		   //return informations from table
+		   if (myFactList.empty()) {
+               res.push_back("true");
+           }else{
+               res.push_back("false");
+	         }
+	   }else{
+		   sql = (std::string)"SELECT * from fact_table_" + agent
+		           + " where subject_id='" + boost::lexical_cast<std::string>(it->subjectId) + boost::lexical_cast<std::string>(it->subjectOwnerId)
+		           + "' and predicate='" + boost::lexical_cast<std::string>(it->property)
+		           + "' and target_id='" + boost::lexical_cast<std::string>(it->targetId) + boost::lexical_cast<std::string>(it->targetOwnerId) + "';";
+
+		   if (sqlite3_exec(database, sql.c_str(), get_facts_callback, (void*) data, &zErrMsg) != SQLITE_OK) {
+		       fprintf(stderr, "SQL error l1857: %s\n", zErrMsg);
+		       sqlite3_free(zErrMsg);
+		   } else {
+		       // fprintf(stdout, "Current fact value from robot obtained successfully\n");
+		   }
+
+		   //return informations from table
+		   if (myFactList.empty()) {
             res.push_back("false");
         }else{
             res.push_back("true");
-	}
-        myFactList = std::vector<toaster_msgs::Fact>(); //empty myFactList
+         }
+	   }
+      myFactList = std::vector<toaster_msgs::Fact>(); //empty myFactList
     }
 
     return res;
@@ -1742,6 +1806,10 @@ void empty_database_db() {
         // ROS_INFO("SQL order obtained successfully\n");
     }
     
+    for(std::vector<toaster_msgs::DatabaseTable>::iterator it = tables.tables.begin(); it != tables.tables.end(); it++){
+      it->changed = true;
+    }
+    
     empty_database_planning_db();
     previousFactsState.clear();
 
@@ -1773,6 +1841,12 @@ void empty_database_for_agent_db(std::string agent) {
         sqlite3_free(zErrMsg);
     } else {
         // ROS_INFO("SQL order obtained successfully\n");
+    }
+    
+    for(std::vector<toaster_msgs::DatabaseTable>::iterator it = tables.tables.begin(); it != tables.tables.end(); it++){
+      if(it->agentName == agent){
+         it->changed = true;
+      }
     }
 
 }
@@ -1855,6 +1929,10 @@ bool reset_tables(std::string newIDTable) {
             //ROS_INFO("Opened id table successfully\n");
         }
 
+    }
+    
+    for(std::vector<toaster_msgs::DatabaseTable>::iterator it = tables.tables.begin(); it != tables.tables.end(); it++){
+         it->changed = true;
     }
 
     return true;
@@ -2302,8 +2380,10 @@ void conceptual_perspective_taking() {
     for (int i = 1; i < agentList.size(); i++) {
         response = get_current_facts_from_agent_db(agentList[i]);
         for (int y = 0; y < response.second.factList.size(); y++) {
+            toTest.push_back(response.second.factList[y]);
             if (!are_in_table_db(mainAgent, toTest)) {
-                if (isVisibleBy(response.second.factList[y].subjectId, agentList[i]) && isVisibleBy(response.second.factList[y].targetId, agentList[i])) {
+                if ((response.second.factList[y].property == "isVisibleBy" && response.second.factList[y].targetId == agentList[i]) 
+                || (isVisibleBy(response.second.factList[y].subjectId, agentList[i]) && isVisibleBy(response.second.factList[y].targetId, agentList[i]))) {
                     toRm.push_back(response.second.factList[y]);
                 }
             }
@@ -2503,16 +2583,34 @@ int main(int argc, char **argv) {
         }
     }
 
+    bool publishInTopic;
+    node.getParam("/database/publishInTopic", publishInTopic);
+    ros::Publisher tablesPublisher;
+    if(publishInTopic){
+         tablesPublisher = node.advertise<toaster_msgs::DatabaseTables>("/database_manager/tables", 1);
+    }
 
     ros::Rate loop_rate(30);
 
     while (ros::ok()) {
         //std::cout << "\n\n\n";
         //db.readDb();
+        ros::spinOnce();
         update_world_states(node, factsReaders);
         conceptual_perspective_taking();
+        if(publishInTopic){
+            for(std::vector<toaster_msgs::DatabaseTable>::iterator it = tables.tables.begin(); it != tables.tables.end(); it++){
+               if(it->changed){
+                  std::pair<bool, toaster_msgs::FactList> res = get_current_facts_from_agent_db(it->agentName);
+                  it->facts = res.second.factList;
+               }
+            }
+            tablesPublisher.publish(tables);
+            for(std::vector<toaster_msgs::DatabaseTable>::iterator it = tables.tables.begin(); it != tables.tables.end(); it++){
+               it->changed = false;
+            }
+        }
         loop_rate.sleep();
-        ros::spinOnce();
     }
 
     return 0;
