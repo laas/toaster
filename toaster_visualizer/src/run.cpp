@@ -116,7 +116,7 @@ public:
 
         // Objects
         std::stringstream pathObj;
-        pathObj << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
+        pathObj << ros::package::getPath("toaster_visualizer") << "/src/list_obj_demo.xml";
         listObj = TiXmlDocument(pathObj.str());
 
         if (!listObj.LoadFile()) {
@@ -137,7 +137,7 @@ public:
             ROS_WARN_ONCE("%s", listHuman.ErrorDesc());
         }
 
-        // Humans
+        // Joints
         std::stringstream pathHumanJoint;
         pathHumanJoint << ros::package::getPath("toaster_visualizer") << "/src/list_human_joints.xml";
         listJoint = TiXmlDocument(pathHumanJoint.str());
@@ -828,7 +828,7 @@ public:
 
         for (int i = 0; i < msg->objectList.size(); i++) {
             visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.pose,
-                    1, msg->objectList[i].meEntity.name);
+                    1, msg->objectList[i].meEntity.name); //1=scale
 
             if (printNames_) {
                 visualization_msgs::Marker mn = defineName(m);
@@ -839,12 +839,12 @@ public:
             }
             obj_list.markers.push_back(m);
 
-            ROS_DEBUG("obj %d", m.id);
+            //ROS_DEBUG("obj %d", m.id);
         }
         // extra object for environment
         geometry_msgs::Pose p;
-        p.position.x = 0.3;
-        p.position.y = 0.3;
+        p.position.x = 0.0;
+        p.position.y = 0.0;
         p.position.z = -0.05;
         p.orientation.w = 1.0;
         visualization_msgs::Marker m = defineObj(p, 1, "env");
@@ -904,7 +904,7 @@ public:
                 area_list.markers.push_back(m.markers[j]);
                 area_list.markers.push_back(mn.markers[j]);
               }
-               // ROS_DEBUG("poly %d", m.id);
+                //ROS_DEBUG("poly %d", m.id);
             }
 
         }

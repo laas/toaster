@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<list_obj>
+
+<object name="env"  				mesh_resource="package://toaster_visualizer/mesh/toaster_environment/adream_empty.dae" />
+<object name="/BBB_ADREAM_1/ETH_GW/PHG_FAN_11"                     mesh_resource="package://toaster_visualizer/mesh/toaster_objects/fan.3ds" />
+
+<object name="IKEA_chair_1"			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
+<object name="IKEA_chair_2"			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
+<object name="FAUTEUIL_1"		        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_armchair_EKTORP.dae" />
+<object name="FAUTEUIL_2"            	        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_armchair_EKTORP.dae" />
+<object name="bed"             			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_bed_FJELLSE.dae" />
+
+<object name="YELLOW_CUBE"                      mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_yellow.3ds" />
+<object name="RED_CUBE"      			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_red.3ds" />
+<object name="RED_CUBE2"      			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_red.3ds" />
+<object name="BLUE_CUBE"            		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_blue.3ds" />
+<object name="BLUE_CUBE2"            		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_blue.3ds" />
+<object name="GREEN_CUBE"                   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_green.3ds" />
+<object name="GREEN_CUBE2"                   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_green.3ds" />
+<object name="BLACK_CUBE"                       mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cube_black.3ds" />
+<object name="BLACK_TAPE"                       mesh_resource="package://toaster_visualizer/mesh/toaster_objects/BlackVideotape_mesh.3ds" />
+<object name="WhiteVideotape"                   mesh_resource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
+<object name="GREY_TAPE"                        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
+<object name="LOTR_TAPE"                        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
+<object name="WALLE_TAPE"                       mesh_resource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
+
+	<object name="Carpet"                     mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_carpet_DRAGOR.3ds" />
+	<object name="IKEA_cupboard_BILLY3"                     mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY3.3ds" />
+	<object name="IKEA_cupboard_BILLY4"                     mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY4.3ds" />
+	<object name="cupboard_small"                     mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cupboard_small.3ds" />
+
+	
+</list_obj>	
+
