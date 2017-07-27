@@ -1,4 +1,3 @@
-
 // Humans
 #include "pdg/MorseHumanReader.h"
 #include "pdg/NiutHumanReader.h"
@@ -792,9 +791,7 @@ int main(int argc, char** argv) {
                     for (std::map<std::string, Joint*>::iterator it = pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.begin(); it != pr2RobotRd.lastConfig_[pr2RobotRd.robotIdOffset_]->skeleton_.end(); ++it) {
                         robot_msg.meAgent.skeletonNames[i] = it->first;
                         fillEntity((it->second), joint_msg.meEntity);
-
                         joint_msg.jointOwner = 1;
-
                         robot_msg.meAgent.skeletonJoint.push_back(joint_msg);
                         i++;
                     }
@@ -996,8 +993,8 @@ int main(int argc, char** argv) {
 
                     if (addFactHand) {
 
-                        //Fact message
                         toaster_msgs::Fact fact_msg;
+                        //Fact message
                         fact_msg.property = "IsInHand";
                         fact_msg.propertyType = "position";
                         fact_msg.subProperty = "object";
