@@ -16,26 +16,26 @@ OM2MObjectReader::OM2MObjectReader(ros::NodeHandle& node, std::string topicOM2M)
     ROS_INFO("[pdg][OM2MObjectReader] done");
 }
 
-void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTDataWithCoordinates::ConstPtr& msg) {
+void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& msg) {
 
     ros::Time now = ros::Time::now();
     // OM2M objects are by convention considered movable
     MovableIoTObject* curObject;
 
     //create a new object with the same id and name as the message
-    if (lastConfig_.find(msg->iot_data.data.key) == lastConfig_.end()) {
-        curObject = new MovableIoTObject(msg->iot_data.data.key);
-        curObject->setName(msg->iot_data.data.key);
+    if (lastConfig_.find(msg->data.key) == lastConfig_.end()) {
+        curObject = new MovableIoTObject(msg->data.key);
+        curObject->setName(msg->data.key);
     } else {
-        curObject = (MovableIoTObject*)lastConfig_[msg->iot_data.data.key];
+        curObject = (MovableIoTObject*)lastConfig_[msg->data.key];
     }
 
 
-    //set object position
+    //set object position at default : 0,0,0
     bg::model::point<double, 3, bg::cs::cartesian> objectPosition;
-    objectPosition.set<0>(msg->x);
-    objectPosition.set<1>(msg->y);
-    objectPosition.set<2>(msg->z);
+    objectPosition.set<0>(0);
+    objectPosition.set<1>(0);
+    objectPosition.set<2>(0);
 
     //set the object orientation
     std::vector<double> objectOrientation;
@@ -49,12 +49,12 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTDataWithCoordinat
     curObject->setPosition(objectPosition);
 
     // set the new value of the OM2M object
-    curObject->setValue(msg->iot_data.data.value);
+    curObject->setValue(msg->data.value);
 
     // set the time
-    unsigned long micro_sec = msg->iot_data.header.stamp.sec * 1000000;
+    unsigned long micro_sec = msg->header.stamp.sec * 1000000;
     curObject->setTime(micro_sec);
 
 
-    lastConfig_[msg->iot_data.data.key]=curObject;
+    lastConfig_[msg->data.key]=curObject;
 }
