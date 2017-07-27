@@ -502,7 +502,7 @@ int main(int argc, char** argv) {
     ToasterSimuRobotReader toasterSimuRobotRd(node);
 
     ArObjectReader arObjectRd(node, "ar_visualization_marker");
-    OM2MObjectReader om2mObjectRd(node, "/iot_updates_with_coordinates");
+    OM2MObjectReader om2mObjectRd(node, "/iot2pdg_updates");
     GazeboObjectReader gazeboRd(node, "/gazebo/model_states");
     ToasterSimuObjectReader toasterSimuObjectRd(node);
 
