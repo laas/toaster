@@ -124,6 +124,7 @@ include_directories(
 
 ## Declare a cpp executable
 set(${PROJECT_NAME}_SOURCES
+    #readers
     src/readers/MorseHumanReader.cpp
     src/readers/NiutHumanReader.cpp
     src/readers/MocapHumanReader.cpp
@@ -141,6 +142,8 @@ set(${PROJECT_NAME}_SOURCES
     src/readers/OM2MObjectReader.cpp
     src/readers/GazeboObjectReader.cpp
     src/readers/FactReader.cpp
+    #utility
+    src/utility/XmlUtility.cpp
 )
 add_executable(pdg ${${PROJECT_NAME}_SOURCES} src/main.cpp)
 
