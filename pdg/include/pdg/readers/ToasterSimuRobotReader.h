@@ -16,6 +16,8 @@
 class ToasterSimuRobotReader : public RobotReader {
 public:
     ToasterSimuRobotReader(ros::NodeHandle& node);
+
+    virtual ~ToasterSimuRobotReader() {};
 private:
     void robotJointStateCallBack(const toaster_msgs::RobotListStamped::ConstPtr& msg);
     ros::Subscriber sub_;

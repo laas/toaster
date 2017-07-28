@@ -134,6 +134,7 @@ set(${PROJECT_NAME}_SOURCES
     src/utility/EntityUtility.cpp
     #publishers
     src/publishers/HumanPublisher.cpp
+    src/publishers/RobotPublisher.cpp
 )
  add_executable(pdg ${${PROJECT_NAME}_SOURCES} src/main.cpp)
 

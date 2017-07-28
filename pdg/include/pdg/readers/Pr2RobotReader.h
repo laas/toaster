@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   Pr2RobotReader.h
  * Author: Grégoire Milliez
  * mail: gregoire.milliez@laas.fr
@@ -22,7 +22,7 @@ public:
     void updateRobot(tf::TransformListener &listener);
 
     //Destructor
-    ~Pr2RobotReader();
+    virtual ~Pr2RobotReader();
 
 private:
     bool initJointsName_;
