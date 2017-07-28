@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ToasterSimuHumanReader.h
  * Author: gmilliez
  *
@@ -11,7 +11,7 @@
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
 #include "toaster_msgs/HumanListStamped.h"
-#include "pdg/HumanReader.h"
+#include "pdg/readers/HumanReader.h"
 
 class ToasterSimuHumanReader : public HumanReader {
 public:

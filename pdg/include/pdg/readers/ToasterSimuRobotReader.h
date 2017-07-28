@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ToasterSimuRobotReader.h
  * Author: gmilliez
  *
@@ -11,7 +11,7 @@
 #include <ros/ros.h>
 #include "toaster-lib/Robot.h"
 #include "toaster_msgs/RobotListStamped.h"
-#include "pdg/RobotReader.h"
+#include "pdg/readers/RobotReader.h"
 
 class ToasterSimuRobotReader : public RobotReader {
 public:

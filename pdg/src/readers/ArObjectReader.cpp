@@ -5,7 +5,7 @@
  * Created on July, 2016
  */
 
-#include "pdg/ArObjectReader.h"
+#include "pdg/readers/ArObjectReader.h"
 
 ArObjectReader::ArObjectReader(ros::NodeHandle& node, std::string topicAR) {
 
@@ -58,4 +58,3 @@ void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg
 	lastConfig_[msg->ns]=curObject;
 
 }
-

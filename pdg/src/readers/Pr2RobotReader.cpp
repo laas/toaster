@@ -1,4 +1,4 @@
-#include "pdg/Pr2RobotReader.h"
+#include "pdg/readers/Pr2RobotReader.h"
 
 Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, bool fullRobot) {
     fullRobot_ = fullRobot;

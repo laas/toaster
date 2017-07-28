@@ -1,11 +1,11 @@
-/* 
+/*
  * File:   ToasterSimuObjectReader.cpp
  * Author: gmilliez
- * 
+ *
  * Created on February 3, 2016, 12:14 PM
  */
 
-#include "pdg/ToasterSimuObjectReader.h"
+#include "pdg/readers/ToasterSimuObjectReader.h"
 #include "tf/transform_datatypes.h"
 
 ToasterSimuObjectReader::ToasterSimuObjectReader(ros::NodeHandle& node) {

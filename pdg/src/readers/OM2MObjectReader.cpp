@@ -5,7 +5,7 @@
  * Created on August, 2016
  */
 
-#include "pdg/OM2MObjectReader.h"
+#include "pdg/readers/OM2MObjectReader.h"
 
 OM2MObjectReader::OM2MObjectReader(ros::NodeHandle& node, std::string topicOM2M) {
 

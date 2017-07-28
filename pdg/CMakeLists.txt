@@ -123,7 +123,26 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/AdreamMocapHumanReader.cpp src/GroupHumanReader.cpp src/ToasterSimuHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/ToasterSimuRobotReader.cpp src/ObjectReader.cpp src/ToasterSimuObjectReader.cpp src/ArObjectReader.cpp src/OM2MObjectReader.cpp src/GazeboObjectReader.cpp src/FactReader.cpp src/main.cpp)
+set(${PROJECT_NAME}_SOURCES
+    src/readers/MorseHumanReader.cpp
+    src/readers/NiutHumanReader.cpp
+    src/readers/MocapHumanReader.cpp
+    src/readers/AdreamMocapHumanReader.cpp
+    src/readers/GroupHumanReader.cpp
+    src/readers/ToasterSimuHumanReader.cpp
+    src/readers/HumanReader.cpp
+    src/readers/RobotReader.cpp
+    src/readers/Pr2RobotReader.cpp
+    src/readers/SpencerRobotReader.cpp
+    src/readers/ToasterSimuRobotReader.cpp
+    src/readers/ObjectReader.cpp
+    src/readers/ToasterSimuObjectReader.cpp
+    src/readers/ArObjectReader.cpp
+    src/readers/OM2MObjectReader.cpp
+    src/readers/GazeboObjectReader.cpp
+    src/readers/FactReader.cpp
+)
+add_executable(pdg ${${PROJECT_NAME}_SOURCES} src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes

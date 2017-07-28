@@ -1,18 +1,14 @@
-/* 
- * File:   GroupHumanReader.cpp
- * Author: gmilliez
- * 
- * Created on April 21, 2015, 12:51 AM
- */
+// A human reader is a class that will read data from human(s)
 
-#include "pdg/GroupHumanReader.h"
 
-GroupHumanReader::GroupHumanReader(ros::NodeHandle& node, std::string topic) {
-    std::cout << "Initializing GroupHumanReader" << std::endl;
+#include "pdg/readers/MocapHumanReader.h"
+
+MocapHumanReader::MocapHumanReader(ros::NodeHandle& node, std::string topic) {
+    std::cout << "Initializing MocapHumanReader" << std::endl;
     // ******************************************
     // Starts listening to the joint_states
-    sub_ = node.subscribe(topic, 1, &GroupHumanReader::groupTrackCallback, this);
     fullHuman_ = false;
+    sub_ = node.subscribe(topic, 1, &MocapHumanReader::optitrackCallback, this);
     std::cout << "Done\n";
 }
 
@@ -20,37 +16,43 @@ GroupHumanReader::GroupHumanReader(ros::NodeHandle& node, std::string topic) {
   Gets data from a TrackedPersons msg in the human map. This msg contains a list of agens with
   their positions and orientations.
  */
-void GroupHumanReader::groupTrackCallback(const spencer_tracking_msgs::TrackedGroups::ConstPtr& msg) {
+void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPersons::ConstPtr& msg) {
     tf::StampedTransform transform;
     ros::Time now = ros::Time::now();
+    Human* curHuman;
     std::stringstream humId;
 
     try {
         std::string frame;
         frame = msg->header.frame_id;
 
-        //transform from the groupTrack frame to map
+        //transform from the mocap frame to map
         listener_.waitForTransform("/map", frame,
                 msg->header.stamp, ros::Duration(3.0));
         listener_.lookupTransform("/map", frame,
                 msg->header.stamp, transform);
 
-        //for every group present in the tracking message
-        for (int i = 0; i < msg->groups.size(); i++) {
-            spencer_tracking_msgs::TrackedGroup group = msg->groups[i];
-            humId << " group" << group.group_id;
+        //for every agent present in the tracking message
+        for (int i = 0; i < msg->tracks.size(); i++) {
+            std::string humanName = "human";
+            spencer_tracking_msgs::TrackedPerson person = msg->tracks[i];
+            humId << "mocap_human" << person.track_id;
             //create a new human with the same id as the message
-            Human* curHuman = new Human(humId.str());
+            if (lastConfig_.find(humId.str()) == lastConfig_.end()) {
+                curHuman = new Human(humId.str());
+                humanName.append(boost::to_string(humId.str()));
+                curHuman->setName(humanName);
+            } else {
+                curHuman = lastConfig_[humId.str()];
+            }
 
-            //get the pose of the agent in the groupTrack frame and transform it to the map frame
-            geometry_msgs::PoseStamped groupTrackPose, mapPose;
-            //geometry_msgs::PoseStamped optitrackPose, mapPose;
-
-            groupTrackPose.pose.position = group.centerOfGravity.pose.position;
-            groupTrackPose.pose.orientation = group.centerOfGravity.pose.orientation;
-            groupTrackPose.header.stamp = msg->header.stamp;
-            groupTrackPose.header.frame_id = frame;
-            listener_.transformPose("/map", groupTrackPose, mapPose);
+            //get the pose of the agent in the optitrack frame and transform it to the map frame
+            geometry_msgs::PoseStamped optitrackPose, mapPose;
+            optitrackPose.pose.position = person.pose.pose.position;
+            optitrackPose.pose.orientation = person.pose.pose.orientation;
+            optitrackPose.header.stamp = msg->header.stamp;
+            optitrackPose.header.frame_id = frame;
+            listener_.transformPose("/map", optitrackPose, mapPose);
 
             //set human position
             bg::model::point<double, 3, bg::cs::cartesian> humanPosition;

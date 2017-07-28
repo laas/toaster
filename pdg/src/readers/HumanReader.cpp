@@ -1,6 +1,6 @@
 // A human reader is a class that will read data from a middleware message
 // and fill a Human class from toaster-lib accordingly to publish on a ros topic.
-#include "pdg/HumanReader.h"
+#include "pdg/readers/HumanReader.h"
 
 
 bool HumanReader::isPresent(std::string id){
@@ -17,5 +17,3 @@ bool HumanReader::isPresent(std::string id){
   else
       return false;
 }
-
-

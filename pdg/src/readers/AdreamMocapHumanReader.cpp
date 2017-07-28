@@ -1,11 +1,11 @@
-/* 
+/*
  * File:   AdreamMocapHumanReader.cpp
  * Author: sdevin
- * 
+ *
  * Created on October 8, 2015, 1:24 PM
  */
 
-#include "pdg/AdreamMocapHumanReader.h"
+#include "pdg/readers/AdreamMocapHumanReader.h"
 
 // A human reader is a class that will read data from human(s)
 
@@ -308,5 +308,3 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
 
     }
 }
-
-

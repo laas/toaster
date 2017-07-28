@@ -1,22 +1,22 @@
 
 // Humans
-#include "pdg/MorseHumanReader.h"
-#include "pdg/NiutHumanReader.h"
-#include "pdg/GroupHumanReader.h"
-#include "pdg/MocapHumanReader.h"
-#include "pdg/AdreamMocapHumanReader.h"
-#include "pdg/ToasterSimuHumanReader.h"
+#include "pdg/readers/MorseHumanReader.h"
+#include "pdg/readers/NiutHumanReader.h"
+#include "pdg/readers/GroupHumanReader.h"
+#include "pdg/readers/MocapHumanReader.h"
+#include "pdg/readers/AdreamMocapHumanReader.h"
+#include "pdg/readers/ToasterSimuHumanReader.h"
 
 // Robots
-#include "pdg/Pr2RobotReader.h"
-#include "pdg/SpencerRobotReader.h"
-#include "pdg/ToasterSimuRobotReader.h"
+#include "pdg/readers/Pr2RobotReader.h"
+#include "pdg/readers/SpencerRobotReader.h"
+#include "pdg/readers/ToasterSimuRobotReader.h"
 
 // Objects
-#include "pdg/ToasterSimuObjectReader.h"
-#include "pdg/ArObjectReader.h"
-#include "pdg/OM2MObjectReader.h"
-#include "pdg/GazeboObjectReader.h"
+#include "pdg/readers/ToasterSimuObjectReader.h"
+#include "pdg/readers/ArObjectReader.h"
+#include "pdg/readers/OM2MObjectReader.h"
+#include "pdg/readers/GazeboObjectReader.h"
 
 // Facts
 

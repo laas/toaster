@@ -1,5 +1,5 @@
 // This class read topic from niut and convert data into toaster-lib type.
-#include <pdg/NiutHumanReader.h>
+#include <pdg/readers/NiutHumanReader.h>
 #include "toaster-lib/MathFunctions.h"
 
 NiutHumanReader::NiutHumanReader(ros::NodeHandle& node, double * kinectPos,

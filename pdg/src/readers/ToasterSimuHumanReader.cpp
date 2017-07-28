@@ -1,11 +1,11 @@
-/* 
+/*
  * File:   ToasterSimuHumanReader.cpp
  * Author: gmilliez
- * 
+ *
  * Created on February 3, 2016, 12:15 PM
  */
 
-#include "pdg/ToasterSimuHumanReader.h"
+#include "pdg/readers/ToasterSimuHumanReader.h"
 #include "tf/transform_datatypes.h"
 
 ToasterSimuHumanReader::ToasterSimuHumanReader(ros::NodeHandle& node) {

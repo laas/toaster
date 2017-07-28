@@ -5,7 +5,7 @@
  * Created on November, 2016
  */
 
-#include "pdg/GazeboObjectReader.h"
+#include "pdg/readers/GazeboObjectReader.h"
 
 GazeboObjectReader::GazeboObjectReader(ros::NodeHandle& node, std::string topic) {
 
@@ -72,4 +72,3 @@ void GazeboObjectReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& m
 	}
 
 }
-

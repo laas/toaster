@@ -1,4 +1,4 @@
-#include "pdg/MorseHumanReader.h"
+#include "pdg/readers/MorseHumanReader.h"
 
 
 MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, bool fullHuman){
@@ -46,7 +46,7 @@ void MorseHumanReader::updateHuman(tf::TransformListener &listener, std::string 
         humanOrientation.push_back(0.0);
         humanOrientation.push_back(0.0);
         humanOrientation.push_back(tf::getYaw(transform.getRotation()));
-        
+
         curHuman->setOrientation(humanOrientation);
         curHuman->setPosition(humanPosition);
         curHuman->setTime(now.toNSec());

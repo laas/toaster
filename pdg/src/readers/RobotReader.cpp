@@ -1,10 +1,14 @@
-#include "pdg/ObjectReader.h"
+#include "pdg/readers/RobotReader.h"
 
-bool ObjectReader::isPresent(std::string id){
+RobotReader::RobotReader(){
+}
+
+bool RobotReader::isPresent(std::string id){
   timeval curTime;
   gettimeofday(&curTime, NULL);
   unsigned long now = curTime.tv_sec * pow(10,9) + curTime.tv_usec;
   unsigned long timeThreshold = pow(10,9);
+
   long timeDif = lastConfig_[id]->getTime() - now;
 
   if ( fabs(timeDif) < timeThreshold)
@@ -12,4 +16,3 @@ bool ObjectReader::isPresent(std::string id){
   else
       return false;
 }
-

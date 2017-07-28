@@ -1,11 +1,11 @@
-/* 
+/*
  * File:   ToasterSimuRobotReader.cpp
  * Author: gmilliez
- * 
+ *
  * Created on February 3, 2016, 12:14 PM
  */
 
-#include "pdg/ToasterSimuRobotReader.h"
+#include "pdg/readers/ToasterSimuRobotReader.h"
 #include "tf/transform_datatypes.h"
 
 ToasterSimuRobotReader::ToasterSimuRobotReader(ros::NodeHandle& node) {
@@ -99,4 +99,3 @@ void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotLi
         }
     }
 }
-

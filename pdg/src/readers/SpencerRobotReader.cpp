@@ -1,11 +1,11 @@
-/* 
+/*
  * File:   SpencerRobotReader.cpp
  * Author: gmilliez
- * 
+ *
  * Created on April 20, 2015, 5:15 PM
  */
 
-#include "pdg/SpencerRobotReader.h"
+#include "pdg/readers/SpencerRobotReader.h"
 
 SpencerRobotReader::SpencerRobotReader(bool fullRobot) {
     fullRobot_ = fullRobot;
@@ -82,4 +82,3 @@ void SpencerRobotReader::setRobotJointLocation(tf::TransformListener &listener, 
 
 SpencerRobotReader::~SpencerRobotReader() {
 }
-
