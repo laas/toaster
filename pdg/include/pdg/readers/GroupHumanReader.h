@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   GroupHumanReader.h
  * Author: gmilliez
  *
@@ -25,6 +25,8 @@ class GroupHumanReader : public HumanReader {
 public:
     GroupHumanReader(ros::NodeHandle& node, std::string topic);
 
+    virtual ~GroupHumanReader() {};
+
 private:
     ros::Subscriber sub_;
     void groupTrackCallback(const spencer_tracking_msgs::TrackedGroups::ConstPtr& msg);
@@ -32,4 +34,3 @@ private:
 };
 
 #endif	/* GROUPHUMANREADER_H */
-

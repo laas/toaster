@@ -35,9 +35,11 @@
 //tf
 #include <tf/transform_broadcaster.h>
 
-//Xml
+//Utility
 #include "pdg/utility/XmlUtility.h"
 #include "pdg/utility/EntityUtility.h"
+
+#include "pdg/publishers/HumanPublisher.h"
 
 bool humanFullConfig_ = true; //If false we will use only position and orientation
 bool robotFullConfig_ = true; //If false we will use only position and orientation
@@ -309,153 +311,20 @@ int main(int argc, char** argv) {
         // Humans //
         ////////////
 
-        if (morseHuman_) {
-            for (std::map<std::string, Human *>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it) {
-                if (newPoseEnt_.getId() == it->first)
-                    updateEntity(newPoseEnt_, it->second);
-                if (morseHumanRd.isPresent(it->first)) {
-                    toaster_msgs::Fact fact_msg;
+        if (morseHuman_)
+          PublishHuman(morseHumanRd, newPoseEnt_, factList_msg, humanList_msg);
 
-                    //Fact
-                    fact_msg.property = "isPresent";
-                    fact_msg.subjectId = it->first;
-                    fact_msg.stringValue = "true";
-                    fact_msg.confidence = 0.90;
-                    fact_msg.factObservability = 1.0;
-                    fact_msg.time = it->second->getTime();
-                    fact_msg.valueType = 0;
+        if (mocapHuman_)
+          PublishHuman(mocapHumanRd, newPoseEnt_, factList_msg, humanList_msg);
 
-                    factList_msg.factList.push_back(fact_msg);
+        if (adreamMocapHuman_)
+          PublishHuman(adreamMocapHumanRd, newPoseEnt_, factList_msg, humanList_msg);
 
+        if (groupHuman_)
+          PublishHuman(groupHumanRd, newPoseEnt_, factList_msg, humanList_msg);
 
-                    //Human
-                    toaster_msgs::Human human_msg;
-                    fillEntity(it->second, human_msg.meAgent.meEntity);
-                    humanList_msg.humanList.push_back(human_msg);
-
-                }
-            }
-        }
-
-        if (mocapHuman_) {
-            for (std::map<std::string, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
-                if (newPoseEnt_.getId() == it->first)
-                    updateEntity(newPoseEnt_, it->second);
-                if (mocapHumanRd.isPresent(it->first)) {
-                    toaster_msgs::Fact fact_msg;
-
-                    //Fact
-                    fact_msg.property = "isPresent";
-                    fact_msg.subjectId = it->first;
-                    fact_msg.stringValue = "true";
-                    fact_msg.confidence = 0.90;
-                    fact_msg.factObservability = 1.0;
-                    fact_msg.time = it->second->getTime();
-                    fact_msg.valueType = 0;
-
-                    factList_msg.factList.push_back(fact_msg);
-
-                    //Human
-                    toaster_msgs::Human human_msg;
-                    fillEntity(it->second, human_msg.meAgent.meEntity);
-                    humanList_msg.humanList.push_back(human_msg);
-
-                }
-            }
-        }
-
-        if (adreamMocapHuman_) {
-            for (std::map<std::string, Human*>::iterator it = adreamMocapHumanRd.lastConfig_.begin(); it != adreamMocapHumanRd.lastConfig_.end(); ++it) {
-                if (newPoseEnt_.getId() == it->first)
-                    updateEntity(newPoseEnt_, it->second);
-                if (adreamMocapHumanRd.isPresent(it->first)) {
-                    toaster_msgs::Fact fact_msg;
-
-                    //Fact
-                    fact_msg.property = "isPresent";
-                    fact_msg.subjectId = it->first;
-                    fact_msg.stringValue = "true";
-                    fact_msg.confidence = 0.90;
-                    fact_msg.factObservability = 1.0;
-                    fact_msg.time = it->second->getTime();
-                    fact_msg.valueType = 0;
-
-                    factList_msg.factList.push_back(fact_msg);
-
-                    //Human
-                    toaster_msgs::Human human_msg;
-                    fillEntity(it->second, human_msg.meAgent.meEntity);
-
-                    //if (humanFullConfig_) {
-                    for (std::map<std::string, Joint*>::iterator itJoint = adreamMocapHumanRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != adreamMocapHumanRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
-                        toaster_msgs::Joint joint_msg;
-                        human_msg.meAgent.skeletonNames.push_back(itJoint->first);
-                        fillEntity((itJoint->second), joint_msg.meEntity);
-                        joint_msg.jointOwner = it->first;
-
-                        human_msg.meAgent.skeletonJoint.push_back(joint_msg);
-
-                    }
-                    //}
-                    humanList_msg.humanList.push_back(human_msg);
-                }
-            }
-        }
-
-        if (groupHuman_) {
-            for (std::map<std::string, Human *>::iterator it = groupHumanRd.lastConfig_.begin();
-                 it != groupHumanRd.lastConfig_.end(); ++it) {
-                if (newPoseEnt_.getId() == it->first)
-                    updateEntity(newPoseEnt_, it->second);
-                if (groupHumanRd.isPresent(it->first)) {
-                    toaster_msgs::Fact fact_msg;
-
-                    //Fact
-                    fact_msg.property = "isPresent";
-                    fact_msg.subjectId = it->first;
-                    fact_msg.stringValue = true;
-                    fact_msg.confidence = 0.90;
-                    fact_msg.factObservability = 1.0;
-                    fact_msg.time = it->second->getTime();
-                    fact_msg.valueType = 0;
-
-                    factList_msg.factList.push_back(fact_msg);
-
-                    //Human
-                    toaster_msgs::Human human_msg;
-                    fillEntity(it->second, human_msg.meAgent.meEntity);
-                    humanList_msg.humanList.push_back(human_msg);
-                }
-            }
-        }
-
-        if (toasterSimuHuman_) {
-            for (std::map<std::string, Human*>::iterator it = toasterSimuHumanRd.lastConfig_.begin(); it != toasterSimuHumanRd.lastConfig_.end(); ++it) {
-                if (newPoseEnt_.getId() == it->first)
-                    updateEntity(newPoseEnt_, it->second);
-
-
-
-                //Human
-                toaster_msgs::Human human_msg;
-                fillEntity(it->second, human_msg.meAgent.meEntity);
-
-                human_msg.meAgent.skeletonJoint.clear();
-                human_msg.meAgent.skeletonNames.clear();
-
-                for (std::map<std::string, Joint*>::iterator itJoint = toasterSimuHumanRd.lastConfig_[it->first]->skeleton_.begin(); itJoint != toasterSimuHumanRd.lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
-                    toaster_msgs::Joint joint_msg;
-                    human_msg.meAgent.skeletonNames.push_back(itJoint->first);
-                    fillEntity((itJoint->second), joint_msg.meEntity);
-                    joint_msg.jointOwner = it->first;
-
-                    human_msg.meAgent.skeletonJoint.push_back(joint_msg);
-
-                }
-                humanList_msg.humanList.push_back(human_msg);
-
-            }
-        }
+        if (toasterSimuHuman_)
+          PublishHuman(toasterSimuHumanRd, newPoseEnt_, factList_msg, humanList_msg);
 
         ////////////////////////////////////////////////////////////////////////
 

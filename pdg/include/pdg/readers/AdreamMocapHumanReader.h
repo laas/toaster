@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   AdreamMocapHumanReader.h
  * Author: sdevin
  *
@@ -26,6 +26,8 @@ class AdreamMocapHumanReader : public HumanReader {
 public:
     AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicTorso, std::string topicHead, std::string topicHand);
 
+    virtual ~AdreamMocapHumanReader() {};
+
 private:
     bool torso_;
     double offset_x;
@@ -40,4 +42,3 @@ private:
 };
 
 #endif	/* ADREAMMOCAPHUMANREADER_H */
-
