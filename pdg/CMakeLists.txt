@@ -144,6 +144,7 @@ set(${PROJECT_NAME}_SOURCES
     src/readers/FactReader.cpp
     #utility
     src/utility/XmlUtility.cpp
+    src/utility/EntityUtility.cpp
 )
 add_executable(pdg ${${PROJECT_NAME}_SOURCES} src/main.cpp)
 
