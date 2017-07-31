@@ -11,26 +11,23 @@
 #include "pdg/readers/GroupHumanReader.h"
 #include "pdg/readers/ToasterSimuHumanReader.h"
 
+#include "pdg/types.h"
+
 void PublishHuman(MorseHumanReader& morseHumanRd, Entity& newPoseEnt_,
-                       toaster_msgs::FactList& factList_msg,
-                       toaster_msgs::HumanListStamped& humanList_msg);
+                       struct toasterList_t& list_msg);
 
 void PublishHuman(MocapHumanReader& mocapHumanRd, Entity& newPoseEnt_,
-                      toaster_msgs::FactList& factList_msg,
-                      toaster_msgs::HumanListStamped& humanList_msg);
+                      struct toasterList_t& list_msg);
 
 void PublishHuman(AdreamMocapHumanReader& adreamMocapHumanRd,
                       Entity& newPoseEnt_,
-                      toaster_msgs::FactList& factList_msg,
-                      toaster_msgs::HumanListStamped& humanList_msg);
+                      struct toasterList_t& list_msg);
 
 void PublishHuman(GroupHumanReader& groupHumanRd, Entity& newPoseEnt_,
-                      toaster_msgs::FactList& factList_msg,
-                      toaster_msgs::HumanListStamped& humanList_msg);
+                      struct toasterList_t& list_msg);
 
 void PublishHuman(ToasterSimuHumanReader& toasterSimuHumanRd,
                       Entity& newPoseEnt_,
-                      toaster_msgs::FactList& factList_msg,
-                      toaster_msgs::HumanListStamped& humanList_msg);
+                      struct toasterList_t& list_msg);
 
 #endif

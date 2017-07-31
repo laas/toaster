@@ -287,19 +287,19 @@ int main(int argc, char** argv) {
         ////////////
 
         if (morseHuman_)
-          PublishHuman(morseHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
+          PublishHuman(morseHumanRd, newPoseEnt_, list_msg);
 
         if (mocapHuman_)
-          PublishHuman(mocapHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
+          PublishHuman(mocapHumanRd, newPoseEnt_, list_msg);
 
         if (adreamMocapHuman_)
-          PublishHuman(adreamMocapHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
+          PublishHuman(adreamMocapHumanRd, newPoseEnt_, list_msg);
 
         if (groupHuman_)
-          PublishHuman(groupHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
+          PublishHuman(groupHumanRd, newPoseEnt_, list_msg);
 
         if (toasterSimuHuman_)
-          PublishHuman(toasterSimuHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
+          PublishHuman(toasterSimuHumanRd, newPoseEnt_, list_msg);
 
         ////////////////////////////////////////////////////////////////////////
 
