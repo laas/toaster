@@ -6,6 +6,22 @@
 #include <string>
 #include <map>
 
+toaster_msgs::Fact createHumanFact(std::string subjectId, uint64_t factTime)
+{
+  toaster_msgs::Fact fact_msg;
+
+  //Fact
+  fact_msg.property = "isPresent";
+  fact_msg.subjectId = subjectId;
+  fact_msg.stringValue = "true";
+  fact_msg.confidence = 0.90;
+  fact_msg.factObservability = 1.0;
+  fact_msg.time = factTime;
+  fact_msg.valueType = 0;
+
+  return fact_msg;
+}
+
 void PublishHuman(MorseHumanReader& morseHumanRd, Entity& newPoseEnt_,
                        struct toasterList_t& list_msg)
 {
@@ -15,19 +31,8 @@ void PublishHuman(MorseHumanReader& morseHumanRd, Entity& newPoseEnt_,
           updateEntity(newPoseEnt_, it->second);
       if (morseHumanRd.isPresent(it->first))
       {
-          toaster_msgs::Fact fact_msg;
-
-          //Fact
-          fact_msg.property = "isPresent";
-          fact_msg.subjectId = it->first;
-          fact_msg.stringValue = "true";
-          fact_msg.confidence = 0.90;
-          fact_msg.factObservability = 1.0;
-          fact_msg.time = it->second->getTime();
-          fact_msg.valueType = 0;
-
+          toaster_msgs::Fact fact_msg = createHumanFact(it->first, it->second->getTime());
           list_msg.fact_msg.factList.push_back(fact_msg);
-
 
           //Human
           toaster_msgs::Human human_msg;
@@ -43,18 +48,9 @@ void PublishHuman(MocapHumanReader& mocapHumanRd, Entity& newPoseEnt_,
   for (std::map<std::string, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
       if (newPoseEnt_.getId() == it->first)
           updateEntity(newPoseEnt_, it->second);
-      if (mocapHumanRd.isPresent(it->first)) {
-          toaster_msgs::Fact fact_msg;
-
-          //Fact
-          fact_msg.property = "isPresent";
-          fact_msg.subjectId = it->first;
-          fact_msg.stringValue = "true";
-          fact_msg.confidence = 0.90;
-          fact_msg.factObservability = 1.0;
-          fact_msg.time = it->second->getTime();
-          fact_msg.valueType = 0;
-
+      if (mocapHumanRd.isPresent(it->first))
+      {
+          toaster_msgs::Fact fact_msg = createHumanFact(it->first, it->second->getTime());
           list_msg.fact_msg.factList.push_back(fact_msg);
 
           //Human
@@ -73,18 +69,9 @@ void PublishHuman(AdreamMocapHumanReader& adreamMocapHumanRd,
   for (std::map<std::string, Human*>::iterator it = adreamMocapHumanRd.lastConfig_.begin(); it != adreamMocapHumanRd.lastConfig_.end(); ++it) {
       if (newPoseEnt_.getId() == it->first)
           updateEntity(newPoseEnt_, it->second);
-      if (adreamMocapHumanRd.isPresent(it->first)) {
-          toaster_msgs::Fact fact_msg;
-
-          //Fact
-          fact_msg.property = "isPresent";
-          fact_msg.subjectId = it->first;
-          fact_msg.stringValue = "true";
-          fact_msg.confidence = 0.90;
-          fact_msg.factObservability = 1.0;
-          fact_msg.time = it->second->getTime();
-          fact_msg.valueType = 0;
-
+      if (adreamMocapHumanRd.isPresent(it->first))
+      {
+          toaster_msgs::Fact fact_msg = createHumanFact(it->first, it->second->getTime());
           list_msg.fact_msg.factList.push_back(fact_msg);
 
           //Human
@@ -114,18 +101,9 @@ void PublishHuman(GroupHumanReader& groupHumanRd, Entity& newPoseEnt_,
        it != groupHumanRd.lastConfig_.end(); ++it) {
       if (newPoseEnt_.getId() == it->first)
           updateEntity(newPoseEnt_, it->second);
-      if (groupHumanRd.isPresent(it->first)) {
-          toaster_msgs::Fact fact_msg;
-
-          //Fact
-          fact_msg.property = "isPresent";
-          fact_msg.subjectId = it->first;
-          fact_msg.stringValue = true;
-          fact_msg.confidence = 0.90;
-          fact_msg.factObservability = 1.0;
-          fact_msg.time = it->second->getTime();
-          fact_msg.valueType = 0;
-
+      if (groupHumanRd.isPresent(it->first))
+      {
+          toaster_msgs::Fact fact_msg = createHumanFact(it->first, it->second->getTime());
           list_msg.fact_msg.factList.push_back(fact_msg);
 
           //Human
