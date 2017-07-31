@@ -15,20 +15,20 @@
 using namespace std;
 
 void PublishObject(ArObjectReader& arObjectRd, Entity& newPoseEnt_,
-                   struct objectIn_t objectIn,
-                   struct toasterList_t list_msg);
+                   struct objectIn_t& objectIn,
+                   struct toasterList_t& list_msg);
 
 void PublishObject(OM2MObjectReader& om2mObjectRd, Entity& newPoseEnt_,
-                  struct objectIn_t objectIn,
-                  struct toasterList_t list_msg);
+                  struct objectIn_t& objectIn,
+                  struct toasterList_t& list_msg);
 
 void PublishObject(GazeboObjectReader& gazeboRd, Entity& newPoseEnt_,
-                  struct objectIn_t objectIn,
-                  struct toasterList_t list_msg);
+                  struct objectIn_t& objectIn,
+                  struct toasterList_t& list_msg);
 
 void PublishObject(ToasterSimuObjectReader& toasterSimuObjectRd,
                     Entity& newPoseEnt_,
-                    struct objectIn_t objectIn,
-                    struct toasterList_t list_msg);
+                    struct objectIn_t& objectIn,
+                    struct toasterList_t& list_msg);
 
 #endif

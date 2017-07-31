@@ -5,8 +5,8 @@
 #include "toaster-lib/Object.h"
 
 void PublishObject(ArObjectReader& arObjectRd, Entity& newPoseEnt_,
-                     struct objectIn_t objectIn,
-                     struct toasterList_t list_msg)
+                     struct objectIn_t& objectIn,
+                     struct toasterList_t& list_msg)
 {
   for (std::map<std::string, MovableObject *>::iterator it = arObjectRd.lastConfig_.begin();
        it != arObjectRd.lastConfig_.end(); ++it) {
@@ -57,8 +57,8 @@ void PublishObject(ArObjectReader& arObjectRd, Entity& newPoseEnt_,
 }
 
 void PublishObject(OM2MObjectReader& om2mObjectRd, Entity& newPoseEnt_,
-                  struct objectIn_t objectIn,
-                  struct toasterList_t list_msg)
+                  struct objectIn_t& objectIn,
+                  struct toasterList_t& list_msg)
 {
   for (std::map<std::string, MovableObject *>::iterator it_obj = om2mObjectRd.lastConfig_.begin();
        it_obj != om2mObjectRd.lastConfig_.end(); ++it_obj)
@@ -125,8 +125,8 @@ void PublishObject(OM2MObjectReader& om2mObjectRd, Entity& newPoseEnt_,
 }
 
 void PublishObject(GazeboObjectReader& gazeboRd, Entity& newPoseEnt_,
-                    struct objectIn_t objectIn,
-                    struct toasterList_t list_msg)
+                    struct objectIn_t& objectIn,
+                    struct toasterList_t& list_msg)
 {
   for (std::map<std::string, MovableObject *>::iterator it = gazeboRd.lastConfig_.begin();
        it != gazeboRd.lastConfig_.end(); ++it) {
@@ -179,8 +179,8 @@ void PublishObject(GazeboObjectReader& gazeboRd, Entity& newPoseEnt_,
 
 void PublishObject(ToasterSimuObjectReader& toasterSimuObjectRd,
                     Entity& newPoseEnt_,
-                    struct objectIn_t objectIn,
-                    struct toasterList_t list_msg)
+                    struct objectIn_t& objectIn,
+                    struct toasterList_t& list_msg)
 {
   for (std::map<std::string, MovableObject *>::iterator it = toasterSimuObjectRd.lastConfig_.begin();
        it != toasterSimuObjectRd.lastConfig_.end(); ++it) {
