@@ -11,7 +11,6 @@
 #include <ros/ros.h>
 #include <string>
 #include "ObjectReader.h"
-#include "toaster-lib/MovableIoTObject.h"
 #include "toaster_msgs/IoTData.h"
 
 
@@ -19,8 +18,7 @@ class OM2MObjectReader : public ObjectReader {
 
 public:
     OM2MObjectReader(ros::NodeHandle& node, std::string topicOM2M);
-
-    virtual ~OM2MObjectReader() {};
+    ~OM2MObjectReader() {};
 
 private:
     ros::Subscriber sub_;

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   FactReader.h
  * Author: gmilliez
  *
@@ -13,9 +13,11 @@
 
 class FactReader {
 public:
-    toaster_msgs::FactList currentFactList_;
-    unsigned int nbFacts_; /// total number of facts
+  FactReader() {nbFacts_ = 0; };
+  ~FactReader() {};
+
+  toaster_msgs::FactList currentFactList_;
+  unsigned int nbFacts_; /// total number of facts
 
 };
 #endif	/* FACTREADER_H */
-

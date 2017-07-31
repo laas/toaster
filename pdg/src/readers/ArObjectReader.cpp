@@ -7,6 +7,12 @@
 
 #include "pdg/readers/ArObjectReader.h"
 
+#include "geometry_msgs/PoseStamped.h"
+#include "tf/transform_listener.h"
+#include <math.h>
+#include <sys/time.h>
+#include <ostream>
+
 ArObjectReader::ArObjectReader(ros::NodeHandle& node, std::string topicAR) {
 
     ROS_INFO("[ArObjectReader] Initializing");

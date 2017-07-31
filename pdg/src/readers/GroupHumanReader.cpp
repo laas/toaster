@@ -7,6 +7,11 @@
 
 #include "pdg/readers/GroupHumanReader.h"
 
+#include "geometry_msgs/PoseStamped.h"
+#include <sys/time.h>
+#include <math.h>
+#include <ostream>
+
 GroupHumanReader::GroupHumanReader(ros::NodeHandle& node, std::string topic) {
     std::cout << "Initializing GroupHumanReader" << std::endl;
     // ******************************************

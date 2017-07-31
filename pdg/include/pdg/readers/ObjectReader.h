@@ -1,4 +1,4 @@
-/* 
+/*
  * File:  ObjectReader.h
  * Author: Grégoire Milliez
  * mail: gregoire.milliez@laas.fr
@@ -16,13 +16,19 @@
 #include <ros/ros.h>
 #include "toaster-lib/MovableObject.h"
 #include <map>
+#include <string>
 
 class ObjectReader {
 public:
-    std::map<std::string, MovableObject*> lastConfig_;
-    unsigned int nbObjects_; /// total object number
+  ObjectReader();
+  ~ObjectReader();
 
-    bool isPresent(std::string id);
+  std::map<std::string, MovableObject*> lastConfig_;
+
+protected:
+  unsigned int nbObjects_; /// total object number
+
+  bool isPresent(std::string id);
 
 };
 

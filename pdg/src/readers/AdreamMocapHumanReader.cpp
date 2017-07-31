@@ -7,6 +7,12 @@
 
 #include "pdg/readers/AdreamMocapHumanReader.h"
 
+#include "tf/transform_listener.h"
+#include "geometry_msgs/PoseStamped.h"
+#include <sys/time.h>
+#include <math.h>
+#include <ostream>
+
 // A human reader is a class that will read data from human(s)
 
 AdreamMocapHumanReader::AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicTorso = "/optitrack/bodies/Rigid_Body_3",

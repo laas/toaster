@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   RobotReader.h
  * Author: Grégoire Milliez
  * mail: gregoire.milliez@laas.fr
@@ -22,7 +22,11 @@ class RobotReader{
 
     public:
         RobotReader();
+        ~RobotReader();
+
         std::map<std::string, Robot*> lastConfig_;
+
+    protected:
         bool fullRobot_;
 
         bool isPresent(std::string id);

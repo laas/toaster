@@ -2,6 +2,16 @@
 // and fill a Human class from toaster-lib accordingly to publish on a ros topic.
 #include "pdg/readers/HumanReader.h"
 
+HumanReader::HumanReader()
+{
+  fullHuman_ = false;
+}
+
+HumanReader::~HumanReader()
+{
+  for(std::map<std::string, Human*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it)
+    delete it->second;
+}
 
 bool HumanReader::isPresent(std::string id){
   timeval curTime;

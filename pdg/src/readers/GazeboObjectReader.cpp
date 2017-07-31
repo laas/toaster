@@ -7,6 +7,11 @@
 
 #include "pdg/readers/GazeboObjectReader.h"
 
+#include "tf/transform_listener.h"
+#include <math.h>
+#include <sys/time.h>
+#include <ostream>
+
 GazeboObjectReader::GazeboObjectReader(ros::NodeHandle& node, std::string topic) {
 
     ROS_INFO("[GazeboObjectReader] Initializing");

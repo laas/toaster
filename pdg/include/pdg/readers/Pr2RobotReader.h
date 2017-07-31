@@ -19,10 +19,11 @@
 class Pr2RobotReader : public RobotReader {
 public:
     Pr2RobotReader(ros::NodeHandle& node, bool fullRobot);
-    void updateRobot(tf::TransformListener &listener);
 
     //Destructor
-    virtual ~Pr2RobotReader();
+    ~Pr2RobotReader();
+
+    void updateRobot(tf::TransformListener &listener);
 
 private:
     bool initJointsName_;

@@ -1,5 +1,16 @@
 #include "pdg/readers/ObjectReader.h"
 
+ObjectReader::ObjectReader()
+{
+  nbObjects_ = 0;
+}
+
+ObjectReader::~ObjectReader()
+{
+  for(std::map<std::string, MovableObject*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it)
+    delete it->second;
+}
+
 bool ObjectReader::isPresent(std::string id){
   timeval curTime;
   gettimeofday(&curTime, NULL);

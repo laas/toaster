@@ -17,7 +17,7 @@ class ToasterSimuObjectReader : public ObjectReader {
 public:
     ToasterSimuObjectReader(ros::NodeHandle& node);
 
-    virtual ~ToasterSimuObjectReader() {};
+    ~ToasterSimuObjectReader() {};
 
 private:
     //Functions

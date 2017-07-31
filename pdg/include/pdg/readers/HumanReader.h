@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   HumanReader.h
  * Author: Grégoire Milliez
  * mail: gregoire.milliez@laas.fr
@@ -17,14 +17,18 @@
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
 #include <map>
+#include <string>
 
 class HumanReader{
 
     public:
-        std::map<std::string, Human*> lastConfig_;
-        bool fullHuman_;
+      HumanReader();
+      ~HumanReader();
 
-        bool isPresent(std::string id);
+      std::map<std::string, Human*> lastConfig_;
+      bool fullHuman_;
+
+      bool isPresent(std::string id);
 
 };
 

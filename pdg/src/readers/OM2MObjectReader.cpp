@@ -7,6 +7,8 @@
 
 #include "pdg/readers/OM2MObjectReader.h"
 
+#include "toaster-lib/MovableIoTObject.h"
+
 OM2MObjectReader::OM2MObjectReader(ros::NodeHandle& node, std::string topicOM2M) {
 
     ROS_INFO("[pdg][OM2MObjectReader] Initializing");

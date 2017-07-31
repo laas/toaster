@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   NiutHumanReader.h
  * Author: Grégoire Milliez
  * mail: gregoire.milliez@laas.fr
@@ -20,7 +20,8 @@
 class NiutHumanReader : public HumanReader {
 public:
     NiutHumanReader(ros::NodeHandle& node, double * kinectPos, bool fullHuman);
-
+    ~NiutHumanReader() {};
+    
 private:
     static const unsigned short NB_MAX_NIUT = 16;
     double* kinectPos_;

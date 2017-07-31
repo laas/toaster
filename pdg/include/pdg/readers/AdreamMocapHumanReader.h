@@ -13,20 +13,13 @@
 #include "HumanReader.h"
 
 #include <ros/ros.h>
-#include "tf/transform_listener.h"
 #include <string>
-#include "geometry_msgs/PoseStamped.h"
 #include "optitrack/or_pose_estimator_state.h"
-#include "tf/transform_listener.h"
-#include <sys/time.h>
-#include <math.h>
-#include <ostream>
 
 class AdreamMocapHumanReader : public HumanReader {
 public:
     AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicTorso, std::string topicHead, std::string topicHand);
-
-    virtual ~AdreamMocapHumanReader() {};
+    ~AdreamMocapHumanReader() {};
 
 private:
     bool torso_;

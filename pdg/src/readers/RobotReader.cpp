@@ -1,6 +1,14 @@
 #include "pdg/readers/RobotReader.h"
 
-RobotReader::RobotReader(){
+RobotReader::RobotReader()
+{
+  fullRobot_ = false;
+}
+
+RobotReader::~RobotReader()
+{
+  for(std::map<std::string, Robot*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it)
+    delete it->second;
 }
 
 bool RobotReader::isPresent(std::string id){

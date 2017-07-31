@@ -3,6 +3,11 @@
 
 #include "pdg/readers/MocapHumanReader.h"
 
+#include "geometry_msgs/PoseStamped.h"
+#include <sys/time.h>
+#include <math.h>
+#include <ostream>
+
 MocapHumanReader::MocapHumanReader(ros::NodeHandle& node, std::string topic) {
     std::cout << "Initializing MocapHumanReader" << std::endl;
     // ******************************************
