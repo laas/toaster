@@ -21,10 +21,6 @@
 // Facts
 
 // Message generated class
-#include <toaster_msgs/FactList.h>
-#include <toaster_msgs/RobotListStamped.h>
-#include <toaster_msgs/HumanListStamped.h>
-#include <toaster_msgs/ObjectListStamped.h>
 #include <toaster_msgs/AddStream.h>
 #include <toaster_msgs/PutInHand.h>
 #include <toaster_msgs/RemoveFromHand.h>
@@ -36,14 +32,16 @@
 #include <tf/transform_broadcaster.h>
 
 //Utility
-#include "pdg/utility/XmlUtility.h"
 #include "pdg/utility/EntityUtility.h"
 
 #include "pdg/publishers/HumanPublisher.h"
 #include "pdg/publishers/RobotPublisher.h"
+#include "pdg/publishers/ObjectPublisher.h"
 
-bool humanFullConfig_ = true; //If false we will use only position and orientation
-bool robotFullConfig_ = true; //If false we will use only position and orientation
+#include "pdg/types.h"
+
+struct fullConfig_t fullConfig;
+bool robotFullConfig_ = true;
 
 // Stream to activate
 bool morseHuman_ = false;
@@ -62,8 +60,7 @@ bool arObject_ = false;
 bool om2mObject_ = false;
 bool gazeboObject_ = false;
 
-std::map<std::string, std::string> objectInAgent_;
-std::map<std::string, std::string> objectInHand_;
+struct objectIn_t objectIn;
 
 //Used to change position of an entity
 Entity newPoseEnt_("");
@@ -114,8 +111,8 @@ bool putInHand(toaster_msgs::PutInHand::Request &req,
     }
 
     if (req.jointName != "") {
-        objectInAgent_[req.objectId] = req.agentId;
-        objectInHand_[req.objectId] = req.jointName;
+        objectIn.Agent_[req.objectId] = req.agentId;
+        objectIn.Hand_[req.objectId] = req.jointName;
         return true;
     } else {
         ROS_INFO("[pdg][Request][put_in_hand][WARNING] joint name is empty %s\n", req.jointName.c_str());
@@ -133,8 +130,8 @@ bool removeFromHand(toaster_msgs::RemoveFromHand::Request &req,
         return false;
     }
 
-    objectInAgent_.erase(req.objectId);
-    objectInHand_.erase(req.objectId);
+    objectIn.Agent_.erase(req.objectId);
+    objectIn.Hand_.erase(req.objectId);
 
     return true;
 }
@@ -239,14 +236,14 @@ int main(int argc, char** argv) {
 
     //Data reading
     GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
-    MorseHumanReader morseHumanRd(node, humanFullConfig_);
+    MorseHumanReader morseHumanRd(node, fullConfig.Human_);
     //NiutHumanReader niutHumanRd()
     MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
     AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
     ToasterSimuHumanReader toasterSimuHumanRd(node);
 
-    Pr2RobotReader pr2RobotRd(node, robotFullConfig_);
-    SpencerRobotReader spencerRobotRd(robotFullConfig_);
+    Pr2RobotReader pr2RobotRd(node, fullConfig.Robot_);
+    SpencerRobotReader spencerRobotRd(fullConfig.Robot_);
     ToasterSimuRobotReader toasterSimuRobotRd(node);
 
     ArObjectReader arObjectRd(node, "ar_visualization_marker");
@@ -286,10 +283,7 @@ int main(int argc, char** argv) {
 
 
     while (node.ok()) {
-        toaster_msgs::ObjectListStamped objectList_msg;
-        toaster_msgs::HumanListStamped humanList_msg;
-        toaster_msgs::RobotListStamped robotList_msg;
-        toaster_msgs::FactList factList_msg;
+      toasterList_t list_msg;
 
         //update data
 
@@ -313,19 +307,19 @@ int main(int argc, char** argv) {
         ////////////
 
         if (morseHuman_)
-          PublishHuman(morseHumanRd, newPoseEnt_, factList_msg, humanList_msg);
+          PublishHuman(morseHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
 
         if (mocapHuman_)
-          PublishHuman(mocapHumanRd, newPoseEnt_, factList_msg, humanList_msg);
+          PublishHuman(mocapHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
 
         if (adreamMocapHuman_)
-          PublishHuman(adreamMocapHumanRd, newPoseEnt_, factList_msg, humanList_msg);
+          PublishHuman(adreamMocapHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
 
         if (groupHuman_)
-          PublishHuman(groupHumanRd, newPoseEnt_, factList_msg, humanList_msg);
+          PublishHuman(groupHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
 
         if (toasterSimuHuman_)
-          PublishHuman(toasterSimuHumanRd, newPoseEnt_, factList_msg, humanList_msg);
+          PublishHuman(toasterSimuHumanRd, newPoseEnt_, list_msg.fact_msg, list_msg.human_msg);
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -334,13 +328,13 @@ int main(int argc, char** argv) {
         //////////
 
         if (pr2Robot_)
-          PublishRobot(pr2RobotRd, newPoseEnt_, factList_msg, robotList_msg, robotFullConfig_);
+          PublishRobot(pr2RobotRd, newPoseEnt_, list_msg.fact_msg, list_msg.robot_msg, fullConfig.Robot_);
 
         if (spencerRobot_)
-          PublishRobot(spencerRobotRd, newPoseEnt_, factList_msg, robotList_msg, robotFullConfig_);
+          PublishRobot(spencerRobotRd, newPoseEnt_, list_msg.fact_msg, list_msg.robot_msg, fullConfig.Robot_);
 
         if (toasterSimuRobot_)
-          PublishRobot(toasterSimuRobotRd, newPoseEnt_, factList_msg, robotList_msg, robotFullConfig_);
+          PublishRobot(toasterSimuRobotRd, newPoseEnt_, list_msg.fact_msg, list_msg.robot_msg, fullConfig.Robot_);
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -349,257 +343,47 @@ int main(int argc, char** argv) {
         /////////////
 
 
-        if (arObject_) {
-            for (std::map<std::string, MovableObject *>::iterator it = arObjectRd.lastConfig_.begin();
-                 it != arObjectRd.lastConfig_.end(); ++it) {
-                if (newPoseEnt_.getId() == it->first) {
-                    updateEntity(newPoseEnt_, it->second);
-                    //Reset newPoseEnt_
-                    newPoseEnt_.setId("");
-                }
+        if (arObject_)
+          PublishObject(arObjectRd, newPoseEnt_, objectIn, list_msg);
 
+        if (om2mObject_)
+          PublishObject(om2mObjectRd, newPoseEnt_, objectIn, list_msg);
 
-                // If in hand, modify position:
-                if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
-                    bool addFactHand = true;
-                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
-                                            humanList_msg, true))
-                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
-                                                robotList_msg, true)) {
-                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n",
-                                     objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
-                            addFactHand = false;
-                        }
+        if (gazeboObject_)
+          PublishObject(gazeboRd, newPoseEnt_, objectIn, list_msg);
 
-                    if (addFactHand) {
-                        toaster_msgs::Fact fact_msg;
-
-                        //Fact message
-                        fact_msg.property = "IsInHand";
-                        fact_msg.propertyType = "position";
-                        fact_msg.subProperty = "object";
-                        fact_msg.subjectId = it->first;
-                        fact_msg.targetId = objectInAgent_[it->first];
-                        fact_msg.targetOwnerId = objectInAgent_[it->first];
-                        fact_msg.confidence = 1.0;
-                        fact_msg.factObservability = 0.8;
-                        fact_msg.time = it->second->getTime();
-                        fact_msg.valueType = 0;
-                        fact_msg.stringValue = "true";
-
-
-                        factList_msg.factList.push_back(fact_msg);
-                    }
-
-                }
-                //Message for object
-                toaster_msgs::Object object_msg;
-                fillEntity(it->second, object_msg.meEntity);
-                objectList_msg.objectList.push_back(object_msg);
-            }
-        }
-
-        if (om2mObject_) {
-            for (std::map<std::string, MovableObject *>::iterator it_obj = om2mObjectRd.lastConfig_.begin();
-                 it_obj != om2mObjectRd.lastConfig_.end(); ++it_obj)
-            {
-                if (newPoseEnt_.getId() == it_obj->first)
-                {
-                    updateEntity(newPoseEnt_, it_obj->second);
-                    //Reset newPoseEnt_
-                    newPoseEnt_.setId("");
-                }
-
-                std::string value_name;
-                std::string value_value;
-
-                // The names of the facts related to the current object
-                std::vector<std::string> factNames;
-                factNames = loadPropertiesFromXml(it_obj->first);
-
-                std::string ae_data = (static_cast<MovableIoTObject*>(it_obj->second))->getValue().c_str();
-
-                // For each fact we determine its value according to the oBIX XML received from OM2M
-                for (std::vector<std::string>::iterator it_fact = factNames.begin(); it_fact != factNames.end(); ++it_fact)
-                {
-                    //Fact message
-                    toaster_msgs::Fact fact_msg;
-                    fact_msg.property = *it_fact;
-                    fact_msg.propertyType = "iot";
-                    fact_msg.subjectId = it_obj->first;
-                    fact_msg.confidence = 1.0;
-                    // We can not know if the human has seen the value of the iot object
-                    fact_msg.factObservability = 0.5;
-                    fact_msg.time = it_obj->second->getTime();
-                    fact_msg.valueType = 0;
-
-                    bool value_found = false;
-                    size_t ref_pos = 0;
-                    while((ae_data.find(" : ", ref_pos) != std::string::npos) && !value_found)
-                    {
-                      size_t begin_pos = ae_data.find(" : ", ref_pos);
-                      size_t middle_pos = ae_data.find("=", begin_pos);
-                      size_t end_pos = ae_data.find(" / ", middle_pos);
-                      value_name = ae_data.substr(begin_pos + 3, middle_pos - begin_pos - 3);
-                      value_value = ae_data.substr(middle_pos + 1, end_pos - middle_pos - 1);
-                      ref_pos = end_pos;
-
-                      fact_msg.stringValue = loadValueFromXmlAsString(it_obj->first, *it_fact, value_name, value_value);
-
-                      // When there is a match we stop parsing
-                      if (!fact_msg.stringValue.empty())
-                          value_found = true;
-                    }
-
-                    // We add the fact to the list
-                    factList_msg.factList.push_back(fact_msg);
-
-                }
-
-                //Message for object
-                toaster_msgs::Object object_msg;
-                fillValue(static_cast<MovableIoTObject*>(it_obj->second), object_msg);
-                fillEntity(it_obj->second, object_msg.meEntity);
-                objectList_msg.objectList.push_back(object_msg);
-            }
-        }
-
-
-        if (gazeboObject_) {
-            for (std::map<std::string, MovableObject *>::iterator it = gazeboRd.lastConfig_.begin();
-                 it != gazeboRd.lastConfig_.end(); ++it) {
-                if (newPoseEnt_.getId() == it->first) {
-                    updateEntity(newPoseEnt_, it->second);
-                    //Reset newPoseEnt_
-                    newPoseEnt_.setId("");
-                }
-
-
-                // If in hand, modify position:
-                if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
-                    bool addFactHand = true;
-                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
-                                            humanList_msg, true))
-                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
-                                                robotList_msg, true)) {
-                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n",
-                                     objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
-                            addFactHand = false;
-                        }
-
-                    if (addFactHand) {
-
-                        //Fact message
-                        toaster_msgs::Fact fact_msg;
-                        fact_msg.property = "IsInHand";
-                        fact_msg.propertyType = "position";
-                        fact_msg.subProperty = "object";
-                        fact_msg.subjectId = it->first;
-                        fact_msg.targetId = objectInAgent_[it->first];
-                        fact_msg.targetOwnerId = objectInAgent_[it->first];
-                        fact_msg.confidence = 1.0;
-                        fact_msg.factObservability = 0.8;
-                        fact_msg.time = it->second->getTime();
-                        fact_msg.valueType = 0;
-                        fact_msg.stringValue = "true";
-
-
-                        factList_msg.factList.push_back(fact_msg);
-                    }
-
-                }
-                //Message for object
-                toaster_msgs::Object object_msg;
-                fillEntity(it->second, object_msg.meEntity);
-                objectList_msg.objectList.push_back(object_msg);
-            }
-        }
-
-        if (toasterSimuObject_) {
-            for (std::map<std::string, MovableObject *>::iterator it = toasterSimuObjectRd.lastConfig_.begin();
-                 it != toasterSimuObjectRd.lastConfig_.end(); ++it) {
-                if (newPoseEnt_.getId() == it->first) {
-                    updateEntity(newPoseEnt_, it->second);
-                    //Reset newPoseEnt_
-                    newPoseEnt_.setId("");
-                    ROS_INFO("got true");
-                }
-
-                // If in hand, modify position:
-                if (objectInAgent_.find(it->first) != objectInAgent_.end()) {
-                    bool addFactHand = true;
-                    if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
-                                            humanList_msg, true))
-                        if (!putAtJointPosition(it->second, objectInAgent_[it->first], objectInHand_[it->first],
-                                                robotList_msg, true)) {
-                            ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n",
-                                     objectInHand_[it->first].c_str(), objectInAgent_[it->first].c_str());
-                            addFactHand = false;
-                        }
-
-                    if (addFactHand) {
-
-                        toaster_msgs::Fact fact_msg;
-                        //Fact message
-                        fact_msg.property = "IsInHand";
-                        fact_msg.propertyType = "position";
-                        fact_msg.subProperty = "object";
-                        fact_msg.subjectId = it->first;
-                        fact_msg.targetId = objectInAgent_[it->first];
-                        fact_msg.targetOwnerId = objectInAgent_[it->first];
-                        fact_msg.confidence = 1.0;
-                        fact_msg.factObservability = 0.8;
-                        fact_msg.time = it->second->getTime();
-                        fact_msg.valueType = 0;
-                        fact_msg.stringValue = "true";
-
-
-                        factList_msg.factList.push_back(fact_msg);
-                    }
-
-                }
-
-                //Message for object
-                toaster_msgs::Object object_msg;
-                fillEntity(it->second, object_msg.meEntity);
-                objectList_msg.objectList.push_back(object_msg);
-
-
-                //printf("[PDG] Last time object %d: %lu\n", i, toasterSimuObjectRd.lastConfig_[toasterSimuObjectRd.objectIdOffset_ + i]->getTime());
-                //printf("[PDG] object %d named %s is seen\n", toasterSimuObjectRd.objectIdOffset_ + i, toasterSimuObjectRd.lastConfig_[toasterSimuObjectRd.objectIdOffset_ + i]->getName().c_str());
-                //}
-            }
-        }
+        if (toasterSimuObject_)
+          PublishObject(toasterSimuObjectRd, newPoseEnt_, objectIn, list_msg);
 
         ////////////////////////////////////////////////////////////////////////
 
         //header of messages
         seq++;
-        objectList_msg.header.stamp = ros::Time::now();
-        objectList_msg.header.seq = seq;
-        objectList_msg.header.frame_id = "/map";
+        list_msg.object_msg.header.stamp = ros::Time::now();
+        list_msg.object_msg.header.seq = seq;
+        list_msg.object_msg.header.frame_id = "/map";
 
-        humanList_msg.header = objectList_msg.header;
-        robotList_msg.header = objectList_msg.header;
+        list_msg.human_msg.header = list_msg.object_msg.header;
+        list_msg.robot_msg.header = list_msg.object_msg.header;
 
-        for(typeof(objectList_msg.objectList.begin()) it=objectList_msg.objectList.begin(); it!= objectList_msg.objectList.end();++it){
-            broadcastTfEntity(tf_br,it->meEntity,"",objectList_msg.header.stamp);
+        for(typeof(list_msg.object_msg.objectList.begin()) it=list_msg.object_msg.objectList.begin(); it!= list_msg.object_msg.objectList.end();++it){
+            broadcastTfEntity(tf_br,it->meEntity,"",list_msg.object_msg.header.stamp);
         }
 
-        for(typeof(humanList_msg.humanList.begin()) it=humanList_msg.humanList.begin(); it!= humanList_msg.humanList.end();++it){
-            broadcastTfAgent(tf_br,it->meAgent,"",humanList_msg.header.stamp);
+        for(typeof(list_msg.human_msg.humanList.begin()) it=list_msg.human_msg.humanList.begin(); it!= list_msg.human_msg.humanList.end();++it){
+            broadcastTfAgent(tf_br,it->meAgent,"",list_msg.human_msg.header.stamp);
         }
-        for(typeof(robotList_msg.robotList.begin()) it=robotList_msg.robotList.begin(); it!= robotList_msg.robotList.end();++it){
-            broadcastTfAgent(tf_br,it->meAgent,"",robotList_msg.header.stamp);
+        for(typeof(list_msg.robot_msg.robotList.begin()) it=list_msg.robot_msg.robotList.begin(); it!= list_msg.robot_msg.robotList.end();++it){
+            broadcastTfAgent(tf_br,it->meAgent,"",list_msg.robot_msg.header.stamp);
         }
 
 
         //ROS_INFO("%s", msg.data.c_str());
 
-        object_pub.publish(objectList_msg);
-        human_pub.publish(humanList_msg);
-        robot_pub.publish(robotList_msg);
-        fact_pub.publish(factList_msg);
+        object_pub.publish(list_msg.object_msg);
+        human_pub.publish(list_msg.human_msg);
+        robot_pub.publish(list_msg.robot_msg);
+        fact_pub.publish(list_msg.fact_msg);
 
         ros::spinOnce();
 

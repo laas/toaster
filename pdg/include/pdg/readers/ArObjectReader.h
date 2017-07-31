@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ArObjectReader.h
  * Author: JPaul Marcade
  *
@@ -21,15 +21,16 @@
 #include "visualization_msgs/Marker.h"
 
 class ArObjectReader : public ObjectReader {
-	
+
 public:
     ArObjectReader(ros::NodeHandle& node, std::string topicAR);
 
+		virtual ~ArObjectReader() {};
+
 private:
     ros::Subscriber subAR_;
-    
-    void CallbackObj(const visualization_msgs::Marker::ConstPtr& msg);   
+
+    void CallbackObj(const visualization_msgs::Marker::ConstPtr& msg);
 };
 
 #endif	/* AROBJECTREADER */
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   GazeboObjectReader.h
  * Author: Sandra Devin
  *
@@ -20,15 +20,16 @@
 #include <ostream>
 
 class GazeboObjectReader : public ObjectReader {
-	
+
 public:
     GazeboObjectReader(ros::NodeHandle& node, std::string topic);
 
+		virtual ~GazeboObjectReader() {};
+
 private:
     ros::Subscriber sub_;
-    
-    void CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg);   
+
+    void CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg);
 };
 
 #endif	/* GAZEBOOBJECTREADER */
-

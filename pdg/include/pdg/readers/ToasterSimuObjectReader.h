@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ToasterSimuObjectReader.h
  * Author: gmilliez
  *
@@ -17,6 +17,8 @@ class ToasterSimuObjectReader : public ObjectReader {
 public:
     ToasterSimuObjectReader(ros::NodeHandle& node);
 
+    virtual ~ToasterSimuObjectReader() {};
+
 private:
     //Functions
     void objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg);
@@ -24,4 +26,3 @@ private:
 };
 
 #endif	/* TOASTERSIMUOBJECTREADER_H */
-

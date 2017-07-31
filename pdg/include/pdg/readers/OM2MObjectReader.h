@@ -20,6 +20,8 @@ class OM2MObjectReader : public ObjectReader {
 public:
     OM2MObjectReader(ros::NodeHandle& node, std::string topicOM2M);
 
+    virtual ~OM2MObjectReader() {};
+
 private:
     ros::Subscriber sub_;
     void newValueCallBack(const toaster_msgs::IoTData::ConstPtr& msg);
