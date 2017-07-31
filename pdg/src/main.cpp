@@ -308,13 +308,13 @@ int main(int argc, char** argv) {
         //////////
 
         if (pr2Robot_)
-          PublishRobot(pr2RobotRd, newPoseEnt_, list_msg.fact_msg, list_msg.robot_msg, fullConfig.Robot_);
+          PublishRobot(pr2RobotRd, newPoseEnt_, list_msg, fullConfig.Robot_);
 
         if (spencerRobot_)
-          PublishRobot(spencerRobotRd, newPoseEnt_, list_msg.fact_msg, list_msg.robot_msg, fullConfig.Robot_);
+          PublishRobot(spencerRobotRd, newPoseEnt_, list_msg, fullConfig.Robot_);
 
         if (toasterSimuRobot_)
-          PublishRobot(toasterSimuRobotRd, newPoseEnt_, list_msg.fact_msg, list_msg.robot_msg, fullConfig.Robot_);
+          PublishRobot(toasterSimuRobotRd, newPoseEnt_, list_msg, fullConfig.Robot_);
 
         ////////////////////////////////////////////////////////////////////////
 

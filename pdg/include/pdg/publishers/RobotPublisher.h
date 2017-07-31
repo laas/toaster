@@ -9,20 +9,19 @@
 #include "pdg/readers/SpencerRobotReader.h"
 #include "pdg/readers/ToasterSimuRobotReader.h"
 
+#include "pdg/types.h"
+
 void PublishRobot(Pr2RobotReader& pr2RobotRd, Entity& newPoseEnt_,
-                     toaster_msgs::FactList& factList_msg,
-                     toaster_msgs::RobotListStamped& robotList_msg,
+                     struct toasterList_t& list_msg,
                      bool FullConfig = false);
 
 void PublishRobot(SpencerRobotReader& spencerRobotRd, Entity& newPoseEnt_,
-                    toaster_msgs::FactList& factList_msg,
-                    toaster_msgs::RobotListStamped& robotList_msg,
+                    struct toasterList_t& list_msg,
                     bool FullConfig = false);
 
 void PublishRobot(ToasterSimuRobotReader& toasterSimuRobotRd,
                     Entity& newPoseEnt_,
-                    toaster_msgs::FactList& factList_msg,
-                    toaster_msgs::RobotListStamped& robotList_msg,
+                    struct toasterList_t& list_msg,
                     bool FullConfig = false);
 
 #endif

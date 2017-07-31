@@ -7,8 +7,7 @@
 #include <map>
 
 void PublishRobot(Pr2RobotReader& pr2RobotRd, Entity& newPoseEnt_,
-                     toaster_msgs::FactList& factList_msg,
-                     toaster_msgs::RobotListStamped& robotList_msg,
+                     struct toasterList_t& list_msg,
                      bool FullConfig)
 {
   for (std::map<std::string, Robot *>::iterator it = pr2RobotRd.lastConfig_.begin();
@@ -29,7 +28,7 @@ void PublishRobot(Pr2RobotReader& pr2RobotRd, Entity& newPoseEnt_,
       fact_msg.valueType = 0;
 
 
-      factList_msg.factList.push_back(fact_msg);
+      list_msg.fact_msg.factList.push_back(fact_msg);
 
 
       //Robot
@@ -50,14 +49,13 @@ void PublishRobot(Pr2RobotReader& pr2RobotRd, Entity& newPoseEnt_,
               robot_msg.meAgent.skeletonJoint.push_back(joint_msg);
           }
       }
-      robotList_msg.robotList.push_back(robot_msg);
+      list_msg.robot_msg.robotList.push_back(robot_msg);
       //}
   }
 }
 
 void PublishRobot(SpencerRobotReader& spencerRobotRd, Entity& newPoseEnt_,
-                    toaster_msgs::FactList& factList_msg,
-                    toaster_msgs::RobotListStamped& robotList_msg,
+                    struct toasterList_t& list_msg,
                     bool FullConfig)
 {
   for (std::map<std::string, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
@@ -76,7 +74,7 @@ void PublishRobot(SpencerRobotReader& spencerRobotRd, Entity& newPoseEnt_,
       fact_msg.valueType = 0;
 
 
-      factList_msg.factList.push_back(fact_msg);
+      list_msg.fact_msg.factList.push_back(fact_msg);
 
       //Robot
       toaster_msgs::Robot robot_msg;
@@ -95,15 +93,14 @@ void PublishRobot(SpencerRobotReader& spencerRobotRd, Entity& newPoseEnt_,
               i++;
           }
       }*/
-      robotList_msg.robotList.push_back(robot_msg);
+      list_msg.robot_msg.robotList.push_back(robot_msg);
       //}
   }
 }
 
 void PublishRobot(ToasterSimuRobotReader& toasterSimuRobotRd,
                     Entity& newPoseEnt_,
-                    toaster_msgs::FactList& factList_msg,
-                    toaster_msgs::RobotListStamped& robotList_msg,
+                    struct toasterList_t& list_msg,
                     bool FullConfig)
 {
   for (std::map<std::string, Robot *>::iterator it = toasterSimuRobotRd.lastConfig_.begin();
@@ -124,7 +121,7 @@ void PublishRobot(ToasterSimuRobotReader& toasterSimuRobotRd,
       fact_msg.valueType = 0;
 
 
-      factList_msg.factList.push_back(fact_msg);
+      list_msg.fact_msg.factList.push_back(fact_msg);
 
 
       //Robot
@@ -145,7 +142,7 @@ void PublishRobot(ToasterSimuRobotReader& toasterSimuRobotRd,
               robot_msg.meAgent.skeletonJoint.push_back(joint_msg);
           }
       }
-      robotList_msg.robotList.push_back(robot_msg);
+      list_msg.robot_msg.robotList.push_back(robot_msg);
       //}
   }
 }
