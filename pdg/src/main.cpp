@@ -1,23 +1,3 @@
-
-// Humans
-#include "pdg/readers/MorseHumanReader.h"
-#include "pdg/readers/NiutHumanReader.h"
-#include "pdg/readers/GroupHumanReader.h"
-#include "pdg/readers/MocapHumanReader.h"
-#include "pdg/readers/AdreamMocapHumanReader.h"
-#include "pdg/readers/ToasterSimuHumanReader.h"
-
-// Robots
-#include "pdg/readers/Pr2RobotReader.h"
-#include "pdg/readers/SpencerRobotReader.h"
-#include "pdg/readers/ToasterSimuRobotReader.h"
-
-// Objects
-#include "pdg/readers/ToasterSimuObjectReader.h"
-#include "pdg/readers/ArObjectReader.h"
-#include "pdg/readers/OM2MObjectReader.h"
-#include "pdg/readers/GazeboObjectReader.h"
-
 // Facts
 
 // Message generated class
@@ -34,6 +14,7 @@
 //Utility
 #include "pdg/utility/EntityUtility.h"
 
+//publishers -> include readers
 #include "pdg/publishers/HumanPublisher.h"
 #include "pdg/publishers/RobotPublisher.h"
 #include "pdg/publishers/ObjectPublisher.h"
@@ -41,7 +22,6 @@
 #include "pdg/types.h"
 
 struct fullConfig_t fullConfig;
-bool robotFullConfig_ = true;
 
 // Stream to activate
 bool morseHuman_ = false;
