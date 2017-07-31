@@ -309,8 +309,8 @@ pose:
     y: 11.0
     z: 0.0
   orientation:
-    x: 0.0
-    y: 0.0
+    x: 0.5
+    y: 0.5
     z: 0.5
     w: 0.5"
 
@@ -328,8 +328,8 @@ pose:
     y: 12.8
     z: 0.0
   orientation:
-    x: 0.0
-    y: 0.0
+    x: 0.5
+    y: 0.5
     z: 0.5
     w: 0.5"
 
@@ -405,10 +405,10 @@ pose:
     y: 11.7
     z: 0.56
   orientation:
-    x: 0.0
+    x: 0.5
     y: 0.5
     z: 0.5
-    w: 0.0" 
+    w: 0.5" 
 
 rosservice call /toaster_simu/add_entity "id: '11'
 name: 'Carpet'
@@ -621,7 +621,7 @@ pose:
     w: 0.0"
 
 rosservice call /toaster_simu/add_entity "id: '23'
-name: 'eyeball1'
+name: 'eyeball_1'
 type: 'object'
 ownerId: ''" 
 
