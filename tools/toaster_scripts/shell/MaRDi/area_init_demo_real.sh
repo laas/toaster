@@ -308,24 +308,6 @@ pose:
     z: 0.5
     w: 0.5"
 
-rosservice call /toaster_simu/add_entity "id: '9'
-name: 'Readingroom_chair_1'
-type: 'object'
-ownerId: ''" 
- 
-rosservice call /toaster_simu/set_entity_pose "id: '9'
-ownerId: ''
-type: 'object'
-pose:
-  position:
-    x: 6.8
-    y: 12.2
-    z: 0.0
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 0.5
-    w: 0.5" 
 
 rosservice call /toaster_simu/add_entity "id: '13'
 name: 'Readingroom_small_shelf'
@@ -357,7 +339,7 @@ type: 'object'
 pose:
   position:
     x: 6.6
-    y: 10.9
+    y: 10.7
     z: 0.0
   orientation:
     x: 0.0
