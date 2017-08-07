@@ -1,9 +1,9 @@
-#include "pdg/MorseHumanReader.h"
-#include "pdg/GroupHumanReader.h"
-#include "pdg/Pr2RobotReader.h"
-#include "pdg/SpencerRobotReader.h"
-#include "pdg/VimanObjectReader.h"
-#include "pdg/SparkObjectReader.h"
+#include "pdg/readers/MorseHumanReader.h"
+#include "pdg/readers/GroupHumanReader.h"
+#include "pdg/readers/Pr2RobotReader.h"
+#include "pdg/readers/SpencerRobotReader.h"
+#include "pdg/readers/VimanObjectReader.h"
+#include "pdg/readers/SparkObjectReader.h"
 
 // Message generated class
 #include <toaster_msgs/Entity.h>
