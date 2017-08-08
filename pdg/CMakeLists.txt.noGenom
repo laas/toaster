@@ -119,7 +119,25 @@ ${Boost_INCLUDE_DIRS}  $ENV{HOME}/devel/include $ENV{HOME}/openrobots/include/
 # )
 
 ## Declare a cpp executable
- add_executable(pdg src/MorseHumanReader.cpp src/NiutHumanReader.cpp src/MocapHumanReader.cpp src/GroupHumanReader.cpp src/HumanReader.cpp src/RobotReader.cpp src/Pr2RobotReader.cpp src/SpencerRobotReader.cpp src/main.cpp)
+set(${PROJECT_NAME}_SOURCES
+    #readers
+    src/readers/MorseHumanReader.cpp
+    src/readers/NiutHumanReader.cpp
+    src/readers/MocapHumanReader.cpp
+    src/readers/GroupHumanReader.cpp
+    src/readers/HumanReader.cpp
+    src/readers/RobotReader.cpp
+    src/readers/Pr2RobotReader.cpp
+    src/readers/SpencerRobotReader.cpp
+    #utility
+    src/utility/XmlUtility.cpp
+    src/utility/EntityUtility.cpp
+    #publishers
+    src/publishers/HumanPublisher.cpp
+    src/publishers/RobotPublisher.cpp
+    src/publishers/ObjectPublisher.cpp
+)
+ add_executable(pdg ${${PROJECT_NAME}_SOURCES} src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
