@@ -16,20 +16,19 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
+#include "pdg/readers/Reader.h"
 #include <map>
 #include <string>
 
-class HumanReader{
+class HumanReader : public Reader<Human>{
 
     public:
       HumanReader();
-      ~HumanReader();
+      virtual ~HumanReader();
 
-      std::map<std::string, Human*> lastConfig_;
       bool fullHuman_;
 
       bool isPresent(std::string id);
-
 };
 
 

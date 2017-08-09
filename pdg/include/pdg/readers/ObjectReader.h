@@ -15,16 +15,17 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/MovableObject.h"
+#include "pdg/readers/Reader.h"
 #include <map>
 #include <string>
 #include <unistd.h>
 
-class ObjectReader {
+class ObjectReader : public Reader<MovableObject>{
 public:
   ObjectReader();
-  ~ObjectReader();
+  virtual ~ObjectReader();
 
-  static std::map<std::string, MovableObject*> lastConfig_;
+  static std::map<std::string, MovableObject*> globalLastConfig_;
 
 protected:
   ros::Subscriber sub_;
@@ -32,9 +33,8 @@ protected:
   static unsigned int nbObjects_; /// total object number
   unsigned int nbLocalObjects_;
 
-  void increaseNbObjects();
-
   bool isPresent(std::string id);
+  void increaseNbObjects();
 
   static bool lastConfigMutex_;
   static bool WaitMutex(unsigned int durationSecond)

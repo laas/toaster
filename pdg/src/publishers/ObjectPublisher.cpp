@@ -4,17 +4,43 @@
 
 #include "toaster-lib/Object.h"
 
+toaster_msgs::Fact DefaultFactMsg(std::map<std::string, MovableObject *>::iterator it, struct objectIn_t& objectIn)
+{
+  toaster_msgs::Fact fact_msg;
+
+  //Fact message
+  fact_msg.property = "IsInHand";
+  fact_msg.propertyType = "position";
+  fact_msg.subProperty = "object";
+  fact_msg.subjectId = it->first;
+  fact_msg.targetId = objectIn.Agent_[it->first];
+  fact_msg.targetOwnerId = objectIn.Agent_[it->first];
+  fact_msg.confidence = 1.0;
+  fact_msg.factObservability = 0.8;
+  fact_msg.time = it->second->getTime();
+  fact_msg.valueType = 0;
+  fact_msg.stringValue = "true";
+
+  return fact_msg;
+}
+
+void ManageNewPoseEnt(std::map<std::string, MovableObject *>::iterator it, Entity& newPoseEnt_)
+{
+  if(newPoseEnt_.getId() == it->first)
+  {
+      updateEntity(newPoseEnt_, it->second);
+      //Reset newPoseEnt_
+      newPoseEnt_.setId("");
+  }
+}
+
 void PublishObject(ArObjectReader& arObjectRd, Entity& newPoseEnt_,
                      struct objectIn_t& objectIn,
                      struct toasterList_t& list_msg)
 {
   for (std::map<std::string, MovableObject *>::iterator it = arObjectRd.lastConfig_.begin();
        it != arObjectRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first) {
-          updateEntity(newPoseEnt_, it->second);
-          //Reset newPoseEnt_
-          newPoseEnt_.setId("");
-      }
+      ManageNewPoseEnt(it, newPoseEnt_);
 
       // If in hand, modify position:
       if (objectIn.Agent_.find(it->first) != objectIn.Agent_.end()) {
@@ -29,22 +55,7 @@ void PublishObject(ArObjectReader& arObjectRd, Entity& newPoseEnt_,
               }
 
           if (addFactHand) {
-              toaster_msgs::Fact fact_msg;
-
-              //Fact message
-              fact_msg.property = "IsInHand";
-              fact_msg.propertyType = "position";
-              fact_msg.subProperty = "object";
-              fact_msg.subjectId = it->first;
-              fact_msg.targetId = objectIn.Agent_[it->first];
-              fact_msg.targetOwnerId = objectIn.Agent_[it->first];
-              fact_msg.confidence = 1.0;
-              fact_msg.factObservability = 0.8;
-              fact_msg.time = it->second->getTime();
-              fact_msg.valueType = 0;
-              fact_msg.stringValue = "true";
-
-
+              toaster_msgs::Fact fact_msg= DefaultFactMsg(it, objectIn);
               list_msg.fact_msg.factList.push_back(fact_msg);
           }
 
@@ -63,12 +74,7 @@ void PublishObject(OM2MObjectReader& om2mObjectRd, Entity& newPoseEnt_,
   for (std::map<std::string, MovableObject *>::iterator it_obj = om2mObjectRd.lastConfig_.begin();
        it_obj != om2mObjectRd.lastConfig_.end(); ++it_obj)
   {
-      if (newPoseEnt_.getId() == it_obj->first)
-      {
-          updateEntity(newPoseEnt_, it_obj->second);
-          //Reset newPoseEnt_
-          newPoseEnt_.setId("");
-      }
+      ManageNewPoseEnt(it_obj, newPoseEnt_);
 
       std::string value_name;
       std::string value_value;
@@ -130,12 +136,7 @@ void PublishObject(GazeboObjectReader& gazeboRd, Entity& newPoseEnt_,
 {
   for (std::map<std::string, MovableObject *>::iterator it = gazeboRd.lastConfig_.begin();
        it != gazeboRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first) {
-          updateEntity(newPoseEnt_, it->second);
-          //Reset newPoseEnt_
-          newPoseEnt_.setId("");
-      }
-
+      ManageNewPoseEnt(it, newPoseEnt_);
 
       // If in hand, modify position:
       if (objectIn.Agent_.find(it->first) != objectIn.Agent_.end()) {
@@ -150,22 +151,7 @@ void PublishObject(GazeboObjectReader& gazeboRd, Entity& newPoseEnt_,
               }
 
           if (addFactHand) {
-
-              //Fact message
-              toaster_msgs::Fact fact_msg;
-              fact_msg.property = "IsInHand";
-              fact_msg.propertyType = "position";
-              fact_msg.subProperty = "object";
-              fact_msg.subjectId = it->first;
-              fact_msg.targetId = objectIn.Agent_[it->first];
-              fact_msg.targetOwnerId = objectIn.Agent_[it->first];
-              fact_msg.confidence = 1.0;
-              fact_msg.factObservability = 0.8;
-              fact_msg.time = it->second->getTime();
-              fact_msg.valueType = 0;
-              fact_msg.stringValue = "true";
-
-
+              toaster_msgs::Fact fact_msg= DefaultFactMsg(it, objectIn);
               list_msg.fact_msg.factList.push_back(fact_msg);
           }
 
@@ -184,12 +170,7 @@ void PublishObject(ToasterSimuObjectReader& toasterSimuObjectRd,
 {
   for (std::map<std::string, MovableObject *>::iterator it = toasterSimuObjectRd.lastConfig_.begin();
        it != toasterSimuObjectRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first) {
-          updateEntity(newPoseEnt_, it->second);
-          //Reset newPoseEnt_
-          newPoseEnt_.setId("");
-          ROS_INFO("got true");
-      }
+      ManageNewPoseEnt(it, newPoseEnt_);
 
       // If in hand, modify position:
       if (objectIn.Agent_.find(it->first) != objectIn.Agent_.end()) {
@@ -204,22 +185,7 @@ void PublishObject(ToasterSimuObjectReader& toasterSimuObjectRd,
               }
 
           if (addFactHand) {
-
-              toaster_msgs::Fact fact_msg;
-              //Fact message
-              fact_msg.property = "IsInHand";
-              fact_msg.propertyType = "position";
-              fact_msg.subProperty = "object";
-              fact_msg.subjectId = it->first;
-              fact_msg.targetId = objectIn.Agent_[it->first];
-              fact_msg.targetOwnerId = objectIn.Agent_[it->first];
-              fact_msg.confidence = 1.0;
-              fact_msg.factObservability = 0.8;
-              fact_msg.time = it->second->getTime();
-              fact_msg.valueType = 0;
-              fact_msg.stringValue = "true";
-
-
+              toaster_msgs::Fact fact_msg= DefaultFactMsg(it, objectIn);
               list_msg.fact_msg.factList.push_back(fact_msg);
           }
 

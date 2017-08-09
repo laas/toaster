@@ -15,16 +15,15 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Robot.h"
+#include "pdg/readers/Reader.h"
 #include <map>
 #include <string>
 
-class RobotReader{
+class RobotReader : public Reader<Robot>{
 
     public:
         RobotReader();
-        ~RobotReader();
-
-        std::map<std::string, Robot*> lastConfig_;
+        virtual ~RobotReader();
 
     protected:
         bool fullRobot_;

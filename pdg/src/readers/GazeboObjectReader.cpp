@@ -42,13 +42,13 @@ void GazeboObjectReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& m
 
 		// If this object is not assigned we have to allocate data.
     WaitMutex(1000);
-		if (lastConfig_.find(objectsName[i]) == lastConfig_.end()) {
+		if (globalLastConfig_.find(objectsName[i]) == globalLastConfig_.end()) {
 		    curObject = new MovableObject(objectsName[i]);
 		    curObject->setRoomId(0);
 		    curObject->setName(objectsName[i]);
         increaseNbObjects();
 		} else{
-		    curObject = lastConfig_[objectsName[i]];
+		    curObject = globalLastConfig_[objectsName[i]];
 		}
     releaseMutex();
 
@@ -77,8 +77,9 @@ void GazeboObjectReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& m
 		curObject->setOrientation(objOrientation);
 
     WaitMutex(1000);
-		lastConfig_[objectsName[i]] = curObject;
+		globalLastConfig_[objectsName[i]] = curObject;
     releaseMutex();
+    lastConfig_[objectsName[i]] = curObject;
 	}
 
 }

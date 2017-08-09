@@ -26,12 +26,12 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& m
 
     //create a new object with the same id and name as the message
     WaitMutex(1000);
-    if (lastConfig_.find(msg->data.key) == lastConfig_.end()) {
+    if (globalLastConfig_.find(msg->data.key) == globalLastConfig_.end()) {
         curObject = new MovableIoTObject(msg->data.key);
         curObject->setName(msg->data.key);
         increaseNbObjects();
     } else {
-        curObject = (MovableIoTObject*)lastConfig_[msg->data.key];
+        curObject = (MovableIoTObject*)globalLastConfig_[msg->data.key];
     }
     releaseMutex();
 
@@ -60,6 +60,7 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& m
     curObject->setTime(micro_sec);
 
     WaitMutex(1000);
-    lastConfig_[msg->data.key]=curObject;
+    globalLastConfig_[msg->data.key]=curObject;
     releaseMutex();
+    lastConfig_[msg->data.key]=curObject;
 }

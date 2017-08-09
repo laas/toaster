@@ -24,13 +24,13 @@ void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectList
 
         // If this object is not assigned we have to allocate data.
         WaitMutex(1000);
-        if (lastConfig_.find(msg->objectList[i].meEntity.id) == lastConfig_.end()) {
+        if (globalLastConfig_.find(msg->objectList[i].meEntity.id) == globalLastConfig_.end()) {
             curObject = new MovableObject(msg->objectList[i].meEntity.id);
             curObject->setRoomId(0);
             curObject->setName(msg->objectList[i].meEntity.name);
             increaseNbObjects();
         } else
-            curObject = lastConfig_[msg->objectList[i].meEntity.id];
+            curObject = globalLastConfig_[msg->objectList[i].meEntity.id];
         releaseMutex();
 
         std::vector<double> objOrientation;
@@ -57,8 +57,10 @@ void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectList
         curObject->setOrientation(objOrientation);
 
         WaitMutex(1000);
+        if (globalLastConfig_[msg->objectList[i].meEntity.id] == NULL)
+            globalLastConfig_[curObject->getId()] = curObject;
+        releaseMutex();
         if (lastConfig_[msg->objectList[i].meEntity.id] == NULL)
             lastConfig_[curObject->getId()] = curObject;
-        releaseMutex();
     }
 }
