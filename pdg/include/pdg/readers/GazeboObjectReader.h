@@ -22,8 +22,6 @@ public:
 		~GazeboObjectReader() {};
 
 private:
-    ros::Subscriber sub_;
-
     void CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg);
 };
 

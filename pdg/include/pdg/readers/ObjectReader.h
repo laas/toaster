@@ -17,18 +17,44 @@
 #include "toaster-lib/MovableObject.h"
 #include <map>
 #include <string>
+#include <unistd.h>
 
 class ObjectReader {
 public:
   ObjectReader();
   ~ObjectReader();
 
-  std::map<std::string, MovableObject*> lastConfig_;
+  static std::map<std::string, MovableObject*> lastConfig_;
 
 protected:
-  unsigned int nbObjects_; /// total object number
+  ros::Subscriber sub_;
+  static unsigned int nbReaders_;
+  static unsigned int nbObjects_; /// total object number
+  unsigned int nbLocalObjects_;
+
+  void increaseNbObjects();
 
   bool isPresent(std::string id);
+
+  static bool lastConfigMutex_;
+  static bool WaitMutex(unsigned int durationSecond)
+  {
+    while(durationSecond-- > 0)
+    {
+      if(!lastConfigMutex_)
+      {
+        lastConfigMutex_ = true;
+        return true;
+      }
+      usleep(1000);
+    }
+    return false;
+  }
+
+  static void releaseMutex()
+  {
+    lastConfigMutex_ = false;
+  }
 
 };
 

@@ -22,8 +22,6 @@ public:
 		~ArObjectReader() {};
 
 private:
-    ros::Subscriber subAR_;
-
     void CallbackObj(const visualization_msgs::Marker::ConstPtr& msg);
 };
 

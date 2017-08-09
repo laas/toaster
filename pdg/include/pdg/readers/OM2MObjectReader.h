@@ -21,7 +21,6 @@ public:
     ~OM2MObjectReader() {};
 
 private:
-    ros::Subscriber sub_;
     void newValueCallBack(const toaster_msgs::IoTData::ConstPtr& msg);
 };
 

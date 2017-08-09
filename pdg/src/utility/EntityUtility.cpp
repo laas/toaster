@@ -32,7 +32,7 @@ void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
 }
 
 void updateEntity(Entity& newPoseEnt, Entity* storedEntity) {
-    ROS_INFO("UPDATE entity");
+    //ROS_INFO("UPDATE entity");
     storedEntity->position_ = newPoseEnt.getPosition();
     storedEntity->orientation_ = newPoseEnt.getOrientation();
     storedEntity->setTime(newPoseEnt.getTime());

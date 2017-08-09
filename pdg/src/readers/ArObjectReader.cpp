@@ -17,7 +17,7 @@ ArObjectReader::ArObjectReader(ros::NodeHandle& node, std::string topicAR) {
 
     ROS_INFO("[ArObjectReader] Initializing");
 
-    subAR_ = node.subscribe(topicAR, 1, &ArObjectReader::CallbackObj, this);
+    sub_ = node.subscribe(topicAR, 1, &ArObjectReader::CallbackObj, this);
 
     ROS_INFO("[ArObjectReader] done");
 }
@@ -28,12 +28,15 @@ void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg
 	MovableObject* curObject;
 
 	//create a new object with the same id as the message
+  WaitMutex(1000);
 	if (lastConfig_.find(msg->ns) == lastConfig_.end()) {
 		curObject = new MovableObject(msg->ns);
 		curObject->setName(msg->ns);
+    increaseNbObjects();
 	} else {
 		curObject = lastConfig_[msg->ns];
 	}
+  releaseMutex();
 
 
 	//set object position
@@ -61,6 +64,7 @@ void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg
 	curObject->setPosition(objectPosition);
 	curObject->setTime(now.toNSec());      //Similar to AdreamMoCapHumanReader. Is it better to use time stamp from msg
 
+  WaitMutex(1000);
 	lastConfig_[msg->ns]=curObject;
-
+  releaseMutex();
 }

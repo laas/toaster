@@ -22,7 +22,6 @@ public:
 private:
     //Functions
     void objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg);
-    ros::Subscriber sub_;
 };
 
 #endif	/* TOASTERSIMUOBJECTREADER_H */
