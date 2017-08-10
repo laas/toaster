@@ -26,6 +26,8 @@ class RobotReader : public Reader<Robot>{
         RobotReader();
         virtual ~RobotReader();
 
+        virtual void Publish(struct toasterList_t& list_msg);
+
     protected:
         bool fullRobot_;
 

@@ -8,11 +8,12 @@
 #include "pdg/readers/ToasterSimuRobotReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterSimuRobotReader::ToasterSimuRobotReader(ros::NodeHandle& node) {
-    std::cout << "Initializing ToasterSimuRobotReader" << std::endl;
+void ToasterSimuRobotReader::init(ros::NodeHandle* node, std::string param) {
+  std::cout << "[PDG] Initializing ToasterSimuRobotReader" << std::endl;
+  Reader<Robot>::init(node, param);
 
-    // Starts listening to the topic
-    sub_ = node.subscribe("/toaster_simu/robotList", 1, &ToasterSimuRobotReader::robotJointStateCallBack, this);
+  if (fullRobot_)
+      sub_ = node_->subscribe("/toaster_simu/robotList", 1, &ToasterSimuRobotReader::robotJointStateCallBack, this);
 }
 
 void ToasterSimuRobotReader::robotJointStateCallBack(const toaster_msgs::RobotListStamped::ConstPtr& msg) {

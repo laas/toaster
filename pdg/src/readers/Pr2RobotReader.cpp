@@ -1,12 +1,22 @@
 #include "pdg/readers/Pr2RobotReader.h"
 
-Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, bool fullRobot) {
+Pr2RobotReader::Pr2RobotReader(bool fullRobot) {
     fullRobot_ = fullRobot;
-    std::cout << "Initializing Pr2RobotReader" << std::endl;
-    initJointsName_ = false;
-    init();
-    if (fullRobot)
-        sub_ = node.subscribe("joint_states", 1, &Pr2RobotReader::pr2JointStateCallBack, this);
+}
+
+void Pr2RobotReader::init(ros::NodeHandle* node, std::string param) {
+  std::cout << "[PDG] Initializing Pr2RobotReader" << std::endl;
+  Reader<Robot>::init(node, param);
+
+  if (fullRobot_)
+      sub_ = node_->subscribe("joint_states", 1, &Pr2RobotReader::pr2JointStateCallBack, this);
+
+  initJointsName_ = false;
+  Robot* curRobot = new Robot("pr2");
+  //TODO: setname with id
+  curRobot->setName("PR2_ROBOT");
+
+  lastConfig_["pr2"] = curRobot;
 }
 
 
@@ -36,23 +46,10 @@ Pr2RobotReader::Pr2RobotReader(ros::NodeHandle& node, bool fullRobot) {
     pr2JointsName_.push_back("l_gripper_joint");
 }*/
 
-void Pr2RobotReader::init() {
-    Robot* curRobot = new Robot("pr2");
-    //TODO: setname with id
-    curRobot->setName("PR2_ROBOT");
-    /*initJointsName();
-    if (fullRobot_) {
-        std::stringstream jointId;
-        jointId << "pr2";
-        for (unsigned int i = 0; i < pr2JointsName_.size(); i++) {
-            jointId << pr2JointsName_[i];
-            curRobot->skeleton_[pr2JointsName_[i]] = new Joint(jointId.str(), "pr2");
-        }
-    }*/
-    lastConfig_["pr2"] = curRobot;
-}
-
-void Pr2RobotReader::updateRobot(tf::TransformListener &listener) {
+void Pr2RobotReader::updateRobot(tf::TransformListener &listener)
+{
+  if(fullRobot_)
+  {
     Robot* curRobot = lastConfig_["pr2"];
     Joint* curJoint = new Joint("pr2_base_link", "pr2");
     curJoint->setName("base_link");
@@ -74,6 +71,7 @@ void Pr2RobotReader::updateRobot(tf::TransformListener &listener) {
             setRobotJointLocation(listener, curJoint);
         }
     }
+  }
 }
 
 void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Joint* joint) {

@@ -7,10 +7,19 @@
 
 #include "pdg/readers/SpencerRobotReader.h"
 
-SpencerRobotReader::SpencerRobotReader(bool fullRobot) {
-    fullRobot_ = fullRobot;
-    std::cout << "Initializing SpencerRobotReader" << std::endl;
-    init();
+SpencerRobotReader::SpencerRobotReader() {
+    fullRobot_ = false;
+}
+
+void SpencerRobotReader::init(ros::NodeHandle* node, std::string param) {
+  std::cout << "[PDG] Initializing SpencerRobotReader" << std::endl;
+  Reader<Robot>::init(node, param);
+
+  Robot* curRobot = new Robot("spencer");
+  //TODO: setname with id
+  curRobot->setName("spencer");
+  initJointsName();
+  lastConfig_["spencer"] = curRobot;
 }
 
 // Maybe get this from a config file?
@@ -19,15 +28,10 @@ void SpencerRobotReader::initJointsName() {
     spencerJointsName_.push_back("base_link");
 }
 
-void SpencerRobotReader::init() {
-    Robot* curRobot = new Robot("spencer");
-    //TODO: setname with id
-    curRobot->setName("spencer");
-    initJointsName();
-    lastConfig_["spencer"] = curRobot;
-}
-
-void SpencerRobotReader::updateRobot(tf::TransformListener &listener) {
+void SpencerRobotReader::updateRobot(tf::TransformListener &listener)
+{
+  if(fullRobot_)
+  {
     Robot* curRobot = lastConfig_["spencer"];
     Joint* curJoint = new Joint("spencer_base_link", "spencer");
     curJoint->setName(spencerJointsName_[0]);
@@ -42,8 +46,7 @@ void SpencerRobotReader::updateRobot(tf::TransformListener &listener) {
     //printf("spencer robot: %f, %f, %f\n", curRobot->getPosition().get<0>(), curRobot->getPosition().get<1>(), curRobot->getPosition().get<2>());
 
     delete curJoint;
-
-
+  }
 }
 
 void SpencerRobotReader::setRobotJointLocation(tf::TransformListener &listener, Joint* joint) {
@@ -78,7 +81,4 @@ void SpencerRobotReader::setRobotJointLocation(tf::TransformListener &listener, 
     } catch (tf::TransformException ex) {
         ROS_ERROR("%s", ex.what());
     }
-}
-
-SpencerRobotReader::~SpencerRobotReader() {
 }

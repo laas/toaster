@@ -15,9 +15,10 @@
 
 class ToasterSimuRobotReader : public RobotReader {
 public:
-    ToasterSimuRobotReader(ros::NodeHandle& node);
-
+    ToasterSimuRobotReader(bool fullRobot) {fullRobot_ = fullRobot; }
     ~ToasterSimuRobotReader() {};
+
+    void init(ros::NodeHandle* node, std::string param);
 private:
     void robotJointStateCallBack(const toaster_msgs::RobotListStamped::ConstPtr& msg);
     ros::Subscriber sub_;
