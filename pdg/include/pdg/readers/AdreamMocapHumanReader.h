@@ -19,7 +19,9 @@
 class AdreamMocapHumanReader : public HumanReader {
 public:
     AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicTorso, std::string topicHead, std::string topicHand);
-    ~AdreamMocapHumanReader() {};
+    virtual ~AdreamMocapHumanReader() {};
+
+    virtual void Publish(struct toasterList_t& list_msg);
 
 private:
     bool torso_;

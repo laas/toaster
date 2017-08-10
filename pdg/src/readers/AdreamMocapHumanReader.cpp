@@ -31,6 +31,34 @@ AdreamMocapHumanReader::AdreamMocapHumanReader(ros::NodeHandle& node, std::strin
     std::cout << "Done\n";
 }
 
+void AdreamMocapHumanReader::Publish(struct toasterList_t& list_msg)
+{
+  for (std::map<std::string, Human*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it) {
+      if (isPresent(it->first))
+      {
+          toaster_msgs::Fact fact_msg = DefaultFactMsg(it->first, it->second->getTime());
+          list_msg.fact_msg.factList.push_back(fact_msg);
+
+          //Human
+          toaster_msgs::Human human_msg;
+          fillEntity(it->second, human_msg.meAgent.meEntity);
+
+          //if (humanFullConfig_) {
+          for (std::map<std::string, Joint*>::iterator itJoint = lastConfig_[it->first]->skeleton_.begin(); itJoint != lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+              toaster_msgs::Joint joint_msg;
+              human_msg.meAgent.skeletonNames.push_back(itJoint->first);
+              fillEntity((itJoint->second), joint_msg.meEntity);
+              joint_msg.jointOwner = it->first;
+
+              human_msg.meAgent.skeletonJoint.push_back(joint_msg);
+
+          }
+          //}
+          list_msg.human_msg.humanList.push_back(human_msg);
+      }
+  }
+}
+
 void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_estimator_state::ConstPtr & msg) {
 
     ros::Time now = ros::Time::now();

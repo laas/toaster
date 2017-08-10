@@ -31,6 +31,8 @@ class HumanReader : public Reader<Human>{
 
       bool isPresent(std::string id);
 
+      virtual void Publish(struct toasterList_t& list_msg);
+
     public:
       toaster_msgs::Fact DefaultFactMsg(std::string subjectId, uint64_t factTime);
 };

@@ -15,7 +15,12 @@
 #include "pdg/utility/EntityUtility.h"
 
 //publishers -> include readers
-#include "pdg/publishers/HumanPublisher.h"
+#include "pdg/readers/MorseHumanReader.h"
+#include "pdg/readers/MocapHumanReader.h"
+#include "pdg/readers/AdreamMocapHumanReader.h"
+#include "pdg/readers/GroupHumanReader.h"
+#include "pdg/readers/ToasterSimuHumanReader.h"
+
 #include "pdg/publishers/RobotPublisher.h"
 #include "pdg/publishers/ObjectPublisher.h"
 
@@ -288,27 +293,27 @@ int main(int argc, char** argv) {
 
         if (morseHuman_){
           morseHumanRd.updateEntityPose(newPoseEnt_);
-          PublishHuman(morseHumanRd, list_msg);
+          morseHumanRd.Publish(list_msg);
         }
 
         if (mocapHuman_){
           mocapHumanRd.updateEntityPose(newPoseEnt_);
-          PublishHuman(mocapHumanRd, list_msg);
+          mocapHumanRd.Publish(list_msg);
         }
 
         if (adreamMocapHuman_){
           adreamMocapHumanRd.updateEntityPose(newPoseEnt_);
-          PublishHuman(adreamMocapHumanRd, list_msg);
+          adreamMocapHumanRd.Publish(list_msg);
         }
 
         if (groupHuman_){
           groupHumanRd.updateEntityPose(newPoseEnt_);
-          PublishHuman(groupHumanRd, list_msg);
+          groupHumanRd.Publish(list_msg);
         }
 
         if (toasterSimuHuman_){
           toasterSimuHumanRd.updateEntityPose(newPoseEnt_);
-          PublishHuman(toasterSimuHumanRd, list_msg);
+          toasterSimuHumanRd.Publish(list_msg);
         }
 
         ////////////////////////////////////////////////////////////////////////

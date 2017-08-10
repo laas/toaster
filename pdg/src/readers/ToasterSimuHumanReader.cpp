@@ -14,6 +14,28 @@ ToasterSimuHumanReader::ToasterSimuHumanReader(ros::NodeHandle& node) {
     sub_ = node.subscribe("/toaster_simu/humanList", 1, &ToasterSimuHumanReader::humanJointStateCallBack, this);
 }
 
+void ToasterSimuHumanReader::Publish(struct toasterList_t& list_msg)
+{
+  for (std::map<std::string, Human*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it) {
+      //Human
+      toaster_msgs::Human human_msg;
+      fillEntity(it->second, human_msg.meAgent.meEntity);
+
+      human_msg.meAgent.skeletonJoint.clear();
+      human_msg.meAgent.skeletonNames.clear();
+
+      for (std::map<std::string, Joint*>::iterator itJoint = lastConfig_[it->first]->skeleton_.begin(); itJoint != lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+          toaster_msgs::Joint joint_msg;
+          human_msg.meAgent.skeletonNames.push_back(itJoint->first);
+          fillEntity((itJoint->second), joint_msg.meEntity);
+          joint_msg.jointOwner = it->first;
+
+          human_msg.meAgent.skeletonJoint.push_back(joint_msg);
+      }
+      list_msg.human_msg.humanList.push_back(human_msg);
+  }
+}
+
 void ToasterSimuHumanReader::humanJointStateCallBack(const toaster_msgs::HumanListStamped::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for human received with time " << msg->humanList[0].meAgent.meEntity.time  << std::endl;
     Human * curHuman;
