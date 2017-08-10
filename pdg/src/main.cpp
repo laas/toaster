@@ -29,12 +29,12 @@
 struct fullConfig_t fullConfig;
 
 // Stream to activate
-bool morseHuman_ = false;
-bool niutHuman_ = false;
-bool groupHuman_ = false;
-bool mocapHuman_ = false;
-bool adreamMocapHuman_ = false;
-bool toasterSimuHuman_ = false;
+MorseHumanReader morseHumanRd(fullConfig.Human_);
+//NiutHumanReader niutHumanRd;
+GroupHumanReader groupHumanRd;
+MocapHumanReader mocapHumanRd;
+AdreamMocapHumanReader adreamMocapHumanRd;
+ToasterSimuHumanReader toasterSimuHumanRd;
 
 bool pr2Robot_ = false;
 bool spencerRobot_ = false;
@@ -57,12 +57,12 @@ Entity newPoseEnt_("");
 bool addStream(toaster_msgs::AddStream::Request &req,
         toaster_msgs::AddStream::Response & res) {
 
-    morseHuman_ = req.morseHuman;
-    niutHuman_ = req.niutHuman;
-    groupHuman_ = req.groupHuman;
-    mocapHuman_ = req.mocapHuman;
-    adreamMocapHuman_ = req.adreamMocapHuman;
-    toasterSimuHuman_ = req.toasterSimuHuman;
+    morseHumanRd.setActivation(req.morseHuman);
+    //niutHumanRd.setActivation(req.niutHuman);
+    groupHumanRd.setActivation(req.groupHuman);
+    mocapHumanRd.setActivation(req.mocapHuman);
+    adreamMocapHumanRd.setActivation(req.adreamMocapHuman);
+    toasterSimuHumanRd.setActivation(req.toasterSimuHuman);
 
     pr2Robot_ = req.pr2Robot;
     spencerRobot_ = req.spencerRobot;
@@ -185,21 +185,7 @@ int main(int argc, char** argv) {
 
     tf::TransformBroadcaster tf_br;
 
-
     //Set params to select input
-    if (node.hasParam("/pdg/morseHuman"))
-        node.getParam("/pdg/morseHuman", morseHuman_);
-    if (node.hasParam("/pdg/niutHuman"))
-        node.getParam("/pdg/niutHuman", niutHuman_);
-    if (node.hasParam("/pdg/groupHuman"))
-        node.getParam("/pdg/groupHuman", groupHuman_);
-    if (node.hasParam("/pdg/mocapHuman"))
-        node.getParam("/pdg/mocapHuman", mocapHuman_);
-    if (node.hasParam("/pdg/adreamMocapHuman"))
-        node.getParam("/pdg/adreamMocapHuman", adreamMocapHuman_);
-    if (node.hasParam("/pdg/toasterSimuHuman"))
-        node.getParam("/pdg/toasterSimuHuman", toasterSimuHuman_);
-
     if (node.hasParam("/pdg/pr2Robot"))
         node.getParam("/pdg/pr2Robot", pr2Robot_);
     if (node.hasParam("/pdg/spencerRobot"))
@@ -220,12 +206,18 @@ int main(int argc, char** argv) {
 
 
     //Data reading
-    GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
-    MorseHumanReader morseHumanRd(node, fullConfig.Human_);
-    //NiutHumanReader niutHumanRd()
-    MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
-    AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
-    ToasterSimuHumanReader toasterSimuHumanRd(node);
+    vector<HumanReader*> humanReaders;
+    groupHumanRd.init(&node, "/spencer/perception/tracked_groups", "/pdg/groupHuman");
+    humanReaders.push_back(&groupHumanRd);
+    morseHumanRd.init(&node, "/pdg/morseHuman");
+    humanReaders.push_back(&morseHumanRd);
+    //niutHumanRd.init(&node, "/niut/Human", "/pdg/niutHuman")
+    mocapHumanRd.init(&node, "/optitrack_person/tracked_persons", "/pdg/mocapHuman");
+    humanReaders.push_back(&mocapHumanRd);
+    adreamMocapHumanRd.init(&node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2", "/pdg/adreamMocapHuman");
+    humanReaders.push_back(&adreamMocapHumanRd);
+    toasterSimuHumanRd.init(&node, "/pdg/toasterSimuHuman");
+    humanReaders.push_back(&toasterSimuHumanRd);
 
     Pr2RobotReader pr2RobotRd(node, fullConfig.Robot_);
     SpencerRobotReader spencerRobotRd(fullConfig.Robot_);
@@ -271,9 +263,7 @@ int main(int argc, char** argv) {
       toasterList_t list_msg;
 
         //update data
-
-        if (morseHuman_)
-            morseHumanRd.updateHumans(listener);
+        morseHumanRd.updateHumans(listener);
 
         if (pr2Robot_)
             pr2RobotRd.updateRobot(listener);
@@ -287,36 +277,11 @@ int main(int argc, char** argv) {
         // publish data //
         //////////////////
 
-        ////////////
-        // Humans //
-        ////////////
-
-        if (morseHuman_){
-          morseHumanRd.updateEntityPose(newPoseEnt_);
-          morseHumanRd.Publish(list_msg);
+        for(vector<HumanReader*>::iterator it = humanReaders.begin(); it != humanReaders.end(); ++it)
+        {
+          (*it)->updateEntityPose(newPoseEnt_);
+          (*it)->Publish(list_msg);
         }
-
-        if (mocapHuman_){
-          mocapHumanRd.updateEntityPose(newPoseEnt_);
-          mocapHumanRd.Publish(list_msg);
-        }
-
-        if (adreamMocapHuman_){
-          adreamMocapHumanRd.updateEntityPose(newPoseEnt_);
-          adreamMocapHumanRd.Publish(list_msg);
-        }
-
-        if (groupHuman_){
-          groupHumanRd.updateEntityPose(newPoseEnt_);
-          groupHumanRd.Publish(list_msg);
-        }
-
-        if (toasterSimuHuman_){
-          toasterSimuHumanRd.updateEntityPose(newPoseEnt_);
-          toasterSimuHumanRd.Publish(list_msg);
-        }
-
-        ////////////////////////////////////////////////////////////////////////
 
         //////////
         //Robots//
@@ -336,8 +301,6 @@ int main(int argc, char** argv) {
           toasterSimuRobotRd.updateEntityPose(newPoseEnt_);
           PublishRobot(toasterSimuRobotRd, list_msg, fullConfig.Robot_);
         }
-
-        ////////////////////////////////////////////////////////////////////////
 
         /////////////
         // Objects //

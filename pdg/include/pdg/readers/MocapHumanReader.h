@@ -13,8 +13,10 @@
 
 class MocapHumanReader : public HumanReader {
 public:
-    MocapHumanReader(ros::NodeHandle& node, std::string topic);
+    MocapHumanReader() {};
     ~MocapHumanReader() {};
+
+    void init(ros::NodeHandle* node, std::string topic, std::string param);
 
 private:
     ros::Subscriber sub_;

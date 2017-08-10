@@ -10,6 +10,7 @@
 #ifndef READER_H
 #define	READER_H
 
+#include <ros/ros.h>
 #include <string>
 #include <toaster_msgs/SetEntityPose.h>
 
@@ -20,9 +21,20 @@ template <typename T>
 class Reader{
 
 public:
-  Reader() {};
-  ~Reader() {};
+  Reader() {node_ = nullptr; activated_ = false; }
+  ~Reader() {}
 
+  void init(ros::NodeHandle* node, std::string param)
+  {
+    node_ = node;
+    if (node_->hasParam(param))
+        node_->getParam(param, activated_);
+  }
+
+  void setActivation(bool activated) {activated_ = activated; }
+
+  bool activated_;
+  ros::NodeHandle* node_;
   std::map<std::string, T*> lastConfig_;
 
   virtual bool isPresent(std::string id) = 0;

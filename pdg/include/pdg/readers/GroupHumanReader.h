@@ -18,8 +18,10 @@
 
 class GroupHumanReader : public HumanReader {
 public:
-    GroupHumanReader(ros::NodeHandle& node, std::string topic);
+    GroupHumanReader() {};
     ~GroupHumanReader() {};
+
+    void init(ros::NodeHandle* node, std::string topic, std::string param);
 
 private:
     ros::Subscriber sub_;

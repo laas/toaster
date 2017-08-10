@@ -1,22 +1,21 @@
 #include "pdg/readers/MorseHumanReader.h"
 
 
-MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, bool fullHuman){
+MorseHumanReader::MorseHumanReader(bool fullHuman){
   fullHuman_ = fullHuman;
-  std::cout << "[PDG] Initializing MorseHumanReader" << std::endl;
-  init();
 }
 
-void MorseHumanReader::init(){
-  if(fullHuman_){
-    // Starts listening to the joint_states topic
-    //ros::Subscriber sub_ = node.subscribe("/human/armature/joint_states", 1, humanJointStateCallBack);
-  }
+void MorseHumanReader::init(ros::NodeHandle* node, std::string param)
+{
+  std::cout << "[PDG] Initializing MorseHumanReader" << std::endl;
+  Reader<Human>::init(node, param);
+  std::cout << "Done\n";
 }
 
 void MorseHumanReader::updateHumans(tf::TransformListener &listener) {
   //update 1st human, this should be extended for multi human
-  updateHuman(listener, "morse_human1", "/human_base");
+  if(activated_)
+    updateHuman(listener, "morse_human1", "/human_base");
 }
 
 void MorseHumanReader::updateHuman(tf::TransformListener &listener, std::string humId, std::string humanBase){

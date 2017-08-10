@@ -19,9 +19,11 @@
 
 class NiutHumanReader : public HumanReader {
 public:
-    NiutHumanReader(ros::NodeHandle& node, double * kinectPos, bool fullHuman);
+    NiutHumanReader(double * kinectPos, bool fullHuman);
     ~NiutHumanReader() {};
-    
+
+    void init(ros::NodeHandle* node, std::string topic, std::string param);
+
 private:
     static const unsigned short NB_MAX_NIUT = 16;
     double* kinectPos_;

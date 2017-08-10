@@ -14,7 +14,6 @@
 #ifndef HUMANREADER_H
 #define	HUMANREADER_H
 
-#include <ros/ros.h>
 #include "toaster-lib/Human.h"
 #include "pdg/readers/Reader.h"
 #include "pdg/types.h"

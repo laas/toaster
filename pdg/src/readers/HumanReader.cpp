@@ -46,17 +46,19 @@ toaster_msgs::Fact HumanReader::DefaultFactMsg(std::string subjectId, uint64_t f
 
 void HumanReader::Publish(struct toasterList_t& list_msg)
 {
-  for (std::map<std::string, Human *>::iterator it = lastConfig_.begin();
-       it != lastConfig_.end(); ++it)
+  if(activated_)
   {
-    if (isPresent(it->first))
+    for (std::map<std::string, Human *>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it)
     {
-        toaster_msgs::Fact fact_msg = DefaultFactMsg(it->first, it->second->getTime());
-        list_msg.fact_msg.factList.push_back(fact_msg);
+      if (isPresent(it->first))
+      {
+          toaster_msgs::Fact fact_msg = DefaultFactMsg(it->first, it->second->getTime());
+          list_msg.fact_msg.factList.push_back(fact_msg);
 
-        toaster_msgs::Human human_msg;
-        fillEntity(it->second, human_msg.meAgent.meEntity);
-        list_msg.human_msg.humanList.push_back(human_msg);
+          toaster_msgs::Human human_msg;
+          fillEntity(it->second, human_msg.meAgent.meEntity);
+          list_msg.human_msg.humanList.push_back(human_msg);
+      }
     }
   }
 }

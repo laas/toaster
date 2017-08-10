@@ -12,13 +12,14 @@
 #include <math.h>
 #include <ostream>
 
-GroupHumanReader::GroupHumanReader(ros::NodeHandle& node, std::string topic) {
-    std::cout << "Initializing GroupHumanReader" << std::endl;
-    // ******************************************
-    // Starts listening to the joint_states
-    sub_ = node.subscribe(topic, 1, &GroupHumanReader::groupTrackCallback, this);
-    fullHuman_ = false;
-    std::cout << "Done\n";
+void GroupHumanReader::init(ros::NodeHandle* node, std::string topic, std::string param)
+{
+  std::cout << "[PDG] Initializing GroupHumanReader" << std::endl;
+  Reader<Human>::init(node, param);
+  // ******************************************
+  // Starts listening to the joint_states
+  sub_ = node_->subscribe(topic, 1, &GroupHumanReader::groupTrackCallback, this);
+  std::cout << "Done\n";
 }
 
 /*
