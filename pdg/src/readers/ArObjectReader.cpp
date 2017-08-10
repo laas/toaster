@@ -28,7 +28,7 @@ void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg
 	MovableObject* curObject;
 
 	//create a new object with the same id as the message
-  WaitMutex(1000);
+  lastConfigMutex_.lock();
 	if (globalLastConfig_.find(msg->ns) == globalLastConfig_.end()) {
 		curObject = new MovableObject(msg->ns);
 		curObject->setName(msg->ns);
@@ -36,7 +36,7 @@ void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg
 	} else {
 		curObject = globalLastConfig_[msg->ns];
 	}
-  releaseMutex();
+  lastConfigMutex_.unlock();
 
 
 	//set object position
@@ -64,8 +64,8 @@ void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg
 	curObject->setPosition(objectPosition);
 	curObject->setTime(now.toNSec());      //Similar to AdreamMoCapHumanReader. Is it better to use time stamp from msg
 
-  WaitMutex(1000);
+  lastConfigMutex_.lock();
 	globalLastConfig_[msg->ns]=curObject;
-  releaseMutex();
+  lastConfigMutex_.unlock();
   lastConfig_[msg->ns]=curObject;
 }

@@ -3,7 +3,7 @@
 //init static variables
 unsigned int ObjectReader::nbObjects_ = 0;
 std::map<std::string, MovableObject*> ObjectReader::globalLastConfig_;
-bool ObjectReader::lastConfigMutex_ = false;
+std::mutex ObjectReader::lastConfigMutex_;
 unsigned int ObjectReader::nbReaders_ = 0;
 
 ObjectReader::ObjectReader()
@@ -19,10 +19,10 @@ ObjectReader::~ObjectReader()
   //delete globalLastConfig_ only if there are no more readers
   if(!nbReaders_)
   {
-    WaitMutex(1000);
+    lastConfigMutex_.lock();
     for(std::map<std::string, MovableObject*>::iterator it = globalLastConfig_.begin(); it != lastConfig_.end(); ++it)
       delete it->second;
-    releaseMutex();
+    lastConfigMutex_.unlock();
   }
 }
 

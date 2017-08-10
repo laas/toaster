@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 #include <unistd.h>
+#include <mutex>
 #include <toaster_msgs/FactList.h>
 
 class ObjectReader : public Reader<MovableObject>{
@@ -40,26 +41,7 @@ protected:
   bool isPresent(std::string id);
   void increaseNbObjects();
 
-  static bool lastConfigMutex_;
-  static bool WaitMutex(unsigned int durationSecond)
-  {
-    while(durationSecond-- > 0)
-    {
-      if(!lastConfigMutex_)
-      {
-        lastConfigMutex_ = true;
-        return true;
-      }
-      usleep(1000);
-    }
-    return false;
-  }
-
-  static void releaseMutex()
-  {
-    lastConfigMutex_ = false;
-  }
-
+  static std::mutex lastConfigMutex_;
 };
 
 #endif /* OBJECTREADER_H */

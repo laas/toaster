@@ -25,7 +25,7 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& m
     MovableIoTObject* curObject;
 
     //create a new object with the same id and name as the message
-    WaitMutex(1000);
+    lastConfigMutex_.lock();
     if (globalLastConfig_.find(msg->data.key) == globalLastConfig_.end()) {
         curObject = new MovableIoTObject(msg->data.key);
         curObject->setName(msg->data.key);
@@ -33,7 +33,7 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& m
     } else {
         curObject = (MovableIoTObject*)globalLastConfig_[msg->data.key];
     }
-    releaseMutex();
+    lastConfigMutex_.unlock();
 
     //set object position at default : 0,0,0
     bg::model::point<double, 3, bg::cs::cartesian> objectPosition;
@@ -59,8 +59,8 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& m
     unsigned long micro_sec = msg->header.stamp.sec * 1000000;
     curObject->setTime(micro_sec);
 
-    WaitMutex(1000);
+    lastConfigMutex_.lock();
     globalLastConfig_[msg->data.key]=curObject;
-    releaseMutex();
+    lastConfigMutex_.unlock();
     lastConfig_[msg->data.key]=curObject;
 }
