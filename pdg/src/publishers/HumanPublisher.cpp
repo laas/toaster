@@ -6,13 +6,11 @@
 #include <string>
 #include <map>
 
-void PublishHuman(MorseHumanReader& morseHumanRd, Entity& newPoseEnt_,
+void PublishHuman(MorseHumanReader& morseHumanRd,
                        struct toasterList_t& list_msg)
 {
   for (std::map<std::string, Human *>::iterator it = morseHumanRd.lastConfig_.begin(); it != morseHumanRd.lastConfig_.end(); ++it)
   {
-      if (newPoseEnt_.getId() == it->first)
-          updateEntity(newPoseEnt_, it->second);
       if (morseHumanRd.isPresent(it->first))
       {
           toaster_msgs::Fact fact_msg = morseHumanRd.DefaultFactMsg(it->first, it->second->getTime());
@@ -26,12 +24,10 @@ void PublishHuman(MorseHumanReader& morseHumanRd, Entity& newPoseEnt_,
   }
 }
 
-void PublishHuman(MocapHumanReader& mocapHumanRd, Entity& newPoseEnt_,
+void PublishHuman(MocapHumanReader& mocapHumanRd,
                        struct toasterList_t& list_msg)
 {
   for (std::map<std::string, Human*>::iterator it = mocapHumanRd.lastConfig_.begin(); it != mocapHumanRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first)
-          updateEntity(newPoseEnt_, it->second);
       if (mocapHumanRd.isPresent(it->first))
       {
           toaster_msgs::Fact fact_msg = mocapHumanRd.DefaultFactMsg(it->first, it->second->getTime());
@@ -47,12 +43,9 @@ void PublishHuman(MocapHumanReader& mocapHumanRd, Entity& newPoseEnt_,
 }
 
 void PublishHuman(AdreamMocapHumanReader& adreamMocapHumanRd,
-                      Entity& newPoseEnt_,
                       struct toasterList_t& list_msg)
 {
   for (std::map<std::string, Human*>::iterator it = adreamMocapHumanRd.lastConfig_.begin(); it != adreamMocapHumanRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first)
-          updateEntity(newPoseEnt_, it->second);
       if (adreamMocapHumanRd.isPresent(it->first))
       {
           toaster_msgs::Fact fact_msg = adreamMocapHumanRd.DefaultFactMsg(it->first, it->second->getTime());
@@ -78,13 +71,11 @@ void PublishHuman(AdreamMocapHumanReader& adreamMocapHumanRd,
   }
 }
 
-void PublishHuman(GroupHumanReader& groupHumanRd, Entity& newPoseEnt_,
+void PublishHuman(GroupHumanReader& groupHumanRd,
                       struct toasterList_t& list_msg)
 {
   for (std::map<std::string, Human *>::iterator it = groupHumanRd.lastConfig_.begin();
        it != groupHumanRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first)
-          updateEntity(newPoseEnt_, it->second);
       if (groupHumanRd.isPresent(it->first))
       {
           toaster_msgs::Fact fact_msg = groupHumanRd.DefaultFactMsg(it->first, it->second->getTime());
@@ -99,13 +90,9 @@ void PublishHuman(GroupHumanReader& groupHumanRd, Entity& newPoseEnt_,
 }
 
 void PublishHuman(ToasterSimuHumanReader& toasterSimuHumanRd,
-                      Entity& newPoseEnt_,
                       struct toasterList_t& list_msg)
 {
   for (std::map<std::string, Human*>::iterator it = toasterSimuHumanRd.lastConfig_.begin(); it != toasterSimuHumanRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first)
-          updateEntity(newPoseEnt_, it->second);
-
       //Human
       toaster_msgs::Human human_msg;
       fillEntity(it->second, human_msg.meAgent.meEntity);

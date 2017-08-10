@@ -4,24 +4,12 @@
 
 #include "toaster-lib/Object.h"
 
-void ManageNewPoseEnt(std::map<std::string, MovableObject *>::iterator it, Entity& newPoseEnt_)
-{
-  if(newPoseEnt_.getId() == it->first)
-  {
-      updateEntity(newPoseEnt_, it->second);
-      //Reset newPoseEnt_
-      newPoseEnt_.setId("");
-  }
-}
-
-void PublishObject(ArObjectReader& arObjectRd, Entity& newPoseEnt_,
+void PublishObject(ArObjectReader& arObjectRd,
                      struct objectIn_t& objectIn,
                      struct toasterList_t& list_msg)
 {
   for (std::map<std::string, MovableObject *>::iterator it = arObjectRd.lastConfig_.begin();
        it != arObjectRd.lastConfig_.end(); ++it) {
-      ManageNewPoseEnt(it, newPoseEnt_);
-
       // If in hand, modify position:
       if (objectIn.Agent_.find(it->first) != objectIn.Agent_.end()) {
           bool addFactHand = true;
@@ -47,15 +35,13 @@ void PublishObject(ArObjectReader& arObjectRd, Entity& newPoseEnt_,
   }
 }
 
-void PublishObject(OM2MObjectReader& om2mObjectRd, Entity& newPoseEnt_,
+void PublishObject(OM2MObjectReader& om2mObjectRd,
                   struct objectIn_t& objectIn,
                   struct toasterList_t& list_msg)
 {
   for (std::map<std::string, MovableObject *>::iterator it_obj = om2mObjectRd.lastConfig_.begin();
        it_obj != om2mObjectRd.lastConfig_.end(); ++it_obj)
   {
-      ManageNewPoseEnt(it_obj, newPoseEnt_);
-
       std::string value_name;
       std::string value_value;
 
@@ -110,13 +96,12 @@ void PublishObject(OM2MObjectReader& om2mObjectRd, Entity& newPoseEnt_,
   }
 }
 
-void PublishObject(GazeboObjectReader& gazeboRd, Entity& newPoseEnt_,
+void PublishObject(GazeboObjectReader& gazeboRd,
                     struct objectIn_t& objectIn,
                     struct toasterList_t& list_msg)
 {
   for (std::map<std::string, MovableObject *>::iterator it = gazeboRd.lastConfig_.begin();
        it != gazeboRd.lastConfig_.end(); ++it) {
-      ManageNewPoseEnt(it, newPoseEnt_);
 
       // If in hand, modify position:
       if (objectIn.Agent_.find(it->first) != objectIn.Agent_.end()) {
@@ -144,13 +129,11 @@ void PublishObject(GazeboObjectReader& gazeboRd, Entity& newPoseEnt_,
 }
 
 void PublishObject(ToasterSimuObjectReader& toasterSimuObjectRd,
-                    Entity& newPoseEnt_,
                     struct objectIn_t& objectIn,
                     struct toasterList_t& list_msg)
 {
   for (std::map<std::string, MovableObject *>::iterator it = toasterSimuObjectRd.lastConfig_.begin();
        it != toasterSimuObjectRd.lastConfig_.end(); ++it) {
-      ManageNewPoseEnt(it, newPoseEnt_);
 
       // If in hand, modify position:
       if (objectIn.Agent_.find(it->first) != objectIn.Agent_.end()) {

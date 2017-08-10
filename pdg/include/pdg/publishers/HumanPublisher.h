@@ -13,21 +13,19 @@
 
 #include "pdg/types.h"
 
-void PublishHuman(MorseHumanReader& morseHumanRd, Entity& newPoseEnt_,
+void PublishHuman(MorseHumanReader& morseHumanRd,
                        struct toasterList_t& list_msg);
 
-void PublishHuman(MocapHumanReader& mocapHumanRd, Entity& newPoseEnt_,
+void PublishHuman(MocapHumanReader& mocapHumanRd,
                       struct toasterList_t& list_msg);
 
 void PublishHuman(AdreamMocapHumanReader& adreamMocapHumanRd,
-                      Entity& newPoseEnt_,
                       struct toasterList_t& list_msg);
 
-void PublishHuman(GroupHumanReader& groupHumanRd, Entity& newPoseEnt_,
+void PublishHuman(GroupHumanReader& groupHumanRd,
                       struct toasterList_t& list_msg);
 
 void PublishHuman(ToasterSimuHumanReader& toasterSimuHumanRd,
-                      Entity& newPoseEnt_,
                       struct toasterList_t& list_msg);
 
 #endif

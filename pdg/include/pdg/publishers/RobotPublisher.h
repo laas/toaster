@@ -11,16 +11,15 @@
 
 #include "pdg/types.h"
 
-void PublishRobot(Pr2RobotReader& pr2RobotRd, Entity& newPoseEnt_,
+void PublishRobot(Pr2RobotReader& pr2RobotRd,
                      struct toasterList_t& list_msg,
                      bool FullConfig = false);
 
-void PublishRobot(SpencerRobotReader& spencerRobotRd, Entity& newPoseEnt_,
+void PublishRobot(SpencerRobotReader& spencerRobotRd,
                     struct toasterList_t& list_msg,
                     bool FullConfig = false);
 
 void PublishRobot(ToasterSimuRobotReader& toasterSimuRobotRd,
-                    Entity& newPoseEnt_,
                     struct toasterList_t& list_msg,
                     bool FullConfig = false);
 

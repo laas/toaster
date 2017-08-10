@@ -6,14 +6,12 @@
 #include <string>
 #include <map>
 
-void PublishRobot(Pr2RobotReader& pr2RobotRd, Entity& newPoseEnt_,
+void PublishRobot(Pr2RobotReader& pr2RobotRd,
                      struct toasterList_t& list_msg,
                      bool FullConfig)
 {
   for (std::map<std::string, Robot *>::iterator it = pr2RobotRd.lastConfig_.begin();
        it != pr2RobotRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first)
-          updateEntity(newPoseEnt_, it->second);
       //if (pr2RobotRd.isPresent(it->first)) {
 
       toaster_msgs::Fact fact_msg = pr2RobotRd.DefaultFactMsg(it->first, it->second->getTime());
@@ -43,13 +41,11 @@ void PublishRobot(Pr2RobotReader& pr2RobotRd, Entity& newPoseEnt_,
   }
 }
 
-void PublishRobot(SpencerRobotReader& spencerRobotRd, Entity& newPoseEnt_,
+void PublishRobot(SpencerRobotReader& spencerRobotRd,
                     struct toasterList_t& list_msg,
                     bool FullConfig)
 {
   for (std::map<std::string, Robot*>::iterator it = spencerRobotRd.lastConfig_.begin(); it != spencerRobotRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first)
-          updateEntity(newPoseEnt_, it->second);
       //if (spencerRobotRd.isPresent(it->first)) {
       toaster_msgs::Fact fact_msg = spencerRobotRd.DefaultFactMsg(it->first, it->second->getTime());
       list_msg.fact_msg.factList.push_back(fact_msg);
@@ -77,14 +73,11 @@ void PublishRobot(SpencerRobotReader& spencerRobotRd, Entity& newPoseEnt_,
 }
 
 void PublishRobot(ToasterSimuRobotReader& toasterSimuRobotRd,
-                    Entity& newPoseEnt_,
                     struct toasterList_t& list_msg,
                     bool FullConfig)
 {
   for (std::map<std::string, Robot *>::iterator it = toasterSimuRobotRd.lastConfig_.begin();
        it != toasterSimuRobotRd.lastConfig_.end(); ++it) {
-      if (newPoseEnt_.getId() == it->first)
-          updateEntity(newPoseEnt_, it->second);
       //if (toasterSimuRobotRd.isPresent(it->first)) {
       toaster_msgs::Fact fact_msg = toasterSimuRobotRd.DefaultFactMsg(it->first, it->second->getTime());
       list_msg.fact_msg.factList.push_back(fact_msg);

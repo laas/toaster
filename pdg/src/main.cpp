@@ -286,20 +286,30 @@ int main(int argc, char** argv) {
         // Humans //
         ////////////
 
-        if (morseHuman_)
-          PublishHuman(morseHumanRd, newPoseEnt_, list_msg);
+        if (morseHuman_){
+          morseHumanRd.updateEntityPose(newPoseEnt_);
+          PublishHuman(morseHumanRd, list_msg);
+        }
 
-        if (mocapHuman_)
-          PublishHuman(mocapHumanRd, newPoseEnt_, list_msg);
+        if (mocapHuman_){
+          mocapHumanRd.updateEntityPose(newPoseEnt_);
+          PublishHuman(mocapHumanRd, list_msg);
+        }
 
-        if (adreamMocapHuman_)
-          PublishHuman(adreamMocapHumanRd, newPoseEnt_, list_msg);
+        if (adreamMocapHuman_){
+          adreamMocapHumanRd.updateEntityPose(newPoseEnt_);
+          PublishHuman(adreamMocapHumanRd, list_msg);
+        }
 
-        if (groupHuman_)
-          PublishHuman(groupHumanRd, newPoseEnt_, list_msg);
+        if (groupHuman_){
+          groupHumanRd.updateEntityPose(newPoseEnt_);
+          PublishHuman(groupHumanRd, list_msg);
+        }
 
-        if (toasterSimuHuman_)
-          PublishHuman(toasterSimuHumanRd, newPoseEnt_, list_msg);
+        if (toasterSimuHuman_){
+          toasterSimuHumanRd.updateEntityPose(newPoseEnt_);
+          PublishHuman(toasterSimuHumanRd, list_msg);
+        }
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -307,14 +317,20 @@ int main(int argc, char** argv) {
         //Robots//
         //////////
 
-        if (pr2Robot_)
-          PublishRobot(pr2RobotRd, newPoseEnt_, list_msg, fullConfig.Robot_);
+        if (pr2Robot_){
+          pr2RobotRd.updateEntityPose(newPoseEnt_);
+          PublishRobot(pr2RobotRd, list_msg, fullConfig.Robot_);
+        }
 
-        if (spencerRobot_)
-          PublishRobot(spencerRobotRd, newPoseEnt_, list_msg, fullConfig.Robot_);
+        if (spencerRobot_){
+          spencerRobotRd.updateEntityPose(newPoseEnt_);
+          PublishRobot(spencerRobotRd, list_msg, fullConfig.Robot_);
+        }
 
-        if (toasterSimuRobot_)
-          PublishRobot(toasterSimuRobotRd, newPoseEnt_, list_msg, fullConfig.Robot_);
+        if (toasterSimuRobot_){
+          toasterSimuRobotRd.updateEntityPose(newPoseEnt_);
+          PublishRobot(toasterSimuRobotRd, list_msg, fullConfig.Robot_);
+        }
 
         ////////////////////////////////////////////////////////////////////////
 
@@ -323,17 +339,25 @@ int main(int argc, char** argv) {
         /////////////
 
 
-        if (arObject_)
-          PublishObject(arObjectRd, newPoseEnt_, objectIn, list_msg);
+        if (arObject_){
+          arObjectRd.updateEntityPose(newPoseEnt_);
+          PublishObject(arObjectRd, objectIn, list_msg);
+        }
 
-        if (om2mObject_)
-          PublishObject(om2mObjectRd, newPoseEnt_, objectIn, list_msg);
+        if (om2mObject_){
+          om2mObjectRd.updateEntityPose(newPoseEnt_);
+          PublishObject(om2mObjectRd, objectIn, list_msg);
+        }
 
-        if (gazeboObject_)
-          PublishObject(gazeboRd, newPoseEnt_, objectIn, list_msg);
+        if (gazeboObject_){
+          gazeboRd.updateEntityPose(newPoseEnt_);
+          PublishObject(gazeboRd, objectIn, list_msg);
+        }
 
-        if (toasterSimuObject_)
-          PublishObject(toasterSimuObjectRd, newPoseEnt_, objectIn, list_msg);
+        if (toasterSimuObject_){
+          toasterSimuObjectRd.updateEntityPose(newPoseEnt_);
+          PublishObject(toasterSimuObjectRd, objectIn, list_msg);
+        }
 
         ////////////////////////////////////////////////////////////////////////
 

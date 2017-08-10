@@ -14,20 +14,19 @@
 
 using namespace std;
 
-void PublishObject(ArObjectReader& arObjectRd, Entity& newPoseEnt_,
+void PublishObject(ArObjectReader& arObjectRd,
                    struct objectIn_t& objectIn,
                    struct toasterList_t& list_msg);
 
-void PublishObject(OM2MObjectReader& om2mObjectRd, Entity& newPoseEnt_,
+void PublishObject(OM2MObjectReader& om2mObjectRd,
                   struct objectIn_t& objectIn,
                   struct toasterList_t& list_msg);
 
-void PublishObject(GazeboObjectReader& gazeboRd, Entity& newPoseEnt_,
+void PublishObject(GazeboObjectReader& gazeboRd,
                   struct objectIn_t& objectIn,
                   struct toasterList_t& list_msg);
 
 void PublishObject(ToasterSimuObjectReader& toasterSimuObjectRd,
-                    Entity& newPoseEnt_,
                     struct objectIn_t& objectIn,
                     struct toasterList_t& list_msg);
 
