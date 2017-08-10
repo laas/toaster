@@ -16,6 +16,7 @@
 #include <ros/ros.h>
 #include "toaster-lib/Robot.h"
 #include "pdg/readers/Reader.h"
+#include "pdg/types.h"
 #include <map>
 #include <string>
 
@@ -29,6 +30,9 @@ class RobotReader : public Reader<Robot>{
         bool fullRobot_;
 
         bool isPresent(std::string id);
+
+    public:
+        toaster_msgs::Fact DefaultFactMsg(std::string subjectId, uint64_t factTime);
 };
 
 #endif /* ROBOTREADER_H */

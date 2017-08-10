@@ -16,9 +16,11 @@
 #include <ros/ros.h>
 #include "toaster-lib/MovableObject.h"
 #include "pdg/readers/Reader.h"
+#include "pdg/types.h"
 #include <map>
 #include <string>
 #include <unistd.h>
+#include <toaster_msgs/FactList.h>
 
 class ObjectReader : public Reader<MovableObject>{
 public:
@@ -26,6 +28,8 @@ public:
   virtual ~ObjectReader();
 
   static std::map<std::string, MovableObject*> globalLastConfig_;
+
+  toaster_msgs::Fact DefaultFactMsg(std::map<std::string, MovableObject *>::iterator it, struct objectIn_t& objectIn);
 
 protected:
   ros::Subscriber sub_;

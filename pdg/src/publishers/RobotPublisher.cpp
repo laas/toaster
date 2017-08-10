@@ -6,22 +6,6 @@
 #include <string>
 #include <map>
 
-toaster_msgs::Fact createRobotFact(std::string subjectId, uint64_t factTime)
-{
-  toaster_msgs::Fact fact_msg;
-
-  //Fact
-  fact_msg.property = "isPresent";
-  fact_msg.subjectId = subjectId;
-  fact_msg.stringValue = "true";
-  fact_msg.confidence = 0.90;
-  fact_msg.factObservability = 1.0;
-  fact_msg.time = factTime;
-  fact_msg.valueType = 0;
-
-  return fact_msg;
-}
-
 void PublishRobot(Pr2RobotReader& pr2RobotRd, Entity& newPoseEnt_,
                      struct toasterList_t& list_msg,
                      bool FullConfig)
@@ -32,7 +16,7 @@ void PublishRobot(Pr2RobotReader& pr2RobotRd, Entity& newPoseEnt_,
           updateEntity(newPoseEnt_, it->second);
       //if (pr2RobotRd.isPresent(it->first)) {
 
-      toaster_msgs::Fact fact_msg = createRobotFact(it->first, it->second->getTime());
+      toaster_msgs::Fact fact_msg = pr2RobotRd.DefaultFactMsg(it->first, it->second->getTime());
       list_msg.fact_msg.factList.push_back(fact_msg);
 
 
@@ -67,7 +51,7 @@ void PublishRobot(SpencerRobotReader& spencerRobotRd, Entity& newPoseEnt_,
       if (newPoseEnt_.getId() == it->first)
           updateEntity(newPoseEnt_, it->second);
       //if (spencerRobotRd.isPresent(it->first)) {
-      toaster_msgs::Fact fact_msg = createRobotFact(it->first, it->second->getTime());
+      toaster_msgs::Fact fact_msg = spencerRobotRd.DefaultFactMsg(it->first, it->second->getTime());
       list_msg.fact_msg.factList.push_back(fact_msg);
 
       //Robot
@@ -102,7 +86,7 @@ void PublishRobot(ToasterSimuRobotReader& toasterSimuRobotRd,
       if (newPoseEnt_.getId() == it->first)
           updateEntity(newPoseEnt_, it->second);
       //if (toasterSimuRobotRd.isPresent(it->first)) {
-      toaster_msgs::Fact fact_msg = createRobotFact(it->first, it->second->getTime());
+      toaster_msgs::Fact fact_msg = toasterSimuRobotRd.DefaultFactMsg(it->first, it->second->getTime());
       list_msg.fact_msg.factList.push_back(fact_msg);
 
       //Robot

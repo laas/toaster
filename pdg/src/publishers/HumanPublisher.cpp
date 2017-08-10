@@ -6,22 +6,6 @@
 #include <string>
 #include <map>
 
-toaster_msgs::Fact createHumanFact(std::string subjectId, uint64_t factTime)
-{
-  toaster_msgs::Fact fact_msg;
-
-  //Fact
-  fact_msg.property = "isPresent";
-  fact_msg.subjectId = subjectId;
-  fact_msg.stringValue = "true";
-  fact_msg.confidence = 0.90;
-  fact_msg.factObservability = 1.0;
-  fact_msg.time = factTime;
-  fact_msg.valueType = 0;
-
-  return fact_msg;
-}
-
 void PublishHuman(MorseHumanReader& morseHumanRd, Entity& newPoseEnt_,
                        struct toasterList_t& list_msg)
 {
@@ -31,7 +15,7 @@ void PublishHuman(MorseHumanReader& morseHumanRd, Entity& newPoseEnt_,
           updateEntity(newPoseEnt_, it->second);
       if (morseHumanRd.isPresent(it->first))
       {
-          toaster_msgs::Fact fact_msg = createHumanFact(it->first, it->second->getTime());
+          toaster_msgs::Fact fact_msg = morseHumanRd.DefaultFactMsg(it->first, it->second->getTime());
           list_msg.fact_msg.factList.push_back(fact_msg);
 
           //Human
@@ -50,7 +34,7 @@ void PublishHuman(MocapHumanReader& mocapHumanRd, Entity& newPoseEnt_,
           updateEntity(newPoseEnt_, it->second);
       if (mocapHumanRd.isPresent(it->first))
       {
-          toaster_msgs::Fact fact_msg = createHumanFact(it->first, it->second->getTime());
+          toaster_msgs::Fact fact_msg = mocapHumanRd.DefaultFactMsg(it->first, it->second->getTime());
           list_msg.fact_msg.factList.push_back(fact_msg);
 
           //Human
@@ -71,7 +55,7 @@ void PublishHuman(AdreamMocapHumanReader& adreamMocapHumanRd,
           updateEntity(newPoseEnt_, it->second);
       if (adreamMocapHumanRd.isPresent(it->first))
       {
-          toaster_msgs::Fact fact_msg = createHumanFact(it->first, it->second->getTime());
+          toaster_msgs::Fact fact_msg = adreamMocapHumanRd.DefaultFactMsg(it->first, it->second->getTime());
           list_msg.fact_msg.factList.push_back(fact_msg);
 
           //Human
@@ -103,7 +87,7 @@ void PublishHuman(GroupHumanReader& groupHumanRd, Entity& newPoseEnt_,
           updateEntity(newPoseEnt_, it->second);
       if (groupHumanRd.isPresent(it->first))
       {
-          toaster_msgs::Fact fact_msg = createHumanFact(it->first, it->second->getTime());
+          toaster_msgs::Fact fact_msg = groupHumanRd.DefaultFactMsg(it->first, it->second->getTime());
           list_msg.fact_msg.factList.push_back(fact_msg);
 
           //Human

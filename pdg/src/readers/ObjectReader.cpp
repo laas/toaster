@@ -45,3 +45,23 @@ void ObjectReader::increaseNbObjects()
   nbObjects_++; /// total object number
   nbLocalObjects_--;
 }
+
+toaster_msgs::Fact ObjectReader::DefaultFactMsg(std::map<std::string, MovableObject *>::iterator it, struct objectIn_t& objectIn)
+{
+  toaster_msgs::Fact fact_msg;
+
+  //Fact message
+  fact_msg.property = "IsInHand";
+  fact_msg.propertyType = "position";
+  fact_msg.subProperty = "object";
+  fact_msg.subjectId = it->first;
+  fact_msg.targetId = objectIn.Agent_[it->first];
+  fact_msg.targetOwnerId = objectIn.Agent_[it->first];
+  fact_msg.confidence = 1.0;
+  fact_msg.factObservability = 0.8;
+  fact_msg.time = it->second->getTime();
+  fact_msg.valueType = 0;
+  fact_msg.stringValue = "true";
+
+  return fact_msg;
+}

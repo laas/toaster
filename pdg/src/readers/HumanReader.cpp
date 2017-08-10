@@ -27,3 +27,19 @@ bool HumanReader::isPresent(std::string id){
   else
       return false;
 }
+
+toaster_msgs::Fact HumanReader::DefaultFactMsg(std::string subjectId, uint64_t factTime)
+{
+  toaster_msgs::Fact fact_msg;
+
+  //Fact
+  fact_msg.property = "isPresent";
+  fact_msg.subjectId = subjectId;
+  fact_msg.stringValue = "true";
+  fact_msg.confidence = 0.90;
+  fact_msg.factObservability = 1.0;
+  fact_msg.time = factTime;
+  fact_msg.valueType = 0;
+
+  return fact_msg;
+}

@@ -17,6 +17,7 @@
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
 #include "pdg/readers/Reader.h"
+#include "pdg/types.h"
 #include <map>
 #include <string>
 
@@ -29,6 +30,9 @@ class HumanReader : public Reader<Human>{
       bool fullHuman_;
 
       bool isPresent(std::string id);
+
+    public:
+      toaster_msgs::Fact DefaultFactMsg(std::string subjectId, uint64_t factTime);
 };
 
 
