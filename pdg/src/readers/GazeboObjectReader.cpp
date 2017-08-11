@@ -12,7 +12,7 @@
 #include <sys/time.h>
 #include <ostream>
 
-GazeboObjectReader::GazeboObjectReader() {
+GazeboObjectReader::GazeboObjectReader() : ObjectReader() {
     childs_.push_back(this);
 }
 

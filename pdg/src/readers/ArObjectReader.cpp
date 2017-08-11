@@ -13,7 +13,7 @@
 #include <sys/time.h>
 #include <ostream>
 
-ArObjectReader::ArObjectReader() {
+ArObjectReader::ArObjectReader() : ObjectReader() {
     childs_.push_back(this);
 }
 

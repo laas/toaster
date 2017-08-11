@@ -10,7 +10,7 @@
 #include "toaster-lib/MovableIoTObject.h"
 #include "pdg/utility/XmlUtility.h"
 
-OM2MObjectReader::OM2MObjectReader() {
+OM2MObjectReader::OM2MObjectReader() : ObjectReader(){
     childs_.push_back(this);
 }
 

@@ -8,7 +8,7 @@
 #include "pdg/readers/ToasterSimuObjectReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterSimuObjectReader::ToasterSimuObjectReader() {
+ToasterSimuObjectReader::ToasterSimuObjectReader() : ObjectReader() {
     childs_.push_back(this);
 }
 

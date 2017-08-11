@@ -1,4 +1,5 @@
 #include "pdg/readers/ObjectReader.h"
+#include <ostream>
 
 //init static variables
 unsigned int ObjectReader::nbObjects_ = 0;
@@ -7,7 +8,7 @@ std::map<std::string, MovableObject*> ObjectReader::globalLastConfig_;
 std::mutex ObjectReader::lastConfigMutex_;
 unsigned int ObjectReader::nbReaders_ = 0;
 
-ObjectReader::ObjectReader()
+ObjectReader::ObjectReader() : Reader<MovableObject>()
 {
   nbLocalObjects_ = 0;
   nbReaders_++;
@@ -21,7 +22,7 @@ ObjectReader::~ObjectReader()
   if(!nbReaders_)
   {
     lastConfigMutex_.lock();
-    for(std::map<std::string, MovableObject*>::iterator it = globalLastConfig_.begin(); it != lastConfig_.end(); ++it)
+    for(std::map<std::string, MovableObject*>::iterator it = globalLastConfig_.begin(); it != globalLastConfig_.end(); ++it)
       delete it->second;
     lastConfigMutex_.unlock();
   }
