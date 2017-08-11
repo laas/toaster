@@ -25,7 +25,10 @@
 #include "pdg/readers/SpencerRobotReader.h"
 #include "pdg/readers/ToasterSimuRobotReader.h"
 
-#include "pdg/publishers/ObjectPublisher.h"
+#include "pdg/readers/ArObjectReader.h"
+#include "pdg/readers/GazeboObjectReader.h"
+#include "pdg/readers/ToasterSimuObjectReader.h"
+#include "pdg/readers/OM2MObjectReader.h"
 
 #include "pdg/types.h"
 
@@ -43,10 +46,10 @@ Pr2RobotReader pr2RobotRd(fullConfig.Robot_);
 SpencerRobotReader spencerRobotRd;
 ToasterSimuRobotReader toasterSimuRobotRd(fullConfig.Robot_);
 
-bool toasterSimuObject_ = false;
-bool arObject_ = false;
-bool om2mObject_ = false;
-bool gazeboObject_ = false;
+ToasterSimuObjectReader toasterSimuObjectRd;
+ArObjectReader arObjectRd;
+OM2MObjectReader om2mObjectRd;
+GazeboObjectReader gazeboRd;
 
 struct objectIn_t objectIn;
 
@@ -71,10 +74,10 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     spencerRobotRd.setActivation(req.spencerRobot);
     toasterSimuRobotRd.setActivation(req.toasterSimuRobot);
 
-    toasterSimuObject_ = req.toasterSimuObject;
-    arObject_ = req.arObject;
-    om2mObject_ = req.om2mObject;
-    gazeboObject_ = req.gazeboObject;
+    toasterSimuObjectRd.setActivation(req.toasterSimuObject);
+    arObjectRd.setActivation(req.arObject);
+    om2mObjectRd.setActivation(req.om2mObject);
+    gazeboRd.setActivation(req.gazeboObject);
 
     ROS_INFO("[pdg] setting pdg input");
 
@@ -188,17 +191,6 @@ int main(int argc, char** argv) {
 
     tf::TransformBroadcaster tf_br;
 
-    //Set params to select input
-    if (node.hasParam("/pdg/toasterSimuObject"))
-        node.getParam("/pdg/toasterSimuObject", toasterSimuObject_);
-
-    if (node.hasParam("/pdg/arObjectReader"))
-        node.getParam("/pdg/arObjectReader", arObject_);
-    if (node.hasParam("/pdg/OM2MObjectReader"))
-        node.getParam("/pdg/OM2MObjectReader", om2mObject_);
-    if (node.hasParam("/pdg/gazeboObjectReader"))
-        node.getParam("/pdg/gazeboObjectReader", gazeboObject_);
-
     //Data reading
     vector<HumanReader*> humanReaders;
     groupHumanRd.init(&node, "/spencer/perception/tracked_groups", "/pdg/groupHuman");
@@ -221,11 +213,15 @@ int main(int argc, char** argv) {
     toasterSimuRobotRd.init(&node, "/pdg/toasterSimuRobot");
     robotReaders.push_back(&toasterSimuRobotRd);
 
-    ArObjectReader arObjectRd(node, "ar_visualization_marker");
-    OM2MObjectReader om2mObjectRd(node, "/iot2pdg_updates");
-    GazeboObjectReader gazeboRd(node, "/gazebo/model_states");
-    ToasterSimuObjectReader toasterSimuObjectRd(node);
-
+    vector<ObjectReader*> objectReaders;
+    arObjectRd.init(&node, "ar_visualization_marker", "/pdg/arObjectReader");
+    objectReaders.push_back(&arObjectRd);
+    om2mObjectRd.init(&node, "/iot2pdg_updates", "/pdg/OM2MObjectReader");
+    objectReaders.push_back(&om2mObjectRd);
+    gazeboRd.init(&node, "/gazebo/model_states", "/pdg/gazeboObjectReader");
+    objectReaders.push_back(&gazeboRd);
+    toasterSimuObjectRd.init(&node, "/pdg/toasterSimuObject");
+    objectReaders.push_back(&toasterSimuObjectRd);
 
     //Services
     ros::ServiceServer addStreamServ = node.advertiseService("pdg/manage_stream", addStream);
@@ -282,30 +278,12 @@ int main(int argc, char** argv) {
           (*it)->Publish(list_msg);
         }
 
-        /////////////
-        // Objects //
-        /////////////
+        for(vector<ObjectReader*>::iterator it = objectReaders.begin(); it != objectReaders.end(); ++it)
+          (*it)->updateEntityPose(newPoseEnt_);
 
-
-        if (arObject_){
-          arObjectRd.updateEntityPose(newPoseEnt_);
-          PublishObject(arObjectRd, objectIn, list_msg);
-        }
-
-        if (om2mObject_){
-          om2mObjectRd.updateEntityPose(newPoseEnt_);
-          PublishObject(om2mObjectRd, objectIn, list_msg);
-        }
-
-        if (gazeboObject_){
-          gazeboRd.updateEntityPose(newPoseEnt_);
-          PublishObject(gazeboRd, objectIn, list_msg);
-        }
-
-        if (toasterSimuObject_){
-          toasterSimuObjectRd.updateEntityPose(newPoseEnt_);
-          PublishObject(toasterSimuObjectRd, objectIn, list_msg);
-        }
+        //do publication for all objects
+        ObjectReader tmp;
+        tmp.Publish(list_msg, objectIn);
 
         ////////////////////////////////////////////////////////////////////////
 

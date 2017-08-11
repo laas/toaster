@@ -12,74 +12,81 @@
 #include <sys/time.h>
 #include <ostream>
 
-GazeboObjectReader::GazeboObjectReader(ros::NodeHandle& node, std::string topic) {
+GazeboObjectReader::GazeboObjectReader() {
+    childs_.push_back(this);
+}
 
-    ROS_INFO("[GazeboObjectReader] Initializing");
-
-    sub_ = node.subscribe(topic, 1, &GazeboObjectReader::CallbackObj, this);
-
-    ROS_INFO("[GazeboObjectReader] Initialized");
+void GazeboObjectReader::init(ros::NodeHandle* node, std::string topic, std::string param)
+{
+  std::cout << "[PDG] Initializing GazeboObjectReader" << std::endl;
+  Reader<MovableObject>::init(node, param);
+  // ******************************************
+  // Starts listening to the joint_states
+  sub_ = node_->subscribe(topic, 1, &GazeboObjectReader::CallbackObj, this);
+  std::cout << "Done\n";
 }
 
 void GazeboObjectReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg) {
 
-	ros::Time now = ros::Time::now();
-	MovableObject* curObject;
-	std::vector<std::string> objectsName = msg->name;
-	std::vector<geometry_msgs::Pose> objectsPose = msg->pose;
+  if(activated_)
+  {
+  	ros::Time now = ros::Time::now();
+  	MovableObject* curObject;
+  	std::vector<std::string> objectsName = msg->name;
+  	std::vector<geometry_msgs::Pose> objectsPose = msg->pose;
 
-	if(objectsName.size() != objectsPose.size()){
-		ROS_ERROR("[GazeboObjectReader] Topic msg invalid: nb of objects diff from nb of poses!");
-		return;
-	}
+  	if(objectsName.size() != objectsPose.size()){
+  		ROS_ERROR("[GazeboObjectReader] Topic msg invalid: nb of objects diff from nb of poses!");
+  		return;
+  	}
 
-	for (int i = 0; i < objectsName.size(); i++) {
+  	for (int i = 0; i < objectsName.size(); i++) {
 
-		if(objectsName[i] == "pr2" || objectsName[i] == "ground_plane"){
-			//we ignore these objects
-			continue;
-		}
+  		if(objectsName[i] == "pr2" || objectsName[i] == "ground_plane"){
+  			//we ignore these objects
+  			continue;
+  		}
 
-		// If this object is not assigned we have to allocate data.
-    lastConfigMutex_.lock();
-		if (globalLastConfig_.find(objectsName[i]) == globalLastConfig_.end()) {
-		    curObject = new MovableObject(objectsName[i]);
-		    curObject->setRoomId(0);
-		    curObject->setName(objectsName[i]);
-        increaseNbObjects();
-		} else{
-		    curObject = globalLastConfig_[objectsName[i]];
-		}
-    lastConfigMutex_.unlock();
+  		// If this object is not assigned we have to allocate data.
+      lastConfigMutex_.lock();
+  		if (globalLastConfig_.find(objectsName[i]) == globalLastConfig_.end()) {
+  		    curObject = new MovableObject(objectsName[i]);
+  		    curObject->setRoomId(0);
+  		    curObject->setName(objectsName[i]);
+          increaseNbObjects();
+  		} else{
+  		    curObject = globalLastConfig_[objectsName[i]];
+  		}
+      lastConfigMutex_.unlock();
 
-		std::vector<double> objOrientation;
-		bg::model::point<double, 3, bg::cs::cartesian> objPosition;
+  		std::vector<double> objOrientation;
+  		bg::model::point<double, 3, bg::cs::cartesian> objPosition;
 
-		curObject->setId(objectsName[i]);
+  		curObject->setId(objectsName[i]);
 
-		curObject->setTime(now.toNSec());
+  		curObject->setTime(now.toNSec());
 
-		objPosition.set<0>(objectsPose[i].position.x);
-		objPosition.set<1>(objectsPose[i].position.y);
-		objPosition.set<2>(objectsPose[i].position.z);
-		curObject->setPosition(objPosition);
+  		objPosition.set<0>(objectsPose[i].position.x);
+  		objPosition.set<1>(objectsPose[i].position.y);
+  		objPosition.set<2>(objectsPose[i].position.z);
+  		curObject->setPosition(objPosition);
 
 
-		tf::Quaternion q;
-		double roll, pitch, yaw;
+  		tf::Quaternion q;
+  		double roll, pitch, yaw;
 
-		tf::quaternionMsgToTF(objectsPose[i].orientation, q);
-		tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
+  		tf::quaternionMsgToTF(objectsPose[i].orientation, q);
+  		tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
 
-		objOrientation.push_back(roll);
-		objOrientation.push_back(pitch);
-		objOrientation.push_back(yaw);
-		curObject->setOrientation(objOrientation);
+  		objOrientation.push_back(roll);
+  		objOrientation.push_back(pitch);
+  		objOrientation.push_back(yaw);
+  		curObject->setOrientation(objOrientation);
 
-    lastConfigMutex_.lock();
-		globalLastConfig_[objectsName[i]] = curObject;
-    lastConfigMutex_.unlock();
-    lastConfig_[objectsName[i]] = curObject;
-	}
-
+      lastConfigMutex_.lock();
+  		globalLastConfig_[objectsName[i]] = curObject;
+      lastConfigMutex_.unlock();
+      lastConfig_[objectsName[i]] = curObject;
+  	}
+  }
 }

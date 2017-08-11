@@ -33,7 +33,6 @@ class RobotReader : public Reader<Robot>{
 
         bool isPresent(std::string id);
 
-    public:
         toaster_msgs::Fact DefaultFactMsg(std::string subjectId, uint64_t factTime);
 };
 

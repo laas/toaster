@@ -8,16 +8,24 @@
 #include "pdg/readers/ToasterSimuObjectReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterSimuObjectReader::ToasterSimuObjectReader(ros::NodeHandle& node) {
-    std::cout << " Initializing ToasterSimuObjectReader" << std::endl;
+ToasterSimuObjectReader::ToasterSimuObjectReader() {
+    childs_.push_back(this);
+}
 
-    // Starts listening to the topic
-    sub_ = node.subscribe("/toaster_simu/objectList", 1, &ToasterSimuObjectReader::objectStateCallBack, this);
+void ToasterSimuObjectReader::init(ros::NodeHandle* node, std::string param)
+{
+  std::cout << "[PDG] Initializing ToasterSimuObjectReader" << std::endl;
+  Reader<MovableObject>::init(node, param);
+  // ******************************************
+  // Starts listening to the joint_states
+  sub_ = node_->subscribe("/toaster_simu/objectList", 1, &ToasterSimuObjectReader::objectStateCallBack, this);
+  std::cout << "Done\n";
 }
 
 void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for object received" << std::endl;
-
+  if(activated_)
+  {
     MovableObject* curObject;
     double roll, pitch, yaw;
     for (unsigned int i = 0; i < msg->objectList.size(); i++) {
@@ -63,4 +71,5 @@ void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectList
         if (lastConfig_[msg->objectList[i].meEntity.id] == NULL)
             lastConfig_[curObject->getId()] = curObject;
     }
+  }
 }

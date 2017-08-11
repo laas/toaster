@@ -146,8 +146,6 @@ set(${PROJECT_NAME}_SOURCES
     #utility
     src/utility/XmlUtility.cpp
     src/utility/EntityUtility.cpp
-    #publishers
-    src/publishers/ObjectPublisher.cpp
 )
 add_executable(pdg ${${PROJECT_NAME}_SOURCES} src/main.cpp)
 

@@ -30,9 +30,10 @@ public:
 
   static std::map<std::string, MovableObject*> globalLastConfig_;
 
-  toaster_msgs::Fact DefaultFactMsg(std::map<std::string, MovableObject *>::iterator it, struct objectIn_t& objectIn);
+  virtual void Publish(struct toasterList_t& list_msg) {};
+  void Publish(struct toasterList_t& list_msg, struct objectIn_t& objectIn);
 
-protected:
+  protected:
   ros::Subscriber sub_;
   static unsigned int nbReaders_;
   static unsigned int nbObjects_; /// total object number
@@ -41,7 +42,11 @@ protected:
   bool isPresent(std::string id);
   void increaseNbObjects();
 
+  toaster_msgs::Fact DefaultFactMsg(string id, MovableObject* object, struct objectIn_t& objectIn);
+  void putInHand(struct objectIn_t& objectIn, string id, MovableObject* object, struct toasterList_t& list_msg);
+
   static std::mutex lastConfigMutex_;
+  static std::vector<ObjectReader*> childs_;
 };
 
 #endif /* OBJECTREADER_H */

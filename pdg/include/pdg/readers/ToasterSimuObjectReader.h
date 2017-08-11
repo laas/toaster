@@ -15,9 +15,10 @@
 
 class ToasterSimuObjectReader : public ObjectReader {
 public:
-    ToasterSimuObjectReader(ros::NodeHandle& node);
-
+    ToasterSimuObjectReader();
     ~ToasterSimuObjectReader() {};
+
+    void init(ros::NodeHandle* node, std::string param);
 
 private:
     //Functions
