@@ -1,6 +1,6 @@
 #include "pdg/readers/Pr2RobotReader.h"
 
-Pr2RobotReader::Pr2RobotReader(bool fullRobot) {
+Pr2RobotReader::Pr2RobotReader(bool fullRobot)  : RobotReader(){
     fullRobot_ = fullRobot;
 }
 

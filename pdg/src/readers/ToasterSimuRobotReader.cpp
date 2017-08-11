@@ -8,6 +8,11 @@
 #include "pdg/readers/ToasterSimuRobotReader.h"
 #include "tf/transform_datatypes.h"
 
+ToasterSimuRobotReader::ToasterSimuRobotReader(bool fullRobot) : RobotReader()
+{
+  fullRobot_ = fullRobot;
+}
+
 void ToasterSimuRobotReader::init(ros::NodeHandle* node, std::string param) {
   std::cout << "[PDG] Initializing ToasterSimuRobotReader" << std::endl;
   Reader<Robot>::init(node, param);

@@ -7,7 +7,7 @@
 
 #include "pdg/readers/SpencerRobotReader.h"
 
-SpencerRobotReader::SpencerRobotReader() {
+SpencerRobotReader::SpencerRobotReader() : RobotReader() {
     fullRobot_ = false;
 }
 

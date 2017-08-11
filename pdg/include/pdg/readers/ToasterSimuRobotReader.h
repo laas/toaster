@@ -15,7 +15,7 @@
 
 class ToasterSimuRobotReader : public RobotReader {
 public:
-    ToasterSimuRobotReader(bool fullRobot) {fullRobot_ = fullRobot; }
+    ToasterSimuRobotReader(bool fullRobot);
     ~ToasterSimuRobotReader() {};
 
     void init(ros::NodeHandle* node, std::string param);

@@ -1,6 +1,6 @@
 #include "pdg/readers/RobotReader.h"
 
-RobotReader::RobotReader()
+RobotReader::RobotReader() : Reader<Robot>()
 {
   fullRobot_ = false;
 }
