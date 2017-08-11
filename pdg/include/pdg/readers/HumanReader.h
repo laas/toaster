@@ -24,6 +24,7 @@ class HumanReader : public Reader<Human>{
 
     public:
       HumanReader();
+      HumanReader(const HumanReader&) = delete;
       virtual ~HumanReader();
 
       bool fullHuman_;

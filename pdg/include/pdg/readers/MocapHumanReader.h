@@ -13,15 +13,16 @@
 
 class MocapHumanReader : public HumanReader {
 public:
-    MocapHumanReader() {};
-    ~MocapHumanReader() {};
+    MocapHumanReader(bool fullHuman);
+    MocapHumanReader(const MocapHumanReader&) = delete;
+    virtual ~MocapHumanReader();
 
     void init(ros::NodeHandle* node, std::string topic, std::string param);
 
 private:
     ros::Subscriber sub_;
     void optitrackCallback(const spencer_tracking_msgs::TrackedPersons::ConstPtr& msg);
-    tf::TransformListener listener_;
+    tf::TransformListener* listener_;
 };
 
 #endif

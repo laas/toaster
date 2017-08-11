@@ -8,6 +8,18 @@
 #include <math.h>
 #include <ostream>
 
+MocapHumanReader::MocapHumanReader(bool fullHuman) : HumanReader()
+{
+  fullHuman_ = fullHuman;
+  listener_ = nullptr;
+}
+
+MocapHumanReader::~MocapHumanReader()
+{
+  if(listener_ != nullptr)
+    delete listener_;
+}
+
 void MocapHumanReader::init(ros::NodeHandle* node, std::string topic, std::string param)
 {
   std::cout << "[PDG] Initializing MocapHumanReader" << std::endl;
@@ -15,6 +27,7 @@ void MocapHumanReader::init(ros::NodeHandle* node, std::string topic, std::strin
   // ******************************************
   // Starts listening to the joint_states
   sub_ = node_->subscribe(topic, 1, &MocapHumanReader::optitrackCallback, this);
+  listener_ = new tf::TransformListener;
   std::cout << "Done\n";
 }
 
@@ -33,9 +46,9 @@ void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPer
         frame = msg->header.frame_id;
 
         //transform from the mocap frame to map
-        listener_.waitForTransform("/map", frame,
+        listener_->waitForTransform("/map", frame,
                 msg->header.stamp, ros::Duration(3.0));
-        listener_.lookupTransform("/map", frame,
+        listener_->lookupTransform("/map", frame,
                 msg->header.stamp, transform);
 
         //for every agent present in the tracking message
@@ -58,7 +71,7 @@ void MocapHumanReader::optitrackCallback(const spencer_tracking_msgs::TrackedPer
             optitrackPose.pose.orientation = person.pose.pose.orientation;
             optitrackPose.header.stamp = msg->header.stamp;
             optitrackPose.header.frame_id = frame;
-            listener_.transformPose("/map", optitrackPose, mapPose);
+            listener_->transformPose("/map", optitrackPose, mapPose);
 
             //set human position
             bg::model::point<double, 3, bg::cs::cartesian> humanPosition;

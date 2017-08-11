@@ -14,7 +14,6 @@
 //Utility
 #include "pdg/utility/EntityUtility.h"
 
-//publishers -> include readers
 #include "pdg/readers/MorseHumanReader.h"
 #include "pdg/readers/MocapHumanReader.h"
 #include "pdg/readers/AdreamMocapHumanReader.h"
@@ -37,10 +36,10 @@ struct fullConfig_t fullConfig;
 // Stream to activate
 MorseHumanReader morseHumanRd(fullConfig.Human_);
 //NiutHumanReader niutHumanRd;
-GroupHumanReader groupHumanRd;
-MocapHumanReader mocapHumanRd;
-AdreamMocapHumanReader adreamMocapHumanRd;
-ToasterSimuHumanReader toasterSimuHumanRd;
+GroupHumanReader groupHumanRd(false);
+MocapHumanReader mocapHumanRd(false);
+AdreamMocapHumanReader adreamMocapHumanRd(false);
+ToasterSimuHumanReader toasterSimuHumanRd(false);
 
 Pr2RobotReader pr2RobotRd(fullConfig.Robot_);
 SpencerRobotReader spencerRobotRd;
@@ -184,7 +183,6 @@ void broadcastTfAgent(tf::TransformBroadcaster &tf_br,toaster_msgs::Agent &agent
 }
 
 int main(int argc, char** argv) {
-
     unsigned int seq = 0;
     ros::init(argc, argv, "pdg");
     ros::NodeHandle node;

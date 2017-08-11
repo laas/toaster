@@ -18,15 +18,15 @@
 
 class GroupHumanReader : public HumanReader {
 public:
-    GroupHumanReader() {};
-    ~GroupHumanReader() {};
+    GroupHumanReader(bool fullHuman);
+    ~GroupHumanReader();
 
     void init(ros::NodeHandle* node, std::string topic, std::string param);
 
 private:
     ros::Subscriber sub_;
     void groupTrackCallback(const spencer_tracking_msgs::TrackedGroups::ConstPtr& msg);
-    tf::TransformListener listener_;
+    tf::TransformListener* listener_;
 };
 
 #endif	/* GROUPHUMANREADER_H */

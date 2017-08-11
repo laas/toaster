@@ -13,6 +13,7 @@
 #include <ros/ros.h>
 #include <string>
 #include <toaster_msgs/SetEntityPose.h>
+#include <ostream>
 
 #include "toaster-lib/MovableIoTObject.h"
 #include "pdg/utility/EntityUtility.h"
@@ -22,6 +23,7 @@ class Reader{
 
 public:
   Reader() {node_ = nullptr; activated_ = false; }
+  Reader(const Reader&) = delete;
   ~Reader() {}
 
   void init(ros::NodeHandle* node, std::string param)

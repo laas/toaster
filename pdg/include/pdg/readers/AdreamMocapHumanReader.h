@@ -18,7 +18,7 @@
 
 class AdreamMocapHumanReader : public HumanReader {
 public:
-    AdreamMocapHumanReader() {};
+    AdreamMocapHumanReader(bool fullHuman);
     virtual ~AdreamMocapHumanReader() {};
 
     void init(ros::NodeHandle* node,

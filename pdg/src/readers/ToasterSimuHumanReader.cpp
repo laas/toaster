@@ -8,6 +8,11 @@
 #include "pdg/readers/ToasterSimuHumanReader.h"
 #include "tf/transform_datatypes.h"
 
+ToasterSimuHumanReader::ToasterSimuHumanReader(bool fullHuman) : HumanReader()
+{
+  fullHuman_ = fullHuman;
+}
+
 void ToasterSimuHumanReader::init(ros::NodeHandle* node, std::string param)
 {
   std::cout << "[PDG] Initializing ToasterHumanReader" << std::endl;

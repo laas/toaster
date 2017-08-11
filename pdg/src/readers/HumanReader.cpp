@@ -1,8 +1,9 @@
 // A human reader is a class that will read data from a middleware message
 // and fill a Human class from toaster-lib accordingly to publish on a ros topic.
 #include "pdg/readers/HumanReader.h"
+#include <ostream>
 
-HumanReader::HumanReader()
+HumanReader::HumanReader() : Reader<Human>()
 {
   fullHuman_ = false;
 }

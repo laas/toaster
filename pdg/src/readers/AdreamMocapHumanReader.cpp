@@ -13,6 +13,11 @@
 #include <math.h>
 #include <ostream>
 
+AdreamMocapHumanReader::AdreamMocapHumanReader(bool fullHuman) : HumanReader()
+{
+  fullHuman_ = fullHuman;
+}
+
 // A human reader is a class that will read data from human(s)
 void AdreamMocapHumanReader::init(ros::NodeHandle* node, std::string topicTorso, std::string topicHead, std::string topicHand, std::string param)
 {

@@ -1,8 +1,14 @@
 #include "pdg/readers/MorseHumanReader.h"
 
 
-MorseHumanReader::MorseHumanReader(bool fullHuman){
+MorseHumanReader::MorseHumanReader(bool fullHuman) : HumanReader(){
   fullHuman_ = fullHuman;
+}
+
+MorseHumanReader::~MorseHumanReader(){
+    for(std::map<std::string, Human*>::iterator it = lastConfig_.begin() ; it != lastConfig_.end(); ++it){
+        delete it->second;
+    }
 }
 
 void MorseHumanReader::init(ros::NodeHandle* node, std::string param)
@@ -76,10 +82,3 @@ void MorseHumanReader::updateHuman(tf::TransformListener &listener, std::string 
       m_LastConfig[101]->skeleton[l_ankle] = msg->position[5]; //Left ankle
   }
 }*/
-
-//Destructor
-MorseHumanReader::~MorseHumanReader(){
-    for(std::map<std::string, Human*>::iterator it = lastConfig_.begin() ; it != lastConfig_.end(); ++it){
-        delete it->second;
-    }
-}

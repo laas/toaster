@@ -15,7 +15,7 @@
 
 class ToasterSimuHumanReader : public HumanReader {
 public:
-    ToasterSimuHumanReader() {};
+    ToasterSimuHumanReader(bool fullHuman);
     virtual ~ToasterSimuHumanReader() {};
 
     void init(ros::NodeHandle* node, std::string param);
