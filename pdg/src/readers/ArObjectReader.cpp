@@ -40,9 +40,9 @@ void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg
   		curObject = new MovableObject(msg->ns);
   		curObject->setName(msg->ns);
       increaseNbObjects();
-  	} else {
+  	} else
   		curObject = globalLastConfig_[msg->ns];
-  	}
+
     lastConfigMutex_.unlock();
 
   	//set object position

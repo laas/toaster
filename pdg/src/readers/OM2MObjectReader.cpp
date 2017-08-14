@@ -91,6 +91,7 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& m
     ros::Time now = ros::Time::now();
     // OM2M objects are by convention considered movable
     MovableIoTObject* curObject;
+    bool is_new = false;
 
     //create a new object with the same id and name as the message
     lastConfigMutex_.lock();
@@ -98,9 +99,10 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& m
         curObject = new MovableIoTObject(msg->data.key);
         curObject->setName(msg->data.key);
         increaseNbObjects();
-    } else {
+        is_new = true;
+    } else
         curObject = (MovableIoTObject*)globalLastConfig_[msg->data.key];
-    }
+
     lastConfigMutex_.unlock();
 
     //set object position at default : 0,0,0
@@ -117,8 +119,11 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& m
 
 
     //put the same orientation and positions as the previous time
-    curObject->setOrientation(objectOrientation);
-    curObject->setPosition(objectPosition);
+    if(is_new)
+    {
+      curObject->setOrientation(objectOrientation);
+      curObject->setPosition(objectPosition);
+    }
 
     // set the new value of the OM2M object
     curObject->setValue(msg->data.value);
