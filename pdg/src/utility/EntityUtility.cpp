@@ -10,7 +10,7 @@ void EntityUtility_setClient(ros::ServiceClient* m_setPoseClient)
   setPoseClient_ = m_setPoseClient;
 }
 
-void fillValue(MovableIoTObject* srcObject, toaster_msgs::Object& msgObject) {
+void fillValue(MovableObject* srcObject, toaster_msgs::Object& msgObject) {
     msgObject.value = srcObject->getValue();
 }
 
@@ -32,7 +32,7 @@ void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity) {
 }
 
 void updateEntity(Entity& newPoseEnt, Entity* storedEntity) {
-    ROS_INFO("UPDATE entity");
+    //ROS_INFO("UPDATE entity");
     storedEntity->position_ = newPoseEnt.getPosition();
     storedEntity->orientation_ = newPoseEnt.getOrientation();
     storedEntity->setTime(newPoseEnt.getTime());

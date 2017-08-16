@@ -15,9 +15,12 @@
 
 class ToasterSimuHumanReader : public HumanReader {
 public:
-    ToasterSimuHumanReader(ros::NodeHandle& node);
+    ToasterSimuHumanReader(bool fullHuman);
+    virtual ~ToasterSimuHumanReader() {};
 
-    ~ToasterSimuHumanReader() {};
+    void init(ros::NodeHandle* node, std::string param);
+
+    virtual void Publish(struct toasterList_t& list_msg);
 
 private:
     void humanJointStateCallBack(const toaster_msgs::HumanListStamped::ConstPtr& msg);

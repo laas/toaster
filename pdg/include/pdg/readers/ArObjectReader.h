@@ -18,12 +18,12 @@
 class ArObjectReader : public ObjectReader {
 
 public:
-    ArObjectReader(ros::NodeHandle& node, std::string topicAR);
+    ArObjectReader();
 		~ArObjectReader() {};
 
-private:
-    ros::Subscriber subAR_;
+    void init(ros::NodeHandle* node, std::string topic, std::string param);
 
+private:
     void CallbackObj(const visualization_msgs::Marker::ConstPtr& msg);
 };
 

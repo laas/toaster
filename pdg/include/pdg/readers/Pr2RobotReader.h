@@ -18,10 +18,10 @@
 
 class Pr2RobotReader : public RobotReader {
 public:
-    Pr2RobotReader(ros::NodeHandle& node, bool fullRobot);
-
-    //Destructor
+    Pr2RobotReader(bool fullRobot);
     ~Pr2RobotReader();
+
+    void init(ros::NodeHandle* node, std::string param);
 
     void updateRobot(tf::TransformListener &listener);
 
@@ -30,7 +30,7 @@ private:
     ros::Subscriber sub_;
     std::vector<std::string> pr2JointsName_;
     //void initJointsName();
-    void init();
+
     void setRobotJointLocation(tf::TransformListener &listener, Joint* joint);
     void pr2JointStateCallBack(const sensor_msgs::JointState::ConstPtr& msg);
 };

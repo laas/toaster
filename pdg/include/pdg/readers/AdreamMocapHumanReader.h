@@ -18,8 +18,16 @@
 
 class AdreamMocapHumanReader : public HumanReader {
 public:
-    AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicTorso, std::string topicHead, std::string topicHand);
-    ~AdreamMocapHumanReader() {};
+    AdreamMocapHumanReader(bool fullHuman);
+    virtual ~AdreamMocapHumanReader() {};
+
+    void init(ros::NodeHandle* node,
+              std::string topicTorso = "/optitrack/bodies/Rigid_Body_3",
+              std::string topicHead = "/optitrack/bodies/Rigid_Body_1",
+              std::string topicHand = "/optitrack/bodies/Rigid_Body_2",
+              std::string param = "/pdg/adreamMocapHuman");
+
+    virtual void Publish(struct toasterList_t& list_msg);
 
 private:
     bool torso_;

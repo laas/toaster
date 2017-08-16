@@ -17,12 +17,18 @@
 class OM2MObjectReader : public ObjectReader {
 
 public:
-    OM2MObjectReader(ros::NodeHandle& node, std::string topicOM2M);
-    ~OM2MObjectReader() {};
+    OM2MObjectReader();
+    virtual ~OM2MObjectReader() {};
+
+    void init(ros::NodeHandle* node, std::string topic, std::string param);
+
+    virtual void Publish(struct toasterList_t& list_msg);
 
 private:
-    ros::Subscriber sub_;
     void newValueCallBack(const toaster_msgs::IoTData::ConstPtr& msg);
+
+    std::string getSubpart(std::string data, std::string start, std::string stop);
+    vector<struct preFact_t> readPreFacts(MovableObject* object);
 };
 
 #endif //PDG_OM2MOBJECTREADER_H

@@ -14,16 +14,16 @@
 
 class SpencerRobotReader : public RobotReader {
 public:
-    SpencerRobotReader(bool fullRobot);
-    //Destructor
-    ~SpencerRobotReader();
+    SpencerRobotReader();
+    ~SpencerRobotReader() {};
+
+    void init(ros::NodeHandle* node, std::string param);
 
     void updateRobot(tf::TransformListener &listener);
 private:
     ros::Subscriber sub_;
     std::vector<std::string> spencerJointsName_;
     void initJointsName();
-    void init();
     void setRobotJointLocation(tf::TransformListener &listener, Joint* joint);
 
 };

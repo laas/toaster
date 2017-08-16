@@ -8,27 +8,37 @@
 #include "pdg/readers/ToasterSimuObjectReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterSimuObjectReader::ToasterSimuObjectReader(ros::NodeHandle& node) {
-    std::cout << " Initializing ToasterSimuObjectReader" << std::endl;
+ToasterSimuObjectReader::ToasterSimuObjectReader() : ObjectReader() {
+    childs_.push_back(this);
+}
 
-    // Starts listening to the topic
-    sub_ = node.subscribe("/toaster_simu/objectList", 1, &ToasterSimuObjectReader::objectStateCallBack, this);
+void ToasterSimuObjectReader::init(ros::NodeHandle* node, std::string param)
+{
+  std::cout << "[PDG] Initializing ToasterSimuObjectReader" << std::endl;
+  Reader<MovableObject>::init(node, param);
+  // ******************************************
+  // Starts listening to the joint_states
+  sub_ = node_->subscribe("/toaster_simu/objectList", 1, &ToasterSimuObjectReader::objectStateCallBack, this);
 }
 
 void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg) {
     //std::cout << "[area_manager][DEBUG] new data for object received" << std::endl;
-
+  if(activated_)
+  {
     MovableObject* curObject;
     double roll, pitch, yaw;
     for (unsigned int i = 0; i < msg->objectList.size(); i++) {
 
         // If this object is not assigned we have to allocate data.
-        if (lastConfig_.find(msg->objectList[i].meEntity.id) == lastConfig_.end()) {
+        lastConfigMutex_.lock();
+        if (globalLastConfig_.find(msg->objectList[i].meEntity.id) == globalLastConfig_.end()) {
             curObject = new MovableObject(msg->objectList[i].meEntity.id);
             curObject->setRoomId(0);
             curObject->setName(msg->objectList[i].meEntity.name);
+            increaseNbObjects();
         } else
-            curObject = lastConfig_[msg->objectList[i].meEntity.id];
+            curObject = globalLastConfig_[msg->objectList[i].meEntity.id];
+        lastConfigMutex_.unlock();
 
         std::vector<double> objOrientation;
         bg::model::point<double, 3, bg::cs::cartesian> objPosition;
@@ -53,7 +63,12 @@ void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectList
         objOrientation.push_back(yaw);
         curObject->setOrientation(objOrientation);
 
+        lastConfigMutex_.lock();
+        if (globalLastConfig_[msg->objectList[i].meEntity.id] == NULL)
+            globalLastConfig_[curObject->getId()] = curObject;
+        lastConfigMutex_.unlock();
         if (lastConfig_[msg->objectList[i].meEntity.id] == NULL)
             lastConfig_[curObject->getId()] = curObject;
     }
+  }
 }

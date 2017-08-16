@@ -18,12 +18,12 @@
 class GazeboObjectReader : public ObjectReader {
 
 public:
-    GazeboObjectReader(ros::NodeHandle& node, std::string topic);
+    GazeboObjectReader();
 		~GazeboObjectReader() {};
 
-private:
-    ros::Subscriber sub_;
+    void init(ros::NodeHandle* node, std::string topic, std::string param);
 
+private:
     void CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg);
 };
 

@@ -20,11 +20,11 @@ class MorseHumanReader : public HumanReader
 
   public:
     //Constructor
-    MorseHumanReader(ros::NodeHandle& node, bool fullHuman);
+    MorseHumanReader(bool fullHuman);
     //Destructor
-    ~MorseHumanReader();
+    virtual ~MorseHumanReader();
 
-    void init();
+    void init(ros::NodeHandle* node, std::string param);
     void updateHumans(tf::TransformListener &listener);
     void updateHuman(tf::TransformListener &listener, std::string humId, std::string humanBase);
 

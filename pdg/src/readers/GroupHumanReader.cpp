@@ -12,13 +12,29 @@
 #include <math.h>
 #include <ostream>
 
-GroupHumanReader::GroupHumanReader(ros::NodeHandle& node, std::string topic) {
-    std::cout << "Initializing GroupHumanReader" << std::endl;
-    // ******************************************
-    // Starts listening to the joint_states
-    sub_ = node.subscribe(topic, 1, &GroupHumanReader::groupTrackCallback, this);
-    fullHuman_ = false;
-    std::cout << "Done\n";
+GroupHumanReader::GroupHumanReader(bool fullHuman) : HumanReader()
+{
+  fullHuman_ = fullHuman;
+  listener_ = nullptr;
+}
+
+GroupHumanReader::~GroupHumanReader(){
+  if(listener_ != nullptr)
+    delete listener_;
+
+  for(std::map<std::string, Human*>::iterator it = lastConfig_.begin() ; it != lastConfig_.end(); ++it){
+      delete it->second;
+  }
+}
+
+void GroupHumanReader::init(ros::NodeHandle* node, std::string topic, std::string param)
+{
+  std::cout << "[PDG] Initializing GroupHumanReader" << std::endl;
+  Reader<Human>::init(node, param);
+  // ******************************************
+  // Starts listening to the joint_states
+  sub_ = node_->subscribe(topic, 1, &GroupHumanReader::groupTrackCallback, this);
+  listener_ = new tf::TransformListener;
 }
 
 /*
@@ -35,9 +51,9 @@ void GroupHumanReader::groupTrackCallback(const spencer_tracking_msgs::TrackedGr
         frame = msg->header.frame_id;
 
         //transform from the groupTrack frame to map
-        listener_.waitForTransform("/map", frame,
+        listener_->waitForTransform("/map", frame,
                 msg->header.stamp, ros::Duration(3.0));
-        listener_.lookupTransform("/map", frame,
+        listener_->lookupTransform("/map", frame,
                 msg->header.stamp, transform);
 
         //for every group present in the tracking message
@@ -55,7 +71,7 @@ void GroupHumanReader::groupTrackCallback(const spencer_tracking_msgs::TrackedGr
             groupTrackPose.pose.orientation = group.centerOfGravity.pose.orientation;
             groupTrackPose.header.stamp = msg->header.stamp;
             groupTrackPose.header.frame_id = frame;
-            listener_.transformPose("/map", groupTrackPose, mapPose);
+            listener_->transformPose("/map", groupTrackPose, mapPose);
 
             //set human position
             bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
