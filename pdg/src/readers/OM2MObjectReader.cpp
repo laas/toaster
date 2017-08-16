@@ -67,9 +67,7 @@ vector<struct preFact_t> OM2MObjectReader::readPreFacts(MovableObject* object)
       std::string value = getSubpart(data, "data=", " /");
       std::string unit = getSubpart(data, "unit=", " /");
       std::string color = getSubpart(data, "color=", " /");
-
-      std::cout << name << ":" << type << ":" << value << ":" << unit << ":" << color << std::endl;
-
+      
       struct preFact_t preFact;
       if(name != "DATA")
         preFact.type = name;
@@ -154,15 +152,6 @@ void OM2MObjectReader::Publish(struct toasterList_t& list_msg)
         fact_msg.propertyType = "measure";
 
       fact_msg.property = it->type;
-
-      cout << fact_msg.subjectId << endl;
-      cout << fact_msg.confidence << endl;
-      cout << fact_msg.factObservability << endl;
-      cout << fact_msg.stringValue << endl;
-      cout << fact_msg.doubleValue << endl;
-      cout << fact_msg.subProperty << endl;
-      cout << fact_msg.propertyType << endl;
-      cout << fact_msg.property << endl;
 
       list_msg.fact_msg.factList.push_back(fact_msg);
     }

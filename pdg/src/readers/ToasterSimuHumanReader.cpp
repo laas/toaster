@@ -20,7 +20,6 @@ void ToasterSimuHumanReader::init(ros::NodeHandle* node, std::string param)
   // ******************************************
   // Starts listening to the joint_states
   sub_ = node_->subscribe("/toaster_simu/humanList", 1, &ToasterSimuHumanReader::humanJointStateCallBack, this);
-  std::cout << "Done\n";
 }
 
 void ToasterSimuHumanReader::Publish(struct toasterList_t& list_msg)

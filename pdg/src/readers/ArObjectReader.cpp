@@ -24,7 +24,6 @@ void ArObjectReader::init(ros::NodeHandle* node, std::string topic, std::string 
   // ******************************************
   // Starts listening to the joint_states
   sub_ = node_->subscribe(topic, 1, &ArObjectReader::CallbackObj, this);
-  std::cout << "Done\n";
 }
 
 void ArObjectReader::CallbackObj(const visualization_msgs::Marker::ConstPtr& msg) {

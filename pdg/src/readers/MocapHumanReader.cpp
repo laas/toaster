@@ -28,7 +28,6 @@ void MocapHumanReader::init(ros::NodeHandle* node, std::string topic, std::strin
   // Starts listening to the joint_states
   sub_ = node_->subscribe(topic, 1, &MocapHumanReader::optitrackCallback, this);
   listener_ = new tf::TransformListener;
-  std::cout << "Done\n";
 }
 
 /*

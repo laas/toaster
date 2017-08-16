@@ -19,7 +19,6 @@ void ToasterSimuObjectReader::init(ros::NodeHandle* node, std::string param)
   // ******************************************
   // Starts listening to the joint_states
   sub_ = node_->subscribe("/toaster_simu/objectList", 1, &ToasterSimuObjectReader::objectStateCallBack, this);
-  std::cout << "Done\n";
 }
 
 void ToasterSimuObjectReader::objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg) {
