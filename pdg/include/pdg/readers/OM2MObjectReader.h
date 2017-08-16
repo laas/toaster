@@ -26,6 +26,9 @@ public:
 
 private:
     void newValueCallBack(const toaster_msgs::IoTData::ConstPtr& msg);
+
+    std::string getSubpart(std::string data, std::string start, std::string stop);
+    vector<struct preFact_t> readPreFacts(MovableObject* object);
 };
 
 #endif //PDG_OM2MOBJECTREADER_H

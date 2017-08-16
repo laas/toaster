@@ -56,6 +56,7 @@ void ObjectReader::Publish(struct toasterList_t& list_msg, struct objectIn_t& ob
       putInHand(objectIn, it->first, it->second, list_msg);
       //Message for object
       toaster_msgs::Object object_msg;
+      fillValue(it->second, object_msg);
       fillEntity(it->second, object_msg.meEntity);
       list_msg.object_msg.objectList.push_back(object_msg);
   }
