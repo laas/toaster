@@ -10,7 +10,7 @@ void EntityUtility_setClient(ros::ServiceClient* m_setPoseClient)
   setPoseClient_ = m_setPoseClient;
 }
 
-void fillValue(MovableIoTObject* srcObject, toaster_msgs::Object& msgObject) {
+void fillValue(MovableObject* srcObject, toaster_msgs::Object& msgObject) {
     msgObject.value = srcObject->getValue();
 }
 
