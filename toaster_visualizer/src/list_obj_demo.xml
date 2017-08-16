@@ -32,7 +32,7 @@
 <object name="Philips_lamp_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
 <object name="blue_flag_21" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
 
-<object name="Readingroom_wgh_sensor" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
+<object name="Chair_presence" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
 <object name="green_flag_26" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
 
 <object name="Livingroom_table" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />
