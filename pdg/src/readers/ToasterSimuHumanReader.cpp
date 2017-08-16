@@ -8,10 +8,44 @@
 #include "pdg/readers/ToasterSimuHumanReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterSimuHumanReader::ToasterSimuHumanReader(ros::NodeHandle& node) {
-    std::cout << "[area_manager] Initializing ToasterHumanReader" << std::endl;
-    // Starts listening to the topic
-    sub_ = node.subscribe("/toaster_simu/humanList", 1, &ToasterSimuHumanReader::humanJointStateCallBack, this);
+ToasterSimuHumanReader::ToasterSimuHumanReader(bool fullHuman) : HumanReader()
+{
+  fullHuman_ = fullHuman;
+}
+
+void ToasterSimuHumanReader::init(ros::NodeHandle* node, std::string param)
+{
+  std::cout << "[PDG] Initializing ToasterHumanReader" << std::endl;
+  Reader<Human>::init(node, param);
+  // ******************************************
+  // Starts listening to the joint_states
+  sub_ = node_->subscribe("/toaster_simu/humanList", 1, &ToasterSimuHumanReader::humanJointStateCallBack, this);
+  std::cout << "Done\n";
+}
+
+void ToasterSimuHumanReader::Publish(struct toasterList_t& list_msg)
+{
+  if(activated_)
+  {
+    for (std::map<std::string, Human*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it) {
+        //Human
+        toaster_msgs::Human human_msg;
+        fillEntity(it->second, human_msg.meAgent.meEntity);
+
+        human_msg.meAgent.skeletonJoint.clear();
+        human_msg.meAgent.skeletonNames.clear();
+
+        for (std::map<std::string, Joint*>::iterator itJoint = lastConfig_[it->first]->skeleton_.begin(); itJoint != lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+            toaster_msgs::Joint joint_msg;
+            human_msg.meAgent.skeletonNames.push_back(itJoint->first);
+            fillEntity((itJoint->second), joint_msg.meEntity);
+            joint_msg.jointOwner = it->first;
+
+            human_msg.meAgent.skeletonJoint.push_back(joint_msg);
+        }
+        list_msg.human_msg.humanList.push_back(human_msg);
+    }
+  }
 }
 
 void ToasterSimuHumanReader::humanJointStateCallBack(const toaster_msgs::HumanListStamped::ConstPtr& msg) {

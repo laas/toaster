@@ -15,14 +15,14 @@
 
 class ToasterSimuObjectReader : public ObjectReader {
 public:
-    ToasterSimuObjectReader(ros::NodeHandle& node);
+    ToasterSimuObjectReader();
+    ~ToasterSimuObjectReader() {};
 
-    virtual ~ToasterSimuObjectReader() {};
+    void init(ros::NodeHandle* node, std::string param);
 
 private:
     //Functions
     void objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg);
-    ros::Subscriber sub_;
 };
 
 #endif	/* TOASTERSIMUOBJECTREADER_H */

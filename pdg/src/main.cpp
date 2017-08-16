@@ -14,31 +14,41 @@
 //Utility
 #include "pdg/utility/EntityUtility.h"
 
-//publishers -> include readers
-#include "pdg/publishers/HumanPublisher.h"
-#include "pdg/publishers/RobotPublisher.h"
-#include "pdg/publishers/ObjectPublisher.h"
+#include "pdg/readers/MorseHumanReader.h"
+#include "pdg/readers/MocapHumanReader.h"
+#include "pdg/readers/AdreamMocapHumanReader.h"
+#include "pdg/readers/GroupHumanReader.h"
+#include "pdg/readers/ToasterSimuHumanReader.h"
+
+#include "pdg/readers/Pr2RobotReader.h"
+#include "pdg/readers/SpencerRobotReader.h"
+#include "pdg/readers/ToasterSimuRobotReader.h"
+
+#include "pdg/readers/ArObjectReader.h"
+#include "pdg/readers/GazeboObjectReader.h"
+#include "pdg/readers/ToasterSimuObjectReader.h"
+#include "pdg/readers/OM2MObjectReader.h"
 
 #include "pdg/types.h"
 
 struct fullConfig_t fullConfig;
 
 // Stream to activate
-bool morseHuman_ = false;
-bool niutHuman_ = false;
-bool groupHuman_ = false;
-bool mocapHuman_ = false;
-bool adreamMocapHuman_ = false;
-bool toasterSimuHuman_ = false;
+MorseHumanReader morseHumanRd(fullConfig.Human_);
+//NiutHumanReader niutHumanRd;
+GroupHumanReader groupHumanRd(false);
+MocapHumanReader mocapHumanRd(false);
+AdreamMocapHumanReader adreamMocapHumanRd(false);
+ToasterSimuHumanReader toasterSimuHumanRd(false);
 
-bool pr2Robot_ = false;
-bool spencerRobot_ = false;
-bool toasterSimuRobot_ = false;
+Pr2RobotReader pr2RobotRd(fullConfig.Robot_);
+SpencerRobotReader spencerRobotRd;
+ToasterSimuRobotReader toasterSimuRobotRd(fullConfig.Robot_);
 
-bool toasterSimuObject_ = false;
-bool arObject_ = false;
-bool om2mObject_ = false;
-bool gazeboObject_ = false;
+ToasterSimuObjectReader toasterSimuObjectRd;
+ArObjectReader arObjectRd;
+OM2MObjectReader om2mObjectRd;
+GazeboObjectReader gazeboRd;
 
 struct objectIn_t objectIn;
 
@@ -52,21 +62,21 @@ Entity newPoseEnt_("");
 bool addStream(toaster_msgs::AddStream::Request &req,
         toaster_msgs::AddStream::Response & res) {
 
-    morseHuman_ = req.morseHuman;
-    niutHuman_ = req.niutHuman;
-    groupHuman_ = req.groupHuman;
-    mocapHuman_ = req.mocapHuman;
-    adreamMocapHuman_ = req.adreamMocapHuman;
-    toasterSimuHuman_ = req.toasterSimuHuman;
+    morseHumanRd.setActivation(req.morseHuman);
+    //niutHumanRd.setActivation(req.niutHuman);
+    groupHumanRd.setActivation(req.groupHuman);
+    mocapHumanRd.setActivation(req.mocapHuman);
+    adreamMocapHumanRd.setActivation(req.adreamMocapHuman);
+    toasterSimuHumanRd.setActivation(req.toasterSimuHuman);
 
-    pr2Robot_ = req.pr2Robot;
-    spencerRobot_ = req.spencerRobot;
-    toasterSimuRobot_ = req.toasterSimuRobot;
+    pr2RobotRd.setActivation(req.pr2Robot);
+    spencerRobotRd.setActivation(req.spencerRobot);
+    toasterSimuRobotRd.setActivation(req.toasterSimuRobot);
 
-    toasterSimuObject_ = req.toasterSimuObject;
-    arObject_ = req.arObject;
-    om2mObject_ = req.om2mObject;
-    gazeboObject_ = req.gazeboObject;
+    toasterSimuObjectRd.setActivation(req.toasterSimuObject);
+    arObjectRd.setActivation(req.arObject);
+    om2mObjectRd.setActivation(req.om2mObject);
+    gazeboRd.setActivation(req.gazeboObject);
 
     ROS_INFO("[pdg] setting pdg input");
 
@@ -173,64 +183,43 @@ void broadcastTfAgent(tf::TransformBroadcaster &tf_br,toaster_msgs::Agent &agent
 }
 
 int main(int argc, char** argv) {
-
     unsigned int seq = 0;
     ros::init(argc, argv, "pdg");
     ros::NodeHandle node;
 
     tf::TransformBroadcaster tf_br;
 
-
-    //Set params to select input
-    if (node.hasParam("/pdg/morseHuman"))
-        node.getParam("/pdg/morseHuman", morseHuman_);
-    if (node.hasParam("/pdg/niutHuman"))
-        node.getParam("/pdg/niutHuman", niutHuman_);
-    if (node.hasParam("/pdg/groupHuman"))
-        node.getParam("/pdg/groupHuman", groupHuman_);
-    if (node.hasParam("/pdg/mocapHuman"))
-        node.getParam("/pdg/mocapHuman", mocapHuman_);
-    if (node.hasParam("/pdg/adreamMocapHuman"))
-        node.getParam("/pdg/adreamMocapHuman", adreamMocapHuman_);
-    if (node.hasParam("/pdg/toasterSimuHuman"))
-        node.getParam("/pdg/toasterSimuHuman", toasterSimuHuman_);
-
-    if (node.hasParam("/pdg/pr2Robot"))
-        node.getParam("/pdg/pr2Robot", pr2Robot_);
-    if (node.hasParam("/pdg/spencerRobot"))
-        node.getParam("/pdg/spencerRobot", spencerRobot_);
-    if (node.hasParam("/pdg/toasterSimuRobot"))
-        node.getParam("/pdg/toasterSimuRobot", toasterSimuRobot_);
-
-    if (node.hasParam("/pdg/toasterSimuObject"))
-        node.getParam("/pdg/toasterSimuObject", toasterSimuObject_);
-
-    if (node.hasParam("/pdg/arObjectReader"))
-        node.getParam("/pdg/arObjectReader", arObject_);
-    if (node.hasParam("/pdg/OM2MObjectReader"))
-        node.getParam("/pdg/OM2MObjectReader", om2mObject_);
-    if (node.hasParam("/pdg/gazeboObjectReader"))
-        node.getParam("/pdg/gazeboObjectReader", gazeboObject_);
-
-
-
     //Data reading
-    GroupHumanReader groupHumanRd(node, "/spencer/perception/tracked_groups");
-    MorseHumanReader morseHumanRd(node, fullConfig.Human_);
-    //NiutHumanReader niutHumanRd()
-    MocapHumanReader mocapHumanRd(node, "/optitrack_person/tracked_persons");
-    AdreamMocapHumanReader adreamMocapHumanRd(node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2");
-    ToasterSimuHumanReader toasterSimuHumanRd(node);
+    vector<HumanReader*> humanReaders;
+    groupHumanRd.init(&node, "/spencer/perception/tracked_groups", "/pdg/groupHuman");
+    humanReaders.push_back(&groupHumanRd);
+    morseHumanRd.init(&node, "/pdg/morseHuman");
+    humanReaders.push_back(&morseHumanRd);
+    //niutHumanRd.init(&node, "/niut/Human", "/pdg/niutHuman")
+    mocapHumanRd.init(&node, "/optitrack_person/tracked_persons", "/pdg/mocapHuman");
+    humanReaders.push_back(&mocapHumanRd);
+    adreamMocapHumanRd.init(&node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2", "/pdg/adreamMocapHuman");
+    humanReaders.push_back(&adreamMocapHumanRd);
+    toasterSimuHumanRd.init(&node, "/pdg/toasterSimuHuman");
+    humanReaders.push_back(&toasterSimuHumanRd);
 
-    Pr2RobotReader pr2RobotRd(node, fullConfig.Robot_);
-    SpencerRobotReader spencerRobotRd(fullConfig.Robot_);
-    ToasterSimuRobotReader toasterSimuRobotRd(node);
+    vector<RobotReader*> robotReaders;
+    pr2RobotRd.init(&node, "/pdg/pr2Robot");
+    robotReaders.push_back(&pr2RobotRd);
+    spencerRobotRd.init(&node, "/pdg/spencerRobot");
+    robotReaders.push_back(&spencerRobotRd);
+    toasterSimuRobotRd.init(&node, "/pdg/toasterSimuRobot");
+    robotReaders.push_back(&toasterSimuRobotRd);
 
-    ArObjectReader arObjectRd(node, "ar_visualization_marker");
-    OM2MObjectReader om2mObjectRd(node, "/iot2pdg_updates");
-    GazeboObjectReader gazeboRd(node, "/gazebo/model_states");
-    ToasterSimuObjectReader toasterSimuObjectRd(node);
-
+    vector<ObjectReader*> objectReaders;
+    arObjectRd.init(&node, "ar_visualization_marker", "/pdg/arObjectReader");
+    objectReaders.push_back(&arObjectRd);
+    om2mObjectRd.init(&node, "/iot2pdg_updates", "/pdg/OM2MObjectReader");
+    objectReaders.push_back(&om2mObjectRd);
+    gazeboRd.init(&node, "/gazebo/model_states", "/pdg/gazeboObjectReader");
+    objectReaders.push_back(&gazeboRd);
+    toasterSimuObjectRd.init(&node, "/pdg/toasterSimuObject");
+    objectReaders.push_back(&toasterSimuObjectRd);
 
     //Services
     ros::ServiceServer addStreamServ = node.advertiseService("pdg/manage_stream", addStream);
@@ -251,8 +240,6 @@ int main(int argc, char** argv) {
     ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotListStamped>("pdg/robotList", 1000);
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("pdg/factList", 1000);
 
-
-
     ros::ServiceClient setPoseClient = node.serviceClient<toaster_msgs::SetEntityPose>("/toaster_simu/set_entity_pose", true);
     EntityUtility_setClient(&setPoseClient);
 
@@ -266,15 +253,10 @@ int main(int argc, char** argv) {
       toasterList_t list_msg;
 
         //update data
+        morseHumanRd.updateHumans(listener);
 
-        if (morseHuman_)
-            morseHumanRd.updateHumans(listener);
-
-        if (pr2Robot_)
-            pr2RobotRd.updateRobot(listener);
-
-        if (spencerRobot_)
-            spencerRobotRd.updateRobot(listener);
+        pr2RobotRd.updateRobot(listener);
+        spencerRobotRd.updateRobot(listener); // /!\ full config always at false !!
 
         ///////////////////////////////////////////////////////////////////////
 
@@ -282,58 +264,24 @@ int main(int argc, char** argv) {
         // publish data //
         //////////////////
 
-        ////////////
-        // Humans //
-        ////////////
+        for(vector<HumanReader*>::iterator it = humanReaders.begin(); it != humanReaders.end(); ++it)
+        {
+          (*it)->updateEntityPose(newPoseEnt_);
+          (*it)->Publish(list_msg);
+        }
 
-        if (morseHuman_)
-          PublishHuman(morseHumanRd, newPoseEnt_, list_msg);
+        for(vector<RobotReader*>::iterator it = robotReaders.begin(); it != robotReaders.end(); ++it)
+        {
+          (*it)->updateEntityPose(newPoseEnt_);
+          (*it)->Publish(list_msg);
+        }
 
-        if (mocapHuman_)
-          PublishHuman(mocapHumanRd, newPoseEnt_, list_msg);
+        for(vector<ObjectReader*>::iterator it = objectReaders.begin(); it != objectReaders.end(); ++it)
+          (*it)->updateEntityPose(newPoseEnt_);
 
-        if (adreamMocapHuman_)
-          PublishHuman(adreamMocapHumanRd, newPoseEnt_, list_msg);
-
-        if (groupHuman_)
-          PublishHuman(groupHumanRd, newPoseEnt_, list_msg);
-
-        if (toasterSimuHuman_)
-          PublishHuman(toasterSimuHumanRd, newPoseEnt_, list_msg);
-
-        ////////////////////////////////////////////////////////////////////////
-
-        //////////
-        //Robots//
-        //////////
-
-        if (pr2Robot_)
-          PublishRobot(pr2RobotRd, newPoseEnt_, list_msg, fullConfig.Robot_);
-
-        if (spencerRobot_)
-          PublishRobot(spencerRobotRd, newPoseEnt_, list_msg, fullConfig.Robot_);
-
-        if (toasterSimuRobot_)
-          PublishRobot(toasterSimuRobotRd, newPoseEnt_, list_msg, fullConfig.Robot_);
-
-        ////////////////////////////////////////////////////////////////////////
-
-        /////////////
-        // Objects //
-        /////////////
-
-
-        if (arObject_)
-          PublishObject(arObjectRd, newPoseEnt_, objectIn, list_msg);
-
-        if (om2mObject_)
-          PublishObject(om2mObjectRd, newPoseEnt_, objectIn, list_msg);
-
-        if (gazeboObject_)
-          PublishObject(gazeboRd, newPoseEnt_, objectIn, list_msg);
-
-        if (toasterSimuObject_)
-          PublishObject(toasterSimuObjectRd, newPoseEnt_, objectIn, list_msg);
+        //do publication for all objects
+        ObjectReader tmp;
+        tmp.Publish(list_msg, objectIn);
 
         ////////////////////////////////////////////////////////////////////////
 

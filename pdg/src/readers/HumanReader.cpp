@@ -1,7 +1,18 @@
 // A human reader is a class that will read data from a middleware message
 // and fill a Human class from toaster-lib accordingly to publish on a ros topic.
 #include "pdg/readers/HumanReader.h"
+#include <ostream>
 
+HumanReader::HumanReader() : Reader<Human>()
+{
+  fullHuman_ = false;
+}
+
+HumanReader::~HumanReader()
+{
+  for(std::map<std::string, Human*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it)
+    delete it->second;
+}
 
 bool HumanReader::isPresent(std::string id){
   timeval curTime;
@@ -16,4 +27,39 @@ bool HumanReader::isPresent(std::string id){
       return true;
   else
       return false;
+}
+
+toaster_msgs::Fact HumanReader::DefaultFactMsg(std::string subjectId, uint64_t factTime)
+{
+  toaster_msgs::Fact fact_msg;
+
+  //Fact
+  fact_msg.property = "isPresent";
+  fact_msg.subjectId = subjectId;
+  fact_msg.stringValue = "true";
+  fact_msg.confidence = 0.90;
+  fact_msg.factObservability = 1.0;
+  fact_msg.time = factTime;
+  fact_msg.valueType = 0;
+
+  return fact_msg;
+}
+
+void HumanReader::Publish(struct toasterList_t& list_msg)
+{
+  if(activated_)
+  {
+    for (std::map<std::string, Human *>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it)
+    {
+      if (isPresent(it->first))
+      {
+          toaster_msgs::Fact fact_msg = DefaultFactMsg(it->first, it->second->getTime());
+          list_msg.fact_msg.factList.push_back(fact_msg);
+
+          toaster_msgs::Human human_msg;
+          fillEntity(it->second, human_msg.meAgent.meEntity);
+          list_msg.human_msg.humanList.push_back(human_msg);
+      }
+    }
+  }
 }

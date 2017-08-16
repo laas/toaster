@@ -2,14 +2,19 @@
 #include <pdg/readers/NiutHumanReader.h>
 #include "toaster-lib/MathFunctions.h"
 
-NiutHumanReader::NiutHumanReader(ros::NodeHandle& node, double * kinectPos,
+NiutHumanReader::NiutHumanReader(double * kinectPos,
         bool fullHuman) : kinectPos_(kinectPos) {
     fullHuman_ = fullHuman;
-    std::cout << "[PDG]Initializing HumanReader" << std::endl;
-    // ******************************************
-    // Starts listening to the joint_states topic
-    // ******************************************
-    sub_ = node.subscribe("/niut/Human", 1, &NiutHumanReader::humanJointCallBack, this);
+}
+
+void NiutHumanReader::init(ros::NodeHandle* node, std::string topic, std::string param)
+{
+  std::cout << "[PDG] Initializing NiutHumanReader" << std::endl;
+  Reader<Human>::init(node, param);
+  // ******************************************
+  // Starts listening to the joint_states
+  sub_ = node_->subscribe(topic, 1, &NiutHumanReader::humanJointCallBack, this);
+  std::cout << "Done\n";
 }
 
 void NiutHumanReader::humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg) {

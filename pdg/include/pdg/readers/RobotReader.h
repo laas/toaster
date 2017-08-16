@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   RobotReader.h
  * Author: Grégoire Milliez
  * mail: gregoire.milliez@laas.fr
@@ -15,17 +15,25 @@
 
 #include <ros/ros.h>
 #include "toaster-lib/Robot.h"
+#include "pdg/readers/Reader.h"
+#include "pdg/types.h"
 #include <map>
 #include <string>
 
-class RobotReader{
+class RobotReader : public Reader<Robot>{
 
     public:
         RobotReader();
-        std::map<std::string, Robot*> lastConfig_;
+        virtual ~RobotReader();
+
+        virtual void Publish(struct toasterList_t& list_msg);
+
+    protected:
         bool fullRobot_;
 
         bool isPresent(std::string id);
+
+        toaster_msgs::Fact DefaultFactMsg(std::string subjectId, uint64_t factTime);
 };
 
 #endif /* ROBOTREADER_H */

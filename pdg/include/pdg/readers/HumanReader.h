@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   HumanReader.h
  * Author: Grégoire Milliez
  * mail: gregoire.milliez@laas.fr
@@ -14,18 +14,27 @@
 #ifndef HUMANREADER_H
 #define	HUMANREADER_H
 
-#include <ros/ros.h>
 #include "toaster-lib/Human.h"
+#include "pdg/readers/Reader.h"
+#include "pdg/types.h"
 #include <map>
+#include <string>
 
-class HumanReader{
+class HumanReader : public Reader<Human>{
 
     public:
-        std::map<std::string, Human*> lastConfig_;
-        bool fullHuman_;
+      HumanReader();
+      HumanReader(const HumanReader&) = delete;
+      virtual ~HumanReader();
 
-        bool isPresent(std::string id);
+      bool fullHuman_;
 
+      bool isPresent(std::string id);
+
+      virtual void Publish(struct toasterList_t& list_msg);
+
+    public:
+      toaster_msgs::Fact DefaultFactMsg(std::string subjectId, uint64_t factTime);
 };
 
 
