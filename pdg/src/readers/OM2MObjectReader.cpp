@@ -7,8 +7,21 @@
 
 #include "pdg/readers/OM2MObjectReader.h"
 
-#include "toaster-lib/MovableIoTObject.h"
 #include "pdg/utility/XmlUtility.h"
+
+enum objectType_t
+{
+  sensor,
+  other
+};
+
+struct preFact_t
+{
+  std::string type;
+  std::string data;
+  std::string param;
+  enum objectType_t objectType;
+};
 
 OM2MObjectReader::OM2MObjectReader() : ObjectReader(){
     childs_.push_back(this);
@@ -24,6 +37,43 @@ void OM2MObjectReader::init(ros::NodeHandle* node, std::string topic, std::strin
   std::cout << "Done\n";
 }
 
+std::string OM2MObjectReader::getSubpart(std::string data, std::string start, std::string stop)
+{
+  std::string part  = "";
+  if(data.find(start) != string::npos)
+  {
+    size_t start_pos = data.find(start);
+    size_t stop_pos = data.find(stop);
+    part = data.substr(start_pos+start.length(), stop_pos-start_pos-start.length());
+  }
+
+  return part;
+}
+
+vector<struct preFact_t> OM2MObjectReader::readPreFacts(MovableObject* object)
+{
+  vector<struct preFact_t> preFacts;
+  size_t start_pos = 0;
+  std::string content = "";//object->getValue();
+  while(content.find("\n", start_pos) != string::npos)
+  {
+    size_t stop_pos = content.find("\n", start_pos);
+    std::string data = content.substr(start_pos, stop_pos-start_pos);
+    if(data.find("=") != string::npos) // if valid data
+    {
+      size_t pos = data.find("=");
+      std::string name = data.substr(0, pos);
+      std::string type = getSubpart(data, "type=", " /");
+      std::string value = getSubpart(data, "data=", " /");
+      std::string unit = getSubpart(data, "unit=", " /");
+      std::string color = getSubpart(data, "color=", " /");
+    }
+
+    start_pos = stop_pos+1;
+  }
+  return preFacts;
+}
+
 void OM2MObjectReader::Publish(struct toasterList_t& list_msg)
 {
   lastConfigMutex_.lock();
@@ -37,7 +87,7 @@ void OM2MObjectReader::Publish(struct toasterList_t& list_msg)
       std::vector<std::string> factNames;
       factNames = loadPropertiesFromXml(it_obj->first);
 
-      std::string ae_data = (static_cast<MovableIoTObject*>(it_obj->second))->getValue().c_str();
+      std::string ae_data = (static_cast<MovableObject*>(it_obj->second))->getValue().c_str();
 
       // For each fact we determine its value according to the oBIX XML received from OM2M
       for (std::vector<std::string>::iterator it_fact = factNames.begin(); it_fact != factNames.end(); ++it_fact)
@@ -75,12 +125,6 @@ void OM2MObjectReader::Publish(struct toasterList_t& list_msg)
           list_msg.fact_msg.factList.push_back(fact_msg);
 
       }
-
-      //Message for object
-      toaster_msgs::Object object_msg;
-      fillValue(static_cast<MovableIoTObject*>(it_obj->second), object_msg);
-      fillEntity(it_obj->second, object_msg.meEntity);
-      list_msg.object_msg.objectList.push_back(object_msg);
   }
   lastConfigMutex_.unlock();
 }
@@ -90,18 +134,18 @@ void OM2MObjectReader::newValueCallBack(const toaster_msgs::IoTData::ConstPtr& m
   {
     ros::Time now = ros::Time::now();
     // OM2M objects are by convention considered movable
-    MovableIoTObject* curObject;
+    MovableObject* curObject;
     bool is_new = false;
 
     //create a new object with the same id and name as the message
     lastConfigMutex_.lock();
     if (globalLastConfig_.find(msg->data.key) == globalLastConfig_.end()) {
-        curObject = new MovableIoTObject(msg->data.key);
+        curObject = new MovableObject(msg->data.key);
         curObject->setName(msg->data.key);
         increaseNbObjects();
         is_new = true;
     } else
-        curObject = (MovableIoTObject*)globalLastConfig_[msg->data.key];
+        curObject = (MovableObject*)globalLastConfig_[msg->data.key];
 
     lastConfigMutex_.unlock();
 
