@@ -1,22 +1,27 @@
 #include "pdg/readers/MorseHumanReader.h"
 
 
-MorseHumanReader::MorseHumanReader(ros::NodeHandle& node, bool fullHuman){
+MorseHumanReader::MorseHumanReader(bool fullHuman) : HumanReader(){
   fullHuman_ = fullHuman;
-  std::cout << "[PDG] Initializing MorseHumanReader" << std::endl;
-  init();
 }
 
-void MorseHumanReader::init(){
-  if(fullHuman_){
-    // Starts listening to the joint_states topic
-    //ros::Subscriber sub_ = node.subscribe("/human/armature/joint_states", 1, humanJointStateCallBack);
-  }
+MorseHumanReader::~MorseHumanReader(){
+    for(std::map<std::string, Human*>::iterator it = lastConfig_.begin() ; it != lastConfig_.end(); ++it){
+        delete it->second;
+    }
+}
+
+void MorseHumanReader::init(ros::NodeHandle* node, std::string param)
+{
+  std::cout << "[PDG] Initializing MorseHumanReader" << std::endl;
+  Reader<Human>::init(node, param);
+  std::cout << "Done\n";
 }
 
 void MorseHumanReader::updateHumans(tf::TransformListener &listener) {
   //update 1st human, this should be extended for multi human
-  updateHuman(listener, "morse_human1", "/human_base");
+  if(activated_)
+    updateHuman(listener, "morse_human1", "/human_base");
 }
 
 void MorseHumanReader::updateHuman(tf::TransformListener &listener, std::string humId, std::string humanBase){
@@ -77,10 +82,3 @@ void MorseHumanReader::updateHuman(tf::TransformListener &listener, std::string 
       m_LastConfig[101]->skeleton[l_ankle] = msg->position[5]; //Left ankle
   }
 }*/
-
-//Destructor
-MorseHumanReader::~MorseHumanReader(){
-    for(std::map<std::string, Human*>::iterator it = lastConfig_.begin() ; it != lastConfig_.end(); ++it){
-        delete it->second;
-    }
-}

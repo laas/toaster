@@ -13,24 +13,20 @@
 #include <ros/ros.h>
 #include "tf/transform_listener.h"
 #include <string>
-#include "geometry_msgs/PoseStamped.h"
 #include "spencer_tracking_msgs/TrackedGroups.h"
 #include "spencer_tracking_msgs/TrackedGroup.h"
-#include "tf/transform_listener.h"
-#include <sys/time.h>
-#include <math.h>
-#include <ostream>
 
 class GroupHumanReader : public HumanReader {
 public:
-    GroupHumanReader(ros::NodeHandle& node, std::string topic);
+    GroupHumanReader(bool fullHuman);
+    ~GroupHumanReader();
 
-    virtual ~GroupHumanReader() {};
+    void init(ros::NodeHandle* node, std::string topic, std::string param);
 
 private:
     ros::Subscriber sub_;
     void groupTrackCallback(const spencer_tracking_msgs::TrackedGroups::ConstPtr& msg);
-    tf::TransformListener listener_;
+    tf::TransformListener* listener_;
 };
 
 #endif	/* GROUPHUMANREADER_H */

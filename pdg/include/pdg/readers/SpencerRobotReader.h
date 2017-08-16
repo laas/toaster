@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   SpencerRobotReader.h
  * Author: gmilliez
  *
@@ -14,19 +14,18 @@
 
 class SpencerRobotReader : public RobotReader {
 public:
-    SpencerRobotReader(bool fullRobot);
+    SpencerRobotReader();
+    ~SpencerRobotReader() {};
+
+    void init(ros::NodeHandle* node, std::string param);
+
     void updateRobot(tf::TransformListener &listener);
-    
-    //Destructor
-    virtual ~SpencerRobotReader();
 private:
     ros::Subscriber sub_;
     std::vector<std::string> spencerJointsName_;
     void initJointsName();
-    void init();
     void setRobotJointLocation(tf::TransformListener &listener, Joint* joint);
 
 };
 
 #endif	/* SPENCERROBOTREADER_H */
-

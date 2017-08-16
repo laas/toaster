@@ -7,22 +7,60 @@
 
 #include "pdg/readers/AdreamMocapHumanReader.h"
 
+#include "tf/transform_listener.h"
+#include "geometry_msgs/PoseStamped.h"
+#include <sys/time.h>
+#include <math.h>
+#include <ostream>
+
+AdreamMocapHumanReader::AdreamMocapHumanReader(bool fullHuman) : HumanReader()
+{
+  fullHuman_ = fullHuman;
+}
+
 // A human reader is a class that will read data from human(s)
+void AdreamMocapHumanReader::init(ros::NodeHandle* node, std::string topicTorso, std::string topicHead, std::string topicHand, std::string param)
+{
+  std::cout << "[PDG] Initializing AdreamMocapHumanReader" << std::endl;
+  Reader<Human>::init(node, param);
+  torso_ = false;
+  // ******************************************
+  // Starts listening to the joint_states
+  subTorso_ = node_->subscribe(topicTorso, 1, &AdreamMocapHumanReader::optitrackCallbackTorso, this);
+  subHead_ = node_->subscribe(topicHead, 1, &AdreamMocapHumanReader::optitrackCallbackHead, this);
+  subHand_ = node_->subscribe(topicHand, 1, &AdreamMocapHumanReader::optitrackCallbackHand, this);
+  std::cout << "Done\n";
+}
 
-AdreamMocapHumanReader::AdreamMocapHumanReader(ros::NodeHandle& node, std::string topicTorso = "/optitrack/bodies/Rigid_Body_3",
-        std::string topicHead = "/optitrack/bodies/Rigid_Body_1", std::string topicHand = "/optitrack/bodies/Rigid_Body_2") {
+void AdreamMocapHumanReader::Publish(struct toasterList_t& list_msg)
+{
+  if(activated_)
+  {
+    for (std::map<std::string, Human*>::iterator it = lastConfig_.begin(); it != lastConfig_.end(); ++it) {
+        if (isPresent(it->first))
+        {
+            toaster_msgs::Fact fact_msg = DefaultFactMsg(it->first, it->second->getTime());
+            list_msg.fact_msg.factList.push_back(fact_msg);
 
-    std::cout << "Initializing AdreamMocapHumanReader" << std::endl;
-    // ******************************************
+            //Human
+            toaster_msgs::Human human_msg;
+            fillEntity(it->second, human_msg.meAgent.meEntity);
 
-    torso_ = false;
+            //if (humanFullConfig_) {
+            for (std::map<std::string, Joint*>::iterator itJoint = lastConfig_[it->first]->skeleton_.begin(); itJoint != lastConfig_[it->first]->skeleton_.end(); ++itJoint) {
+                toaster_msgs::Joint joint_msg;
+                human_msg.meAgent.skeletonNames.push_back(itJoint->first);
+                fillEntity((itJoint->second), joint_msg.meEntity);
+                joint_msg.jointOwner = it->first;
 
-    // Starts listening to the joint_states
-    fullHuman_ = false;
-    subTorso_ = node.subscribe(topicTorso, 1, &AdreamMocapHumanReader::optitrackCallbackTorso, this);
-    subHead_ = node.subscribe(topicHead, 1, &AdreamMocapHumanReader::optitrackCallbackHead, this);
-    subHand_ = node.subscribe(topicHand, 1, &AdreamMocapHumanReader::optitrackCallbackHand, this);
-    std::cout << "Done\n";
+                human_msg.meAgent.skeletonJoint.push_back(joint_msg);
+
+            }
+            //}
+            list_msg.human_msg.humanList.push_back(human_msg);
+        }
+    }
+  }
 }
 
 void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_estimator_state::ConstPtr & msg) {

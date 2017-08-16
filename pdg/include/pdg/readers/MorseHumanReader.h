@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   MorseHumanReader.h
  * Author: Grégoire Milliez
  * mail: gregoire.milliez@laas.fr
@@ -13,17 +13,18 @@
 #include "HumanReader.h"
 
 #include <tf/transform_listener.h>
+#include <string>
 
 class MorseHumanReader : public HumanReader
 {
 
   public:
     //Constructor
-    MorseHumanReader(ros::NodeHandle& node, bool fullHuman);
+    MorseHumanReader(bool fullHuman);
     //Destructor
-    ~MorseHumanReader();
-    
-    void init();
+    virtual ~MorseHumanReader();
+
+    void init(ros::NodeHandle* node, std::string param);
     void updateHumans(tf::TransformListener &listener);
     void updateHuman(tf::TransformListener &listener, std::string humId, std::string humanBase);
 
