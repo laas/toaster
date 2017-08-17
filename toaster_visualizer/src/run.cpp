@@ -61,6 +61,7 @@ class Run {
     ros::Subscriber sub_areaList;
     ros::Subscriber sub_humanList;
     ros::Subscriber sub_robotList;
+    ros::Subscriber sub_factList;
     ros::Subscriber sub_agentFactList;
 
     //publishers
@@ -102,6 +103,7 @@ public:
         sub_areaList = node.subscribe("/area_manager/areaList", 1000, &Run::chatterCallbackAreaList, this);
         sub_humanList = node.subscribe("/pdg/humanList", 1000, &Run::chatterCallbackHumanList, this);
         sub_robotList = node.subscribe("/pdg/robotList", 1000, &Run::chatterCallbackRobotList, this);
+        sub_factList = node.subscribe("/pdg/factList", 1000, &Run::chatterCallbackFactList, this);
         sub_agentFactList = node.subscribe("/agent_monitor/factList", 1000, &Run::chatterCallbackAgentFactList, this);
 
         //definition of publishers
@@ -336,8 +338,10 @@ public:
     for (unsigned int i = 0; i < factList.size(); i++)
     {
       if(factList[i].subjectId == id)
+      {
         if(factList[i].stringValue == "active")
           active = true;
+      }
     }
     return active;
   }
@@ -1066,10 +1070,16 @@ public:
         }
     }
 
+    void chatterCallbackFactList(const toaster_msgs::FactList::ConstPtr& msg)
+    {
+      factList.clear();
+      for(unsigned int i = 0; i < msg->factList.size(); i++)
+      {
+        factList.push_back(msg->factList[i]);
+      }
+    }
+
     void chatterCallbackAgentFactList(const toaster_msgs::FactList::ConstPtr& msg) {
-        factList.clear();
-        for(unsigned int i = 0; i < msg->factList.size(); i++)
-          factList.push_back(msg->factList[i]);
         agentMoving_map.clear();
         arrow_list.markers.clear();
 

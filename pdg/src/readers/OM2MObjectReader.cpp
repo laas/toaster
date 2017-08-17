@@ -67,7 +67,7 @@ vector<struct preFact_t> OM2MObjectReader::readPreFacts(MovableObject* object)
       std::string value = getSubpart(data, "data=", " /");
       std::string unit = getSubpart(data, "unit=", " /");
       std::string color = getSubpart(data, "color=", " /");
-      
+
       struct preFact_t preFact;
       if(name != "DATA")
         preFact.type = name;
