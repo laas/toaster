@@ -6,7 +6,7 @@
 #include <toaster_msgs/ObjectListStamped.h>
 #include <toaster_msgs/SetEntityPose.h>
 
-#include "toaster-lib/MovableIoTObject.h"
+#include "toaster-lib/MovableObject.h"
 
 #ifndef ENTITYUTILITY_H
 #define ENTITYUTILITY_H
@@ -16,7 +16,7 @@ using namespace std;
 // Service client
 void EntityUtility_setClient(ros::ServiceClient* m_setPoseClient);
 
-void fillValue(MovableIoTObject* srcObject, toaster_msgs::Object& msgObject);
+void fillValue(MovableObject* srcObject, toaster_msgs::Object& msgObject);
 
 void fillEntity(Entity* srcEntity, toaster_msgs::Entity& msgEntity);
 

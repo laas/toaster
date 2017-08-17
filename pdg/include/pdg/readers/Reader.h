@@ -15,7 +15,6 @@
 #include <toaster_msgs/SetEntityPose.h>
 #include <ostream>
 
-#include "toaster-lib/MovableIoTObject.h"
 #include "pdg/utility/EntityUtility.h"
 
 template <typename T>
