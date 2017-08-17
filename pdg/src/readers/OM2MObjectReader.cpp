@@ -43,7 +43,7 @@ std::string OM2MObjectReader::getSubpart(std::string data, std::string start, st
   if(data.find(start) != string::npos)
   {
     size_t start_pos = data.find(start);
-    size_t stop_pos = data.find(stop);
+    size_t stop_pos = data.find(stop, start_pos);
     part = data.substr(start_pos+start.length(), stop_pos-start_pos-start.length());
   }
 
@@ -54,7 +54,7 @@ vector<struct preFact_t> OM2MObjectReader::readPreFacts(MovableObject* object)
 {
   vector<struct preFact_t> preFacts;
   size_t start_pos = 0;
-  std::string content = "";//object->getValue();
+  std::string content = object->getValue();
   while(content.find("\n", start_pos) != string::npos)
   {
     size_t stop_pos = content.find("\n", start_pos);
@@ -67,6 +67,32 @@ vector<struct preFact_t> OM2MObjectReader::readPreFacts(MovableObject* object)
       std::string value = getSubpart(data, "data=", " /");
       std::string unit = getSubpart(data, "unit=", " /");
       std::string color = getSubpart(data, "color=", " /");
+      
+      struct preFact_t preFact;
+      if(name != "DATA")
+        preFact.type = name;
+      else if(type != "")
+        preFact.type = type;
+      else
+        preFact.type = "";
+
+      if(value == "true")
+        preFact.data = "active";
+      else if(value == "false")
+        preFact.data = "inactive";
+      else
+        preFact.data = value;
+
+      if((unit != "") && (data != "true") && (data != "false"))
+        preFact.objectType = sensor;
+      else
+        preFact.objectType = other;
+
+      if((color != "") && (preFact.type.find("LAMP") != string::npos))
+        preFact.param = color;
+
+      if(preFact.type != "")
+        preFacts.push_back(preFact);
     }
 
     start_pos = stop_pos+1;
@@ -80,51 +106,55 @@ void OM2MObjectReader::Publish(struct toasterList_t& list_msg)
   for (std::map<std::string, MovableObject *>::iterator it_obj = globalLastConfig_.begin();
        it_obj != globalLastConfig_.end(); ++it_obj)
   {
-      std::string value_name;
-      std::string value_value;
 
-      // The names of the facts related to the current object
-      std::vector<std::string> factNames;
-      factNames = loadPropertiesFromXml(it_obj->first);
+    vector<struct preFact_t> preFacts = readPreFacts(it_obj->second);
+    for(vector<struct preFact_t>::iterator it = preFacts.begin(); it != preFacts.end(); ++it)
+    {
+      toaster_msgs::Fact fact_msg;
+      fact_msg.subjectId = it_obj->first;
+      fact_msg.time = it_obj->second->getTime();
 
-      std::string ae_data = (static_cast<MovableObject*>(it_obj->second))->getValue().c_str();
+      if((it->data == "active") || (it->data == "inactive"))
+        fact_msg.confidence = 1.0;
+      else if(it->objectType == sensor)
+        fact_msg.confidence = 1.0;
+      else
+        fact_msg.confidence = 0.7;
 
-      // For each fact we determine its value according to the oBIX XML received from OM2M
-      for (std::vector<std::string>::iterator it_fact = factNames.begin(); it_fact != factNames.end(); ++it_fact)
+      if((it->data == "active") || (it->data == "inactive"))
+        fact_msg.factObservability = 0.8;
+      else if(it->objectType == sensor)
+        fact_msg.factObservability = 0.3;
+      else
+        fact_msg.factObservability = 0.5;
+
+      if((it->data == "active") || (it->data == "inactive"))
       {
-          //Fact message
-          toaster_msgs::Fact fact_msg;
-          fact_msg.property = *it_fact;
-          fact_msg.propertyType = "iot";
-          fact_msg.subjectId = it_obj->first;
-          fact_msg.confidence = 1.0;
-          // We can not know if the human has seen the value of the iot object
-          fact_msg.factObservability = 0.5;
-          fact_msg.time = it_obj->second->getTime();
-          fact_msg.valueType = 0;
-
-          bool value_found = false;
-          size_t ref_pos = 0;
-          while((ae_data.find(" : ", ref_pos) != std::string::npos) && !value_found)
-          {
-            size_t begin_pos = ae_data.find(" : ", ref_pos);
-            size_t middle_pos = ae_data.find("=", begin_pos);
-            size_t end_pos = ae_data.find(" / ", middle_pos);
-            value_name = ae_data.substr(begin_pos + 3, middle_pos - begin_pos - 3);
-            value_value = ae_data.substr(middle_pos + 1, end_pos - middle_pos - 1);
-            ref_pos = end_pos;
-
-            fact_msg.stringValue = loadValueFromXmlAsString(it_obj->first, *it_fact, value_name, value_value);
-
-            // When there is a match we stop parsing
-            if (!fact_msg.stringValue.empty())
-                value_found = true;
-          }
-
-          // We add the fact to the list
-          list_msg.fact_msg.factList.push_back(fact_msg);
-
+        fact_msg.valueType = 0;
+        fact_msg.stringValue = it->data;
       }
+      else
+      {
+        fact_msg.valueType = 1;
+        std::string::size_type sz;
+        double doubleData = std::stod (it->data,&sz);
+        fact_msg.doubleValue = doubleData;
+      }
+
+      if(it->objectType == sensor)
+        fact_msg.subProperty = "physical_quantity";
+      else
+        fact_msg.subProperty = "object";
+
+      if((it->data == "active") || (it->data == "inactive"))
+        fact_msg.propertyType = "state";
+      else
+        fact_msg.propertyType = "measure";
+
+      fact_msg.property = it->type;
+
+      list_msg.fact_msg.factList.push_back(fact_msg);
+    }
   }
   lastConfigMutex_.unlock();
 }

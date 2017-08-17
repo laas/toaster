@@ -23,7 +23,6 @@ void GazeboObjectReader::init(ros::NodeHandle* node, std::string topic, std::str
   // ******************************************
   // Starts listening to the joint_states
   sub_ = node_->subscribe(topic, 1, &GazeboObjectReader::CallbackObj, this);
-  std::cout << "Done\n";
 }
 
 void GazeboObjectReader::CallbackObj(const gazebo_msgs::ModelStates::ConstPtr& msg) {
