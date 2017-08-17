@@ -15,7 +15,6 @@ void MorseHumanReader::init(ros::NodeHandle* node, std::string param)
 {
   std::cout << "[PDG] Initializing MorseHumanReader" << std::endl;
   Reader<Human>::init(node, param);
-  std::cout << "Done\n";
 }
 
 void MorseHumanReader::updateHumans(tf::TransformListener &listener) {

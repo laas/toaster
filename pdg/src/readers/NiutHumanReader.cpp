@@ -14,7 +14,6 @@ void NiutHumanReader::init(ros::NodeHandle* node, std::string topic, std::string
   // ******************************************
   // Starts listening to the joint_states
   sub_ = node_->subscribe(topic, 1, &NiutHumanReader::humanJointCallBack, this);
-  std::cout << "Done\n";
 }
 
 void NiutHumanReader::humanJointCallBack(const niut_msgs::niut_HUMAN_LIST::ConstPtr& msg) {

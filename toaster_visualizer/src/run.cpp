@@ -1,19 +1,21 @@
 #include "ros/ros.h"
 #include "ros/package.h"
 #include "std_msgs/String.h"
+//std
 #include <iostream>
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include <vector>
+#include <time.h>
+#include <map>
+//visualization_msgs
 #include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
-#include <sstream>
-#include <iostream>
-#include <vector>
+//toaster_msgs
 #include "toaster_msgs/Entity.h"
 #include "toaster_msgs/Object.h"
 #include "toaster_msgs/AreaList.h"
-#include "geometry_msgs/Point.h"
 #include "toaster_msgs/ObjectListStamped.h"
 #include "toaster_msgs/HumanListStamped.h"
 #include "toaster_msgs/FactList.h"
@@ -21,11 +23,12 @@
 #include "toaster_msgs/Joint.h"
 #include "toaster_msgs/Empty.h"
 #include "toaster_msgs/Scale.h"
-#include <map>
+//geometry_msgs
+#include "geometry_msgs/Point.h"
 #include <geometry_msgs/Polygon.h>
 #include <geometry_msgs/Quaternion.h>
+
 #include <tinyxml.h>
-#include <time.h>
 #include <tf/transform_listener.h>
 
 //nameMarker rpoportionnal scale
@@ -36,6 +39,8 @@ class Run {
     visualization_msgs::MarkerArray human_list;
     visualization_msgs::MarkerArray robot_list;
     visualization_msgs::MarkerArray arrow_list;
+
+    std::vector<toaster_msgs::Fact> factList;
 
     //a vector to store allready treated marker's name and an id counter
     std::vector<std::string> name_list;
@@ -158,7 +163,6 @@ public:
             ROS_WARN_ONCE("error # %d", listRobot.ErrorId());
             ROS_WARN_ONCE("%s", listRobot.ErrorDesc());
         }
-
     }
 
     bool switchNamePrint(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res) {
@@ -166,7 +170,6 @@ public:
         printNames_ = !printNames_;
 
         return true;
-
     }
 
     bool scaleName(toaster_msgs::Scale::Request &req, toaster_msgs::Scale::Response &res) {
@@ -178,7 +181,6 @@ public:
         areaNameScale_ = req.areaScale;
 
         return true;
-
     }
 
 
@@ -186,14 +188,14 @@ public:
     // **************************************** definition function of rviz markers ********************************************************
 
     /**
-     * create a circle marker	
+     * create a circle marker
      * @param p  		point from geometry library locating the center of the circle
      * @param rayon  	radius of the circle
      * @param name 		marker's name
      * @return marker 	circle marker with input property
      */
      visualization_msgs::Marker defineCircle(geometry_msgs::Point p, double rayon, double height, std::string name) {
-        //declaration 
+        //declaration
         visualization_msgs::Marker marker;
 
         //frame id
@@ -245,41 +247,37 @@ public:
      * @param name 		polygon's name
      * @return marker 	line marker representing input polygon
      */
-  
+
     visualization_msgs::MarkerArray definePolygon(geometry_msgs::Polygon poly, std::string name, double zmin, double zmax){
 		//declaration
 		visualization_msgs::Marker line_strip1, line_strip2, line_list;
-      
-        //frame id
-       
-		 line_strip1.header.frame_id = line_strip2.header.frame_id = line_list.header.frame_id = "map";
 
-        //namespace
-        std::ostringstream nameSpace;
-        nameSpace << name;
-       
-        line_strip1.ns = line_strip2.ns = line_list.ns = nameSpace.str();
-        line_strip1.id = 1;
-        line_strip2.id = 2;
-        line_list.id = 3;
+    //frame id
+		line_strip1.header.frame_id = line_strip2.header.frame_id = line_list.header.frame_id = "map";
 
-        //action
+    //namespace
+    std::ostringstream nameSpace;
+    nameSpace << name;
 
+    line_strip1.ns = line_strip2.ns = line_list.ns = nameSpace.str();
+    line_strip1.id = 1;
+    line_strip2.id = 2;
+    line_list.id = 3;
+
+    //action
 		line_strip1.action = line_strip2.action = line_list.action = visualization_msgs::Marker::ADD;
 
-        //orientation
-      
+    //orientation
 		line_strip1.pose.orientation.w = line_strip2.pose.orientation.w = line_list.pose.orientation.w = 1.0;
-		
+
 		// marker type
-        line_strip1.type = visualization_msgs::Marker::LINE_STRIP;
-        line_strip2.type = visualization_msgs::Marker::LINE_STRIP;
-        line_list.type = visualization_msgs::Marker::LINE_LIST;
+    line_strip1.type = visualization_msgs::Marker::LINE_STRIP;
+    line_strip2.type = visualization_msgs::Marker::LINE_STRIP;
+    line_list.type = visualization_msgs::Marker::LINE_LIST;
 
 		line_strip1.scale.x = 0.2;
 		line_strip2.scale.x = 0.2;
 		line_list.scale.x = 0.2;
-		
 
 		// assigning colour
 		line_strip1.color.b = 1.0;
@@ -290,7 +288,7 @@ public:
 		line_list.color.a = 1.0;
 		geometry_msgs::Point p2;
 		geometry_msgs::Point p1;
-    
+
 		for (int i = 0; i < poly.points.size(); i++) {
 
 			p1.x = poly.points[i].x;
@@ -304,19 +302,19 @@ public:
 			line_strip1.points.push_back(p1);
 			line_strip2.points.push_back(p2);
 		}
-	
+
         p1.x = poly.points[0].x;
         p1.y = poly.points[0].y;
         p1.z = zmin;
-        
+
         p2.x = poly.points[0].x;
         p2.y = poly.points[0].y;
-        p2.z = zmax; 
-        
+        p2.z = zmax;
+
         line_strip1.points.push_back(p1);
         line_strip2.points.push_back(p2);
        // line_strip1 gives bottom polygonal face while line_strip2 gives upper polygonal face
-       // line_list gives vertical edges 
+       // line_list gives vertical edges
 
         line_strip1.lifetime = ros::Duration();
         line_strip2.lifetime = ros::Duration();
@@ -324,13 +322,26 @@ public:
 
         visualization_msgs::MarkerArray markersarray;
 
-        // mymarkers.markers[0] = points ; 
+        // mymarkers.markers[0] = points ;
         markersarray.markers.push_back(line_strip1);
         markersarray.markers.push_back(line_strip2);
         markersarray.markers.push_back(line_list);
 
         return markersarray;
 }
+
+  bool isActivated(std::string id)
+  {
+    bool active = false;
+    for (unsigned int i = 0; i < factList.size(); i++)
+    {
+      if(factList[i].subjectId == id)
+        if(factList[i].stringValue == "active")
+          active = true;
+    }
+    return active;
+  }
+
     /**
      * create an object marker
      * @param x  		coordinates of object's base in thx x direction
@@ -340,7 +351,7 @@ public:
      * @param name 		marker's name
      * @return marker 	object marker or mesh marker if the object is in the mesh database
      */
-    visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, double scale, std::string name) {
+    visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, std::string name, std::string id, double scale = 1) {
         //declaration
         double roll, pitch, yaw;
         visualization_msgs::Marker marker;
@@ -360,15 +371,24 @@ public:
         //pose
         marker.pose = pose;
 
-
         //orientation
         //marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
 
         //color
-        marker.color.r = 0.0;
-        marker.color.g = 1.0;
-        marker.color.b = 1.0;
-        marker.color.a = 1.0;
+        if(isActivated(id))
+        {
+          marker.color.r = 0.75;
+          marker.color.g = 0.5;
+          marker.color.b = 0.25;
+          marker.color.a = 1.0;
+        }
+        else
+        {
+          marker.color.r = 0.25;
+          marker.color.g = 0.5;
+          marker.color.b = 0.75;
+          marker.color.a = 1.0;
+        }
 
         //scale
         marker.scale.x = 0.2;
@@ -377,13 +397,6 @@ public:
 
         //type
         marker.type = visualization_msgs::Marker::CUBE; //marker by default
-
-        //std::stringstream s;
-        //s << ros::package::getPath("toaster_visualizer") << "/src/list_obj.xml";
-        //TiXmlDocument list(s.str()); //load xml file
-
-        //TiXmlDocument list("src/toaster/toaster_visualizer/src/list_obj.xml"); //load xml file
-
 
         TiXmlHandle hdl(&listObj);
         TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
@@ -403,10 +416,20 @@ public:
                 marker.scale.y = scale;
                 marker.scale.z = scale;
 
-                marker.color.r = 0.0;
-                marker.color.g = 0.0;
-                marker.color.b = 0.0;
-                marker.color.a = 0.0;
+                if(isActivated(id))
+                {
+                  marker.color.r = 0.75;
+                  marker.color.g = 0.5;
+                  marker.color.b = 0.25;
+                  marker.color.a = 0.5;
+                }
+                else
+                {
+                  marker.color.r = 0.0;
+                  marker.color.g = 0.0;
+                  marker.color.b = 0.0;
+                  marker.color.a = 0.0;
+                }
 
                 marker.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh
                 marker.mesh_resource = mesh_r;
@@ -512,8 +535,6 @@ public:
         //type of marker
         marker.type = visualization_msgs::Marker::MESH_RESOURCE;
 
-
-
         TiXmlHandle hdl(&listHuman);
         TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
 
@@ -540,10 +561,7 @@ public:
                     marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/human.dae"; //using 3d human model
                 }
                 marker.mesh_use_embedded_materials = true;
-
             }
-
-
         }
 
         marker.lifetime = ros::Duration(1.0);
@@ -618,15 +636,8 @@ public:
             } else {
                 marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_robots/pr2.dae"; //using default 3d robot model
                 marker.mesh_use_embedded_materials = true;
-
             }
-
-
         }
-
-
-
-
         marker.lifetime = marker.lifetime = ros::Duration(1.0);
 
         return marker;
@@ -701,7 +712,7 @@ public:
 
     /**
      * In our context names are identifier so we need to create an unique identifier for each input name
-     * @param name		name of target 
+     * @param name		name of target
      * @return id		new identifier or target's identifier if his name already have been assigned to an identifier
      */
     int id_generator(std::string name) {
@@ -802,17 +813,6 @@ public:
         return marker;
     }
 
-
-
-
-
-
-
-
-
-
-
-
     //******************************************************** emission/reception ********************************************************
 
     //reception
@@ -828,7 +828,8 @@ public:
 
         for (int i = 0; i < msg->objectList.size(); i++) {
             visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.pose,
-                    1, msg->objectList[i].meEntity.name);
+                                                      msg->objectList[i].meEntity.name,
+                                                      msg->objectList[i].meEntity.id);
 
             if (printNames_) {
                 visualization_msgs::Marker mn = defineName(m);
@@ -847,7 +848,7 @@ public:
         p.position.y = 0.3;
         p.position.z = -0.05;
         p.orientation.w = 1.0;
-        visualization_msgs::Marker m = defineObj(p, 1, "env");
+        visualization_msgs::Marker m = defineObj(p, "env", "");
         obj_list.markers.push_back(m);
     }
 
@@ -898,9 +899,9 @@ public:
                     posy = posy + m.markers[j].points[i].y;
                     posz = posz + msg->areaList[i].zmin;
                 }
-               
+
                 mn.markers[j] = setPosition(mn.markers[j], posx / m.markers[j].points.size(), posy / m.markers[j].points.size(),  + posz / m.markers[j].points.size());
-			
+
                 area_list.markers.push_back(m.markers[j]);
                 area_list.markers.push_back(mn.markers[j]);
               }
@@ -908,7 +909,7 @@ public:
             }
 
         }
-        
+
     }
     /**
      * CallBack creating markers based on received toaster_msgs and adding then to robot_list
@@ -1066,6 +1067,9 @@ public:
     }
 
     void chatterCallbackAgentFactList(const toaster_msgs::FactList::ConstPtr& msg) {
+        factList.clear();
+        for(unsigned int i = 0; i < msg->factList.size(); i++)
+          factList.push_back(msg->factList[i]);
         agentMoving_map.clear();
         arrow_list.markers.clear();
 
@@ -1161,21 +1165,14 @@ public:
                                 }
                             }
                         }
-
                     }
-
-
-
                 }
-
 
                 // Create arrow
                 if (foundTarg && foundSub) {
                     arrow = defineArrow(sub, targ, msg->factList[iFact].confidence, msg->factList[iFact].subProperty.compare("distance") == 0);
                     arrow_list.markers.push_back(arrow);
                 }
-
-
             }
         }
     }
@@ -1225,5 +1222,3 @@ int main(int argc, char **argv) {
 
     return 0;
 }
-
-
