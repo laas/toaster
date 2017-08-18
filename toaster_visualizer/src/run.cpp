@@ -9,9 +9,6 @@
 #include <vector>
 #include <time.h>
 #include <map>
-//visualization_msgs
-#include <visualization_msgs/MarkerArray.h>
-#include <visualization_msgs/Marker.h>
 //toaster_msgs
 #include "toaster_msgs/Entity.h"
 #include "toaster_msgs/Object.h"
@@ -23,10 +20,8 @@
 #include "toaster_msgs/Joint.h"
 #include "toaster_msgs/Empty.h"
 #include "toaster_msgs/Scale.h"
-//geometry_msgs
-#include "geometry_msgs/Point.h"
-#include <geometry_msgs/Polygon.h>
-#include <geometry_msgs/Quaternion.h>
+
+#include "markerCreator.h"
 
 #include <tinyxml.h>
 #include <tf/transform_listener.h>
@@ -86,7 +81,6 @@ public:
         id_cpt = 1;
         printNames_ = true;
 
-
         objectNameScale_ = 0.2;
         humanNameScale_ = 0.3;
         robotNameScale_ = 0.3;
@@ -119,52 +113,23 @@ public:
 
         // **************************************** definition function of rviz markers ********************************************************
 
-        //open xml files
+        openXmlFile("/src/list_obj.xml", listObj);
+        openXmlFile("/src/list_human.xml", listHuman);
+        openXmlFile("/src/list_human_joints.xml", listJoint);
+        openXmlFile("/src/list_robot.xml", listRobot);
+    }
 
-        // Objects
-        std::stringstream pathObj;
-        pathObj << ros::package::getPath("toaster_visualizer") << "/src/list_obj_demo.xml";
-        listObj = TiXmlDocument(pathObj.str());
+    bool openXmlFile(std::string fileName, TiXmlDocument& doc)
+    {
+      std::stringstream path;
+      path << ros::package::getPath("toaster_visualizer") << fileName;
+      doc = TiXmlDocument(path.str());
 
-        if (!listObj.LoadFile()) {
-            ROS_WARN_ONCE("Error while loading xml file");
-            ROS_WARN_ONCE("error # %d", listObj.ErrorId());
-            ROS_WARN_ONCE("%s", listObj.ErrorDesc());
-        }
-
-
-        // Humans
-        std::stringstream pathHuman;
-        pathHuman << ros::package::getPath("toaster_visualizer") << "/src/list_human.xml";
-        listHuman = TiXmlDocument(pathHuman.str());
-
-        if (!listHuman.LoadFile()) {
-            ROS_WARN_ONCE("Error while loading xml file");
-            ROS_WARN_ONCE("error # %d", listHuman.ErrorId());
-            ROS_WARN_ONCE("%s", listHuman.ErrorDesc());
-        }
-
-        // Joints
-        std::stringstream pathHumanJoint;
-        pathHumanJoint << ros::package::getPath("toaster_visualizer") << "/src/list_human_joints.xml";
-        listJoint = TiXmlDocument(pathHumanJoint.str());
-
-        if (!listJoint.LoadFile()) {
-            ROS_WARN_ONCE("Error while loading xml file");
-            ROS_WARN_ONCE("error # %d", listJoint.ErrorId());
-            ROS_WARN_ONCE("%s", listJoint.ErrorDesc());
-        }
-
-        // Robots
-        std::stringstream pathRobot;
-        pathRobot << ros::package::getPath("toaster_visualizer") << "/src/list_robot.xml";
-        listRobot = TiXmlDocument(pathRobot.str());
-
-        if (!listRobot.LoadFile()) {
-            ROS_WARN_ONCE("Error while loading xml file");
-            ROS_WARN_ONCE("error # %d", listRobot.ErrorId());
-            ROS_WARN_ONCE("%s", listRobot.ErrorDesc());
-        }
+      if (!doc.LoadFile()) {
+          ROS_WARN_ONCE("Error while loading xml file");
+          ROS_WARN_ONCE("error # %d", doc.ErrorId());
+          ROS_WARN_ONCE("%s", doc.ErrorDesc());
+      }
     }
 
     bool switchNamePrint(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res) {
@@ -186,151 +151,7 @@ public:
     }
 
 
-
     // **************************************** definition function of rviz markers ********************************************************
-
-    /**
-     * create a circle marker
-     * @param p  		point from geometry library locating the center of the circle
-     * @param rayon  	radius of the circle
-     * @param name 		marker's name
-     * @return marker 	circle marker with input property
-     */
-     visualization_msgs::Marker defineCircle(geometry_msgs::Point p, double rayon, double height, std::string name) {
-        //declaration
-        visualization_msgs::Marker marker;
-
-        //frame id
-        marker.header.frame_id = "map";
-
-        //namespace
-        std::ostringstream nameSpace;
-        nameSpace << name;
-        marker.ns = nameSpace.str();
-        marker.id = id_generator(name); //creation of an unique id based on marker's name
-
-        //action
-        marker.action = visualization_msgs::Marker::ADD;
-
-        //position
-        marker.pose.position.x = p.x;
-        marker.pose.position.y = p.y;
-        marker.pose.position.z = p.z;
-
-        //orientation
-        marker.pose.orientation.x = 0.0;
-        marker.pose.orientation.y = 0.0;
-        marker.pose.orientation.z = 0.0;
-        marker.pose.orientation.w = 1.0;
-
-        //color
-        marker.color.r = 0.0;
-        marker.color.g = 1.0;
-        marker.color.b = 0.0;
-        marker.color.a = 0.1;
-
-        //dimemsion
-        marker.scale.x = rayon * 2;
-        marker.scale.y = rayon * 2;
-        marker.scale.z = height;
-
-        //type
-        marker.type = 3;
-        marker.lifetime = ros::Duration();
-
-        return marker;
-    }
-
-
-    /**
-     * create a polygon marker based on line marker
-     * @param poly 		polygon from geometry library
-     * @param scale 		thickness of the line
-     * @param name 		polygon's name
-     * @return marker 	line marker representing input polygon
-     */
-
-    visualization_msgs::MarkerArray definePolygon(geometry_msgs::Polygon poly, std::string name, double zmin, double zmax){
-		//declaration
-		visualization_msgs::Marker line_strip1, line_strip2, line_list;
-
-    //frame id
-		line_strip1.header.frame_id = line_strip2.header.frame_id = line_list.header.frame_id = "map";
-
-    //namespace
-    std::ostringstream nameSpace;
-    nameSpace << name;
-
-    line_strip1.ns = line_strip2.ns = line_list.ns = nameSpace.str();
-    line_strip1.id = 1;
-    line_strip2.id = 2;
-    line_list.id = 3;
-
-    //action
-		line_strip1.action = line_strip2.action = line_list.action = visualization_msgs::Marker::ADD;
-
-    //orientation
-		line_strip1.pose.orientation.w = line_strip2.pose.orientation.w = line_list.pose.orientation.w = 1.0;
-
-		// marker type
-    line_strip1.type = visualization_msgs::Marker::LINE_STRIP;
-    line_strip2.type = visualization_msgs::Marker::LINE_STRIP;
-    line_list.type = visualization_msgs::Marker::LINE_LIST;
-
-		line_strip1.scale.x = 0.2;
-		line_strip2.scale.x = 0.2;
-		line_list.scale.x = 0.2;
-
-		// assigning colour
-		line_strip1.color.b = 1.0;
-		line_strip1.color.a = 1.0;
-		line_strip2.color.b = 1.0;
-		line_strip2.color.a = 1.0;
-		line_list.color.b = 1.0;
-		line_list.color.a = 1.0;
-		geometry_msgs::Point p2;
-		geometry_msgs::Point p1;
-
-		for (int i = 0; i < poly.points.size(); i++) {
-
-			p1.x = poly.points[i].x;
-			p1.y = poly.points[i].y;
-			p1.z = zmin;
-			p2.x = poly.points[i].x;
-			p2.y = poly.points[i].y;
-			p2.z = zmax;
-			line_list.points.push_back(p1);
-			line_list.points.push_back(p2);
-			line_strip1.points.push_back(p1);
-			line_strip2.points.push_back(p2);
-		}
-
-        p1.x = poly.points[0].x;
-        p1.y = poly.points[0].y;
-        p1.z = zmin;
-
-        p2.x = poly.points[0].x;
-        p2.y = poly.points[0].y;
-        p2.z = zmax;
-
-        line_strip1.points.push_back(p1);
-        line_strip2.points.push_back(p2);
-       // line_strip1 gives bottom polygonal face while line_strip2 gives upper polygonal face
-       // line_list gives vertical edges
-
-        line_strip1.lifetime = ros::Duration();
-        line_strip2.lifetime = ros::Duration();
-        line_list.lifetime = ros::Duration();
-
-        visualization_msgs::MarkerArray markersarray;
-
-        // mymarkers.markers[0] = points ;
-        markersarray.markers.push_back(line_strip1);
-        markersarray.markers.push_back(line_strip2);
-        markersarray.markers.push_back(line_list);
-
-        return markersarray;
-}
 
   bool isActivated(std::string id)
   {
@@ -345,372 +166,6 @@ public:
     }
     return active;
   }
-
-    /**
-     * create an object marker
-     * @param x  		coordinates of object's base in thx x direction
-     * @param y			coordinates of object's base in thx y direction
-     * @param z 			coordinates of object's base in thx z direction
-     * @param scale 		dimension of the marker
-     * @param name 		marker's name
-     * @return marker 	object marker or mesh marker if the object is in the mesh database
-     */
-    visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, std::string name, std::string id, double scale = 1) {
-        //declaration
-        double roll, pitch, yaw;
-        visualization_msgs::Marker marker;
-
-        //frame id
-        marker.header.frame_id = "map";
-
-        //namespace
-        std::ostringstream nameSpace;
-        nameSpace << name;
-        marker.ns = nameSpace.str();
-        marker.id = id_generator(name); //creation of an unique id based on marker's name
-
-        //action
-        marker.action = visualization_msgs::Marker::ADD;
-
-        //pose
-        marker.pose = pose;
-
-        //orientation
-        //marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
-
-        //color
-        if(isActivated(id))
-        {
-          marker.color.r = 0.75;
-          marker.color.g = 0.5;
-          marker.color.b = 0.25;
-          marker.color.a = 1.0;
-        }
-        else
-        {
-          marker.color.r = 0.25;
-          marker.color.g = 0.5;
-          marker.color.b = 0.75;
-          marker.color.a = 1.0;
-        }
-
-        //scale
-        marker.scale.x = 0.2;
-        marker.scale.y = 0.2;
-        marker.scale.z = 0.2;
-
-        //type
-        marker.type = visualization_msgs::Marker::CUBE; //marker by default
-
-        TiXmlHandle hdl(&listObj);
-        TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
-
-        std::string name_obj;
-        std::string mesh_r;
-
-        while (elem) //for each element of the xml file
-        {
-            name_obj = elem->Attribute("name");
-            mesh_r = elem->Attribute("mesh_resource");
-            elem = elem->NextSiblingElement();
-
-            if (name_obj.compare(name) == 0) //if there is a 3d model relativ to this object
-            {
-                marker.scale.x = scale;
-                marker.scale.y = scale;
-                marker.scale.z = scale;
-
-                if(isActivated(id))
-                {
-                  marker.color.r = 0.75;
-                  marker.color.g = 0.5;
-                  marker.color.b = 0.25;
-                  marker.color.a = 1.0;
-                }
-                else
-                {
-                  marker.color.r = 0.0;
-                  marker.color.g = 0.0;
-                  marker.color.b = 0.0;
-                  marker.color.a = 0.0;
-                }
-
-                marker.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh
-                marker.mesh_resource = mesh_r;
-                marker.mesh_use_embedded_materials = true;
-
-                elem = NULL;
-            }
-        }
-
-        marker.lifetime = ros::Duration(1.0);
-
-        return marker;
-    }
-
-    /**
-     * create a name marker corresponding to the input marker
-     * @param marker	marker to which we want to create a name marker
-     * @return marker 	name marker
-     */
-    visualization_msgs::Marker defineName(visualization_msgs::Marker marker) {
-        //declaration
-        std::stringstream ss;
-        visualization_msgs::Marker nameMarker = marker;
-
-        //position
-        nameMarker.pose.position.z = nameMarker.pose.position.z + marker.scale.x * 1.25; //put the name marker above target marker
-
-        //color
-        nameMarker.color.r = marker.color.r * 0.7; //add some contrast between name marker and input marker
-        nameMarker.color.g = marker.color.g * 0.7;
-        nameMarker.color.b = marker.color.b * 0.7;
-        nameMarker.color.a = 1.0;
-
-
-        //id
-        nameMarker.id = -nameMarker.id; //opposite id to avoid id conflicts
-
-        //type
-        nameMarker.type = 9;
-
-        //text field
-        nameMarker.text = marker.ns;
-
-        ss << nameMarker.text << "_name";
-        nameMarker.ns = ss.str();
-
-        //scale
-        nameMarker.scale.z = 0.5 * marker.scale.x;
-
-        return nameMarker;
-
-    }
-
-    /**
-     * create a human marker
-     * @param x  			coordinates of human's base in the x direction
-     * @param y			coordinates of human's base in the y direction
-     * @param z 			coordinates of human's base in the z direction
-     * @param scale 		dimension of the marker
-     * @param name 		marker's name
-     * @return marker 	mesh marker of human
-     */
-    visualization_msgs::Marker defineHuman(geometry_msgs::Pose pose, double scale, std::string name) {
-
-        //declaration
-        double roll, pitch, yaw;
-        visualization_msgs::Marker marker;
-
-        //frame id
-        marker.header.frame_id = "map";
-
-        //namespace
-        std::ostringstream nameSpace;
-        nameSpace << name;
-        marker.ns = nameSpace.str();
-        marker.id = id_generator(name); //creation of an unique id based on marker's name
-
-        //action
-        marker.action = visualization_msgs::Marker::ADD;
-
-        //position
-        /*tf::Quaternion q;
-        tf::quaternionMsgToTF(marker.pose.orientation, q);
-        tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
-
-        yaw += 3.141596 / 2;
-
-        pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
-         */
-        marker.pose = pose;
-
-        //color
-        marker.color.r = 0.0;
-        marker.color.g = 0.0;
-        marker.color.b = 0.0;
-        marker.color.a = 0.0;
-
-        //scale
-        marker.scale.x = scale;
-        marker.scale.y = scale;
-        marker.scale.z = scale;
-
-        //type of marker
-        marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-
-        TiXmlHandle hdl(&listHuman);
-        TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
-
-        std::string name_obj;
-        std::string mesh_r;
-
-        while (elem) //for each element of the xml file
-        {
-            name_obj = elem->Attribute("name");
-            mesh_r = elem->Attribute("mesh_resource");
-            elem = elem->NextSiblingElement();
-
-            if (name_obj.compare(name) == 0) //if there is a 3d model relative to this human
-            {
-                marker.mesh_resource = mesh_r;
-                marker.mesh_use_embedded_materials = true;
-
-                elem = NULL;
-            } else {
-                if (pose.position.z < -0.4) {
-                    //human is seating
-                    marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/humanSeat.dae"; //using 3d human model
-                } else {
-                    marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/human.dae"; //using 3d human model
-                }
-                marker.mesh_use_embedded_materials = true;
-            }
-        }
-
-        marker.lifetime = ros::Duration(1.0);
-
-        return marker;
-    }
-
-    /**
-     * create a robot marker
-     * @param x  			coordinates of robot's base in the x direction
-     * @param y			coordinates of robot's base in the y direction
-     * @param z 			coordinates of robot's base in the z direction
-     * @param scale 		dimension of the marker
-     * @param name 		marker's name
-     * @return marker 	mesh marker of robot
-     */
-    visualization_msgs::Marker defineRobot(geometry_msgs::Pose pose, double scale, std::string name) {
-
-        //declaration
-        visualization_msgs::Marker marker;
-
-        //frame id
-        marker.header.frame_id = "map";
-
-        //namespace
-        std::ostringstream nameSpace;
-        nameSpace << name;
-        marker.ns = nameSpace.str();
-        marker.id = id_generator(name); //creation of an unique id based on marker's name
-
-        //action
-        marker.action = visualization_msgs::Marker::ADD;
-
-        //pose
-        marker.pose = pose;
-
-        //orientation
-        //marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
-
-        //color
-        marker.color.r = 0.0;
-        marker.color.g = 0.0;
-        marker.color.b = 0.0;
-        marker.color.a = 0.0;
-
-        //scale
-        marker.scale.x = scale;
-        marker.scale.y = scale;
-        marker.scale.z = scale;
-
-        //type of marker
-        marker.type = visualization_msgs::Marker::MESH_RESOURCE;
-
-        TiXmlHandle hdl(&listRobot);
-        TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
-
-        std::string name_obj;
-        std::string mesh_r;
-
-        while (elem) //for each element of the xml file
-        {
-            name_obj = elem->Attribute("name");
-            mesh_r = elem->Attribute("mesh_resource");
-            elem = elem->NextSiblingElement();
-
-            if (name_obj.compare(name) == 0) //if there is a 3d model relative to this robot
-            {
-                marker.mesh_resource = mesh_r;
-                marker.mesh_use_embedded_materials = true;
-
-                elem = NULL;
-            } else {
-                marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_robots/pr2.dae"; //using default 3d robot model
-                marker.mesh_use_embedded_materials = true;
-            }
-        }
-        marker.lifetime = marker.lifetime = ros::Duration(1.0);
-
-        return marker;
-    }
-
-    visualization_msgs::Marker defineArrow(visualization_msgs::Marker& sub, visualization_msgs::Marker& targ, double confidence, bool distance) {
-
-        //declaration
-        visualization_msgs::Marker marker;
-
-        //frame id
-        marker.header.frame_id = "map";
-
-        //namespace
-        std::ostringstream nameSpace;
-        std::string subtype = "distance";
-        if (!distance)
-            subtype = "direction";
-        nameSpace << sub.ns << " MvTwd " << subtype << targ.ns;
-        marker.ns = nameSpace.str();
-        marker.id = id_generator(nameSpace.str()); //creation of an unique id based on marker's name
-
-        //action
-        marker.action = visualization_msgs::Marker::ADD;
-
-        //position
-        geometry_msgs::Point point0;
-        geometry_msgs::Point point1;
-
-        point0.x = sub.pose.position.x;
-        point0.y = sub.pose.position.y;
-        point0.z = sub.pose.position.z;
-
-        point1.x = targ.pose.position.x;
-        point1.y = targ.pose.position.y;
-        point1.z = targ.pose.position.z;
-
-        if (distance) {
-            point0.x += 0.1;
-            point0.y += 0.1;
-            point1.y += 0.1;
-            point1.x += 0.1;
-        }
-
-
-        marker.points.push_back(point0);
-        marker.points.push_back(point1);
-
-        //color
-        if (distance)
-            marker.color.r = confidence;
-        else
-            marker.color.g = confidence;
-        marker.color.a = 1.0;
-
-        //scale
-        marker.scale.x = 0.05;
-        marker.scale.y = 0.2;
-        marker.scale.z = 0.3;
-
-        //type of marker
-        marker.type = visualization_msgs::Marker::ARROW;
-        marker.mesh_use_embedded_materials = true;
-
-        marker.lifetime = ros::Duration(0.01);
-
-        return marker;
-    }
-
 
     // ******************************************************** id generator for markers  ********************************************************
 
@@ -831,13 +286,15 @@ public:
         obj_list.markers.clear();
 
         for (int i = 0; i < msg->objectList.size(); i++) {
-            visualization_msgs::Marker m = defineObj(msg->objectList[i].meEntity.pose,
+            visualization_msgs::Marker m = MarkerCreator::defineObj(msg->objectList[i].meEntity.pose,
                                                       msg->objectList[i].meEntity.name,
-                                                      msg->objectList[i].meEntity.id);
+                                                      isActivated(msg->objectList[i].meEntity.id),
+                                                      id_generator(msg->objectList[i].meEntity.name),
+                                                      listObj);
 
             if (printNames_) {
-                visualization_msgs::Marker mn = defineName(m);
-                mn = setColor(mn, 0.0, 0.0, 1.0);
+                visualization_msgs::Marker mn = MarkerCreator::defineName(m);
+                //mn = setColor(mn, 0.0, 0.0, 1.0);
                 mn = setSize(mn, 0, 0, objectNameScale_);
 
                 obj_list.markers.push_back(mn);
@@ -852,7 +309,7 @@ public:
         p.position.y = 0.0;
         p.position.z = -0.05;
         p.orientation.w = 1.0;
-        visualization_msgs::Marker m = defineObj(p, "env", "");
+        visualization_msgs::Marker m = MarkerCreator::defineObj(p, "env", false, id_generator("env"), listObj);
         obj_list.markers.push_back(m);
     }
 
@@ -869,12 +326,12 @@ public:
 
             if (msg->areaList[i].isCircle == true) //circle case
             {
-                visualization_msgs::Marker m = defineCircle(msg->areaList[i].center,
-                        msg->areaList[i].ray, msg->areaList[i].height, msg->areaList[i].name);
+                visualization_msgs::Marker m = MarkerCreator::defineCircle(msg->areaList[i].center,
+                        msg->areaList[i].ray, msg->areaList[i].height, msg->areaList[i].name, id_generator(msg->areaList[i].name));
 
                 m = setRandomColor(m);
 
-                visualization_msgs::Marker mn = defineName(m);
+                visualization_msgs::Marker mn = MarkerCreator::defineName(m);
                 mn = setSize(mn, 0.0, 0.0, 0.3);
                 mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
 
@@ -884,14 +341,14 @@ public:
                 ROS_DEBUG("circle %d", m.id);
             } else // polygon case
             {
-                visualization_msgs::MarkerArray m = definePolygon(msg->areaList[i].poly, msg->areaList[i].name, msg->areaList[i].zmin, msg->areaList[i].zmax);
+                visualization_msgs::MarkerArray m = MarkerCreator::definePolygon(msg->areaList[i].poly, msg->areaList[i].name, msg->areaList[i].zmin, msg->areaList[i].zmax);
 
                for(int i =0 ; i<3 ; i++)
                 m.markers[i] = setRandomColor(m.markers[i]);
 
                 visualization_msgs::MarkerArray mn ;
                 for(int i =0 ; i<3 ; i++)
-                { mn.markers.push_back(defineName(m.markers[i]));
+                { mn.markers.push_back(MarkerCreator::defineName(m.markers[i]));
                 mn.markers.push_back(setSize(mn.markers[i], 0.0, 0.0, 0.1));}
 
                 double posx = 0.0;
@@ -926,11 +383,13 @@ public:
 
         for (int i = 0; i < msg->robotList.size(); i++) {
             //non articulated robot
-            visualization_msgs::Marker m = defineRobot(msg->robotList[i].meAgent.meEntity.pose,
-                    1.0, msg->robotList[i].meAgent.meEntity.name);
+            visualization_msgs::Marker m = MarkerCreator::defineRobot(msg->robotList[i].meAgent.meEntity.pose,
+                    1.0, msg->robotList[i].meAgent.meEntity.name,
+                    id_generator(msg->robotList[i].meAgent.meEntity.name),
+                    listRobot);
 
             if (printNames_) {
-                visualization_msgs::Marker mn = defineName(m);
+                visualization_msgs::Marker mn = MarkerCreator::defineName(m);
                 mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
                 mn = setSize(mn, 0, 0, robotNameScale_);
 
@@ -962,11 +421,13 @@ public:
 
         for (int i = 0; i < msg->humanList.size(); i++) {
             //non articulated human
-            visualization_msgs::Marker m = defineHuman(msg->humanList[i].meAgent.meEntity.pose,
-                    1.0, msg->humanList[i].meAgent.meEntity.name);
+            visualization_msgs::Marker m = MarkerCreator::defineHuman(msg->humanList[i].meAgent.meEntity.pose,
+                    1.0, msg->humanList[i].meAgent.meEntity.name,
+                    id_generator(msg->humanList[i].meAgent.meEntity.name),
+                    listHuman);
 
             if (printNames_) {
-                visualization_msgs::Marker mn = defineName(m);
+                visualization_msgs::Marker mn = MarkerCreator::defineName(m);
                 mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
                 mn = setSize(mn, 0, 0, humanNameScale_);
 
@@ -1180,8 +641,15 @@ public:
 
                 // Create arrow
                 if (foundTarg && foundSub) {
-                    arrow = defineArrow(sub, targ, msg->factList[iFact].confidence, msg->factList[iFact].subProperty.compare("distance") == 0);
-                    arrow_list.markers.push_back(arrow);
+                  bool distance = msg->factList[iFact].subProperty.compare("distance") == 0;
+                  std::ostringstream nameSpace;
+                  std::string subtype = "distance";
+                  if (!distance)
+                      subtype = "direction";
+                  nameSpace << sub.ns << " MvTwd " << subtype << targ.ns;
+                  arrow = MarkerCreator::defineArrow(sub, targ, msg->factList[iFact].confidence,
+                                                    distance, id_generator(nameSpace.str()));
+                  arrow_list.markers.push_back(arrow);
                 }
             }
         }
