@@ -289,12 +289,12 @@ pose:
     w: 0.5"
 
 
-rosservice call /toaster_simu/add_entity "id: '8'
+rosservice call /toaster_simu/add_entity "id: 'Readingroom_table'
 name: 'Readingroom_table'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '8'
+rosservice call /toaster_simu/set_entity_pose "id: 'Readingroom_table'
 ownerId: ''
 type: 'object'
 pose:
