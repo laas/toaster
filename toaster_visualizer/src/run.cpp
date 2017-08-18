@@ -23,7 +23,7 @@
 
 #include "markerCreator.h"
 
-//#include "visualizer.h"
+#include "visualizer.h"
 
 #include <tinyxml.h>
 #include <tf/transform_listener.h>
@@ -39,14 +39,7 @@ class Run {
 
     std::vector<toaster_msgs::Fact> factList;
 
-    //a vector to store allready treated marker's name and an id counter
-    std::vector<std::string> name_list;
-    int id_cpt;
-    float objectNameScale_;
-    float humanNameScale_;
-    float robotNameScale_;
-    float areaNameScale_;
-    bool printNames_;
+    Visualizer visualizer;
 
     //a vector to store marker's color
     std::map<std::string, double> agentMoving_map;
@@ -76,16 +69,7 @@ public:
     /**
      * Constructor of the run class for toaster_visualizer
      */
-    Run(ros::NodeHandle& node) {
-        name_list = std::vector<std::string>();
-        id_cpt = 1;
-        printNames_ = true;
-
-        objectNameScale_ = 0.2;
-        humanNameScale_ = 0.3;
-        robotNameScale_ = 0.3;
-        areaNameScale_ = 0.3;
-
+    Run(ros::NodeHandle& node) : visualizer(&node) {
         area_list = visualization_msgs::MarkerArray();
         obj_list = visualization_msgs::MarkerArray();
         human_list = visualization_msgs::MarkerArray();
@@ -132,25 +116,6 @@ public:
       }
     }
 
-    bool switchNamePrint(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res) {
-        ROS_INFO("[toaster_visu] switching name print");
-        printNames_ = !printNames_;
-
-        return true;
-    }
-
-    bool scaleName(toaster_msgs::Scale::Request &req, toaster_msgs::Scale::Response &res) {
-        ROS_INFO("[toaster_visu] scaling printed names");
-
-        objectNameScale_ = req.objectScale;
-        humanNameScale_ = req.humanScale;
-        robotNameScale_ = req.robotScale;
-        areaNameScale_ = req.areaScale;
-
-        return true;
-    }
-
-
     // **************************************** definition function of rviz markers ********************************************************
 
   bool isActivated(std::string id)
@@ -166,23 +131,6 @@ public:
     }
     return active;
   }
-
-
-    // ******************************************************** id generator for markers  ********************************************************
-
-    /**
-     * In our context names are identifier so we need to create an unique identifier for each input name
-     * @param name		name of target
-     * @return id		new identifier or target's identifier if his name already have been assigned to an identifier
-     */
-    int id_generator(std::string name) {
-        if (std::find(name_list.begin(), name_list.end(), name) != name_list.end()) {
-            return std::find(name_list.begin(), name_list.end(), name) - name_list.begin() + 1;
-        } else {
-            name_list.push_back(name);
-            return id_cpt++;
-        }
-    }
 
     bool isSeating(const toaster_msgs::Human hum) {
         //Find the head:
@@ -219,12 +167,12 @@ public:
             visualization_msgs::Marker m = MarkerCreator::defineObj(msg->objectList[i].meEntity.pose,
                                                       msg->objectList[i].meEntity.name,
                                                       isActivated(msg->objectList[i].meEntity.id),
-                                                      id_generator(msg->objectList[i].meEntity.name),
+                                                      visualizer.id_generator(msg->objectList[i].meEntity.name),
                                                       listObj);
 
-            if (printNames_) {
+            if (visualizer.mustPrintName()) {
                 visualization_msgs::Marker mn = MarkerCreator::defineName(m);
-                mn = MarkerCreator::setSize(mn, 0, 0, objectNameScale_);
+                mn = MarkerCreator::setSize(mn, 0, 0, visualizer.getObjectNameScale());
 
                 obj_list.markers.push_back(mn);
             }
@@ -238,7 +186,7 @@ public:
         p.position.y = 0.3;
         p.position.z = -0.05;
         p.orientation.w = 1.0;
-        visualization_msgs::Marker m = MarkerCreator::defineObj(p, "env", false, id_generator("env"), listObj);
+        visualization_msgs::Marker m = MarkerCreator::defineObj(p, "env", false, visualizer.id_generator("env"), listObj);
         obj_list.markers.push_back(m);
     }
 
@@ -256,7 +204,7 @@ public:
             if (msg->areaList[i].isCircle == true) //circle case
             {
                 visualization_msgs::Marker m = MarkerCreator::defineCircle(msg->areaList[i].center,
-                        msg->areaList[i].ray, msg->areaList[i].height, msg->areaList[i].name, id_generator(msg->areaList[i].name));
+                        msg->areaList[i].ray, msg->areaList[i].height, msg->areaList[i].name, visualizer.id_generator(msg->areaList[i].name));
 
                 m = MarkerCreator::setRandomColor(m);
 
@@ -314,13 +262,13 @@ public:
             //non articulated robot
             visualization_msgs::Marker m = MarkerCreator::defineRobot(msg->robotList[i].meAgent.meEntity.pose,
                     1.0, msg->robotList[i].meAgent.meEntity.name,
-                    id_generator(msg->robotList[i].meAgent.meEntity.name),
+                    visualizer.id_generator(msg->robotList[i].meAgent.meEntity.name),
                     listRobot);
 
-            if (printNames_) {
+            if (visualizer.mustPrintName()) {
                 visualization_msgs::Marker mn = MarkerCreator::defineName(m);
                 mn = MarkerCreator::setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
-                mn = MarkerCreator::setSize(mn, 0, 0, robotNameScale_);
+                mn = MarkerCreator::setSize(mn, 0, 0, visualizer.getRobotNameScale());
 
                 //If the robot is moving, we intensify its name color
                 std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->robotList[i].meAgent.meEntity.id);
@@ -352,13 +300,13 @@ public:
             //non articulated human
             visualization_msgs::Marker m = MarkerCreator::defineHuman(msg->humanList[i].meAgent.meEntity.pose,
                     1.0, msg->humanList[i].meAgent.meEntity.name,
-                    id_generator(msg->humanList[i].meAgent.meEntity.name),
+                    visualizer.id_generator(msg->humanList[i].meAgent.meEntity.name),
                     listHuman);
 
-            if (printNames_) {
+            if (visualizer.mustPrintName()) {
                 visualization_msgs::Marker mn = MarkerCreator::defineName(m);
                 mn = MarkerCreator::setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
-                mn = MarkerCreator::setSize(mn, 0, 0, humanNameScale_);
+                mn = MarkerCreator::setSize(mn, 0, 0, visualizer.getHumanNameScale());
 
                 //If the human is moving, we intensify its color
                 std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->humanList[i].meAgent.meEntity.id);
@@ -391,7 +339,7 @@ public:
 
                     //namespace
                     markerTempo.ns = name;
-                    markerTempo.id = id_generator(joints[y].meEntity.name); //creation of an unique id based on marker's name
+                    markerTempo.id = visualizer.id_generator(joints[y].meEntity.name); //creation of an unique id based on marker's name
 
                     //action
                     markerTempo.action = visualization_msgs::Marker::ADD;
@@ -577,7 +525,7 @@ public:
                       subtype = "direction";
                   nameSpace << sub.ns << " MvTwd " << subtype << targ.ns;
                   arrow = MarkerCreator::defineArrow(sub, targ, msg->factList[iFact].confidence,
-                                                    distance, id_generator(nameSpace.str()));
+                                                    distance, visualizer.id_generator(nameSpace.str()));
                   arrow_list.markers.push_back(arrow);
                 }
             }
@@ -607,20 +555,9 @@ int main(int argc, char **argv) {
     ros::NodeHandle node;
     ROS_INFO("[toaster-visu] launched");
 
-
-
     Run c = Run(node);
 
-
     ros::Rate loop_rate(30);
-
-    ros::ServiceServer switch_name_print;
-    switch_name_print = node.advertiseService("toaster_visualizer/switch_name_print", &Run::switchNamePrint, &c);
-
-
-    ros::ServiceServer name_scale;
-    name_scale = node.advertiseService("toaster_visualizer/scale_name", &Run::scaleName, &c);
-
 
     while (ros::ok()) {
         c.send();

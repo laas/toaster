@@ -13,6 +13,7 @@ include_directories(include ${catkin_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS})
 
 set(${PROJECT_NAME}_SOURCES
     src/markerCreator.cpp
+    src/visualizer.cpp
 )
 add_executable(toaster_visualizer ${${PROJECT_NAME}_SOURCES} src/run.cpp)
 target_link_libraries(toaster_visualizer ${catkin_LIBRARIES} ${TinyXML_LIBRARIES})
