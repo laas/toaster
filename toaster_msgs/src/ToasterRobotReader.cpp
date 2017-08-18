@@ -1,24 +1,21 @@
-/* 
+/*
  * File:   ToasterObjectReader.cpp
  * Author: gmilliez
- * 
+ *
  * Created on December 12, 2014, 2:23 PM
  */
 
 #include "toaster_msgs/ToasterRobotReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterRobotReader::ToasterRobotReader(ros::NodeHandle& node, bool fullRobot, std::string topic) {
-    fullRobot_ = fullRobot;
-    std::cout << "Initializing ToasterRobotReader" << std::endl;
+ToasterRobotReader::ToasterRobotReader(ros::NodeHandle& node, bool fullRobot, std::string topic) : EntityReader<Robot>(fullRobot) {
+    std::cout << "[Toaster_msgs] Initializing ToasterRobotReader" << std::endl;
 
     // Starts listening to the topic
     sub_ = node.subscribe(topic, 1, &ToasterRobotReader::robotJointStateCallBack, this);
 }
 
 void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotListStamped::ConstPtr& msg) {
-    //std::cout << "[area_manager][DEBUG] new data for robot received" << std::endl;
-
     double roll, pitch, yaw;
     Robot* curRobot;
 
@@ -57,8 +54,7 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotListSt
 
         lastConfig_[curRobot->getId()] = curRobot;
 
-        //TODO: fullRobot case
-        if (fullRobot_) {
+        if (fullConfig_) {
             Joint * curJnt;
             for (unsigned int i_jnt = 0; i_jnt < msg->robotList[i].meAgent.skeletonJoint.size(); i_jnt++) {
 
@@ -80,7 +76,6 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotListSt
                 jointPosition.set<2>(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.position.z);
                 curJnt->setPosition(jointPosition);
 
-
                 tf::Quaternion q;
                 tf::quaternionMsgToTF(msg->robotList[i].meAgent.skeletonJoint[i_jnt].meEntity.pose.orientation, q);
                 tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
@@ -97,19 +92,3 @@ void ToasterRobotReader::robotJointStateCallBack(const toaster_msgs::RobotListSt
         }
     }
 }
-
-bool ToasterRobotReader::isPresent(std::string id) {
-    timeval curTime;
-    gettimeofday(&curTime, NULL);
-    unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;
-    unsigned long timeThreshold = pow(10, 9);
-    //std::cout << "current time: " << now <<  "  robot time: " << m_LastTime << std::endl;
-    long timeDif = lastConfig_[id]->getTime() - now;
-    //std::cout << "time dif: " << timeDif << std::endl;
-
-    if (fabs(timeDif) < timeThreshold)
-        return true;
-    else
-        return false;
-}
-

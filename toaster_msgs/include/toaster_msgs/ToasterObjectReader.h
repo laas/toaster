@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ToasterObjectReader.h
  * Author: gmilliez
  *
@@ -11,14 +11,11 @@
 #include <ros/ros.h>
 #include "toaster-lib/Object.h"
 #include "toaster_msgs/ObjectListStamped.h"
+#include "toaster_msgs/EntityReader.h"
 #include <map>
 
-class ToasterObjectReader {
+class ToasterObjectReader : public EntityReader<Object> {
 public:
-    std::map<std::string, Object*> lastConfig_;
-
-    bool isPresent(std::string id);
-
     ToasterObjectReader(ros::NodeHandle& node, std::string topic="pdg/objectList");
 
 private:
@@ -28,4 +25,3 @@ private:
 };
 
 #endif	/* TOASTEROBJECTREADER_H */
-

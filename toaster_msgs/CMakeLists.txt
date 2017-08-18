@@ -112,5 +112,9 @@ ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}  $ENV{TOASTERLIB_DIR}/include
 )
 
-add_library(toaster_msgs_lib ./src/ToasterFactReader.cpp ./src/ToasterHumanReader.cpp ./src/ToasterObjectReader.cpp ./src/ToasterRobotReader.cpp)
+add_library(toaster_msgs_lib
+./src/ToasterFactReader.cpp
+./src/ToasterHumanReader.cpp
+./src/ToasterObjectReader.cpp
+./src/ToasterRobotReader.cpp)
   add_dependencies(toaster_msgs_lib toaster_msgs_generate_messages_cpp)
