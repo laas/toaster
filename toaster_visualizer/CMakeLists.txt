@@ -11,12 +11,14 @@ catkin_package(
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${TinyXML_INCLUDE_DIRS})
 
-
-add_executable(toaster_visualizer src/run.cpp)
+set(${PROJECT_NAME}_SOURCES
+    src/markerCreator.cpp
+    src/visualizer.cpp
+)
+add_executable(toaster_visualizer ${${PROJECT_NAME}_SOURCES} src/run.cpp)
 target_link_libraries(toaster_visualizer ${catkin_LIBRARIES} ${TinyXML_LIBRARIES})
 add_dependencies(toaster_visualizer beginner_tutorials_generate_messages_cpp)
 
 
 catkin_package(
 )
-
