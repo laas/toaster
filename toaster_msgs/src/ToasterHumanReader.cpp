@@ -1,22 +1,20 @@
-/* 
+/*
  * File:   ToasterObjectReader.cpp
  * Author: gmilliez
- * 
+ *
  * Created on December 12, 2014, 2:23 PM
  */
 
 #include "toaster_msgs/ToasterHumanReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic) {
-    fullHuman_ = fullHuman;
-    std::cout << "[area_manager] Initializing ToasterHumanReader" << std::endl;
+ToasterHumanReader::ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic) : EntityReader<Human>(fullHuman){
+    std::cout << "[Toaster_msgs] Initializing ToasterHumanReader" << std::endl;
     // Starts listening to the topic
     sub_ = node.subscribe(topic, 1, &ToasterHumanReader::humanJointStateCallBack, this);
 }
 
 void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanListStamped::ConstPtr& msg) {
-    //std::cout << "[area_manager][DEBUG] new data for human received with time " << msg->humanList[0].meAgent.meEntity.time  << std::endl;
 
     double roll, pitch, yaw;
     Human * curHuman;
@@ -57,8 +55,7 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanListSt
 
         lastConfig_[curHuman->getId()] = curHuman;
 
-        //TODO: fullHuman
-        if (fullHuman_) {
+        if (fullConfig_) {
             Joint * curJnt;
             for (unsigned int i_jnt = 0; i_jnt < msg->humanList[i].meAgent.skeletonJoint.size(); i_jnt++) {
 
@@ -97,19 +94,3 @@ void ToasterHumanReader::humanJointStateCallBack(const toaster_msgs::HumanListSt
         }
     }
 }
-
-bool ToasterHumanReader::isPresent(std::string id) {
-    timeval curTime;
-    gettimeofday(&curTime, NULL);
-    unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;
-    unsigned long timeThreshold = pow(10, 9);
-    //std::cout << "current time: " << now <<  "  human time: " << m_LastTime << std::endl;
-    long timeDif = lastConfig_[id]->getTime() - now;
-    //std::cout << "time dif: " << timeDif << std::endl;
-
-    if (fabs(timeDif) < timeThreshold)
-        return true;
-    else
-        return false;
-}
-

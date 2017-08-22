@@ -1,4 +1,5 @@
 #include <string>
+#include <vector>
 
 #include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
@@ -12,9 +13,9 @@
 #ifndef MARKERCREATOR_H
 #define MARKERCREATOR_H
 
-namespace MarkerCreator
+class MarkerCreator
 {
-
+public:
   /**
    * create a circle marker
    * @param p  		point from geometry library locating the center of the circle
@@ -22,7 +23,7 @@ namespace MarkerCreator
    * @param name 		marker's name
    * @return marker 	circle marker with input property
    */
-  visualization_msgs::Marker defineCircle(geometry_msgs::Point p, double rayon, double height, std::string name, int id);
+  static visualization_msgs::Marker defineCircle(geometry_msgs::Point p, double rayon, double height, std::string name, int id);
 
   /**
    * create a polygon marker based on line marker
@@ -31,14 +32,14 @@ namespace MarkerCreator
    * @param name 		polygon's name
    * @return marker 	line marker representing input polygon
    */
-  visualization_msgs::MarkerArray definePolygon(geometry_msgs::Polygon poly, std::string name, double zmin, double zmax);
+  static visualization_msgs::MarkerArray definePolygon(geometry_msgs::Polygon poly, std::string name, double zmin, double zmax);
 
   /**
    * create a name marker corresponding to the input marker
    * @param marker	marker to which we want to create a name marker
    * @return marker 	name marker
    */
-  visualization_msgs::Marker defineName(visualization_msgs::Marker marker);
+  static visualization_msgs::Marker defineName(visualization_msgs::Marker marker);
 
   /**
    * create an object marker
@@ -49,7 +50,7 @@ namespace MarkerCreator
    * @param name 		marker's name
    * @return marker 	object marker or mesh marker if the object is in the mesh database
    */
-  visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, std::string name, bool activated, int id, TiXmlDocument& listObj, double scale = 1);
+  static visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, std::string name, bool activated, int id, TiXmlDocument& listObj, double scale = 1);
 
   /**
    * create a human marker
@@ -60,7 +61,7 @@ namespace MarkerCreator
    * @param name 		marker's name
    * @return marker 	mesh marker of human
    */
-  visualization_msgs::Marker defineHuman(geometry_msgs::Pose pose, double scale, std::string name, int id, TiXmlDocument& listHuman);
+  static visualization_msgs::Marker defineHuman(geometry_msgs::Pose pose, double scale, std::string name, int id, TiXmlDocument& listHuman);
 
   /**
    * create a robot marker
@@ -71,9 +72,52 @@ namespace MarkerCreator
    * @param name 		marker's name
    * @return marker 	mesh marker of robot
    */
-  visualization_msgs::Marker defineRobot(geometry_msgs::Pose pose, double scale, std::string name, int id, TiXmlDocument& listRobot);
+  static visualization_msgs::Marker defineRobot(geometry_msgs::Pose pose, double scale, std::string name, int id, TiXmlDocument& listRobot);
 
-  visualization_msgs::Marker defineArrow(visualization_msgs::Marker& sub, visualization_msgs::Marker& targ, double confidence, bool distance, int id);
-}
+  static visualization_msgs::Marker defineArrow(visualization_msgs::Marker& sub, visualization_msgs::Marker& targ, double confidence, bool distance, int id);
+
+  /////////////////////////////
+  /*MARKERS UTILITY FUNCTIONS*/
+  /////////////////////////////
+
+  /**
+   * Function to modify a marker's color
+   * @param marker		name of target marker
+   * @param r 			value of red coefficient
+   * @param g 			value of green coefficient
+   * @param b 			value of blue coefficient
+   * @return marker 		new marker with input modifications
+   */
+  static visualization_msgs::Marker setColor(visualization_msgs::Marker marker, double r, double g, double b);
+  /**
+   * Function to modify a marker's position
+   * @param marker		name of target marker
+   * @param x 			coordinates of marker's base in the x direction
+   * @param y 			coordinates of marker's base in the y direction
+   * @param z 			coordinates of marker's base in the z direction
+   * @return marker 		new marker with input modifications
+   */
+  static visualization_msgs::Marker setPosition(visualization_msgs::Marker marker, float x, float y, float z);
+
+  /**
+   * Function to modify a marker's size
+   * @param marker		name of target marker
+   * @param x 			size of the marker in the x direction
+   * @param y 			size of the marker in the y direction
+   * @param z 			size of the marker in the z direction
+   * @return marker 		new marker with input modifications
+   */
+  static visualization_msgs::Marker setSize(visualization_msgs::Marker marker, float x, float y, float z);
+
+  /**
+   * Function to give and register a random color to input marker
+   * @param marker		name of target marker
+   * @return marker 		new marker with input modifications
+   */
+  static visualization_msgs::Marker setRandomColor(visualization_msgs::Marker marker);
+
+private:
+   static std::map<std::string, std::vector<float> > colorMap_;
+};
 
 #endif /*MARKERCREATOR_H*/

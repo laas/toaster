@@ -1,5 +1,5 @@
 
-/* 
+/*
  * File:   TOASTERRobotReader.h
  * Author: gmilliez
  *
@@ -14,15 +14,11 @@
 #include <ros/ros.h>
 #include "toaster-lib/Human.h"
 #include "toaster_msgs/HumanListStamped.h"
+#include "toaster_msgs/EntityReader.h"
 #include <map>
 
-class ToasterHumanReader {
+class ToasterHumanReader : public EntityReader<Human>{
 public:
-    std::map<std::string, Human*> lastConfig_;
-    bool fullHuman_;
-
-    bool isPresent(std::string id);
-
     ToasterHumanReader(ros::NodeHandle& node, bool fullHuman, std::string topic="pdg/humanList");
 
 private:

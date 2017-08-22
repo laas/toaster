@@ -1,9 +1,8 @@
 #include "markerCreator.h"
 
-namespace MarkerCreator
-{
+std::map<std::string, std::vector<float> > MarkerCreator::colorMap_;
 
-visualization_msgs::Marker defineCircle(geometry_msgs::Point p, double rayon, double height, std::string name, int id) {
+visualization_msgs::Marker MarkerCreator::defineCircle(geometry_msgs::Point p, double rayon, double height, std::string name, int id) {
    //declaration
    visualization_msgs::Marker marker;
 
@@ -48,7 +47,7 @@ visualization_msgs::Marker defineCircle(geometry_msgs::Point p, double rayon, do
    return marker;
 }
 
-visualization_msgs::MarkerArray definePolygon(geometry_msgs::Polygon poly, std::string name, double zmin, double zmax){
+visualization_msgs::MarkerArray MarkerCreator::definePolygon(geometry_msgs::Polygon poly, std::string name, double zmin, double zmax){
 //declaration
 visualization_msgs::Marker line_strip1, line_strip2, line_list;
 
@@ -130,7 +129,7 @@ for (int i = 0; i < poly.points.size(); i++) {
     return markersarray;
 }
 
-visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, std::string name, bool activated, int id, TiXmlDocument& listObj, double scale){
+visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, std::string name, bool activated, int id, TiXmlDocument& listObj, double scale){
     //declaration
     double roll, pitch, yaw;
     visualization_msgs::Marker marker;
@@ -223,7 +222,7 @@ visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, std::string name,
     return marker;
 }
 
-visualization_msgs::Marker defineName(visualization_msgs::Marker marker) {
+visualization_msgs::Marker MarkerCreator::defineName(visualization_msgs::Marker marker) {
     //declaration
     std::stringstream ss;
     visualization_msgs::Marker nameMarker = marker;
@@ -257,7 +256,7 @@ visualization_msgs::Marker defineName(visualization_msgs::Marker marker) {
 
 }
 
-visualization_msgs::Marker defineHuman(geometry_msgs::Pose pose, double scale, std::string name, int id, TiXmlDocument& listHuman) {
+visualization_msgs::Marker MarkerCreator::defineHuman(geometry_msgs::Pose pose, double scale, std::string name, int id, TiXmlDocument& listHuman) {
 
     //declaration
     double roll, pitch, yaw;
@@ -334,7 +333,7 @@ visualization_msgs::Marker defineHuman(geometry_msgs::Pose pose, double scale, s
     return marker;
 }
 
-visualization_msgs::Marker defineRobot(geometry_msgs::Pose pose, double scale, std::string name, int id, TiXmlDocument& listRobot) {
+visualization_msgs::Marker MarkerCreator::defineRobot(geometry_msgs::Pose pose, double scale, std::string name, int id, TiXmlDocument& listRobot) {
 
     //declaration
     visualization_msgs::Marker marker;
@@ -399,7 +398,7 @@ visualization_msgs::Marker defineRobot(geometry_msgs::Pose pose, double scale, s
     return marker;
 }
 
-visualization_msgs::Marker defineArrow(visualization_msgs::Marker& sub, visualization_msgs::Marker& targ, double confidence, bool distance, int id) {
+visualization_msgs::Marker MarkerCreator::defineArrow(visualization_msgs::Marker& sub, visualization_msgs::Marker& targ, double confidence, bool distance, int id) {
 
     //declaration
     visualization_msgs::Marker marker;
@@ -462,5 +461,45 @@ visualization_msgs::Marker defineArrow(visualization_msgs::Marker& sub, visualiz
 
     return marker;
 }
+  /////////////////////////////
+  /*MARKERS UTILITY FUNCTIONS*/
+  /////////////////////////////
 
-} // namespace markerCreator
+visualization_msgs::Marker MarkerCreator::setColor(visualization_msgs::Marker marker, double r, double g, double b) {
+    marker.color.r = r;
+    marker.color.g = g;
+    marker.color.b = b;
+
+    return marker;
+}
+
+visualization_msgs::Marker MarkerCreator::setPosition(visualization_msgs::Marker marker, float x, float y, float z) {
+    marker.pose.position.x = x;
+    marker.pose.position.y = y;
+    marker.pose.position.z = z;
+
+    return marker;
+}
+
+visualization_msgs::Marker MarkerCreator::setSize(visualization_msgs::Marker marker, float x, float y, float z) {
+    marker.scale.x = x;
+    marker.scale.y = y;
+    marker.scale.z = z;
+
+    return marker;
+}
+
+visualization_msgs::Marker MarkerCreator::setRandomColor(visualization_msgs::Marker marker) {
+    if (colorMap_.find(marker.ns) == colorMap_.end()) {
+        std::vector<float> color_list;
+        color_list.push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
+        color_list.push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
+        color_list.push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
+        colorMap_[marker.ns] = color_list;
+    }
+
+    marker.color.r = (colorMap_[marker.ns])[0];
+    marker.color.g = (colorMap_[marker.ns])[1];
+    marker.color.b = (colorMap_[marker.ns])[2];
+    return marker;
+}

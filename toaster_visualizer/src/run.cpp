@@ -23,6 +23,8 @@
 
 #include "markerCreator.h"
 
+#include "visualizer.h"
+
 #include <tinyxml.h>
 #include <tf/transform_listener.h>
 
@@ -37,19 +39,10 @@ class Run {
 
     std::vector<toaster_msgs::Fact> factList;
 
-    //a vector to store allready treated marker's name and an id counter
-    std::vector<std::string> name_list;
-    int id_cpt;
-    float objectNameScale_;
-    float humanNameScale_;
-    float robotNameScale_;
-    float areaNameScale_;
-    bool printNames_;
+    Visualizer visualizer;
 
     //a vector to store marker's color
-    std::map<std::string, std::vector<float> > color_map;
     std::map<std::string, double> agentMoving_map;
-
 
     //subscribers
     ros::Subscriber sub_objList;
@@ -76,16 +69,7 @@ public:
     /**
      * Constructor of the run class for toaster_visualizer
      */
-    Run(ros::NodeHandle& node) {
-        name_list = std::vector<std::string>();
-        id_cpt = 1;
-        printNames_ = true;
-
-        objectNameScale_ = 0.2;
-        humanNameScale_ = 0.3;
-        robotNameScale_ = 0.3;
-        areaNameScale_ = 0.3;
-
+    Run(ros::NodeHandle& node) : visualizer(&node) {
         area_list = visualization_msgs::MarkerArray();
         obj_list = visualization_msgs::MarkerArray();
         human_list = visualization_msgs::MarkerArray();
@@ -132,25 +116,6 @@ public:
       }
     }
 
-    bool switchNamePrint(toaster_msgs::Empty::Request &req, toaster_msgs::Empty::Response &res) {
-        ROS_INFO("[toaster_visu] switching name print");
-        printNames_ = !printNames_;
-
-        return true;
-    }
-
-    bool scaleName(toaster_msgs::Scale::Request &req, toaster_msgs::Scale::Response &res) {
-        ROS_INFO("[toaster_visu] scaling printed names");
-
-        objectNameScale_ = req.objectScale;
-        humanNameScale_ = req.humanScale;
-        robotNameScale_ = req.robotScale;
-        areaNameScale_ = req.areaScale;
-
-        return true;
-    }
-
-
     // **************************************** definition function of rviz markers ********************************************************
 
   bool isActivated(std::string id)
@@ -167,21 +132,6 @@ public:
     return active;
   }
 
-    // ******************************************************** id generator for markers  ********************************************************
-
-    /**
-     * In our context names are identifier so we need to create an unique identifier for each input name
-     * @param name		name of target
-     * @return id		new identifier or target's identifier if his name already have been assigned to an identifier
-     */
-    int id_generator(std::string name) {
-        if (std::find(name_list.begin(), name_list.end(), name) != name_list.end()) {
-            return std::find(name_list.begin(), name_list.end(), name) - name_list.begin() + 1;
-        } else {
-            name_list.push_back(name);
-            return id_cpt++;
-        }
-    }
 
     bool isSeating(const toaster_msgs::Human hum) {
         //Find the head:
@@ -201,77 +151,6 @@ public:
         }
     }
 
-
-    // ******************************************************** adjustment functions ********************************************************
-
-    /**
-     * Function to modify a marker's color
-     * @param marker		name of target marker
-     * @param r 			value of red coefficient
-     * @param g 			value of green coefficient
-     * @param b 			value of blue coefficient
-     * @return marker 		new marker with input modifications
-     */
-    visualization_msgs::Marker setColor(visualization_msgs::Marker marker, double r, double g, double b) {
-        marker.color.r = r;
-        marker.color.g = g;
-        marker.color.b = b;
-
-        return marker;
-    }
-
-    /**
-     * Function to modify a marker's position
-     * @param marker		name of target marker
-     * @param x 			coordinates of marker's base in the x direction
-     * @param y 			coordinates of marker's base in the y direction
-     * @param z 			coordinates of marker's base in the z direction
-     * @return marker 		new marker with input modifications
-     */
-    visualization_msgs::Marker setPosition(visualization_msgs::Marker marker, float x, float y, float z) {
-        marker.pose.position.x = x;
-        marker.pose.position.y = y;
-        marker.pose.position.z = z;
-
-        return marker;
-    }
-
-    /**
-     * Function to modify a marker's size
-     * @param marker		name of target marker
-     * @param x 			size of the marker in the x direction
-     * @param y 			size of the marker in the y direction
-     * @param z 			size of the marker in the z direction
-     * @return marker 		new marker with input modifications
-     */
-    visualization_msgs::Marker setSize(visualization_msgs::Marker marker, float x, float y, float z) {
-        marker.scale.x = x;
-        marker.scale.y = y;
-        marker.scale.z = z;
-
-        return marker;
-    }
-
-    /**
-     * Function to give and register a random color to input marker
-     * @param marker		name of target marker
-     * @return marker 		new marker with input modifications
-     */
-    visualization_msgs::Marker setRandomColor(visualization_msgs::Marker marker) {
-        if (color_map.find(marker.ns) == color_map.end()) {
-            std::vector<float> color_list;
-            color_list.push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
-            color_list.push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
-            color_list.push_back(static_cast<float> (rand()) / static_cast<float> (RAND_MAX));
-            color_map[marker.ns] = color_list;
-        }
-
-        marker.color.r = (color_map[marker.ns])[0];
-        marker.color.g = (color_map[marker.ns])[1];
-        marker.color.b = (color_map[marker.ns])[2];
-        return marker;
-    }
-
     //******************************************************** emission/reception ********************************************************
 
     //reception
@@ -289,13 +168,12 @@ public:
             visualization_msgs::Marker m = MarkerCreator::defineObj(msg->objectList[i].meEntity.pose,
                                                       msg->objectList[i].meEntity.name,
                                                       isActivated(msg->objectList[i].meEntity.id),
-                                                      id_generator(msg->objectList[i].meEntity.name),
+                                                      visualizer.id_generator(msg->objectList[i].meEntity.name),
                                                       listObj);
 
-            if (printNames_) {
+            if (visualizer.mustPrintName()) {
                 visualization_msgs::Marker mn = MarkerCreator::defineName(m);
-                //mn = setColor(mn, 0.0, 0.0, 1.0);
-                mn = setSize(mn, 0, 0, objectNameScale_);
+                mn = MarkerCreator::setSize(mn, 0, 0, visualizer.getObjectNameScale());
 
                 obj_list.markers.push_back(mn);
             }
@@ -309,7 +187,7 @@ public:
         p.position.y = 0.0;
         p.position.z = -0.05;
         p.orientation.w = 1.0;
-        visualization_msgs::Marker m = MarkerCreator::defineObj(p, "env", false, id_generator("env"), listObj);
+        visualization_msgs::Marker m = MarkerCreator::defineObj(p, "env", false, visualizer.id_generator("env"), listObj);
         obj_list.markers.push_back(m);
     }
 
@@ -327,13 +205,13 @@ public:
             if (msg->areaList[i].isCircle == true) //circle case
             {
                 visualization_msgs::Marker m = MarkerCreator::defineCircle(msg->areaList[i].center,
-                        msg->areaList[i].ray, msg->areaList[i].height, msg->areaList[i].name, id_generator(msg->areaList[i].name));
+                        msg->areaList[i].ray, msg->areaList[i].height, msg->areaList[i].name, visualizer.id_generator(msg->areaList[i].name));
 
-                m = setRandomColor(m);
+                m = MarkerCreator::setRandomColor(m);
 
                 visualization_msgs::Marker mn = MarkerCreator::defineName(m);
-                mn = setSize(mn, 0.0, 0.0, 0.3);
-                mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
+                mn = MarkerCreator::setSize(mn, 0.0, 0.0, 0.3);
+                mn = MarkerCreator::setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
 
                 area_list.markers.push_back(m);
                 area_list.markers.push_back(mn);
@@ -344,12 +222,12 @@ public:
                 visualization_msgs::MarkerArray m = MarkerCreator::definePolygon(msg->areaList[i].poly, msg->areaList[i].name, msg->areaList[i].zmin, msg->areaList[i].zmax);
 
                for(int i =0 ; i<3 ; i++)
-                m.markers[i] = setRandomColor(m.markers[i]);
+                m.markers[i] = MarkerCreator::setRandomColor(m.markers[i]);
 
                 visualization_msgs::MarkerArray mn ;
                 for(int i =0 ; i<3 ; i++)
                 { mn.markers.push_back(MarkerCreator::defineName(m.markers[i]));
-                mn.markers.push_back(setSize(mn.markers[i], 0.0, 0.0, 0.1));}
+                mn.markers.push_back(MarkerCreator::setSize(mn.markers[i], 0.0, 0.0, 0.1));}
 
                 double posx = 0.0;
                 double posy = 0.0;
@@ -361,7 +239,7 @@ public:
                     posz = posz + msg->areaList[i].zmin;
                 }
 
-                mn.markers[j] = setPosition(mn.markers[j], posx / m.markers[j].points.size(), posy / m.markers[j].points.size(),  + posz / m.markers[j].points.size());
+                mn.markers[j] = MarkerCreator::setPosition(mn.markers[j], posx / m.markers[j].points.size(), posy / m.markers[j].points.size(),  + posz / m.markers[j].points.size());
 
                 area_list.markers.push_back(m.markers[j]);
                 area_list.markers.push_back(mn.markers[j]);
@@ -385,20 +263,20 @@ public:
             //non articulated robot
             visualization_msgs::Marker m = MarkerCreator::defineRobot(msg->robotList[i].meAgent.meEntity.pose,
                     1.0, msg->robotList[i].meAgent.meEntity.name,
-                    id_generator(msg->robotList[i].meAgent.meEntity.name),
+                    visualizer.id_generator(msg->robotList[i].meAgent.meEntity.name),
                     listRobot);
 
-            if (printNames_) {
+            if (visualizer.mustPrintName()) {
                 visualization_msgs::Marker mn = MarkerCreator::defineName(m);
-                mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
-                mn = setSize(mn, 0, 0, robotNameScale_);
+                mn = MarkerCreator::setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
+                mn = MarkerCreator::setSize(mn, 0, 0, visualizer.getRobotNameScale());
 
                 //If the robot is moving, we intensify its name color
                 std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->robotList[i].meAgent.meEntity.id);
                 if (it != agentMoving_map.end())
-                    mn = setColor(mn, 0.4 + it->second * 0.6, 0.0, 0.0);
+                    mn = MarkerCreator::setColor(mn, 0.4 + it->second * 0.6, 0.0, 0.0);
                 else
-                    mn = setColor(mn, 0.2, 0.0, 0.0);
+                    mn = MarkerCreator::setColor(mn, 0.2, 0.0, 0.0);
 
 
                 robot_list.markers.push_back(mn);
@@ -423,20 +301,20 @@ public:
             //non articulated human
             visualization_msgs::Marker m = MarkerCreator::defineHuman(msg->humanList[i].meAgent.meEntity.pose,
                     1.0, msg->humanList[i].meAgent.meEntity.name,
-                    id_generator(msg->humanList[i].meAgent.meEntity.name),
+                    visualizer.id_generator(msg->humanList[i].meAgent.meEntity.name),
                     listHuman);
 
-            if (printNames_) {
+            if (visualizer.mustPrintName()) {
                 visualization_msgs::Marker mn = MarkerCreator::defineName(m);
-                mn = setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
-                mn = setSize(mn, 0, 0, humanNameScale_);
+                mn = MarkerCreator::setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 1);
+                mn = MarkerCreator::setSize(mn, 0, 0, visualizer.getHumanNameScale());
 
                 //If the human is moving, we intensify its color
                 std::map<std::string, double>::const_iterator it = agentMoving_map.find(msg->humanList[i].meAgent.meEntity.id);
                 if (it != agentMoving_map.end())
-                    mn = setColor(mn, 0.0, 0.4 + it->second * 0.6, 0.0);
+                    mn = MarkerCreator::setColor(mn, 0.0, 0.4 + it->second * 0.6, 0.0);
                 else
-                    mn = setColor(mn, 0.0, 0.2, 0.0);
+                    mn = MarkerCreator::setColor(mn, 0.0, 0.2, 0.0);
 
                 human_list.markers.push_back(mn);
             }
@@ -462,7 +340,7 @@ public:
 
                     //namespace
                     markerTempo.ns = name;
-                    markerTempo.id = id_generator(joints[y].meEntity.name); //creation of an unique id based on marker's name
+                    markerTempo.id = visualizer.id_generator(joints[y].meEntity.name); //creation of an unique id based on marker's name
 
                     //action
                     markerTempo.action = visualization_msgs::Marker::ADD;
@@ -648,7 +526,7 @@ public:
                       subtype = "direction";
                   nameSpace << sub.ns << " MvTwd " << subtype << targ.ns;
                   arrow = MarkerCreator::defineArrow(sub, targ, msg->factList[iFact].confidence,
-                                                    distance, id_generator(nameSpace.str()));
+                                                    distance, visualizer.id_generator(nameSpace.str()));
                   arrow_list.markers.push_back(arrow);
                 }
             }
@@ -678,20 +556,9 @@ int main(int argc, char **argv) {
     ros::NodeHandle node;
     ROS_INFO("[toaster-visu] launched");
 
-
-
     Run c = Run(node);
 
-
     ros::Rate loop_rate(30);
-
-    ros::ServiceServer switch_name_print;
-    switch_name_print = node.advertiseService("toaster_visualizer/switch_name_print", &Run::switchNamePrint, &c);
-
-
-    ros::ServiceServer name_scale;
-    name_scale = node.advertiseService("toaster_visualizer/scale_name", &Run::scaleName, &c);
-
 
     while (ros::ok()) {
         c.send();
