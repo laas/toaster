@@ -68,7 +68,7 @@ void setAreaMsg(toaster_msgs::AreaList& areaList_msg) {
             //If it is a polygon
             area.poly = polygonToRos(it->first);
             area.zmin = ((PolygonArea*) it->second)->z.get<0>();
-            area.zmax = ((PolygonArea*) it->second)->z.get<1>(); 
+            area.zmax = ((PolygonArea*) it->second)->z.get<1>();
         }
 
         area.isCircle = it->second->getIsCircle();
@@ -142,7 +142,7 @@ void rotateTranslate(Entity* rotEnt, CircleArea* circleArea) {
 
     double theta = rotEnt->getOrientation()[2];
     point_type3d newCenter;
-    
+
     newCenter.set<0>(cos(theta) * circleArea->getCenterRelative().get<0>() - sin(theta) * circleArea->getCenterRelative().get<1>());
     newCenter.set<1>(sin(theta) * circleArea->getCenterRelative().get<0>() + cos(theta) * circleArea->getCenterRelative().get<1>());
     newCenter.set<0>(newCenter.get<0>() + rotEnt->getPosition().get<0>());
@@ -175,7 +175,7 @@ void rotateTranslate(Entity* rotEnt, PolygonArea* polyArea) {
     double zmin = polyArea->getZRelative().get<0>() + rotEnt->getPosition().get<2>();
     double zmax = polyArea->getZRelative().get<1>() + rotEnt->getPosition().get<2>();
     polyArea->z = boost::make_tuple(zmin , zmax);
-    
+
 }
 
 void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
@@ -281,7 +281,7 @@ void printMyArea(unsigned int id) {
     else
         printf("Area name: %s, id: %d, owner id: %s, type %s, factType: %s \n"
             "entityType: %s, isCircle: false, zmin: %f, zmax: %f\n", mapArea_[id]->getName().c_str(),
-            id, mapArea_[id]->getMyOwner().c_str(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str(), 
+            id, mapArea_[id]->getMyOwner().c_str(), mapArea_[id]->getAreaType().c_str(), mapArea_[id]->getFactType().c_str(), mapArea_[id]->getEntityType().c_str(),
             ((PolygonArea*) mapArea_[id])->getZmin(), ((PolygonArea*) mapArea_[id])->getZmax());
 
     printf("inside entities: ");
@@ -334,7 +334,7 @@ bool addArea(toaster_msgs::AddArea::Request &req,
         }
 
         PolygonArea* myPoly = new PolygonArea(id, pointsPoly, req.myArea.poly.points.size(), req.myArea.zmin, req.myArea.zmax, req.myArea.enterHysteresis, req.myArea.leaveHysteresis);
-        
+
         curArea = myPoly;
     }
 
@@ -358,7 +358,10 @@ bool removeArea(toaster_msgs::RemoveArea::Request &req,
 
     ROS_INFO("request: removed Area: id %d, named: %s", req.id, mapArea_[req.id]->getName().c_str());
     if (mapArea_.find(req.id) != mapArea_.end())
-        mapArea_.erase(req.id);
+    {
+      delete mapArea_[req.id];
+      mapArea_.erase(req.id);
+    }
 
     res.answer = true;
     ROS_INFO("sending back response: [%d]", (int) res.answer);
@@ -369,6 +372,9 @@ bool removeAllAreas(toaster_msgs::Empty::Request &req,
         toaster_msgs::Empty::Response & res) {
 
     ROS_INFO("request: remove all areas");
+    for(std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea)
+      delete itArea->second;
+
     mapArea_.clear();
     return true;
 }
@@ -377,7 +383,7 @@ bool printArea(toaster_msgs::PrintArea::Request &req,
         toaster_msgs::RemoveArea::Response & res) {
 
     std::map<unsigned int, Area*>::iterator itArea = mapArea_.find(req.id);
-    if (itArea != mapArea_.end()) {
+    if (!(itArea != mapArea_.end())) {
         ROS_WARN("The requested area with id %d does not exist, please enter a valid id.\n "
                 "Alternatively, use the service /area_manager/print_all_areas", req.id);
         res.answer = false;
@@ -395,39 +401,42 @@ bool printAllAreas(toaster_msgs::Empty::Request &req,
     return true;
 }
 
-// This function is used to get relative position of an entity according to another (left / right))
+std::string getDirection(double angle)
+{
+  double pi = 3.1416;
+  if (angle > 0) {
+    if (angle < pi / 6)
+      return "ahead";
+    else if (angle < pi / 4)
+      return "ahead right";
+    else if (angle < 3 * pi / 4)
+      return "right";
+    else if (angle < 5 * pi / 6)
+      return "back right";
+    else
+      return "back";
+  } else {
+    if (-angle < pi / 6)
+      return "ahead";
+    else if (-angle < pi / 4)
+      return "ahead left";
+    else if (-angle < 3 * pi / 4)
+      return "left";
+    else if (-angle < 5 * pi / 6)
+      return "back left";
+    else
+      return"back";
+  }
+}
 
+// This function is used to get relative position of an entity according to another (left / right))
 bool getRelativePosition(toaster_msgs::GetRelativePosition::Request &req,
         toaster_msgs::GetRelativePosition::Response & res) {
-    double pi = 3.1416;
-
     if (mapEntities_.find(req.subjectId) != mapEntities_.end() && mapEntities_.find(req.targetId) != mapEntities_.end()) {
         double angleResult;
         angleResult = MathFunctions::relativeAngle(mapEntities_[req.subjectId], mapEntities_[req.targetId], mapEntities_[req.subjectId]->getOrientation()[2]);
-        if (angleResult > 0) {
-            if (angleResult < pi / 6)
-                res.direction = "ahead";
-            else if (angleResult < pi / 4)
-                res.direction = "ahead right";
-            else if (angleResult < 3 * pi / 4)
-                res.direction = "right";
-            else if (angleResult < 5 * pi / 6)
-                res.direction = "back right";
-            else
-                res.direction = "back";
-        } else {
-            if (-angleResult < pi / 6)
-                res.direction = "ahead";
-            else if (-angleResult < pi / 4)
-                res.direction = "ahead left";
-            else if (-angleResult < 3 * pi / 4)
-                res.direction = "left";
-            else if (-angleResult < 5 * pi / 6)
-                res.direction = "back left";
-            else
-                res.direction = "back";
-        }
 
+        res.direction = getDirection(angleResult);
         res.answer = true;
         res.angleValue = angleResult;
         return true;
@@ -448,30 +457,7 @@ bool getMultiRelativePosition(toaster_msgs::GetMultiRelativePosition::Request &r
         double angleSubjects, angleResult;
         angleSubjects = MathFunctions::relativeAngle(mapEntities_[req.agentSubjectId], mapEntities_[req.objectSubjectId], 0);
         angleResult = MathFunctions::relativeAngle(mapEntities_[req.objectSubjectId], mapEntities_[req.targetId], angleSubjects);
-        if (angleResult > 0) {
-            if (angleResult < pi / 6)
-                res.direction = "ahead";
-            else if (angleResult < pi / 4)
-                res.direction = "ahead right";
-            else if (angleResult < 3 * pi / 4)
-                res.direction = "right";
-            else if (angleResult < 5 * pi / 6)
-                res.direction = "back right";
-            else
-                res.direction = "back";
-        } else {
-            if (-angleResult < pi / 6)
-                res.direction = "ahead";
-            else if (-angleResult < pi / 4)
-                res.direction = "ahead left";
-            else if (-angleResult < 3 * pi / 4)
-                res.direction = "left";
-            else if (-angleResult < 5 * pi / 6)
-                res.direction = "back left";
-            else
-                res.direction = "back";
-        }
-
+        res.direction = getDirection(angleResult);
         res.answer = true;
         res.angleValue = angleResult;
         return true;
