@@ -213,7 +213,7 @@ visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, st
         marker.color.a = 0.0;
       }
 
-      elem = nullptr;
+      elem = NULL;
     }
   }
 
