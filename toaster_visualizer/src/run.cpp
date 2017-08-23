@@ -240,7 +240,7 @@ public:
 
               visualization_msgs::Marker mn = MarkerCreator::defineName(m.markers[0]);
               mn = MarkerCreator::setSize(mn, 0.0, 0.0, 0.1);
-              mn = MarkerCreator::setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5)
+              mn = MarkerCreator::setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
               mn = MarkerCreator::setPosition(mn, posx / m.markers[0].points.size(), posy / m.markers[0].points.size(),  + posz / m.markers[0].points.size());
               area_list.markers.push_back(mn);
                // ROS_DEBUG("poly %d", m.id);
