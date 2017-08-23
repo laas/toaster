@@ -24,7 +24,7 @@ rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupH
 #############
 rosservice call /area_manager/add_area "myArea:
   id: 0
-  name: 'Livingroom'
+  name: 'Readingroom'
   myOwner: ''
   areaType: 'room'
   factType: ''
@@ -39,11 +39,10 @@ rosservice call /area_manager/add_area "myArea:
     - {x: 9.4, y: 9.1, z: 0.0}
     - {x: 9.4, y: 5.1, z: 0.0}
     - {x: 2.3, y: 5.1, z: 0.0}
-    - {x: 2.3, y: 9.1, z: 0.0}
   zmin: 0.0
-  zmax: 0.0
-  enterHysteresis: 0.0
-  leaveHysteresis: 0.0
+  zmax: 2.0
+  enterHysteresis: 0.01
+  leaveHysteresis: 0.01
   insideEntities_: [0]
   upcomingEntities_: [0]
   leavingEntities_: [0]"
@@ -67,15 +66,13 @@ rosservice call /area_manager/add_area "myArea:
     - {x: 6.4, y: 9.1, z: 0.0}
     - {x: 6.4, y: 13.2, z: 0.0}
     - {x: 2.3, y: 13.2, z: 0.0}
-    - {x: 2.3, y: 9.1, z: 0.0}
   zmin: 0.0
-  zmax: 0.0
-  enterHysteresis: 0.0
-  leaveHysteresis: 0.0
+  zmax: 2.0
+  enterHysteresis: 0.01
+  leaveHysteresis: 0.01
   insideEntities_: [0]
   upcomingEntities_: [0]
   leavingEntities_: [0]"
-
 
 rosservice call /area_manager/add_area "myArea:
   id: 0
@@ -94,19 +91,17 @@ rosservice call /area_manager/add_area "myArea:
     - {x: 0.0, y: 9.0, z: 0.0}
     - {x: 2.3, y: 9.0, z: 0.0}
     - {x: 2.3, y: 5.0, z: 0.0}
-    - {x: 0.0, y: 5.0, z: 0.0}
   zmin: 0.0
-  zmax: 0.0
-  enterHysteresis: 0.0
-  leaveHysteresis: 0.0
+  zmax: 2.0
+  enterHysteresis: 0.01
+  leaveHysteresis: 0.01
   insideEntities_: [0]
   upcomingEntities_: [0]
   leavingEntities_: [0]"
 
-
 rosservice call /area_manager/add_area "myArea:
   id: 0
-  name: 'Drone_Area'
+  name: 'Kitchen'
   myOwner: ''
   areaType: 'room'
   factType: ''
@@ -117,15 +112,14 @@ rosservice call /area_manager/add_area "myArea:
   height: 0.0
   poly:
     points:
-    - {x: 0.0, y: 0.0, z: 0.0}
     - {x: 0.0, y: 5.0, z: 0.0}
-    - {x: 9.4, y: 5.0, z: 0.0}
-    - {x: 9.4, y: 0.0, z: 0.0}
-    - {x: 0.0, y: 0.0, z: 0.0}
+    - {x: 0.0, y: 9.0, z: 0.0}
+    - {x: 2.3, y: 9.0, z: 0.0}
+    - {x: 2.3, y: 5.0, z: 0.0}
   zmin: 0.0
-  zmax: 0.0
-  enterHysteresis: 0.0
-  leaveHysteresis: 0.0
+  zmax: 2.0
+  enterHysteresis: 0.01
+  leaveHysteresis: 0.01
   insideEntities_: [0]
   upcomingEntities_: [0]
   leavingEntities_: [0]"
@@ -134,7 +128,7 @@ rosservice call /area_manager/add_area "myArea:
 rosservice call /area_manager/add_area "myArea:
   id: 0
   name: 'Bed'
-  myOwner: 'bed'
+  myOwner: 'Bed'
   areaType: 'bed_area'
   factType: ''
   entityType: 'entities'
@@ -144,23 +138,21 @@ rosservice call /area_manager/add_area "myArea:
   height: 0.0
   poly:
     points:
-    - {x: 2.5, y: 10.5, z: 0.0}
-    - {x: 2.5, y: 11.5, z: 0.0}
-    - {x: 4.5, y: 11.5, z: 0.0}
-    - {x: 4.5, y: 10.5, z: 0.0}
-    - {x: 2.5, y: 10.5, z: 0.0}
+    - {x: 0.5, y: 1.0, z: 0.0}
+    - {x: -0.5, y: 1.0, z: 0.0}
+    - {x: -0.5, y: -1.0, z: 0.0}
+    - {x: 0.5, y: -1.0, z: 0.0}
   zmin: 0.0
-  zmax: 0.0
-  enterHysteresis: 0.0
-  leaveHysteresis: 0.0
+  zmax: 0.5
+  enterHysteresis: 0.01
+  leaveHysteresis: 0.3
   insideEntities_: [0]
   upcomingEntities_: [0]
   leavingEntities_: [0]"
 
-
 rosservice call /area_manager/add_area "myArea:
   id: 0
-  name: 'interaction'
+  name: 'robot_interaction'
   myOwner: 'PR2_ROBOT'
   areaType: ''
   factType: 'interaction'
@@ -175,21 +167,19 @@ rosservice call /area_manager/add_area "myArea:
     - {x: 2, y: -2, z: 0}
     - {x: 2, y: 2, z: 0}
     - {x: 0, y: 1, z: 0}
-    - {x: 0, y: -1, z: 0}
   zmin: 0.0
-  zmax: 0.0
-  enterHysteresis: 0.0
-  leaveHysteresis: 0.0
+  zmax: 2.0
+  enterHysteresis: 0.01
+  leaveHysteresis: 0.01
   insideEntities_: [0]
   upcomingEntities_: [0]
   leavingEntities_: [0]"
-  
   
 # IoT part:
 
 rosservice call /area_manager/add_area "myArea:
   id: 0
-  name: 'Readingroom'
+  name: 'LivingRoom'
   myOwner: ''
   areaType: 'room'
   factType: ''
@@ -204,11 +194,10 @@ rosservice call /area_manager/add_area "myArea:
     - {x: 6.5, y: 13.2, z: 0.0}
     - {x: 9.4, y: 13.2, z: 0.0}
     - {x: 9.4, y: 9.1, z: 0.0}
-    - {x: 6.5, y: 9.1, z: 0.0}
   zmin: 0.0
-  zmax: 0.0
-  enterHysteresis: 0.0
-  leaveHysteresis: 0.0
+  zmax: 2.0
+  enterHysteresis: 0.01
+  leaveHysteresis: 0.01
   insideEntities_: [0]
   upcomingEntities_: [0]
   leavingEntities_: [0]"
@@ -219,12 +208,12 @@ rosservice call /area_manager/add_area "myArea:
 ### OBJECTS ###
 ###############
 
-rosservice call /toaster_simu/add_entity "id: '1'
-name: 'Livingroom_table'
+rosservice call /toaster_simu/add_entity "id: 'Readingroom_table'
+name: 'Readingroom_table'
 type: 'object'
 ownerId: ''"
 
-rosservice call /toaster_simu/set_entity_pose "id: '1'
+rosservice call /toaster_simu/set_entity_pose "id: 'Readingroom_table'
 ownerId: ''
 type: 'object'
 pose:
@@ -238,12 +227,12 @@ pose:
     z: 1.0
     w: 0.0" 
 
-rosservice call /toaster_simu/add_entity "id: '2'
-name: 'Livingroom_table2'
+rosservice call /toaster_simu/add_entity "id: 'Readingroom_table2'
+name: 'Readingroom_table2'
 type: 'object'
 ownerId: ''"
 
-rosservice call /toaster_simu/set_entity_pose "id: '2'
+rosservice call /toaster_simu/set_entity_pose "id: 'Readingroom_table2'
 ownerId: ''
 type: 'object'
 pose:
@@ -255,14 +244,14 @@ pose:
     x: 0.0
     y: 0.0
     z: 1.0
-    w: 0.0" 
+    w: 0.0"  
 
-rosservice call /toaster_simu/add_entity "id: '3'
+rosservice call /toaster_simu/add_entity "id: 'Fauteuil1'
 name: 'Fauteuil1'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '3'
+rosservice call /toaster_simu/set_entity_pose "id: 'Fauteuil1'
 ownerId: ''
 type: 'object'
 pose:
@@ -276,12 +265,12 @@ pose:
     z: 1.0
     w: 0.5" 
    
-rosservice call /toaster_simu/add_entity "id: '4'
+rosservice call /toaster_simu/add_entity "id: 'Bed'
 name: 'Bed'
 type: 'object'
 ownerId: ''"
 
-rosservice call /toaster_simu/set_entity_pose "id: '4'
+rosservice call /toaster_simu/set_entity_pose "id: 'Bed'
 ownerId: ''
 type: 'object'
 pose:
@@ -295,12 +284,12 @@ pose:
     z: 0.5
     w: 0.5"
 
-rosservice call /toaster_simu/add_entity "id: '5'
+rosservice call /toaster_simu/add_entity "id: 'Phidget_lamp_2'
 name: 'Phidget_lamp_2'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '5'
+rosservice call /toaster_simu/set_entity_pose "id: 'Phidget_lamp_2'
 ownerId: ''
 type: 'object'
 pose:
@@ -314,12 +303,12 @@ pose:
     z: 0.5
     w: 0.5"
 
-rosservice call /toaster_simu/add_entity "id: '6'
+rosservice call /toaster_simu/add_entity "id: 'Phidget_lamp_1'
 name: 'Phidget_lamp_1'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '6'
+rosservice call /toaster_simu/set_entity_pose "id: 'Phidget_lamp_1'
 ownerId: ''
 type: 'object'
 pose:
@@ -333,12 +322,12 @@ pose:
     z: 0.5
     w: 0.5"
 
-rosservice call /toaster_simu/add_entity "id: '7'
-name: 'Readingroom_low_table'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_low_table'
+name: 'Livingroom_low_table'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '7'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_low_table'
 ownerId: ''
 type: 'object'
 pose:
@@ -353,12 +342,12 @@ pose:
     w: 0.5"
 
 
-rosservice call /toaster_simu/add_entity "id: '8'
-name: 'Readingroom_table'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_table'
+name: 'Livingroom_table'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '8'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_table'
 ownerId: ''
 type: 'object'
 pose:
@@ -372,12 +361,12 @@ pose:
     z: 0.5
     w: 0.5"
 
-rosservice call /toaster_simu/add_entity "id: '9'
-name: 'Readingroom_wgh_sensor'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_wgh_sensor'
+name: 'Livingroom_wgh_sensor'
 type: 'object'
 ownerId: ''" 
  
-rosservice call /toaster_simu/set_entity_pose "id: '9'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_wgh_sensor'
 ownerId: ''
 type: 'object'
 pose:
@@ -391,12 +380,12 @@ pose:
     z: 0.5
     w: 0.5" 
 
-rosservice call /toaster_simu/add_entity "id: '10'
+rosservice call /toaster_simu/add_entity "id: 'Fan'
 name: 'Fan'
 type: 'object'
 ownerId: ''" 
  
-rosservice call /toaster_simu/set_entity_pose "id: '10'
+rosservice call /toaster_simu/set_entity_pose "id: 'Fan'
 ownerId: ''
 type: 'object'
 pose:
@@ -410,12 +399,12 @@ pose:
     z: 0.5
     w: 0.5" 
 
-rosservice call /toaster_simu/add_entity "id: '11'
+rosservice call /toaster_simu/add_entity "id: 'Carpet'
 name: 'Carpet'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '11'
+rosservice call /toaster_simu/set_entity_pose "id: 'Carpet'
 ownerId: ''
 type: 'object'
 pose:
@@ -429,12 +418,12 @@ pose:
     z: 0.5
     w: 0.5" 
 
-rosservice call /toaster_simu/add_entity "id: '12'
+rosservice call /toaster_simu/add_entity "id: 'Philips_lamp_1'
 name: 'Philips_lamp_1'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '12'
+rosservice call /toaster_simu/set_entity_pose "id: 'Philips_lamp_1'
 ownerId: ''
 type: 'object'
 pose:
@@ -448,18 +437,18 @@ pose:
     z: 0.5
     w: 0.0" 
 
-rosservice call /toaster_simu/add_entity "id: '13'
-name: 'Readingroom_small_shelf'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_small_shelf'
+name: 'Livingroom_small_shelf'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '13'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_small_shelf'
 ownerId: ''
 type: 'object'
 pose:
   position:
     x: 6.7
-    y: 11.6
+    y: 11.4
     z: 0.0
   orientation:
     x: 0.0
@@ -467,18 +456,18 @@ pose:
     z: 0.0
     w: 0.5"
 
-rosservice call /toaster_simu/add_entity "id: '14'
-name: 'Readingroom_shelf_1'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_shelf_1'
+name: 'Livingroom_shelf_1'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '14'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_shelf_1'
 ownerId: ''
 type: 'object'
 pose:
   position:
     x: 6.6
-    y: 10.9
+    y: 10.7
     z: 0.0
   orientation:
     x: 0.0
@@ -486,12 +475,12 @@ pose:
     z: 0.5
     w: 0.5"
 
-rosservice call /toaster_simu/add_entity "id: '15'
-name: 'Readingroom_shelf_2'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_shelf_2'
+name: 'Livingroom_shelf_2'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '15'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_shelf_2'
 ownerId: ''
 type: 'object'
 pose:
@@ -505,12 +494,12 @@ pose:
     z: 1.0
     w: 0.0"
 
-rosservice call /toaster_simu/add_entity "id: '16'
+rosservice call /toaster_simu/add_entity "id: 'Bedroom_console'
 name: 'Bedroom_console'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '16'
+rosservice call /toaster_simu/set_entity_pose "id: 'Bedroom_console'
 ownerId: ''
 type: 'object'
 pose:
@@ -524,12 +513,12 @@ pose:
     z: 0.5
     w: 0.5"
 
-rosservice call /toaster_simu/add_entity "id: '17'
+rosservice call /toaster_simu/add_entity "id: 'Philips_lamp_2'
 name: 'Philips_lamp_2'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '17'
+rosservice call /toaster_simu/set_entity_pose "id: 'Philips_lamp_2'
 ownerId: ''
 type: 'object'
 pose:
@@ -543,12 +532,12 @@ pose:
     z: 0.5
     w: 0.5" 
 
-rosservice call /toaster_simu/add_entity "id: '18'
-name: 'Readingroom_tmp_sensor'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_tmp_sensor'
+name: 'Livingroom_tmp_sensor'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '18'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_tmp_sensor'
 ownerId: ''
 type: 'object'
 pose:
@@ -562,12 +551,12 @@ pose:
     z: 0.5
     w: 0.5" 
 
-rosservice call /toaster_simu/add_entity "id: '19'
-name: 'Readingroom_lum_sensor'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_lum_sensor'
+name: 'Livingroom_lum_sensor'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '19'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_lum_sensor'
 ownerId: ''
 type: 'object'
 pose:
@@ -582,18 +571,18 @@ pose:
     w: 0.5" 
  
 
-rosservice call /toaster_simu/add_entity "id: '21'
-name: 'Readingroom_tele_1'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_tele_1'
+name: 'Livingroom_tele_1'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '21'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_tele_1'
 ownerId: ''
 type: 'object'
 pose:
   position:
     x: 6.6
-    y: 10.9
+    y: 10.7
     z: 1.06
   orientation:
     x: 0.0
@@ -601,12 +590,13 @@ pose:
     z: 0.5
     w: 0.5"
 
-rosservice call /toaster_simu/add_entity "id: '22'
-name: 'Readingroom_tele_2'
+
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_tele_2'
+name: 'Livingroom_tele_2'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '22'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_tele_2'
 ownerId: ''
 type: 'object'
 pose:
@@ -620,12 +610,12 @@ pose:
     z: 1.0
     w: 0.0"
 
-rosservice call /toaster_simu/add_entity "id: '23'
+rosservice call /toaster_simu/add_entity "id: 'eyeball_1'
 name: 'eyeball_1'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: '23'
+rosservice call /toaster_simu/set_entity_pose "id: 'eyeball_1'
 ownerId: ''
 type: 'object'
 pose:
@@ -639,42 +629,6 @@ pose:
     z: 0.5
     w: 0.0"
 
-#rosservice call /toaster_simu/add_entity "id: '5'
-#name: 'IKEA_chair_STEFAN'
-#type: 'object'
-#ownerId: ''" 
-
-#rosservice call /toaster_simu/set_entity_pose "id: '5'
-#ownerId: ''
-#type: 'object'
-#pose:
-#  position:
-#    x: 8.5
-#    y: 10.0
-#    z: 0.0
-#  orientation:
-#    x: 0.0
-#    y: 0.0
-#    z: 0.5
-#    w: 0.5"
-#rosservice call /toaster_simu/add_entity "id: '10'
-#name: 'IKEA_chair_2'
-#type: 'object'
-#ownerId: ''" 
- 
-#rosservice call /toaster_simu/set_entity_pose "id: '10'
-#ownerId: ''
-#type: 'object'
-#pose:
-#  position:
-#    x: 7.8
-#    y: 12.6
-#    z: 0.0
-#  orientation:
-#    x: 0.0
-#    y: 0.0
-#    z: 0.0
-#    w: 0.5" 
 
 rosservice call /area_manager/publish_all_areas "{}"
 
