@@ -3,257 +3,255 @@
 std::map<std::string, std::vector<float> > MarkerCreator::colorMap_;
 
 visualization_msgs::Marker MarkerCreator::defineCircle(geometry_msgs::Point p, double rayon, double height, std::string name, int id) {
-   //declaration
-   visualization_msgs::Marker marker;
+  //declaration
+  visualization_msgs::Marker marker;
 
-   //frame id
-   marker.header.frame_id = "map";
+  //frame id
+  marker.header.frame_id = "map";
 
-   //namespace
-   std::ostringstream nameSpace;
-   nameSpace << name;
-   marker.ns = nameSpace.str();
-   marker.id = id;
+  //namespace
+  std::ostringstream nameSpace;
+  nameSpace << name;
+  marker.ns = nameSpace.str();
+  marker.id = id;
 
-   //action
-   marker.action = visualization_msgs::Marker::ADD;
+  //action
+  marker.action = visualization_msgs::Marker::ADD;
 
-   //position
-   marker.pose.position.x = p.x;
-   marker.pose.position.y = p.y;
-   marker.pose.position.z = p.z;
+  //position
+  marker.pose.position.x = p.x;
+  marker.pose.position.y = p.y;
+  marker.pose.position.z = p.z;
 
-   //orientation
-   marker.pose.orientation.x = 0.0;
-   marker.pose.orientation.y = 0.0;
-   marker.pose.orientation.z = 0.0;
-   marker.pose.orientation.w = 1.0;
+  //orientation
+  marker.pose.orientation.x = 0.0;
+  marker.pose.orientation.y = 0.0;
+  marker.pose.orientation.z = 0.0;
+  marker.pose.orientation.w = 1.0;
 
-   //color
-   marker.color.r = 0.0;
-   marker.color.g = 1.0;
-   marker.color.b = 0.0;
-   marker.color.a = 0.1;
+  //color
+  marker.color.r = 0.0;
+  marker.color.g = 1.0;
+  marker.color.b = 0.0;
+  marker.color.a = 0.2;
 
-   //dimemsion
-   marker.scale.x = rayon * 2;
-   marker.scale.y = rayon * 2;
-   marker.scale.z = height;
+  //dimemsion
+  marker.scale.x = rayon * 2;
+  marker.scale.y = rayon * 2;
+  marker.scale.z = height;
 
-   //type
-   marker.type = 3;
-   marker.lifetime = ros::Duration();
+  //type
+  marker.type = 3;
+  marker.lifetime = ros::Duration();
 
-   return marker;
+  return marker;
 }
 
 visualization_msgs::MarkerArray MarkerCreator::definePolygon(geometry_msgs::Polygon poly, std::string name, double zmin, double zmax){
-//declaration
-visualization_msgs::Marker line_strip1, line_strip2, line_list;
+  //declaration
+  visualization_msgs::Marker line_strip1, line_strip2, line_list;
 
-//frame id
-line_strip1.header.frame_id = line_strip2.header.frame_id = line_list.header.frame_id = "map";
+  //frame id
+  line_strip1.header.frame_id = line_strip2.header.frame_id = line_list.header.frame_id = "map";
 
-//namespace
-std::ostringstream nameSpace;
-nameSpace << name;
+  //namespace
+  std::ostringstream nameSpace;
+  nameSpace << name;
 
-line_strip1.ns = line_strip2.ns = line_list.ns = nameSpace.str();
-line_strip1.id = 1;
-line_strip2.id = 2;
-line_list.id = 3;
+  line_strip1.ns = line_strip2.ns = line_list.ns = nameSpace.str();
+  line_strip1.id = 1;
+  line_strip2.id = 2;
+  line_list.id = 3;
 
-//action
-line_strip1.action = line_strip2.action = line_list.action = visualization_msgs::Marker::ADD;
+  //action
+  line_strip1.action = line_strip2.action = line_list.action = visualization_msgs::Marker::ADD;
 
-//orientation
-line_strip1.pose.orientation.w = line_strip2.pose.orientation.w = line_list.pose.orientation.w = 1.0;
+  //orientation
+  line_strip1.pose.orientation.w = line_strip2.pose.orientation.w = line_list.pose.orientation.w = 1.0;
 
-// marker type
-line_strip1.type = visualization_msgs::Marker::LINE_STRIP;
-line_strip2.type = visualization_msgs::Marker::LINE_STRIP;
-line_list.type = visualization_msgs::Marker::LINE_LIST;
+  // marker type
+  line_strip1.type = visualization_msgs::Marker::LINE_STRIP;
+  line_strip2.type = visualization_msgs::Marker::LINE_STRIP;
+  line_list.type = visualization_msgs::Marker::LINE_LIST;
 
-line_strip1.scale.x = 0.2;
-line_strip2.scale.x = 0.2;
-line_list.scale.x = 0.2;
+  line_strip1.scale.x = 0.2;
+  line_strip2.scale.x = 0.2;
+  line_list.scale.x = 0.2;
 
-// assigning colour
-line_strip1.color.b = 1.0;
-line_strip1.color.a = 1.0;
-line_strip2.color.b = 1.0;
-line_strip2.color.a = 1.0;
-line_list.color.b = 1.0;
-line_list.color.a = 1.0;
-geometry_msgs::Point p2;
-geometry_msgs::Point p1;
+  // assigning colour
+  line_strip1.color.b = 1.0;
+  line_strip1.color.a = 1.0;
+  line_strip2.color.b = 1.0;
+  line_strip2.color.a = 1.0;
+  line_list.color.b = 1.0;
+  line_list.color.a = 1.0;
+  geometry_msgs::Point p2;
+  geometry_msgs::Point p1;
 
-for (int i = 0; i < poly.points.size(); i++) {
+  for (int i = 0; i < poly.points.size(); i++) {
 
-  p1.x = poly.points[i].x;
-  p1.y = poly.points[i].y;
-  p1.z = zmin;
-  p2.x = poly.points[i].x;
-  p2.y = poly.points[i].y;
-  p2.z = zmax;
-  line_list.points.push_back(p1);
-  line_list.points.push_back(p2);
-  line_strip1.points.push_back(p1);
-  line_strip2.points.push_back(p2);
-}
-
-    p1.x = poly.points[0].x;
-    p1.y = poly.points[0].y;
+    p1.x = poly.points[i].x;
+    p1.y = poly.points[i].y;
     p1.z = zmin;
-
-    p2.x = poly.points[0].x;
-    p2.y = poly.points[0].y;
+    p2.x = poly.points[i].x;
+    p2.y = poly.points[i].y;
     p2.z = zmax;
-
+    line_list.points.push_back(p1);
+    line_list.points.push_back(p2);
     line_strip1.points.push_back(p1);
     line_strip2.points.push_back(p2);
-   // line_strip1 gives bottom polygonal face while line_strip2 gives upper polygonal face
-   // line_list gives vertical edges
+  }
 
-    line_strip1.lifetime = ros::Duration();
-    line_strip2.lifetime = ros::Duration();
-    line_list.lifetime = ros::Duration();
+  p1.x = poly.points[0].x;
+  p1.y = poly.points[0].y;
+  p1.z = zmin;
 
-    visualization_msgs::MarkerArray markersarray;
+  p2.x = poly.points[0].x;
+  p2.y = poly.points[0].y;
+  p2.z = zmax;
 
-    // mymarkers.markers[0] = points ;
-    markersarray.markers.push_back(line_strip1);
-    markersarray.markers.push_back(line_strip2);
-    markersarray.markers.push_back(line_list);
+  line_strip1.points.push_back(p1);
+  line_strip2.points.push_back(p2);
+ // line_strip1 gives bottom polygonal face while line_strip2 gives upper polygonal face
+ // line_list gives vertical edges
 
-    return markersarray;
+  line_strip1.lifetime = ros::Duration();
+  line_strip2.lifetime = ros::Duration();
+  line_list.lifetime = ros::Duration();
+
+  visualization_msgs::MarkerArray markersarray;
+
+  // mymarkers.markers[0] = points ;
+  markersarray.markers.push_back(line_strip1);
+  markersarray.markers.push_back(line_strip2);
+  markersarray.markers.push_back(line_list);
+
+  return markersarray;
 }
 
 visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, std::string name, bool activated, int id, TiXmlDocument& listObj, double scale){
-    //declaration
-    double roll, pitch, yaw;
-    visualization_msgs::Marker marker;
+  //declaration
+  double roll, pitch, yaw;
+  visualization_msgs::Marker marker;
 
-    //frame id
-    marker.header.frame_id = "map";
+  //frame id
+  marker.header.frame_id = "map";
 
-    //namespace
-    std::ostringstream nameSpace;
-    nameSpace << name;
-    marker.ns = nameSpace.str();
-    marker.id = id; //creation of an unique id based on marker's name
+  //namespace
+  std::ostringstream nameSpace;
+  nameSpace << name;
+  marker.ns = nameSpace.str();
+  marker.id = id; //creation of an unique id based on marker's name
 
-    //action
-    marker.action = visualization_msgs::Marker::ADD;
+  //action
+  marker.action = visualization_msgs::Marker::ADD;
 
-    //pose
-    marker.pose = pose;
+  //pose
+  marker.pose = pose;
 
-    //orientation
-    //marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
+  //orientation
+  //marker.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw + 3.141596 / 2);
 
-    //color
-    if(activated)
+  //color
+  if(activated)
+  {
+    marker.color.r = 0.75;
+    marker.color.g = 0.5;
+    marker.color.b = 0.25;
+    marker.color.a = 1.0;
+  }
+  else
+  {
+    marker.color.r = 0.25;
+    marker.color.g = 0.5;
+    marker.color.b = 0.75;
+    marker.color.a = 1.0;
+  }
+
+  //scale
+  marker.scale.x = 0.2;
+  marker.scale.y = 0.2;
+  marker.scale.z = 0.2;
+
+  //type
+  marker.type = visualization_msgs::Marker::CUBE; //marker by default
+
+  TiXmlHandle hdl(&listObj);
+  TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
+
+  std::string name_obj;
+  std::string mesh_r;
+
+  while (elem) //for each element of the xml file
+  {
+    name_obj = elem->Attribute("name");
+    mesh_r = elem->Attribute("mesh_resource");
+    elem = elem->NextSiblingElement();
+
+    if (name_obj.compare(name) == 0) //if there is a 3d model relativ to this object
     {
-      marker.color.r = 0.75;
-      marker.color.g = 0.5;
-      marker.color.b = 0.25;
-      marker.color.a = 1.0;
+      marker.scale.x = scale;
+      marker.scale.y = scale;
+      marker.scale.z = scale;
+
+      marker.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh
+      marker.mesh_resource = mesh_r;
+      marker.mesh_use_embedded_materials = true;
+
+      if(activated)
+      {
+        marker.color.r = 0.75;
+        marker.color.g = 0.5;
+        marker.color.b = 0.25;
+        marker.color.a = 0.9;
+      }
+      else
+      {
+        marker.color.r = 0.25;
+        marker.color.g = 0.5;
+        marker.color.b = 0.75;
+        marker.color.a = 0.0;
+      }
+
+      elem = nullptr;
     }
-    else
-    {
-      marker.color.r = 0.25;
-      marker.color.g = 0.5;
-      marker.color.b = 0.75;
-      marker.color.a = 1.0;
-    }
+  }
 
-    //scale
-    marker.scale.x = 0.2;
-    marker.scale.y = 0.2;
-    marker.scale.z = 0.2;
+  marker.lifetime = ros::Duration(1.0);
 
-    //type
-    marker.type = visualization_msgs::Marker::CUBE; //marker by default
-
-    TiXmlHandle hdl(&listObj);
-    TiXmlElement *elem = hdl.FirstChildElement().FirstChildElement().Element();
-
-    std::string name_obj;
-    std::string mesh_r;
-
-    while (elem) //for each element of the xml file
-    {
-        name_obj = elem->Attribute("name");
-        mesh_r = elem->Attribute("mesh_resource");
-        elem = elem->NextSiblingElement();
-
-        if (name_obj.compare(name) == 0) //if there is a 3d model relativ to this object
-        {
-            marker.scale.x = scale;
-            marker.scale.y = scale;
-            marker.scale.z = scale;
-
-            marker.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh
-            marker.mesh_resource = mesh_r;
-            marker.mesh_use_embedded_materials = true;
-
-            if(activated)
-            {
-              marker.color.r = 0.75;
-              marker.color.g = 0.5;
-              marker.color.b = 0.25;
-              marker.color.a = 0.9;
-            }
-            else
-            {
-              marker.color.r = 0.25;
-              marker.color.g = 0.5;
-              marker.color.b = 0.75;
-              marker.color.a = 0.0;
-            }
-
-            elem = NULL;
-        }
-    }
-
-    marker.lifetime = ros::Duration(1.0);
-
-    return marker;
+  return marker;
 }
 
 visualization_msgs::Marker MarkerCreator::defineName(visualization_msgs::Marker marker) {
-    //declaration
-    std::stringstream ss;
-    visualization_msgs::Marker nameMarker = marker;
+  //declaration
+  std::stringstream ss;
+  visualization_msgs::Marker nameMarker = marker;
 
-    //position
-    nameMarker.pose.position.z = nameMarker.pose.position.z + marker.scale.x * 1.25; //put the name marker above target marker
+  //position
+  nameMarker.pose.position.z = nameMarker.pose.position.z + marker.scale.x * 1.25; //put the name marker above target marker
 
-    //color
-    nameMarker.color.r = marker.color.r * 0.9; //add some contrast between name marker and input marker
-    nameMarker.color.g = marker.color.g * 0.9;
-    nameMarker.color.b = marker.color.b * 0.9;
-    nameMarker.color.a = 1.0;
+  //color
+  nameMarker.color.r = marker.color.r * 0.9; //add some contrast between name marker and input marker
+  nameMarker.color.g = marker.color.g * 0.9;
+  nameMarker.color.b = marker.color.b * 0.9;
+  nameMarker.color.a = 1.0;
 
+  //id
+  nameMarker.id = -nameMarker.id; //opposite id to avoid id conflicts
 
-    //id
-    nameMarker.id = -nameMarker.id; //opposite id to avoid id conflicts
+  //type
+  nameMarker.type = 9;
 
-    //type
-    nameMarker.type = 9;
+  //text field
+  nameMarker.text = marker.ns;
 
-    //text field
-    nameMarker.text = marker.ns;
+  ss << nameMarker.text << "_name";
+  nameMarker.ns = ss.str();
 
-    ss << nameMarker.text << "_name";
-    nameMarker.ns = ss.str();
+  //scale
+  nameMarker.scale.z = 0.5 * marker.scale.x;
 
-    //scale
-    nameMarker.scale.z = 0.5 * marker.scale.x;
-
-    return nameMarker;
-
+  return nameMarker;
 }
 
 visualization_msgs::Marker MarkerCreator::defineHuman(geometry_msgs::Pose pose, double scale, std::string name, int id, TiXmlDocument& listHuman) {
@@ -274,15 +272,6 @@ visualization_msgs::Marker MarkerCreator::defineHuman(geometry_msgs::Pose pose, 
     //action
     marker.action = visualization_msgs::Marker::ADD;
 
-    //position
-    /*tf::Quaternion q;
-    tf::quaternionMsgToTF(marker.pose.orientation, q);
-    tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
-
-    yaw += 3.141596 / 2;
-
-    pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(roll, pitch, yaw);
-     */
     marker.pose = pose;
 
     //color
