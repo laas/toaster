@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ToasterobotReader.h
  * Author: gmilliez
  *
@@ -12,16 +12,12 @@
 #include <ros/ros.h>
 #include "toaster-lib/Robot.h"
 #include "toaster_msgs/RobotListStamped.h"
+#include "toaster_msgs/EntityReader.h"
 #include <map>
 
-class ToasterRobotReader{
+class ToasterRobotReader : public EntityReader<Robot>{
 
     public:
-       std::map<std::string, Robot*> lastConfig_;
-       bool fullRobot_;
-
-       bool isPresent(std::string id);
-
        ToasterRobotReader(ros::NodeHandle& node, bool fullRobot, std::string topic="pdg/robotList");
 
     private:
@@ -31,4 +27,3 @@ class ToasterRobotReader{
 };
 
 #endif	/* TOASTERROBOTREADER_H */
-

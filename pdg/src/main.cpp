@@ -1,5 +1,3 @@
-// Facts
-
 // Message generated class
 #include <toaster_msgs/AddStream.h>
 #include <toaster_msgs/PutInHand.h>

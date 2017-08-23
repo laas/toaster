@@ -8,16 +8,14 @@
 #include "toaster_msgs/ToasterObjectReader.h"
 #include "tf/transform_datatypes.h"
 
-ToasterObjectReader::ToasterObjectReader(ros::NodeHandle& node, std::string topic) {
-    std::cout << " Initializing ToasterObjectReader" << std::endl;
+ToasterObjectReader::ToasterObjectReader(ros::NodeHandle& node, std::string topic) : EntityReader<Object>(false) {
+    std::cout << "[Toaster_msgs] Initializing ToasterObjectReader" << std::endl;
 
     // Starts listening to the topic
     sub_ = node.subscribe(topic, 1, &ToasterObjectReader::objectStateCallBack, this);
 }
 
 void ToasterObjectReader::objectStateCallBack(const toaster_msgs::ObjectListStamped::ConstPtr& msg) {
-    //std::cout << "[area_manager][DEBUG] new data for object received" << std::endl;
-
     Object* curObject;
     double roll, pitch, yaw;
 
@@ -58,19 +56,3 @@ void ToasterObjectReader::objectStateCallBack(const toaster_msgs::ObjectListStam
             lastConfig_[curObject->getId()] = curObject;
     }
 }
-
-bool ToasterObjectReader::isPresent(std::string id) {
-    timeval curTime;
-    gettimeofday(&curTime, NULL);
-    unsigned long now = curTime.tv_sec * pow(10, 9) + curTime.tv_usec;
-    unsigned long timeThreshold = pow(10, 9);
-    //std::cout << "current time: " << now <<  "  human time: " << m_LastTime << std::endl;
-    long timeDif = lastConfig_[id]->getTime() - now;
-    //std::cout << "time dif: " << timeDif << std::endl;
-
-    if (fabs(timeDif) < timeThreshold)
-        return true;
-    else
-        return false;
-}
-
