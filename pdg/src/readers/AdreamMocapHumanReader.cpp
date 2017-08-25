@@ -29,7 +29,30 @@ void AdreamMocapHumanReader::init(ros::NodeHandle* node, std::string topicTorso,
   subTorso_ = node_->subscribe(topicTorso, 1, &AdreamMocapHumanReader::optitrackCallbackTorso, this);
   subHead_ = node_->subscribe(topicHead, 1, &AdreamMocapHumanReader::optitrackCallbackHead, this);
   subHand_ = node_->subscribe(topicHand, 1, &AdreamMocapHumanReader::optitrackCallbackHand, this);
-  std::cout << "Done\n";
+
+    if (node_->hasParam("mocap_calib_world_x"))
+      node_->getParam("mocap_calib_world_x", offset_x);
+    else
+    {
+      offset_x = 6.164;
+      std::cout << "param mocap_calib_world_x note find : use default value : " << offset_x << std::endl;
+    }
+
+    if (node_->hasParam("mocap_calib_world_y"))
+      node_->getParam("mocap_calib_world_y", offset_y);
+    else
+    {
+      offset_y = 2.956;
+      std::cout << "param mocap_calib_world_y note find : use default value : " << offset_y << std::endl;
+    }
+
+    if (node_->hasParam("mocap_calib_world_z"))
+      node_->getParam("mocap_calib_world_z", offset_z);
+    else
+    {
+      offset_z = 0;
+      std::cout << "param mocap_calib_world_z note find : use default value : " << offset_z << std::endl;
+    }
 }
 
 void AdreamMocapHumanReader::Publish(struct toasterList_t& list_msg)
@@ -69,16 +92,6 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
     Human* curHuman;
     Joint* curJoint;
 
-    if (ros::param::get("mocap_calib_world_x",offset_x))
-    {
-        if (ros::param::get("mocap_calib_world_y",offset_y));
-            if (ros::param::get("mocap_calib_world_z",offset_z));
-    } else {
-        offset_x=0;
-        offset_y=0;
-        offset_z=0;
-    }
-
     try {
         std::string humId = "HERAKLES_HUMAN1";
         //create a new human with the same id as the message
@@ -101,7 +114,7 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
                 bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
                 humanPosition.set<0>(msg->pos[0].x + offset_x);
                 humanPosition.set<1>(msg->pos[0].y + offset_y);
-                humanPosition.set<2>(msg->pos[0].z + offset_z - 0.17);
+                humanPosition.set<2>(msg->pos[0].z + offset_z - 1.48);
 
                 //set the human orientation
                 std::vector<double> humanOrientation;
@@ -109,8 +122,6 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
                 //transform the pose message
                 humanOrientation.push_back(0.0);
                 humanOrientation.push_back(0.0);
-
-
                 humanOrientation.push_back(yaw);
 
                 //put the data in the human
@@ -161,12 +172,10 @@ void AdreamMocapHumanReader::optitrackCallbackHead(const optitrack::or_pose_esti
             curJoint->setTime(now.toNSec());
 
             lastConfig_[humId]->skeleton_[jointNameHead] = curJoint;
-
         }
 
-
     } catch (tf::TransformException ex) {
-        ROS_ERROR("%s", ex.what());
+        ROS_ERROR("[AdreamMocap Head transfor] %s", ex.what());
     }
 }
 
@@ -175,16 +184,6 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
     ros::Time now = ros::Time::now();
     Human* curHuman;
     Joint* curJoint;
-
-    if (ros::param::get("mocap_calib_world_x",offset_x))
-    {
-        if (ros::param::get("mocap_calib_world_y",offset_y));
-            if (ros::param::get("mocap_calib_world_z",offset_z));
-    } else {
-        offset_x=0;
-        offset_y=0;
-        offset_z=0;
-    }
 
     try {
 
@@ -213,7 +212,6 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
 
             std::vector<double> jointOrientation;
 
-
             tf::Quaternion q(msg->pos[0].qx, msg->pos[0].qy, msg->pos[0].qz, msg->pos[0].qw);
             double roll, pitch, yaw;
             tf::Matrix3x3 m(q);
@@ -223,7 +221,6 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
             jointOrientation.push_back(pitch);
             jointOrientation.push_back(yaw);
 
-
             curJoint->setPosition(jointPosition);
             curJoint->setOrientation(jointOrientation);
             curJoint->setTime(now.toNSec());
@@ -232,7 +229,7 @@ void AdreamMocapHumanReader::optitrackCallbackHand(const optitrack::or_pose_esti
         }
 
     } catch (tf::TransformException ex) {
-        ROS_ERROR("%s", ex.what());
+        ROS_ERROR("[AdreamMocap Hand transfor] %s", ex.what());
 
     }
 }
@@ -243,15 +240,7 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
     Human* curHuman;
     Joint* curJoint;
     Joint* jointBase;
-    if (ros::param::get("mocap_calib_world_x",offset_x))
-    {
-        if (ros::param::get("mocap_calib_world_y",offset_y));
-            if (ros::param::get("mocap_calib_world_z",offset_z));
-    } else {
-        offset_x=0;
-        offset_y=0;
-        offset_z=0;
-    }
+
     try {
 
         std::string humId = "HERAKLES_HUMAN1";
@@ -280,7 +269,7 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
             bg::model::point<double, 3, bg::cs::cartesian> humanPosition;
             humanPosition.set<0>(msg->pos[0].x + offset_x);
             humanPosition.set<1>(msg->pos[0].y + offset_y);
-            humanPosition.set<2>(msg->pos[0].z + offset_z);
+            humanPosition.set<2>(msg->pos[0].z + offset_z - 1.31);
 
             //set the human orientation
             std::vector<double> humanOrientation;
@@ -325,14 +314,10 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
 
             lastConfig_[humId]->skeleton_[jointBaseName] = jointBase;
 
-
-
             bg::model::point<double, 3, bg::cs::cartesian> jointPosition;
             jointPosition.set<0>(msg->pos[0].x + offset_x);
             jointPosition.set<1>(msg->pos[0].y + offset_y);
             jointPosition.set<2>(msg->pos[0].z + offset_z);
-
-
 
             curJoint->setPosition(jointPosition);
             curJoint->setOrientation(humanOrientation);
@@ -342,7 +327,7 @@ void AdreamMocapHumanReader::optitrackCallbackTorso(const optitrack::or_pose_est
         }
 
     } catch (tf::TransformException ex) {
-        ROS_ERROR("%s", ex.what());
+        ROS_ERROR("[AdreamMocap Torso transfor] %s", ex.what());
 
     }
 }

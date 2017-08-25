@@ -39,24 +39,22 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
             obj.meEntity.pose = pose;
 
             object_map[id] = obj;
-        } else {
+        } else
             return false;
-        }
 
         // Ok, not an object, mb a human?
     } else if (boost::iequals(type, "human")) {
         std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(id);
         if (itH != human_map.end()) {
             toaster_msgs::Human hum;
-            hum.meAgent.meEntity = itH->second.meAgent.meEntity;
+            hum.meAgent = itH->second.meAgent;
             hum.meAgent.meEntity.pose = pose;
 
             // TODO: update joints too
 
             human_map[id] = hum;
-        } else {
+        } else 
             return false;
-        }
 
         // Ok, not a human, mb a robot??
     } else if (boost::iequals(type, "robot")) {
@@ -126,9 +124,8 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
                 rob.meAgent.skeletonJoint[index] = joint;
                 robot_map[itR->second.meAgent.meEntity.id] = rob;
 
-            } else {
+            } else
                 return false;
-            }
         }
     }
     return true;
