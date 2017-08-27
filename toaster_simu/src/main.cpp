@@ -254,9 +254,6 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
     return true;
 }
 
-
-
-
 ///////////////////////////
 //   Service functions   //
 ///////////////////////////
@@ -564,107 +561,25 @@ int main(int argc, char** argv) {
         toaster_msgs::HumanListStamped humanList_msg;
         toaster_msgs::RobotListStamped robotList_msg;
 
-
-
         if (keyboardControlled_ != "") {
 
             if (kbd.get_key(new_event, pressed, k, mod))
                 if (new_event) {
                     switch (k) {
-                        case (SDLK_UP):
-                        {
-                            if (pressed)
-                                x = 1.0;
-                            else x = 0.0;
-                            break;
-                        }
-                        case (SDLK_DOWN):
-                        {
-                            if (pressed)
-                                x = -1.0;
-                            else x = 0.0;
-                            break;
-                        }
-                        case (SDLK_LEFT):
-                        {
-                            if (pressed)
-                                y = -1.0;
-                            else y = 0.0;
-                            break;
-                        }
-                        case (SDLK_RIGHT):
-                        {
-                            if (pressed)
-                                y = 1.0;
-                            else y = 0.0;
-                            break;
-                        }
-                        case (SDLK_PAGEUP):
-                        {
-                            if (pressed)
-                                z = 1.0;
-                            else z = 0.0;
-                            break;
-                        }
-                        case (SDLK_PAGEDOWN):
-                        {
-                            if (pressed)
-                                z = -1.0;
-                            else z = 0.0;
-                            break;
-                        }
-                        case (SDLK_w):
-                        {
-                            if (pressed)
-                                roll = 1.0;
-                            else roll = 0.0;
-                            break;
-                        }
-                        case (SDLK_s):
-                        {
-                            if (pressed)
-                                roll = -1.0;
-                            else roll = 0.0;
-                            break;
-                        }
-                        case (SDLK_a):
-                        {
-                            if (pressed)
-                                pitch = -1.0;
-                            else pitch = 0.0;
-                            break;
-                        }
-                        case (SDLK_d):
-                        {
-                            if (pressed)
-                                pitch = 1.0;
-                            else pitch = 0.0;
-                            break;
-                        }
-                        case (SDLK_q):
-                        {
-                            if (pressed)
-                                yaw = -1.0;
-                            else yaw = 0.0;
-                            break;
-                        }
-                        case (SDLK_e):
-                        {
-                            if (pressed)
-                                yaw = 1.0;
-                            else yaw = 0.0;
-                            break;
-                        }
-                        case (SDLK_KP_MINUS):
-                        {
-                            inc /= 1.2;
-                            break;
-                        }
-                        case (SDLK_KP_PLUS):
-                        {
-                            inc *= 1.2;
-                            break;
-                        }
+                        case (SDLK_UP): { x = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_DOWN): { x = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_LEFT): { y = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_RIGHT): { y = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_PAGEUP): { z = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_PAGEDOWN): { z = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_w): { roll = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_s): { roll = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_a): { pitch = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_d): { pitch = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_q): { yaw = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_e): { yaw = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_KP_MINUS): { inc /= 1.2; break; }
+                        case (SDLK_KP_PLUS): { inc *= 1.2; break; }
                     }
                 }
             updateEntityPose(keyboardControlled_, x*inc, y*inc, z*inc, roll*inc, pitch*inc, yaw * inc);
