@@ -22,7 +22,7 @@
 
 #include "toaster_simu/Keyboard.h"
 
-
+std::map<std::string, bool> objectUpdate;
 std::map<std::string, toaster_msgs::Object> object_map;
 std::map<std::string, toaster_msgs::Human> human_map;
 std::map<std::string, toaster_msgs::Robot> robot_map;
@@ -39,6 +39,7 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
             obj.meEntity.pose = pose;
 
             object_map[id] = obj;
+            objectUpdate[id] = true;
         } else
             return false;
 
@@ -142,7 +143,6 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
         obj.meEntity.pose.position.y += y;
         obj.meEntity.pose.position.z += z;
 
-
         tf::Quaternion q(obj.meEntity.pose.orientation.x, obj.meEntity.pose.orientation.y,
                 obj.meEntity.pose.orientation.z, obj.meEntity.pose.orientation.w);
         tf::Matrix3x3(q).getRPY(rollEnt, pitchEnt, yawEnt);
@@ -154,6 +154,7 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
         obj.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollEnt, pitchEnt, yawEnt);
 
         object_map[id] = obj;
+        objectUpdate[id] = true;
     } else {
         // Ok, not an object, mb a human?
         std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(id);
@@ -302,7 +303,7 @@ bool addEntity(toaster_msgs::AddEntity::Request &req,
             obj.meEntity.pose.orientation.w = 1.0;
             obj.meEntity.time = now.toNSec();
             object_map[req.id] = obj;
-
+            objectUpdate[req.id] = true;
         }// Ok, not an object, mb a human?
 
         else if (boost::iequals(req.type, "human")) {
@@ -405,6 +406,7 @@ bool removeEntity(toaster_msgs::RemoveEntity::Request &req,
         if (boost::iequals(req.type, "object")) {
             std::map<std::string, toaster_msgs::Object>::iterator it = object_map.find(req.id);
             if (it != object_map.end()) {
+                objectUpdate[req.id] = false;
                 object_map.erase(it);
             } else {
                 ROS_WARN("[toaster_simu][Request] We couldn't find the object %s", req.id.c_str());
@@ -612,8 +614,10 @@ int main(int argc, char** argv) {
         }
         //update msg list
         for (std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.begin(); it != object_map.end(); ++it) {
-            objectList_msg.objectList.push_back(it->second);
+            if(objectUpdate[it->first] == true)
+              objectList_msg.objectList.push_back(it->second);
         }
+        objectUpdate.clear();
 
         for (std::map<std::string, toaster_msgs::Human>::const_iterator it = human_map.begin(); it != human_map.end(); ++it) {
             humanList_msg.humanList.push_back(it->second);
