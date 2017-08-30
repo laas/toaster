@@ -142,6 +142,7 @@ set(${PROJECT_NAME}_SOURCES
     src/readers/ArObjectReader.cpp
     src/readers/OM2MObjectReader.cpp
     src/readers/GazeboObjectReader.cpp
+    src/readers/MocapObjectReader.cpp
     src/readers/FactReader.cpp
     #utility
     src/utility/XmlUtility.cpp

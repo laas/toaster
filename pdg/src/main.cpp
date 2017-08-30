@@ -26,6 +26,7 @@
 #include "pdg/readers/GazeboObjectReader.h"
 #include "pdg/readers/ToasterSimuObjectReader.h"
 #include "pdg/readers/OM2MObjectReader.h"
+#include "pdg/readers/MocapObjectReader.h"
 
 #include "pdg/types.h"
 
@@ -47,6 +48,7 @@ ToasterSimuObjectReader toasterSimuObjectRd;
 ArObjectReader arObjectRd;
 OM2MObjectReader om2mObjectRd;
 GazeboObjectReader gazeboRd;
+MocapObjectReader mocapObjectRd;
 
 struct objectIn_t objectIn;
 
@@ -75,6 +77,7 @@ bool addStream(toaster_msgs::AddStream::Request &req,
     arObjectRd.setActivation(req.arObject);
     om2mObjectRd.setActivation(req.om2mObject);
     gazeboRd.setActivation(req.gazeboObject);
+    mocapObjectRd.setActivation(req.mocapObject);
 
     ROS_INFO("[pdg] setting pdg input");
 
@@ -216,6 +219,8 @@ int main(int argc, char** argv) {
     objectReaders.push_back(&om2mObjectRd);
     gazeboRd.init(&node, "/gazebo/model_states", "/pdg/gazeboObjectReader");
     objectReaders.push_back(&gazeboRd);
+    mocapObjectRd.init(&node, "/optitrack/bodies/Rigid_Body_1", "object", "/pdg/mocapObjectReader");
+    objectReaders.push_back(&mocapObjectRd);
     toasterSimuObjectRd.init(&node, "/pdg/toasterSimuObject");
     objectReaders.push_back(&toasterSimuObjectRd);
 

@@ -3,3 +3,4 @@ pdg:
     arObjectReader : true
     gazeboObjectReader: true
     OM2MObjectReader: false
+    mocapObjectReader: false
