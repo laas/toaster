@@ -274,7 +274,7 @@ type: 'object'
 pose:
   position:
     x: 7.2
-    y: 12.9
+    y: 12.7
     z: 0.0
   orientation:
     x: 0.0

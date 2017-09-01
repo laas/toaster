@@ -3,36 +3,36 @@
 
 <object name="env" 				mesh_resource="package://toaster_visualizer/mesh/toaster_environment/adream_empty.dae" />
 
-<object name="Fan" 				mesh_resource="package://toaster_visualizer/mesh/toaster_objects/fan.3ds" />
+<object name="Ventilateur" 				mesh_resource="package://toaster_visualizer/mesh/toaster_objects/fan.3ds" />
 
 
-<object name="Phidget_lamp_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_RUTBO.3ds" />
+<object name="Lampe3" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_RUTBO.3ds" />
 
 
-<object name="Phidget_lamp_1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_lamp_orgel.3ds" />
+<object name="Lampe2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_lamp_orgel.3ds" />
 
 
-<object name="Livingroom_tmp_sensor" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/T.3ds" />
+<object name="Temperature" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/T.3ds" />
 
 
-<object name="Livingroom_lum_sensor" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/L.3ds" />
+<object name="Luminosite" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/L.3ds" />
 
 
-<object name="eyeball_1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/eyeball1.3ds" />
+<object name="Capteur1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/eyeball1.3ds" />
 
-<object name="eyeball_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/eyeball2.3ds" />
+<object name="Capteur2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/eyeball2.3ds" />
 
 <object name="eyeball_3" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/eyeball3.3ds" />
 
 
 
-<object name="Philips_lamp_1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
+<object name="Lampe1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
 
 
 <object name="Philips_lamp_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
 
 
-<object name="Chair_presence" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
+<object name="Presence" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
 
 
 <object name="Readingroom_table" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />

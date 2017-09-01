@@ -221,18 +221,18 @@ public:
             {
                 visualization_msgs::MarkerArray m = MarkerCreator::definePolygon(msg->areaList[i].poly, msg->areaList[i].name, msg->areaList[i].zmin, msg->areaList[i].zmax);
 
-               for(int i =0 ; i<3 ; i++)
-                m.markers[i] = MarkerCreator::setRandomColor(m.markers[i]);
+               for(int iMarker =0 ; iMarker<3 ; iMarker++)
+                m.markers[iMarker] = MarkerCreator::setRandomColor(m.markers[iMarker]);
 
                 double posx = 0.0;
                 double posy = 0.0;
                 double posz = 0.0;
             		for (int j = 0; j<3; j++)
                 {
-                  for (int i = 0; i < m.markers[j].points.size(); i++)
+                  for (int iPoint = 0; iPoint < m.markers[j].points.size(); iPoint++)
                   {
-                    posx = posx + m.markers[j].points[i].x;
-                    posy = posy + m.markers[j].points[i].y;
+                    posx = posx + m.markers[j].points[iPoint].x;
+                    posy = posy + m.markers[j].points[iPoint].y;
                     posz = posz + msg->areaList[i].zmin;
                   }
 
@@ -242,8 +242,7 @@ public:
 
               visualization_msgs::Marker mn = MarkerCreator::defineName(m.markers[0]);
               mn = MarkerCreator::setSize(mn, 0.0, 0.0, 0.1);
-              mn = MarkerCreator::setPosition(mn, mn.pose.position.x, mn.pose.position.y, mn.pose.position.z + 0.5);
-              mn = MarkerCreator::setPosition(mn, posx / m.markers[0].points.size(), posy / m.markers[0].points.size(),  + posz / m.markers[0].points.size());
+              mn = MarkerCreator::setPosition(mn, m.markers[0].points[0].x, m.markers[0].points[0].y,  msg->areaList[i].zmax + 0.5);
               area_list.markers.push_back(mn);
                // ROS_DEBUG("poly %d", m.id);
 
