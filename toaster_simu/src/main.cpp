@@ -22,7 +22,7 @@
 
 #include "toaster_simu/Keyboard.h"
 
-
+std::map<std::string, bool> objectUpdate;
 std::map<std::string, toaster_msgs::Object> object_map;
 std::map<std::string, toaster_msgs::Human> human_map;
 std::map<std::string, toaster_msgs::Robot> robot_map;
@@ -39,24 +39,23 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
             obj.meEntity.pose = pose;
 
             object_map[id] = obj;
-        } else {
+            objectUpdate[id] = true;
+        } else
             return false;
-        }
 
         // Ok, not an object, mb a human?
     } else if (boost::iequals(type, "human")) {
         std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(id);
         if (itH != human_map.end()) {
             toaster_msgs::Human hum;
-            hum.meAgent.meEntity = itH->second.meAgent.meEntity;
+            hum.meAgent = itH->second.meAgent;
             hum.meAgent.meEntity.pose = pose;
 
             // TODO: update joints too
 
             human_map[id] = hum;
-        } else {
+        } else 
             return false;
-        }
 
         // Ok, not a human, mb a robot??
     } else if (boost::iequals(type, "robot")) {
@@ -126,9 +125,8 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
                 rob.meAgent.skeletonJoint[index] = joint;
                 robot_map[itR->second.meAgent.meEntity.id] = rob;
 
-            } else {
+            } else
                 return false;
-            }
         }
     }
     return true;
@@ -145,7 +143,6 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
         obj.meEntity.pose.position.y += y;
         obj.meEntity.pose.position.z += z;
 
-
         tf::Quaternion q(obj.meEntity.pose.orientation.x, obj.meEntity.pose.orientation.y,
                 obj.meEntity.pose.orientation.z, obj.meEntity.pose.orientation.w);
         tf::Matrix3x3(q).getRPY(rollEnt, pitchEnt, yawEnt);
@@ -157,6 +154,7 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
         obj.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollEnt, pitchEnt, yawEnt);
 
         object_map[id] = obj;
+        objectUpdate[id] = true;
     } else {
         // Ok, not an object, mb a human?
         std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(id);
@@ -257,9 +255,6 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
     return true;
 }
 
-
-
-
 ///////////////////////////
 //   Service functions   //
 ///////////////////////////
@@ -308,7 +303,7 @@ bool addEntity(toaster_msgs::AddEntity::Request &req,
             obj.meEntity.pose.orientation.w = 1.0;
             obj.meEntity.time = now.toNSec();
             object_map[req.id] = obj;
-
+            objectUpdate[req.id] = true;
         }// Ok, not an object, mb a human?
 
         else if (boost::iequals(req.type, "human")) {
@@ -411,6 +406,7 @@ bool removeEntity(toaster_msgs::RemoveEntity::Request &req,
         if (boost::iequals(req.type, "object")) {
             std::map<std::string, toaster_msgs::Object>::iterator it = object_map.find(req.id);
             if (it != object_map.end()) {
+                objectUpdate[req.id] = false;
                 object_map.erase(it);
             } else {
                 ROS_WARN("[toaster_simu][Request] We couldn't find the object %s", req.id.c_str());
@@ -567,107 +563,25 @@ int main(int argc, char** argv) {
         toaster_msgs::HumanListStamped humanList_msg;
         toaster_msgs::RobotListStamped robotList_msg;
 
-
-
         if (keyboardControlled_ != "") {
 
             if (kbd.get_key(new_event, pressed, k, mod))
                 if (new_event) {
                     switch (k) {
-                        case (SDLK_UP):
-                        {
-                            if (pressed)
-                                x = 1.0;
-                            else x = 0.0;
-                            break;
-                        }
-                        case (SDLK_DOWN):
-                        {
-                            if (pressed)
-                                x = -1.0;
-                            else x = 0.0;
-                            break;
-                        }
-                        case (SDLK_LEFT):
-                        {
-                            if (pressed)
-                                y = -1.0;
-                            else y = 0.0;
-                            break;
-                        }
-                        case (SDLK_RIGHT):
-                        {
-                            if (pressed)
-                                y = 1.0;
-                            else y = 0.0;
-                            break;
-                        }
-                        case (SDLK_PAGEUP):
-                        {
-                            if (pressed)
-                                z = 1.0;
-                            else z = 0.0;
-                            break;
-                        }
-                        case (SDLK_PAGEDOWN):
-                        {
-                            if (pressed)
-                                z = -1.0;
-                            else z = 0.0;
-                            break;
-                        }
-                        case (SDLK_w):
-                        {
-                            if (pressed)
-                                roll = 1.0;
-                            else roll = 0.0;
-                            break;
-                        }
-                        case (SDLK_s):
-                        {
-                            if (pressed)
-                                roll = -1.0;
-                            else roll = 0.0;
-                            break;
-                        }
-                        case (SDLK_a):
-                        {
-                            if (pressed)
-                                pitch = -1.0;
-                            else pitch = 0.0;
-                            break;
-                        }
-                        case (SDLK_d):
-                        {
-                            if (pressed)
-                                pitch = 1.0;
-                            else pitch = 0.0;
-                            break;
-                        }
-                        case (SDLK_q):
-                        {
-                            if (pressed)
-                                yaw = -1.0;
-                            else yaw = 0.0;
-                            break;
-                        }
-                        case (SDLK_e):
-                        {
-                            if (pressed)
-                                yaw = 1.0;
-                            else yaw = 0.0;
-                            break;
-                        }
-                        case (SDLK_KP_MINUS):
-                        {
-                            inc /= 1.2;
-                            break;
-                        }
-                        case (SDLK_KP_PLUS):
-                        {
-                            inc *= 1.2;
-                            break;
-                        }
+                        case (SDLK_UP): { x = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_DOWN): { x = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_LEFT): { y = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_RIGHT): { y = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_PAGEUP): { z = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_PAGEDOWN): { z = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_w): { roll = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_s): { roll = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_a): { pitch = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_d): { pitch = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_q): { yaw = pressed ? -1.0 : 0.0; break; }
+                        case (SDLK_e): { yaw = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_KP_MINUS): { inc /= 1.2; break; }
+                        case (SDLK_KP_PLUS): { inc *= 1.2; break; }
                     }
                 }
             updateEntityPose(keyboardControlled_, x*inc, y*inc, z*inc, roll*inc, pitch*inc, yaw * inc);
@@ -700,8 +614,10 @@ int main(int argc, char** argv) {
         }
         //update msg list
         for (std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.begin(); it != object_map.end(); ++it) {
-            objectList_msg.objectList.push_back(it->second);
+            if(objectUpdate[it->first] == true)
+              objectList_msg.objectList.push_back(it->second);
         }
+        objectUpdate.clear();
 
         for (std::map<std::string, toaster_msgs::Human>::const_iterator it = human_map.begin(); it != human_map.end(); ++it) {
             humanList_msg.humanList.push_back(it->second);

@@ -1,16 +1,23 @@
 <launch>
         <rosparam command="load" file="$(find pdg)/params/toaster_simu.yaml" />
-	<node name="pdg" pkg="pdg" type="pdg" output="screen"/>  <!-- Launch pdg -->
+	<!--node name="pdg" pkg="pdg" type="pdg" output="screen"/-->  <!-- Launch pdg -->
+  <include file="$(find pdg)/launch/pdg.launch"></include>
 	<node name="agent_monitor" pkg="agent_monitor" type="agent_monitor" output="screen" />  <!-- Launch the agent monitor -->
-        <node name="area_manager" pkg="area_manager" type="area_manager" output="screen" />  <!-- Launch the area manager -->
+  <node name="area_manager" pkg="area_manager" type="area_manager" output="screen" />  <!-- Launch the area manager -->
 	<node name="toaster_visualizer" pkg="toaster_visualizer" type="toaster_visualizer" output="screen" />  <!-- Launch the visualization of toaster -->
 	<node name="toaster_simu" pkg="toaster_simu" type="toaster_simu" output="screen" />  <!-- Launch toaster simu -->
 
+<<<<<<< HEAD
         <!--rosparam command="load" file="$(find database_manager)/params/Database.yaml" /-->
 	<!--node name="run_server" pkg="database_manager" type="run_server" output="screen"/-->  <!-- Launch the toaster database -->
 	<!--node pkg="rviz" type="rviz" name="$(anon rviz)" args="-d $(find pr2_navigation_global)/rviz/config_iot.rviz"/-->
 	<node pkg="costmap_2d" type="costmap_2d_markers" name="voxel_visualizer">
 		<remap from="voxel_grid" to="move_base_node/local_costmap/voxel_grid_throttled"/>
 	</node>
-</launch>
+=======
 
+        <!-- rosparam command="load" file="$(find database_manager)/params/Database.yaml" /-->
+	<!-- node name="run_server" pkg="database_manager" type="run_server" output="screen"/-->  <!-- Launch the toaster database -->
+	 <!--node name="rviz" pkg="rviz" type="rviz" output="screen"/>"-->  <!-- Launch rviz -->
+>>>>>>> sarthou/master
+</launch>

@@ -249,8 +249,8 @@ public:
             }
 
         }
-
     }
+
     /**
      * CallBack creating markers based on received toaster_msgs and adding then to robot_list
      * Robots can be represented by a single unarticulated mesh or by multiple meshs for an articulated model
@@ -377,8 +377,6 @@ public:
 
                         if (name_obj.compare(name) == 0) //if there is a 3d model related to this object
                         {
-
-
                             markerTempo.scale.x = scale;
                             markerTempo.scale.y = scale;
                             markerTempo.scale.z = scale;
@@ -391,11 +389,11 @@ public:
 
                             markerTempo.type = visualization_msgs::Marker::MESH_RESOURCE; //use it as mesh
 
-                            if (isSeating(msg->humanList[i]) && name == "base") {
+                            if (isSeating(msg->humanList[i]) && name == "base")
                                 markerTempo.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/mocapMorse/baseSeat.dae"; //using 3d human model
-                            } else {
+                             else
                                 markerTempo.mesh_resource = mesh_r;
-                            }
+                            
                             markerTempo.mesh_use_embedded_materials = true;
 
                             elem = NULL;
