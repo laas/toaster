@@ -1,8 +1,7 @@
 /*
- * File:   AdreamMocapHumanReader.cpp
- * Author: sdevin
+ * File:   MocapObjectReader.cpp
+ * Author: gsarthou
  *
- * Created on October 8, 2015, 1:24 PM
  */
 
 #include "pdg/readers/MocapObjectReader.h"
