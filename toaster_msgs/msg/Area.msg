@@ -13,7 +13,7 @@ float64 zmin
 float64 zmax
 float64 enterHysteresis
 float64 leaveHysteresis
-uint32[] insideEntities_
-uint32[] upcomingEntities_
-uint32[] leavingEntities_
+string[] insideEntities_
+string[] upcomingEntities_
+string[] leavingEntities_
 

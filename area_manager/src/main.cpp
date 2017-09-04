@@ -20,7 +20,7 @@
 #include <toaster_msgs/FactList.h>
 #include <geometry_msgs/PolygonStamped.h>
 #include <iterator>
-//#include <boost/numeric/ublas/matrix.hpp>
+//#include <boost/numeric/ublas/matrix.hpp>area_manager/factList
 //#include <boost/numeric/ublas/io.hpp>
 
 
@@ -76,6 +76,13 @@ void setAreaMsg(toaster_msgs::AreaList& areaList_msg) {
         area.factType = it->second->getFactType();
         area.myOwner = it->second->getMyOwner();
         area.areaType = it->second->getAreaType();
+
+	area.enterHysteresis = it->second->getEnterHysteresis();
+	area.leaveHysteresis = it->second->getLeaveHysteresis();
+
+	area.insideEntities_ = it->second->getInsideEntities();
+	area.upcomingEntities_ = it->second->getUpcomingEntities();
+	area.leavingEntities_ = it->second->getLeavingEntities();
 
         areaList_msg.areaList.push_back(area);
     }
@@ -244,12 +251,11 @@ void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
                 else {
                     printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                     ent->removeInArea(it->second->getId());
-                    it->second->removeInsideEntity(ent->getId());
                     if (it->second->getAreaType() == "room")
                         ent->setRoomId(0);
                 }// Same if entity is not in Area
-            else
-                if (it->second->isPointInArea(ent->getPosition(),ent->getId())) {
+            else if (it->second->isPointInArea(ent->getPosition(),ent->getId()))
+            {
                 printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                 ent->inArea_.push_back(it->second->getId());
 
@@ -396,6 +402,7 @@ bool printArea(toaster_msgs::PrintArea::Request &req,
 
 bool printAllAreas(toaster_msgs::Empty::Request &req,
         toaster_msgs::Empty::Response & res) {
+	std::cout << mapArea_.size() << " areas" << std::endl;
     for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea)
         printMyArea(itArea->first);
     return true;
