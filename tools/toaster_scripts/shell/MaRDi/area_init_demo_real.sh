@@ -7,7 +7,7 @@
 #  spencerRobot: false, vimanObject: true, sparkObject: false, sparkFact: false}"
 
 # spark (branch genom / mardi_dev2)
-rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: false, adreamMocapHuman: false, toasterSimuHuman: false, pr2Robot: true, spencerRobot: false, toasterSimuRobot: false, toasterSimuObject: true, arObject: true, om2mObject: true, gazeboObject: false}" 
+#rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: false, adreamMocapHuman: false, toasterSimuHuman: false, pr2Robot: true, spencerRobot: false, toasterSimuRobot: false, toasterSimuObject: true, arObject: true, om2mObject: true, gazeboObject: false}" 
 
 # no genom (branch master)
 #rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: true, pr2Robot: true,
@@ -21,133 +21,7 @@ rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupH
 ### AREA ###
 #############
 rosservice call /area_manager/add_area "myArea:
-  id: 0
-  name: 'Readingroom'
-  myOwner: ''
-  areaType: 'room'
-  factType: ''
-  entityType: 'entities'
-  isCircle: false
-  center: {x: 0.0, y: 0.0, z: 0.0}
-  ray: 0.0
-  height: 0.0
-  poly:
-    points:
-    - {x: 2.3, y: 9.1, z: 0.0}
-    - {x: 9.4, y: 9.1, z: 0.0}
-    - {x: 9.4, y: 5.1, z: 0.0}
-    - {x: 2.3, y: 5.1, z: 0.0}
-  zmin: 0.0
-  zmax: 2.0
-  enterHysteresis: 0.01
-  leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
-
-rosservice call /area_manager/add_area "myArea:
-  id: 0
-  name: 'Bedroom'
-  myOwner: ''
-  areaType: 'room'
-  factType: ''
-  entityType: 'entities'
-  isCircle: false
-  center: {x: 0.0, y: 0.0, z: 0.0}
-  ray: 0.0
-  height: 0.0
-  poly:
-    points:
-    - {x: 2.3, y: 9.1, z: 0.0}
-    - {x: 6.4, y: 9.1, z: 0.0}
-    - {x: 6.4, y: 13.2, z: 0.0}
-    - {x: 2.3, y: 13.2, z: 0.0}
-  zmin: 0.0
-  zmax: 2.0
-  enterHysteresis: 0.01
-  leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
-
-rosservice call /area_manager/add_area "myArea:
-  id: 0
-  name: 'Kitchen'
-  myOwner: ''
-  areaType: 'room'
-  factType: ''
-  entityType: 'entities'
-  isCircle: false
-  center: {x: 0.0, y: 0.0, z: 0.0}
-  ray: 0.0
-  height: 0.0
-  poly:
-    points:
-    - {x: 0.0, y: 5.0, z: 0.0}
-    - {x: 0.0, y: 9.0, z: 0.0}
-    - {x: 2.3, y: 9.0, z: 0.0}
-    - {x: 2.3, y: 5.0, z: 0.0}
-  zmin: 0.0
-  zmax: 2.0
-  enterHysteresis: 0.01
-  leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
-
-rosservice call /area_manager/add_area "myArea:
-  id: 0
-  name: 'Kitchen'
-  myOwner: ''
-  areaType: 'room'
-  factType: ''
-  entityType: 'entities'
-  isCircle: false
-  center: {x: 0.0, y: 0.0, z: 0.0}
-  ray: 0.0
-  height: 0.0
-  poly:
-    points:
-    - {x: 0.0, y: 5.0, z: 0.0}
-    - {x: 0.0, y: 9.0, z: 0.0}
-    - {x: 2.3, y: 9.0, z: 0.0}
-    - {x: 2.3, y: 5.0, z: 0.0}
-  zmin: 0.0
-  zmax: 2.0
-  enterHysteresis: 0.01
-  leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
-
-
-rosservice call /area_manager/add_area "myArea:
-  id: 0
-  name: 'Bed'
-  myOwner: 'Bed'
-  areaType: 'bed_area'
-  factType: ''
-  entityType: 'entities'
-  isCircle: false
-  center: {x: 0.0, y: 0.0, z: 0.0}
-  ray: 0.0
-  height: 0.0
-  poly:
-    points:
-    - {x: 0.5, y: 1.0, z: 0.0}
-    - {x: -0.5, y: 1.0, z: 0.0}
-    - {x: -0.5, y: -1.0, z: 0.0}
-    - {x: 0.5, y: -1.0, z: 0.0}
-  zmin: 0.0
-  zmax: 0.5
-  enterHysteresis: 0.01
-  leaveHysteresis: 0.3
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
-
-rosservice call /area_manager/add_area "myArea:
-  id: 0
+  id: 1
   name: 'robot_interaction'
   myOwner: 'PR2_ROBOT'
   areaType: ''
@@ -174,7 +48,7 @@ rosservice call /area_manager/add_area "myArea:
 # IoT part:
 
 rosservice call /area_manager/add_area "myArea:
-  id: 0
+  id: 2
   name: 'LivingRoom'
   myOwner: ''
   areaType: 'room'
@@ -191,7 +65,32 @@ rosservice call /area_manager/add_area "myArea:
     - {x: 9.4, y: 13.2, z: 0.0}
     - {x: 9.4, y: 9.1, z: 0.0}
   zmin: 0.0
-  zmax: 2.0
+  zmax: 2.5
+  enterHysteresis: 0.01
+  leaveHysteresis: 0.01
+  insideEntities_: [0]
+  upcomingEntities_: [0]
+  leavingEntities_: [0]"
+
+rosservice call /area_manager/add_area "myArea:
+  id: 3
+  name: 'Bedroom'
+  myOwner: ''
+  areaType: 'room'
+  factType: ''
+  entityType: 'entities'
+  isCircle: false
+  center: {x: 0.0, y: 0.0, z: 0.0}
+  ray: 0.0
+  height: 0.0
+  poly:
+    points:
+    - {x: 2.35, y: 9.1, z: 0.0}
+    - {x: 6.3, y: 9.1, z: 0.0}
+    - {x: 6.3, y: 13.2, z: 0.0}
+    - {x: 2.35, y: 13.2, z: 0.0}
+  zmin: 0.0
+  zmax: 2.5
   enterHysteresis: 0.01
   leaveHysteresis: 0.01
   insideEntities_: [0]
@@ -199,50 +98,9 @@ rosservice call /area_manager/add_area "myArea:
   leavingEntities_: [0]"
 
 
-
 ###############
 ### OBJECTS ###
 ###############
-  
-
-rosservice call /toaster_simu/add_entity "id: 'Readingroom_table'
-name: 'Readingroom_table'
-type: 'object'
-ownerId: ''"
-
-rosservice call /toaster_simu/set_entity_pose "id: 'Readingroom_table'
-ownerId: ''
-type: 'object'
-pose:
-  position:
-    x: 9.0
-    y: 6.0
-    z: 0.0
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 1.0
-    w: 0.0" 
-
-rosservice call /toaster_simu/add_entity "id: 'Readingroom_table2'
-name: 'Readingroom_table2'
-type: 'object'
-ownerId: ''"
-
-rosservice call /toaster_simu/set_entity_pose "id: 'Readingroom_table2'
-ownerId: ''
-type: 'object'
-pose:
-  position:
-    x: 9.0
-    y: 8.0
-    z: 0.0
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 1.0
-    w: 0.0" 
-
    
 rosservice call /toaster_simu/add_entity "id: 'Bed'
 name: 'Bed'
@@ -255,7 +113,7 @@ type: 'object'
 pose:
   position:
     x: 3.5
-    y: 11.0
+    y: 11.4
     z: 0.0
   orientation:
     x: 0.0
@@ -398,6 +256,256 @@ pose:
     y: 0.0
     z: 1.0
     w: 0.0"
+
+rosservice call /toaster_simu/add_entity "id: 'Bedroom_console'
+name: 'Bedroom_console'
+type: 'object'
+ownerId: ''" 
+
+rosservice call /toaster_simu/set_entity_pose "id: 'Bedroom_console'
+ownerId: ''
+type: 'object'
+pose:
+  position:
+    x: 6.0
+    y: 11.6
+    z: 0.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.5
+    w: 0.5"
+
+rosservice call /toaster_simu/add_entity "id: 'Bedroom_chest'
+name: 'Bedroom_chest'
+type: 'object'
+ownerId: ''" 
+
+rosservice call /toaster_simu/set_entity_pose "id: 'Bedroom_chest'
+ownerId: ''
+type: 'object'
+pose:
+  position:
+    x: 3.8
+    y: 12.9
+    z: 0.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.5"
+
+rosservice call /toaster_simu/add_entity "id: 'Bedroom_big_cupboard'
+name: 'Bedroom_big_cupboard'
+type: 'object'
+ownerId: ''" 
+
+rosservice call /toaster_simu/set_entity_pose "id: 'Bedroom_big_cupboard'
+ownerId: ''
+type: 'object'
+pose:
+  position:
+    x: 4.7
+    y: 9.4
+    z: 0.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 1.0
+    w: 0.0"
+
+rosservice call /toaster_simu/add_entity "id: 'Bedroom_cupboard1'
+name: 'Bedroom_cupboard1'
+type: 'object'
+ownerId: ''" 
+
+rosservice call /toaster_simu/set_entity_pose "id: 'Bedroom_cupboard1'
+ownerId: ''
+type: 'object'
+pose:
+  position:
+    x: 3.3
+    y: 9.4
+    z: 0.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 1.0
+    w: 0.0"
+
+rosservice call /toaster_simu/add_entity "id: 'Bedroom_cupboard2'
+name: 'Bedroom_cupboard2'
+type: 'object'
+ownerId: ''" 
+
+rosservice call /toaster_simu/set_entity_pose "id: 'Bedroom_cupboard2'
+ownerId: ''
+type: 'object'
+pose:
+  position:
+    x: 3.3
+    y: 9.4
+    z: 0.39
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 1.0
+    w: 0.0"
+
+rosservice call /toaster_simu/add_entity "id: 'Bedroom_cupboard3'
+name: 'Bedroom_cupboard3'
+type: 'object'
+ownerId: ''" 
+
+rosservice call /toaster_simu/set_entity_pose "id: 'Bedroom_cupboard3'
+ownerId: ''
+type: 'object'
+pose:
+  position:
+    x: 5.2
+    y: 12.9
+    z: 0.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.5"
+
+
+#################################
+### OBJECTS INTERACTION ZONES ###
+#################################
+
+# LivingRoom table : h: .75    x: 8.9    y: 9.9    z: 0.0 //OK
+rosservice call /area_manager/add_area "myArea:
+  id: 4
+  name: 'Livingroom_table_area'
+  myOwner: 'Livingroom_table'
+  areaType: ''
+  factType: ''
+  entityType: 'entities'
+  isCircle: false
+  center: {x: 0.0, y: 0.0, z: 0.0}
+  ray: 0.0
+  height: 0.0
+  poly:
+    points:
+    - {x: -0.4, y: -0.7, z: 0.0}
+    - {x: -0.4, y: 0.7, z: 0.0}
+    - {x: 0.4, y: 0.7, z: 0.0}
+    - {x: 0.4, y: -0.72, z: 0.0}
+  zmin: 0.65
+  zmax: 1.05
+  enterHysteresis: 0.1
+  leaveHysteresis: 0.1
+  insideEntities_: [0]
+  upcomingEntities_: [0]
+  leavingEntities_: [0]"
+
+# LivingRoom low table : h:0.45        x: 7.2    y: 12.7    z: 0.0 //OK
+rosservice call /area_manager/add_area "myArea:
+  id: 5
+  name: 'Livingroom_low_table_area'
+  myOwner: 'Livingroom_low_table'
+  areaType: ''
+  factType: ''
+  entityType: 'entities'
+  isCircle: false
+  center: {x: 0.0, y: 0.0, z: 0.0}
+  ray: 0.0
+  height: 0.0
+  poly:
+    points:
+    - {x: 0.3, y: -0.3, z: 0.0}
+    - {x: 0.3, y: 0.3, z: 0.0}
+    - {x: -0.3, y: 0.3, z: 0.0}
+    - {x: -0.3, y: -0.3, z: 0.0}
+  zmin: 0.35
+  zmax: 0.65
+  enterHysteresis: 0.1
+  leaveHysteresis: 0.1
+  insideEntities_: [0]
+  upcomingEntities_: [0]
+  leavingEntities_: [0]"
+
+
+# LivingRoom small shelf : h:0.56    x: 6.7    y: 11.4    z: 0.0 //OK
+rosservice call /area_manager/add_area "myArea:
+  id: 6
+  name: 'Livingroom_small_shelf_area'
+  myOwner: 'Livingroom_small_shelf'
+  areaType: ''
+  factType: ''
+  entityType: 'entities'
+  isCircle: false
+  center: {x: 0.0, y: 0.0, z: 0.0}
+  ray: 0.0
+  height: 0.0
+  poly:
+    points:
+    - {x: 0.35, y: -0.25, z: 0.0}
+    - {x: 0.35, y: 0.25, z: 0.0}
+    - {x: -0.35, y: 0.25, z: 0.0}
+    - {x: -0.35, y: -0.25, z: 0.0}
+  zmin: 0.46
+  zmax: 0.76
+  enterHysteresis: 0.1
+  leaveHysteresis: 0.1
+  insideEntities_: [0]
+  upcomingEntities_: [0]
+  leavingEntities_: [0]"
+
+# Bedroom_console : h:0.72    x: 6.0    y: 11.6    z: 0.0 //OK
+rosservice call /area_manager/add_area "myArea:
+  id: 7
+  name: 'Bedroom_console_area'
+  myOwner: 'Bedroom_console'
+  areaType: ''
+  factType: ''
+  entityType: 'entities'
+  isCircle: false
+  center: {x: 0.0, y: 0.0, z: 0.0}
+  ray: 0.0
+  height: 0.0
+  poly:
+    points:
+    - {x: 0.85, y: -0.15, z: 0.0}
+    - {x: 0.85, y: 0.15, z: 0.0}
+    - {x: -0.85, y: 0.15, z: 0.0}
+    - {x: -0.85, y: -0.15, z: 0.0}
+  zmin: 0.0
+  zmax: 0.92
+  enterHysteresis: 0.1
+  leaveHysteresis: 0.1
+  insideEntities_: [0]
+  upcomingEntities_: [0]
+  leavingEntities_: [0]"
+
+# Bedroom_cupboard3 : h: ?<1.06    x: 5.2    y: 12.9    z: 0.0
+rosservice call /area_manager/add_area "myArea:
+  id: 8
+  name: 'Bedroom_cupboard3_area'
+  myOwner: 'Bedroom_cupboard3'
+  areaType: ''
+  factType: ''
+  entityType: 'entities'
+  isCircle: false
+  center: {x: 0.0, y: 0.0, z: 0.0}
+  ray: 0.0
+  height: 0.0
+  poly:
+    points:
+    - {x: 0.5, y: -0.15, z: 0.0}
+    - {x: 0.5, y: 0.15, z: 0.0}
+    - {x: -0.5, y: 0.15, z: 0.0}
+    - {x: -0.5, y: -0.15, z: 0.0}
+  zmin: 0.0
+  zmax: 0.9
+  enterHysteresis: 0.1
+  leaveHysteresis: 0.1
+  insideEntities_: [0]
+  upcomingEntities_: [0]
+  leavingEntities_: [0]"
 
 
 

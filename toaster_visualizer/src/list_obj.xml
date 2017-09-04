@@ -51,14 +51,16 @@
 <object name="Livingroom_tele_2" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/tele.3ds" />
 
 <object name="Bedroom_console" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_console_HEMNES.dae" />
-
-
+<object name="Bedroom_chest" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chest_HEMNES.3ds" />
+<object name="Bedroom_big_cupboard" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY1.3ds" />
 
 <object name="IKEA_chair_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
 
 <object name="FAUTEUIL_2"            	        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_armchair_EKTORP.dae" />
 
-<object name="IKEA_cupboard_BILLY4"    	   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY4.3ds" />
+<object name="Bedroom_cupboard1"    	   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY4.3ds" />
+<object name="Bedroom_cupboard2"    	   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY4.3ds" />
+<object name="Bedroom_cupboard3"    	   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY4.3ds" />
 
 <object name="cupboard_small"                   mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cupboard_small.3ds" />	
 

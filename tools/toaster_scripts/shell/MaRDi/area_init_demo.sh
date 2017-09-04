@@ -99,37 +99,12 @@ rosservice call /area_manager/add_area "myArea:
   upcomingEntities_: [0]
   leavingEntities_: [0]"
 
-rosservice call /area_manager/add_area "myArea:
-  id: 0
-  name: 'Kitchen'
-  myOwner: ''
-  areaType: 'room'
-  factType: ''
-  entityType: 'entities'
-  isCircle: false
-  center: {x: 0.0, y: 0.0, z: 0.0}
-  ray: 0.0
-  height: 0.0
-  poly:
-    points:
-    - {x: 0.0, y: 5.0, z: 0.0}
-    - {x: 0.0, y: 9.0, z: 0.0}
-    - {x: 2.3, y: 9.0, z: 0.0}
-    - {x: 2.3, y: 5.0, z: 0.0}
-  zmin: 0.0
-  zmax: 2.0
-  enterHysteresis: 0.01
-  leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
-
 
 rosservice call /area_manager/add_area "myArea:
   id: 0
   name: 'Bed'
   myOwner: 'Bed'
-  areaType: 'bed_area'
+  areaType: 'object_area'
   factType: ''
   entityType: 'entities'
   isCircle: false

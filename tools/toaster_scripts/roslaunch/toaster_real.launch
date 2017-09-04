@@ -1,6 +1,6 @@
 <launch>
         <rosparam command="load" file="$(find pdg)/params/toaster_real.yaml" />
-	<node name="pdg" pkg="pdg" type="pdg" output="screen"/>  <!-- Launch pdg -->
+	<include file="$(find pdg)/launch/pdg.launch"></include>  <!-- Launch pdg -->
 	<node name="agent_monitor" pkg="agent_monitor" type="agent_monitor" output="screen" />  <!-- Launch the agent monitor -->
         <node name="area_manager" pkg="area_manager" type="area_manager" output="screen" />  <!-- Launch the area manager -->
 	<node name="toaster_visualizer" pkg="toaster_visualizer" type="toaster_visualizer" output="screen" />  <!-- Launch the visualization of toaster -->
