@@ -219,7 +219,7 @@ int main(int argc, char** argv) {
     objectReaders.push_back(&om2mObjectRd);
     gazeboRd.init(&node, "/gazebo/model_states", "/pdg/gazeboObjectReader");
     objectReaders.push_back(&gazeboRd);
-    mocapObjectsRd.init(&node, "/optitrack/bodies/Rigid_Body_2:/optitrack/bodies/Rigid_Body_1", "hand:head", "/pdg/mocapObjectReader");
+    mocapObjectsRd.init(&node, "/pdg/mocapObjectsTopics", "/pdg/mocapObjectsIds", "/pdg/mocapObjectReader");
     mocapObjectsRd.extract(objectReaders);
     toasterSimuObjectRd.init(&node, "/pdg/toasterSimuObject");
     objectReaders.push_back(&toasterSimuObjectRd);

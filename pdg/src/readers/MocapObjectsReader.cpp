@@ -23,9 +23,16 @@ void MocapObjectsReader::init(ros::NodeHandle* node,
           std::string ids,
           std::string param)
 {
-  std::string topic = topics + ":";
+  std::string topic = "";
+  if (node->hasParam(topics))
+      node->getParam(topics, topic);
+  topic = topic + ":";
   std::vector<std::string> mocapTopic;
-  std::string id = ids + ":";
+
+  std::string id = "";
+  if (node->hasParam(ids))
+      node->getParam(ids, id);
+  id = id + ":";
   std::vector<std::string> mocapId;
 
   split(topic, mocapTopic, ':');

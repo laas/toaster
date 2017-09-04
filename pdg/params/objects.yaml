@@ -4,3 +4,5 @@ pdg:
     gazeboObjectReader: true
     OM2MObjectReader: false
     mocapObjectReader: true
+    mocapObjectsTopics : '/optitrack/bodies/Rigid_Body_2:/optitrack/bodies/Rigid_Body_1'
+    mocapObjectsIds : 'hand:head'
