@@ -1,0 +1,198 @@
+<!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // propertyType
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+-->
+
+<owl:Class rdf:about="toasterOntology#Motion">
+  <rdfs:label>Motion</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Position">
+  <rdfs:label>Position</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Posture">
+  <rdfs:label>Posture</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Density">
+  <rdfs:label>Density</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Attention">
+  <rdfs:label>Attention</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#State">
+  <rdfs:label>State</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Measure">
+  <rdfs:label>Measure</rdfs:label>
+</owl:Class>
+
+<!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // property
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+-->
+
+<owl:Class rdf:about="toasterOntology#IsMoving">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Motion"/>
+  <rdfs:label>IsMoving</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#IsMovingToward">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Motion"/>
+  <rdfs:label>IsMovingToward</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Distance">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Position"/>
+  <rdfs:label>Distance</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#IsInHand">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Position"/>
+  <rdfs:label>IsInHand</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#IsFacing">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Posture"/>
+  <rdfs:label>IsFacing</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#IsInRoom">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Position"/>
+  <rdfs:label>IsInRoom</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#IsAt">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Position"/>
+  <rdfs:label>IsAt</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#IsInArea">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Position"/>
+  <rdfs:label>IsInArea</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#AreaDensity">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Density"/>
+  <rdfs:label>AreaDensity</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#IsLookingToward">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Attention"/>
+  <rdfs:label>IsLookingToward</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#IsLookingAt">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Attention"/>
+  <rdfs:label>IsLookingAt</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Motion">
+  <rdfs:subClassOf rdf:resource="toasterOntology#State"/>
+  <rdfs:label>Motion</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Active">
+  <rdfs:subClassOf rdf:resource="toasterOntology#State"/>
+  <rdfs:label>Active</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Inactive">
+  <rdfs:subClassOf rdf:resource="toasterOntology#State"/>
+  <rdfs:label>Inactive</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Temperature">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Measure"/>
+  <rdfs:label>Temperature</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Illuminance">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Measure"/>
+  <rdfs:label>Illuminance</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Luminosity">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Measure"/>
+  <rdfs:label>Luminosity</rdfs:label>
+</owl:Class>
+
+<!--
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // SubProperty
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+-->
+
+<owl:Class rdf:about="toasterOntology#Agent">
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsMoving"/>
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsLookingToward"/>
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsLookingAt"/>
+  <rdfs:label>Agent</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Direction">
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsMovingToward"/>
+  <rdfs:label>Direction</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Distance">
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsMovingToward"/>
+  <rdfs:label>Distance</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#3D">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Distance"/>
+  <rdfs:label>3D</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Joint">
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsMoving"/>
+  <rdfs:label>Joint</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Object">
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsInHand"/>
+  <rdfs:subClassOf rdf:resource="toasterOntology#Inactive"/>
+  <rdfs:subClassOf rdf:resource="toasterOntology#Active"/>
+  <rdfs:subClassOf rdf:resource="toasterOntology#Motion"/>
+  <rdfs:label>Object</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Angle">
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsFacing"/>
+  <rdfs:label>Angle</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Room">
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsInRoom"/>
+  <rdfs:label>Room</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Location">
+  <rdfs:subClassOf rdf:resource="toasterOntology#IsAt"/>
+  <rdfs:label>Location</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#Ratio">
+  <rdfs:subClassOf rdf:resource="toasterOntology#AreaDensity"/>
+  <rdfs:label>Ratio</rdfs:label>
+</owl:Class>
+
+<owl:Class rdf:about="toasterOntology#PhysicalQuantity">
+  <rdfs:subClassOf rdf:resource="toasterOntology#Temperature"/>
+  <rdfs:subClassOf rdf:resource="toasterOntology#Illuminance"/>
+  <rdfs:subClassOf rdf:resource="toasterOntology#Luminosity"/>
+  <rdfs:label>PhysicalQuantity</rdfs:label>
+</owl:Class>
