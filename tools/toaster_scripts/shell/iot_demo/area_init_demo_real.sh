@@ -7,7 +7,7 @@
 #  spencerRobot: false, vimanObject: true, sparkObject: false, sparkFact: false}"
 
 # spark (branch genom / mardi_dev2)
-#rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: false, adreamMocapHuman: false, toasterSimuHuman: false, pr2Robot: true, spencerRobot: false, toasterSimuRobot: false, toasterSimuObject: true, arObject: true, om2mObject: true, gazeboObject: false}" 
+rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: false, adreamMocapHuman: true, toasterSimuHuman: false, pr2Robot: true, spencerRobot: false, toasterSimuRobot: false, toasterSimuObject: true, arObject: true, om2mObject: true, gazeboObject: false, mocapObject: false}" 
 
 # no genom (branch master)
 #rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: true, pr2Robot: true,
@@ -15,36 +15,11 @@
 
 
 
-#area manager setup
 
 #############
 ### AREA ###
 #############
-rosservice call /area_manager/add_area "myArea:
-  id: 1
-  name: 'robot_interaction'
-  myOwner: 'PR2_ROBOT'
-  areaType: ''
-  factType: 'interaction'
-  entityType: 'agents'
-  isCircle: false
-  center: {x: 0.0, y: 0.0, z: 0.0}
-  ray: 2.0
-  height: 0.0
-  poly:
-    points:
-    - {x: 0, y: -1, z: 0}
-    - {x: 2, y: -2, z: 0}
-    - {x: 2, y: 2, z: 0}
-    - {x: 0, y: 1, z: 0}
-  zmin: 0.0
-  zmax: 2.0
-  enterHysteresis: 0.01
-  leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
-  
+
 # IoT part:
 
 rosservice call /area_manager/add_area "myArea:
@@ -68,9 +43,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 2.5
   enterHysteresis: 0.01
   leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 rosservice call /area_manager/add_area "myArea:
   id: 3
@@ -93,9 +68,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 2.5
   enterHysteresis: 0.01
   leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 
 ###############
@@ -390,17 +365,17 @@ rosservice call /area_manager/add_area "myArea:
   height: 0.0
   poly:
     points:
-    - {x: -0.4, y: -0.7, z: 0.0}
-    - {x: -0.4, y: 0.7, z: 0.0}
-    - {x: 0.4, y: 0.7, z: 0.0}
-    - {x: 0.4, y: -0.72, z: 0.0}
+    - {x: -0.7, y: -0.4, z: 0.0}
+    - {x: -0.7, y: 0.4, z: 0.0}
+    - {x: 0.7, y: 0.4, z: 0.0}
+    - {x: 0.7, y: -0.4, z: 0.0}
   zmin: 0.65
   zmax: 1.05
   enterHysteresis: 0.1
   leaveHysteresis: 0.1
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 # LivingRoom low table : h:0.45        x: 7.2    y: 12.7    z: 0.0 //OK
 rosservice call /area_manager/add_area "myArea:
@@ -424,9 +399,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 0.65
   enterHysteresis: 0.1
   leaveHysteresis: 0.1
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 
 # LivingRoom small shelf : h:0.56    x: 6.7    y: 11.4    z: 0.0 //OK
@@ -451,9 +426,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 0.76
   enterHysteresis: 0.1
   leaveHysteresis: 0.1
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 # Bedroom_console : h:0.72    x: 6.0    y: 11.6    z: 0.0 //OK
 rosservice call /area_manager/add_area "myArea:
@@ -477,9 +452,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 0.92
   enterHysteresis: 0.1
   leaveHysteresis: 0.1
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 # Bedroom_cupboard3 : h: ?<1.06    x: 5.2    y: 12.9    z: 0.0
 rosservice call /area_manager/add_area "myArea:
@@ -503,11 +478,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 0.9
   enterHysteresis: 0.1
   leaveHysteresis: 0.1
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 
-
-rosservice call /area_manager/publish_all_areas "{}"
 

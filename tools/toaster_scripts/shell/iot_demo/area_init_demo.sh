@@ -9,7 +9,7 @@
 # spark (branch genom / mardi_dev2)
 rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: false, adreamMocapHuman: false,
   toasterSimuHuman: true, pr2Robot: false, spencerRobot: false, toasterSimuRobot: true,
-  toasterSimuObject: true, arObject: true, om2mObject: true, gazeboObject: false}" 
+  toasterSimuObject: true, arObject: true, om2mObject: true, gazeboObject: false, mocapObject: false}" 
 
 # no genom (branch master)
 #rosservice call /pdg/manage_stream "{morseHuman: false, niutHuman: false, groupHuman: false, mocapHuman: true, pr2Robot: true,
@@ -43,9 +43,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 2.0
   enterHysteresis: 0.01
   leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 
 
@@ -70,9 +70,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 2.0
   enterHysteresis: 0.01
   leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 rosservice call /area_manager/add_area "myArea:
   id: 0
@@ -95,9 +95,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 2.0
   enterHysteresis: 0.01
   leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 
 rosservice call /area_manager/add_area "myArea:
@@ -121,9 +121,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 0.5
   enterHysteresis: 0.01
   leaveHysteresis: 0.3
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 rosservice call /area_manager/add_area "myArea:
   id: 0
@@ -146,9 +146,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 2.0
   enterHysteresis: 0.01
   leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
   
 # IoT part:
 
@@ -173,9 +173,9 @@ rosservice call /area_manager/add_area "myArea:
   zmax: 2.0
   enterHysteresis: 0.01
   leaveHysteresis: 0.01
-  insideEntities_: [0]
-  upcomingEntities_: [0]
-  leavingEntities_: [0]"
+  insideEntities_: ['']
+  upcomingEntities_: ['']
+  leavingEntities_: ['']"
 
 
 
