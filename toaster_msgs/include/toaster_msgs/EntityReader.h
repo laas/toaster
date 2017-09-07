@@ -20,6 +20,8 @@ public:
 
     bool isPresent(std::string id);
 
+    void clear() { lastConfig_.clear(); }
+
     ros::Subscriber sub_;
     bool fullConfig_;
 };
