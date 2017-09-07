@@ -52,8 +52,10 @@ void MocapObjectReader::init(ros::NodeHandle* node, std::string topic, std::stri
     }
 }
 
-void MocapObjectReader::optitrackCallback(const optitrack::or_pose_estimator_state::ConstPtr & msg) {
-
+void MocapObjectReader::optitrackCallback(const optitrack::or_pose_estimator_state::ConstPtr & msg)
+{
+  if(activated_)
+  {
     ros::Time now = ros::Time::now();
     MovableObject* curObject;
 
@@ -103,4 +105,5 @@ void MocapObjectReader::optitrackCallback(const optitrack::or_pose_estimator_sta
       std::string err = "[Mocap " + id_ + " transfor] " + std::string(ex.what());
       ROS_ERROR("%s", err.c_str());
     }
+  }
 }
