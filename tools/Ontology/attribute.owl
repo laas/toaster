@@ -1,8 +1,8 @@
 <rdf:RDF xml:base="toasterOntology/attribute">
   <!-- toasterOntology/attribute#attribute -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#attribute">
+  <owl:Class rdf:about="toasterOntology/attribute#attribute">
     <rdfs:label>attribute</rdfs:label>
-  </owl:Attribute>
+  </owl:Class>
   <!--
       ///////////////////////////////////////////////////////////////////////////////////////
       //
