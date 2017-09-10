@@ -1,0 +1,267 @@
+<rdf:RDF xml:base="toasterOntology/attribute">
+  <!-- toasterOntology/attribute#attribute -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#attribute">
+    <rdfs:label>attribute</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      //
+      // propertyType
+      //
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#color -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#color">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
+    <rdfs:label>color</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#red -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#red">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
+    <rdfs:label>red</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#blue -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#blue">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
+    <rdfs:label>blue</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#green -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#green">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
+    <rdfs:label>green</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#white -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#white">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
+    <rdfs:label>white</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#black -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#black">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
+    <rdfs:label>black</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#orange -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#orange">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
+    <rdfs:label>orange</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#yellow -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#yellow">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
+    <rdfs:label>yellow</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#pink -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#pink">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
+    <rdfs:label>pink</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#purple -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#purple">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
+    <rdfs:label>purple</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      //
+      // gender
+      //
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#gender -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#gender">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
+    <rdfs:label>gender</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#male -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#male">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#gender"/>
+    <rdfs:label>male</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#female -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#female">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#gender"/>
+    <rdfs:label>female</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      //
+      // age
+      //
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#age -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#age">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
+    <rdfs:label>age</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#young -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#young">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#age"/>
+    <rdfs:label>young</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#old -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#old">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#age"/>
+    <rdfs:label>old</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#adult -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#adult">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#age"/>
+    <rdfs:label>adult</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      //
+      // activity
+      //
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#activity -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#activity">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
+    <rdfs:label>activity</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#inanimate -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#inanimate">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#activity"/>
+    <rdfs:label>inanimate</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#animate -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#animate">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#activity"/>
+    <rdfs:label>animate</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      //
+      // vitality
+      //
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#vitality -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#vitality">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
+    <rdfs:label>vitality</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#alive -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#alive">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#vitality"/>
+    <rdfs:label>alive</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#nonalive -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#nonalive">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#vitality"/>
+    <rdfs:label>nonalive</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      //
+      // entity
+      //
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#entity -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#entity">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
+    <rdfs:label>entity</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      // -- objects
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#object -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#object">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#entity"/>
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#inanimate"/>
+    <rdfs:label>object</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#vegetal -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#vegetal">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#alive"/>
+    <rdfs:label>vegetal</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#technicalObject -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#technicalObject">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
+    <rdfs:label>technicalObject</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#sensor -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#sensor">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#technicalObject"/>
+    <rdfs:label>sensor</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#actuator -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#actuator">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#technicalObject"/>
+    <rdfs:label>actuator</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#conveyance -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#conveyance">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#technicalObject"/>
+    <rdfs:label>conveyance</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#furniture -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#furniture">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
+    <rdfs:label>furniture</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      // -- agents
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#agent -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#agent">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#entity"/>
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#animate"/>
+    <rdfs:label>agent</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      // -- -- human
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#human -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#human">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#agent"/>
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#alive"/>
+    <rdfs:label>human</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#man -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#man">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#human"/>
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#male"/>
+    <rdfs:label>man</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#woman -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#woman">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#human"/>
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#female"/>
+    <rdfs:label>woman</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#child -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#child">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#human"/>
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#young"/>
+    <rdfs:label>child</rdfs:label>
+  </owl:Attribute>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      // -- -- other entities
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/attribute#robot -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#robot">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#agent"/>
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#nonalive"/>
+    <rdfs:label>robot</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#animal -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#animal">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#agent"/>
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#alive"/>
+    <rdfs:label>animal</rdfs:label>
+  </owl:Attribute>
+</rdf:RDF>
