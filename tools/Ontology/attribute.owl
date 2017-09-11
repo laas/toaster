@@ -1,379 +1,624 @@
-<rdf:RDF xml:base="toasterOntology/attribute">
-  <!-- toasterOntology/attribute#attribute -->
-  <owl:Class rdf:about="toasterOntology/attribute#attribute">
-    <rdfs:label>attribute</rdfs:label>
-  </owl:Class>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      //
-      // propertyType
-      //
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#color -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#color">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
-    <rdfs:label>color</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#red -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#red">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
-    <rdfs:label>red</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#blue -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#blue">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
-    <rdfs:label>blue</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#green -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#green">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
-    <rdfs:label>green</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#white -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#white">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
-    <rdfs:label>white</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#black -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#black">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
-    <rdfs:label>black</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#orange -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#orange">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
-    <rdfs:label>orange</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#yellow -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#yellow">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
-    <rdfs:label>yellow</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#pink -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#pink">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
-    <rdfs:label>pink</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#purple -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#purple">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#color"/>
-    <rdfs:label>purple</rdfs:label>
-  </owl:Attribute>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      //
-      // gender
-      //
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#gender -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#gender">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
-    <rdfs:label>gender</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#male -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#male">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#gender"/>
-    <rdfs:label>male</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#female -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#female">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#gender"/>
-    <rdfs:label>female</rdfs:label>
-  </owl:Attribute>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      //
-      // age
-      //
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#age -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#age">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
-    <rdfs:label>age</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#young -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#young">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#age"/>
-    <rdfs:label>young</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#old -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#old">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#age"/>
-    <rdfs:label>old</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#adult -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#adult">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#age"/>
-    <rdfs:label>adult</rdfs:label>
-  </owl:Attribute>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      //
-      // activity
-      //
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#activity -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#activity">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
-    <rdfs:label>activity</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#inanimate -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#inanimate">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#activity"/>
-    <rdfs:label>inanimate</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#animate -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#animate">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#activity"/>
-    <rdfs:label>animate</rdfs:label>
-  </owl:Attribute>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      //
-      // vitality
-      //
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#vitality -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#vitality">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
-    <rdfs:label>vitality</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#alive -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#alive">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#vitality"/>
-    <rdfs:label>alive</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#nonalive -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#nonalive">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#vitality"/>
-    <rdfs:label>nonalive</rdfs:label>
-  </owl:Attribute>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      //
-      // entity
-      //
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#entity -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#entity">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
-    <rdfs:label>entity</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#joint -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#joint">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#entity"/>
-    <rdfs:label>joint</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#hand -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#hand">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#joint"/>
-    <rdfs:label>hand</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#head -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#head">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#joint"/>
-    <rdfs:label>head</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#feet -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#feet">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#joint"/>
-    <rdfs:label>feet</rdfs:label>
-  </owl:Attribute>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      // -- objects
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#object -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#object">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#entity"/>
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#inanimate"/>
-    <rdfs:label>object</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#vegetal -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#vegetal">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#alive"/>
-    <rdfs:label>vegetal</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#technicalObject -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#technicalObject">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
-    <rdfs:label>technicalObject</rdfs:label>
-  </owl:Attribute>
-  <!--///////////////////////////////////////////////////////////////////////////////////////
-      // --- sensors
-      ///////////////////////////////////////////////////////////////////////////////////////-->
-  <!-- toasterOntology/attribute#sensor -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#sensor">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#technicalObject"/>
-    <rdfs:label>sensor</rdfs:label>
-  </owl:Attribute>
-  <!--///////////////////////////////////////////////////////////////////////////////////////
-      // --- actuator
-      ///////////////////////////////////////////////////////////////////////////////////////-->
-  <!-- toasterOntology/attribute#actuator -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#actuator">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#technicalObject"/>
-    <rdfs:label>actuator</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#lamp -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#lamp">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#actuator"/>
-    <rdfs:label>lamp</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#fan -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#fan">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#actuator"/>
-    <rdfs:label>fan</rdfs:label>
-  </owl:Attribute>
-  <!--///////////////////////////////////////////////////////////////////////////////////////
-      // --- conveyance
-      ///////////////////////////////////////////////////////////////////////////////////////-->
-  <!-- toasterOntology/attribute#conveyance -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#conveyance">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#technicalObject"/>
-    <rdfs:label>conveyance</rdfs:label>
-  </owl:Attribute>
-  <!--///////////////////////////////////////////////////////////////////////////////////////
-      // --- furniture and affair
-      ///////////////////////////////////////////////////////////////////////////////////////-->
-  <!-- toasterOntology/attribute#furniture -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#furniture">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
-    <rdfs:label>furniture</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#affair -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#affair">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
-    <rdfs:label>affair</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#desk -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#desk">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
-    <rdfs:label>desk</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#book -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#book">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
-    <rdfs:label>book</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#trashbin -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#trashbin">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
-    <rdfs:label>trashbin</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#cube -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#cube">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
-    <rdfs:label>cube</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#mug -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#mug">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
-    <rdfs:label>mug</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#tape -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#tape">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
-    <rdfs:label>tape</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#bed -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#bed">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
-    <rdfs:label>bed</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#chair -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#chair">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
-    <rdfs:label>chair</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#table -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#table">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
-    <rdfs:label>table</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#sofa -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#sofa">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
-    <rdfs:label>sofa</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#shelf -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#shelf">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
-    <rdfs:label>shelf</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#box -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#box">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
-    <rdfs:label>box</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#door -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#door">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
-    <rdfs:label>door</rdfs:label>
-  </owl:Attribute>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      // -- agents
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#agent -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#agent">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#entity"/>
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#animate"/>
-    <rdfs:label>agent</rdfs:label>
-  </owl:Attribute>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      // -- -- human
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#human -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#human">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#agent"/>
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#alive"/>
-    <rdfs:label>human</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#man -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#man">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#human"/>
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#male"/>
-    <rdfs:label>man</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#woman -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#woman">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#human"/>
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#female"/>
-    <rdfs:label>woman</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#child -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#child">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#human"/>
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#young"/>
-    <rdfs:label>child</rdfs:label>
-  </owl:Attribute>
-  <!--
-      ///////////////////////////////////////////////////////////////////////////////////////
-      // -- -- other entities
-      ///////////////////////////////////////////////////////////////////////////////////////
-  -->
-  <!-- toasterOntology/attribute#robot -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#robot">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#agent"/>
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#nonalive"/>
-    <rdfs:label>robot</rdfs:label>
-  </owl:Attribute>
-  <!-- toasterOntology/attribute#animal -->
-  <owl:Attribute rdf:about="toasterOntology/attribute#animal">
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#agent"/>
-    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#alive"/>
-    <rdfs:label>animal</rdfs:label>
-  </owl:Attribute>
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/srth/ontologies/toaster/attribute#"
+     xml:base="http://www.semanticweb.org/srth/ontologies/toaster/attribute"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#activity -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#activity">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#attribute"/>
+        <rdfs:comment>explain if an entity can move by it self</rdfs:comment>
+        <rdfs:label>activity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#actuator -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#actuator">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#technicalObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#adult -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#adult">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#age"/>
+        <rdfs:label>adult</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#affair -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#affair">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#nonalive"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#object"/>
+        <rdfs:comment>affairs are every little non alive objects</rdfs:comment>
+        <rdfs:label>affair</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#age -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#age">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#attribute"/>
+        <rdfs:comment>approximated age description</rdfs:comment>
+        <rdfs:label>age</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#agent -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#agent">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#animate"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#entity"/>
+        <rdfs:comment>an agent is an animated entity</rdfs:comment>
+        <rdfs:label>agent</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#alive -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#alive">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#vitality"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#nonalive"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#animal -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#animal">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#agent"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#alive"/>
+        <rdfs:label>animal</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#animate -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#animate">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#activity"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#inanimate"/>
+        <rdfs:label>animate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#arm -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#arm">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#joint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#attribute -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#attribute"/>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#bed -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#bed">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#black -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#black">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#color"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#blue -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#blue">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#color"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#book -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#book">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#affair"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#box -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#box">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#affair"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#chair -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#chair">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#child -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#child">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#human"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#young"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#color -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#color">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#attribute"/>
+        <rdfs:label>color</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#conveyance -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#conveyance">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#technicalObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#cube -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#cube">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#affair"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#desk -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#desk">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#door -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#door">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#entity -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#entity">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#attribute"/>
+        <rdfs:comment>entity can describe every physical things like human, robot, objetcs, ...</rdfs:comment>
+        <rdfs:label>entity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#fan -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#fan">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#actuator"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#feet -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#feet">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#joint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#female -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#female">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#gender"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#male"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#nonalive"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#object"/>
+        <rdfs:label>furniture</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#gender -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#gender">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#attribute"/>
+        <rdfs:label>gender</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#green -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#green">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#color"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#hand -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#hand">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#joint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#head -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#head">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#joint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#human -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#human">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#agent"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#alive"/>
+        <rdfs:label>human</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#inanimate -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#inanimate">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#activity"/>
+        <rdfs:label>inanimate</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#joint -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#joint">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#entity"/>
+        <rdfs:comment>joints are parts of agent</rdfs:comment>
+        <rdfs:label>joint</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#lamp -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#lamp">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#actuator"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#leg -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#leg">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#joint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#male -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#male">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#gender"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#man -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#man">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#human"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#male"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#woman"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#mug -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#mug">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#affair"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#nonalive -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#nonalive">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#vitality"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#object -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#object">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#entity"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#inanimate"/>
+        <rdfs:comment>an object is an inanimated entity</rdfs:comment>
+        <rdfs:label>object</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#old -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#old">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#age"/>
+        <rdfs:label>old</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#pink -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#pink">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#color"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#purple -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#purple">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#color"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#red -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#red">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#color"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#robot -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#robot">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#agent"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#nonalive"/>
+        <rdfs:label>robot</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#sensor -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#sensor">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#technicalObject"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#shelf -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#shelf">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#sofa -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#sofa">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#table -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#table">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#tape -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#tape">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#affair"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#technicalObject -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#technicalObject">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#nonalive"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#object"/>
+        <owl:disjointWith rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#vegetal"/>
+        <rdfs:comment>a technical object can also be an affair or a furniture</rdfs:comment>
+        <rdfs:label>technicalObject</rdfs:label>
+        <rdfs:seeAlso>affair
+furniture</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#torso -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#torso">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#joint"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#trashbin -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#trashbin">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#affair"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#vegetal -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#vegetal">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#alive"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#object"/>
+        <rdfs:label>vegetal</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#vitality -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#vitality">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#attribute"/>
+        <rdfs:comment>vitality describe if an entity is alive or not</rdfs:comment>
+        <rdfs:label>vitality</rdfs:label>
+        <rdfs:seeAlso>entity</rdfs:seeAlso>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#white -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#white">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#color"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#woman -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#woman">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#female"/>
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#human"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#yellow -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#yellow">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#color"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/srth/ontologies/toaster/attribute#young -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#young">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/srth/ontologies/toaster/attribute#age"/>
+        <rdfs:label>young</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#actuator"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#conveyance"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#sensor"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#adult"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#old"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#young"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#affair"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#furniture"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#vegetal"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#agent"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#joint"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#object"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#animal"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#human"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#robot"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#arm"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#feet"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#hand"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#head"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#leg"/>
+            <rdf:Description rdf:about="http://www.semanticweb.org/srth/ontologies/toaster/attribute#torso"/>
+        </owl:members>
+    </rdf:Description>
 </rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.8.20170104-2310) https://github.com/owlcs/owlapi -->
+
