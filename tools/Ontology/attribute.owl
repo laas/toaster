@@ -165,6 +165,26 @@
     <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#attribute"/>
     <rdfs:label>entity</rdfs:label>
   </owl:Attribute>
+  <!-- toasterOntology/attribute#joint -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#joint">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#entity"/>
+    <rdfs:label>joint</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#hand -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#hand">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#joint"/>
+    <rdfs:label>hand</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#head -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#head">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#joint"/>
+    <rdfs:label>head</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#feet -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#feet">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#joint"/>
+    <rdfs:label>feet</rdfs:label>
+  </owl:Attribute>
   <!--
       ///////////////////////////////////////////////////////////////////////////////////////
       // -- objects
@@ -187,25 +207,117 @@
     <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
     <rdfs:label>technicalObject</rdfs:label>
   </owl:Attribute>
+  <!--///////////////////////////////////////////////////////////////////////////////////////
+      // --- sensors
+      ///////////////////////////////////////////////////////////////////////////////////////-->
   <!-- toasterOntology/attribute#sensor -->
   <owl:Attribute rdf:about="toasterOntology/attribute#sensor">
     <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#technicalObject"/>
     <rdfs:label>sensor</rdfs:label>
   </owl:Attribute>
+  <!--///////////////////////////////////////////////////////////////////////////////////////
+      // --- actuator
+      ///////////////////////////////////////////////////////////////////////////////////////-->
   <!-- toasterOntology/attribute#actuator -->
   <owl:Attribute rdf:about="toasterOntology/attribute#actuator">
     <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#technicalObject"/>
     <rdfs:label>actuator</rdfs:label>
   </owl:Attribute>
+  <!-- toasterOntology/attribute#lamp -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#lamp">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#actuator"/>
+    <rdfs:label>lamp</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#fan -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#fan">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#actuator"/>
+    <rdfs:label>fan</rdfs:label>
+  </owl:Attribute>
+  <!--///////////////////////////////////////////////////////////////////////////////////////
+      // --- conveyance
+      ///////////////////////////////////////////////////////////////////////////////////////-->
   <!-- toasterOntology/attribute#conveyance -->
   <owl:Attribute rdf:about="toasterOntology/attribute#conveyance">
     <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#technicalObject"/>
     <rdfs:label>conveyance</rdfs:label>
   </owl:Attribute>
+  <!--///////////////////////////////////////////////////////////////////////////////////////
+      // --- furniture and affair
+      ///////////////////////////////////////////////////////////////////////////////////////-->
   <!-- toasterOntology/attribute#furniture -->
   <owl:Attribute rdf:about="toasterOntology/attribute#furniture">
     <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
     <rdfs:label>furniture</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#affair -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#affair">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#object"/>
+    <rdfs:label>affair</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#desk -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#desk">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
+    <rdfs:label>desk</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#book -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#book">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
+    <rdfs:label>book</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#trashbin -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#trashbin">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
+    <rdfs:label>trashbin</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#cube -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#cube">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
+    <rdfs:label>cube</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#mug -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#mug">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
+    <rdfs:label>mug</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#tape -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#tape">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
+    <rdfs:label>tape</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#bed -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#bed">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
+    <rdfs:label>bed</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#chair -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#chair">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
+    <rdfs:label>chair</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#table -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#table">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
+    <rdfs:label>table</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#sofa -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#sofa">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
+    <rdfs:label>sofa</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#shelf -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#shelf">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
+    <rdfs:label>shelf</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#box -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#box">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#affair"/>
+    <rdfs:label>box</rdfs:label>
+  </owl:Attribute>
+  <!-- toasterOntology/attribute#door -->
+  <owl:Attribute rdf:about="toasterOntology/attribute#door">
+    <rdfs:subAttributeOf rdf:resource="toasterOntology/attribute#furniture"/>
+    <rdfs:label>door</rdfs:label>
   </owl:Attribute>
   <!--
       ///////////////////////////////////////////////////////////////////////////////////////
