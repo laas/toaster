@@ -29,7 +29,7 @@
 <object name="Lampe1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
 
 
-<object name="Philips_lamp_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
+<object name="Lampe4" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
 
 
 <object name="Presence" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
