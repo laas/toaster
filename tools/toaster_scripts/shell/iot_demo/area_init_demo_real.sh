@@ -116,12 +116,12 @@ pose:
     w: 0.5"
 
 
-rosservice call /toaster_simu/add_entity "id: 'Livingroom_table'
-name: 'Livingroom_table'
+rosservice call /toaster_simu/add_entity "id: 'Livingroom_black_table'
+name: 'Livingroom_black_table'
 type: 'object'
 ownerId: ''" 
 
-rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_table'
+rosservice call /toaster_simu/set_entity_pose "id: 'Livingroom_black_table'
 ownerId: ''
 type: 'object'
 pose:
@@ -351,7 +351,7 @@ pose:
 ### OBJECTS INTERACTION ZONES ###
 #################################
 
-# LivingRoom table : h: .75    x: 8.9    y: 9.9    z: 0.0 //OK
+# LivingRoom table : h: .75    x: 8.9    y: 9.9    z: 0.0 
 rosservice call /area_manager/add_area "myArea:
   id: 4
   name: 'Livingroom_table_area'
@@ -377,7 +377,7 @@ rosservice call /area_manager/add_area "myArea:
   upcomingEntities_: ['']
   leavingEntities_: ['']"
 
-# LivingRoom low table : h:0.45        x: 7.2    y: 12.7    z: 0.0 //OK
+# LivingRoom low table : h:0.45        x: 7.2    y: 12.7    z: 0.0
 rosservice call /area_manager/add_area "myArea:
   id: 5
   name: 'Livingroom_low_table_area'
@@ -404,7 +404,7 @@ rosservice call /area_manager/add_area "myArea:
   leavingEntities_: ['']"
 
 
-# LivingRoom small shelf : h:0.56    x: 6.7    y: 11.4    z: 0.0 //OK
+# LivingRoom small shelf : h:0.56    x: 6.7    y: 11.4    z: 0.0
 rosservice call /area_manager/add_area "myArea:
   id: 6
   name: 'Livingroom_small_shelf_area'
@@ -430,7 +430,7 @@ rosservice call /area_manager/add_area "myArea:
   upcomingEntities_: ['']
   leavingEntities_: ['']"
 
-# Bedroom_console : h:0.72    x: 6.0    y: 11.6    z: 0.0 //OK
+# Bedroom_console : h:0.72    x: 6.0    y: 11.6    z: 0.0 
 rosservice call /area_manager/add_area "myArea:
   id: 7
   name: 'Bedroom_console_area'
