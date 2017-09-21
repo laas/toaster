@@ -20,7 +20,7 @@
 #include <toaster_msgs/FactList.h>
 #include <geometry_msgs/PolygonStamped.h>
 #include <iterator>
-//#include <boost/numeric/ublas/matrix.hpp>
+//#include <boost/numeric/ublas/matrix.hpp>area_manager/factList
 //#include <boost/numeric/ublas/io.hpp>
 
 
@@ -53,33 +53,41 @@ geometry_msgs::Polygon polygonToRos(unsigned int id) {
 
 void setAreaMsg(toaster_msgs::AreaList& areaList_msg) {
     toaster_msgs::Area area;
-    for (std::map<unsigned int, Area*>::iterator it = mapArea_.begin(); it != mapArea_.end(); ++it) {
-        area.id = it->second->getId();
-        area.name = it->second->getName();
+    for (std::map<unsigned int, Area*>::iterator it = mapArea_.begin(); it != mapArea_.end(); ++it)
+    {
+      area.id = it->second->getId();
+      area.name = it->second->getName();
 
-        //If it is a circle area
-        if (it->second->getIsCircle()) {
-            area.center.x = ((CircleArea*) it->second)->getCenter().get<0>();
-            area.center.y = ((CircleArea*) it->second)->getCenter().get<1>();
-            area.center.z = ((CircleArea*) it->second)->getCenter().get<2>();
-            area.ray = ((CircleArea*) it->second)->getRay();
-            area.height = ((CircleArea*) it->second)->getHeight();
-        } else {
-            //If it is a polygon
-            area.poly = polygonToRos(it->first);
-            area.zmin = ((PolygonArea*) it->second)->z.get<0>();
-            area.zmax = ((PolygonArea*) it->second)->z.get<1>();
-        }
+      if (it->second->getIsCircle()) //If it is a circle area
+      {
+        area.center.x = ((CircleArea*) it->second)->getCenter().get<0>();
+        area.center.y = ((CircleArea*) it->second)->getCenter().get<1>();
+        area.center.z = ((CircleArea*) it->second)->getCenter().get<2>();
+        area.ray = ((CircleArea*) it->second)->getRay();
+        area.height = ((CircleArea*) it->second)->getHeight();
+      }
+      else //If it is a polygon
+      {
+        area.poly = polygonToRos(it->first);
+        area.zmin = ((PolygonArea*) it->second)->z.get<0>();
+        area.zmax = ((PolygonArea*) it->second)->z.get<1>();
+      }
 
-        area.isCircle = it->second->getIsCircle();
-        area.entityType = it->second->getEntityType();
-        area.factType = it->second->getFactType();
-        area.myOwner = it->second->getMyOwner();
-        area.areaType = it->second->getAreaType();
+      area.isCircle = it->second->getIsCircle();
+      area.entityType = it->second->getEntityType();
+      area.factType = it->second->getFactType();
+      area.myOwner = it->second->getMyOwner();
+      area.areaType = it->second->getAreaType();
 
-        areaList_msg.areaList.push_back(area);
+    	area.enterHysteresis = it->second->getEnterHysteresis();
+    	area.leaveHysteresis = it->second->getLeaveHysteresis();
+
+    	area.insideEntities_ = it->second->getInsideEntities();
+    	area.upcomingEntities_ = it->second->getUpcomingEntities();
+    	area.leavingEntities_ = it->second->getLeavingEntities();
+
+      areaList_msg.areaList.push_back(area);
     }
-
 }
 
 bool areaCompatible(std::string areaEntType, EntityType entType) {
@@ -182,87 +190,41 @@ void updateEntityArea(std::map<unsigned int, Area*>& mpArea, Entity * entity) {
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
         if (it->second->getMyOwner() == entity->getId()) {
 
-            if (it->second->getIsCircle()) {
+            if (it->second->getIsCircle())
                 rotateTranslate(entity, ((CircleArea*) it->second));
-            } else {
-                rotateTranslate(entity, ((PolygonArea*) it->second));
-            }
-        }
-    }
-}
-
-/**
-void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
-	//ROS_INFO("Inside the function");
-    for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
-        // if the entity is actually concerned, and is not the owner
-        //ROS_INFO("entity's type : %s, area's type : %s",areaCompatible(it->second->getEntityType().ToString("") ,ent->getEntityType().ToString(""));
-        if (areaCompatible(it->second->getEntityType(), ent->getEntityType()) && it->second->getMyOwner() != ent->getId()) {
-
-            // If we already know that entity is in Area, we update if needed.
-            if (ent->isInArea(it->second->getId()))
-                if (it->second->isPointInArea(ent->getPosition()))
-                    continue;
-                else {
-                    printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
-                    ent->removeInArea(it->second->getId());
-                    it->second->removeEntity(ent->getId());
-                    if (it->second->getAreaType() == "room")
-                        ent->setRoomId(0);
-                }// Same if entity is not in Area
             else
-                if (it->second->isPointInArea(ent->getPosition())) {
-                printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
-                ent->inArea_.push_back(it->second->getId());
-                it->second->insideEntities_.push_back(ent->getId());
-
-                //User has to be in a room. May it be a "global room".
-                if (it->second->getAreaType() == "room")
-                    ent->setRoomId(it->second->getId());
-            } else {
-                //printf("[area_manager][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
-                continue;
-            }
-        } else {
-            continue;
+                rotateTranslate(entity, ((PolygonArea*) it->second));
         }
     }
 }
-**/
 
 void updateInArea(Entity* ent, std::map<unsigned int, Area*>& mpArea) {
 	//ROS_INFO("Inside the function");
     for (std::map<unsigned int, Area*>::iterator it = mpArea.begin(); it != mpArea.end(); ++it) {
         // if the entity is actually concerned, and is not the owner
-        //ROS_INFO("entity's type : %s, area's type : %s",areaCompatible(it->second->getEntityType().ToString("") ,ent->getEntityType().ToString(""));
-        if (areaCompatible(it->second->getEntityType(), ent->getEntityType()) && it->second->getMyOwner() != ent->getId()) {
-
-            // If we already know that entity is in Area, we update if needed.
+        if (areaCompatible(it->second->getEntityType(), ent->getEntityType()) && it->second->getMyOwner() != ent->getId())
+        { // If we already know that entity is in Area, we update if needed.
             if (ent->isInArea(it->second->getId()))
                 if (it->second->isPointInArea(ent->getPosition(), ent->getId()))
                     continue;
                 else {
                     printf("[area_manager] %s leaves Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                     ent->removeInArea(it->second->getId());
-                    it->second->removeInsideEntity(ent->getId());
                     if (it->second->getAreaType() == "room")
                         ent->setRoomId(0);
                 }// Same if entity is not in Area
-            else
-                if (it->second->isPointInArea(ent->getPosition(),ent->getId())) {
+            else if (it->second->isPointInArea(ent->getPosition(),ent->getId()))
+            {
                 printf("[area_manager] %s enters in Area %s\n", ent->getName().c_str(), it->second->getName().c_str());
                 ent->inArea_.push_back(it->second->getId());
 
                 //User has to be in a room. May it be a "global room".
                 if (it->second->getAreaType() == "room")
                     ent->setRoomId(it->second->getId());
-            } else {
-                //printf("[area_manager][DEGUG] %s is not in Area %s, he is in %f, %f\n", ent->getName().c_str(), it->second->getName().c_str(), ent->getPosition().get<0>(), ent->getPosition().get<1>());
+            } else
                 continue;
-            }
-        } else {
+        } else
             continue;
-        }
     }
 }
 // Return confidence: 0.0 if not facing 1.0 if facing
@@ -291,7 +253,6 @@ void printMyArea(unsigned int id) {
     printf("\n--------------------------\n");
 }
 
-
 unsigned int getFreeId(std::map<unsigned int, Area*>& map) {
     unsigned int i = 1;
     for (std::map<unsigned int, Area*>::iterator it = map.begin(); it != map.end(); ++it)
@@ -301,7 +262,6 @@ unsigned int getFreeId(std::map<unsigned int, Area*>& map) {
             break;
     return i;
 }
-
 
 ///////////////////////////
 //   Service functions   //
@@ -318,7 +278,6 @@ bool addArea(toaster_msgs::AddArea::Request &req,
         id = getFreeId(mapArea_);
     else
         id = req.myArea.id;
-
 
     //If it is a circle area
     if (req.myArea.isCircle) {
@@ -396,6 +355,7 @@ bool printArea(toaster_msgs::PrintArea::Request &req,
 
 bool printAllAreas(toaster_msgs::Empty::Request &req,
         toaster_msgs::Empty::Response & res) {
+	std::cout << mapArea_.size() << " areas" << std::endl;
     for (std::map<unsigned int, Area*>::iterator itArea = mapArea_.begin(); itArea != mapArea_.end(); ++itArea)
         printMyArea(itArea->first);
     return true;
@@ -520,8 +480,6 @@ int main(int argc, char** argv) {
     // Set this in a ros service?
     ros::Rate loop_rate(30);
 
-
-
     /************************/
     /* Start of the Ros loop*/
     /************************/
@@ -607,12 +565,8 @@ int main(int argc, char** argv) {
 
                 if (itEntity->second->isInArea(itArea->first)) {
 
-
                     // compute facts according to factType
                     // TODO: instead of calling it interaction, make a list of facts to compute?
-
-
-
 
                     if (itArea->second->getFactType() == "interaction") {
 
@@ -628,10 +582,8 @@ int main(int argc, char** argv) {
                             // If positive, target is at right!
                             double angleResult = 0.0;
                             confidence = isFacing(itEntity->second, ownerEnt, 0.5, angleResult);
-                            if (confidence > 0.0) {
-                                //printf("[area_manager][DEBUG] %s is facing %s with confidence %f, angleResult %f\n",
-                                       // itEntity->second->getName().c_str(), ownerEnt->getName().c_str(), confidence, angleResult);
-
+                            if (confidence > 0.0)
+                            {
                                 //Fact Facing
                                 fact_msg.property = "IsFacing";
                                 fact_msg.propertyType = "posture";
@@ -648,13 +600,8 @@ int main(int argc, char** argv) {
                                 factList_msg.factList.push_back(fact_msg);
                             }
 
-
                             // Compute here other facts linked to interaction
                             //////////////////////////////////////////////////
-
-                            // TODO
-
-
                         } // ownerEnt!= NULL
 
                     } else if (itArea->second->getFactType() == "density") {
@@ -662,67 +609,32 @@ int main(int argc, char** argv) {
                         densityTime = itEntity->second->getTime();
                     } else if (itArea->second->getFactType() == "") {
 
-                    } else {
+                    } else
                         printf("[area_manager][WARNING] Area %s has factType %s, which is not available\n", itArea->second->getName().c_str(), itArea->second->getFactType().c_str());
+
+                    if (ownerEnt != NULL)
+                      fact_msg.targetOwnerId = ownerEnt->getId();
+                    fact_msg.propertyType = "position";
+                    fact_msg.subProperty = itArea->second->getAreaType();
+                    fact_msg.subjectId = itEntity->first;
+                    fact_msg.targetId = itArea->second->getName();
+                    fact_msg.confidence = 1;
+                    fact_msg.factObservability = 0.8;
+                    fact_msg.time = itEntity->second->getTime();
+                    fact_msg.valueType = 0;
+                    fact_msg.stringValue = "true";
+
+                    if (itArea->second->getAreaType() == "room") //Fact in Area
+                      fact_msg.property = "IsInRoom";
+                    else if (itArea->second->getAreaType() == "support")
+                    { //Fact in Area
+                      fact_msg.property = "IsAt";
+                      fact_msg.subProperty = "location";
                     }
+                    else //Fact in Area
+                      fact_msg.property = "IsInArea";
 
-                    if (itArea->second->getAreaType() == "room") {
-                        //Fact in Area
-                        fact_msg.property = "IsInRoom";
-                        fact_msg.propertyType = "position";
-
-                        fact_msg.subProperty = itArea->second->getAreaType();
-                        if (ownerEnt != NULL) {
-                            fact_msg.targetOwnerId = ownerEnt->getId();
-                        }
-
-                        fact_msg.subjectId = itEntity->first;
-                        fact_msg.targetId = itArea->second->getName();
-                        fact_msg.confidence = 1;
-                        fact_msg.factObservability = 0.8;
-                        fact_msg.time = itEntity->second->getTime();
-                        fact_msg.valueType = 0;
-                        fact_msg.stringValue = "true";
-
-                        factList_msg.factList.push_back(fact_msg);
-                    } else if (itArea->second->getAreaType() == "support") {
-                        //Fact in Area
-                        fact_msg.property = "IsAt";
-                        fact_msg.propertyType = "position";
-
-                        fact_msg.subProperty = "location";
-                        if (ownerEnt != NULL) {
-                            fact_msg.targetOwnerId = ownerEnt->getId();
-                        }
-
-                        fact_msg.subjectId = itEntity->first;
-                        fact_msg.targetId = itArea->second->getName();
-                        fact_msg.confidence = 1;
-                        fact_msg.factObservability = 0.8;
-                        fact_msg.time = itEntity->second->getTime();
-                        fact_msg.valueType = 0;
-                        fact_msg.stringValue = "true";
-
-                        factList_msg.factList.push_back(fact_msg);
-
-                    } else {
-                        //Fact in Area
-                        fact_msg.property = "IsInArea";
-                        fact_msg.propertyType = "position";
-
-                        fact_msg.subProperty = itArea->second->getAreaType();
-                        if (ownerEnt != NULL) {
-                            fact_msg.targetOwnerId = ownerEnt->getId();
-                        }
-
-                        fact_msg.subjectId = itEntity->first;
-                        fact_msg.targetId = itArea->second->getName();
-                        fact_msg.confidence = 1;
-                        fact_msg.factObservability = 0.8;
-                        fact_msg.time = itEntity->second->getTime();
-
-                        factList_msg.factList.push_back(fact_msg);
-                    }
+                    factList_msg.factList.push_back(fact_msg);
                 }
             }// For all Entities
 
