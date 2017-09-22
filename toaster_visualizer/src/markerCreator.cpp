@@ -203,15 +203,14 @@ visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, st
         marker.color.r = 0.75;
         marker.color.g = 0.5;
         marker.color.b = 0.25;
-        marker.color.a = 0.9;
+        marker.color.a = 0.2;
       }
       else
       {
         marker.color.r = 0.25;
         marker.color.g = 0.5;
         marker.color.b = 0.75;
-        marker.color.a = 0.1;
-      }
+        marker.color.a = 1.0;      }
 
       elem = NULL;
     }

@@ -19,7 +19,7 @@
     <object name="LOW_TABLE_SMALL_1"                    mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_1.dae" />
     <object name="LOW_TABLE_LARGE"                      mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_2.dae" />
     <object name="IKEA_sofa_EKTORP"                     mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_sofa_EKTORP.dae"/>
-    <object name="IKEA_table_TORSBY"                    mesh_resource="package://toaster_visualizer/mesh/toaster_objects/KEA_table_TORSBY.dae" />
+    <object name="IKEA_table_TORSBY"                    mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_table_TORSBY.dae" />
     <object name="office_desk"                          mesh_resource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />
     <object name="TABLE_4"                              mesh_resource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />
     <object name="DESK"                                 mesh_resource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />
@@ -42,16 +42,53 @@
     <object name="GREY_TAPE"                            mesh_resource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
     <object name="LOTR_TAPE"                            mesh_resource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
     <object name="WALLE_TAPE"                           mesh_resource="package://toaster_visualizer/mesh/toaster_objects/GreyVideotape_mesh.3ds" />
-    <object name="env"  				mesh_resource="package://toaster_visualizer/mesh/toaster_environment/mardi_real.dae" />
+    <object name="env" 					mesh_resource="package://toaster_visualizer/mesh/toaster_environment/adream_empty.dae" />
 
     <object name="Livingroom_table"                     mesh_resource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />
     <object name="Kitchen_table"                        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/office_desk.dae" />
     <object name="Bedroom_bedsidetable"                 mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_1.dae" />
     <object name="Livingroom_coffeetable"               mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_2.dae" />
     <object name="Bedroom_shelf"                        mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_shelf.dae" />
+    <object name="Carpet" 				mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_carpet_DRAGOR.3ds" />
+
+    <object name="IKEA_lamp_orgel" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_lamp_orgel.3ds" />
+    <object name="IKEA_RUTBO" 				mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_RUTBO.3ds" />
+    <object name="office_drawer_block" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/office_drawer_block.3ds" />
+<object name="IKEA_cupboard_BILLY1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY1.3ds" />
+    <object name="IKEA_cupboard_BILLY3" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY3.3ds" />
+    <object name="IKEA_cupboard_BILLY4"    	   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY4.3ds" />
+    <object name="cupboard_small"			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/cupboard_small.3ds" />
+<object name="IKEA_chest_HEMNES" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chest_HEMNES.3ds" />
+
+
+    <object name="Bed" 					mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_bed_FJELLSE.dae" />
+    <object name="Bedroom_console" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_console_HEMNES.dae" />
+    <object name="Livingroom_low_table" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_low_table_LACK_1.dae" />
+    <object name="Livingroom_black_table" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_table_TORSBY.dae" />
+    <object name="Livingroom_small_shelf" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/office_drawer_block.3ds" />
+<object name="Bedroom_big_cupboard" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY1.3ds" />
+    <object name="Livingroom_shelf_1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY3.3ds" />
+    <object name="Livingroom_shelf_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY3.3ds" />
+    <object name="Bedroom_cupboard1"    	   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY4.3ds" />
+    <object name="Bedroom_cupboard2"    	   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY4.3ds" />
+    <object name="Bedroom_cupboard3"    	   	mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_cupboard_BILLY4.3ds" />
+    <object name="Bedroom_chest" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chest_HEMNES.3ds" />
 
 
 
-	
-</list_obj>	
+    <object name="Phidget_lamp_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_RUTBO.3ds" />
+    <object name="Phidget_lamp_1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_lamp_orgel.3ds" />
 
+    <object name="Fan" 					mesh_resource="package://toaster_visualizer/mesh/toaster_objects/fan.3ds" />
+    <object name="Livingroom_lum_sensor" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/L.3ds" />
+    <object name="Livingroom_tmp_sensor" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/T.3ds" />
+    <object name="eyeball_1" 				mesh_resource="package://toaster_visualizer/mesh/toaster_objects/eyeball1.3ds" />
+    <object name="eyeball_2" 				mesh_resource="package://toaster_visualizer/mesh/toaster_objects/eyeball2.3ds" />
+    <object name="eyeball_3" 				mesh_resource="package://toaster_visualizer/mesh/toaster_objects/eyeball3.3ds" />
+    <object name="Philips_lamp_1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
+    <object name="Philips_lamp_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/PhilipsLamp.3ds" />
+    <object name="Chair_presence_sensor" 		mesh_resource="package://toaster_visualizer/mesh/toaster_objects/IKEA_chair_PELLO.dae" />
+    <object name="Livingroom_tele_1" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/tele.3ds" />
+    <object name="Livingroom_tele_2" 			mesh_resource="package://toaster_visualizer/mesh/toaster_objects/tele.3ds" />
+
+</list_obj> 
