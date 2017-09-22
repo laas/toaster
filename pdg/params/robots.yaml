@@ -1,4 +1,4 @@
 ---
 pdg:
-    pr2Robot : true
+    pr2Robot : false
     spencerRobot : false
