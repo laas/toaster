@@ -1,0 +1,194 @@
+<rdf:RDF xml:base="toasterOntology/measure">
+  <!-- toasterOntology/attribute#attribute -->
+  <owl:Class rdf:about="toasterOntology/measure#measure">
+    <rdfs:label>measure</rdfs:label>
+  </owl:Class>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      //
+      // state
+      //
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/measure#state -->
+  <owl:Measure rdf:about="toasterOntology/measure#state">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#measure"/>
+    <rdfs:label>state</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#active -->
+  <owl:Measure rdf:about="toasterOntology/measure#active">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#state"/>
+    <rdfs:label>active</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#inactive -->
+  <owl:Measure rdf:about="toasterOntology/measure#inactive">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#state"/>
+    <rdfs:label>inactive</rdfs:label>
+  </owl:Measure>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      //
+      // physicalQuantity
+      //
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/measure#physicalQuantity -->
+  <owl:Measure rdf:about="toasterOntology/measure#physicalQuantity">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#measure"/>
+    <rdfs:label>physicalQuantity</rdfs:label>
+  </owl:Measure>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      // density
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/measure#density -->
+  <owl:Measure rdf:about="toasterOntology/measure#density">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#physicalQuantity"/>
+    <rdfs:label>density</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#areaDensity -->
+  <owl:Measure rdf:about="toasterOntology/measure#areaDensity">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#density"/>
+    <rdfs:label>areaDensity</rdfs:label>
+  </owl:Measure>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      // distance
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/measure#distance -->
+  <owl:Measure rdf:about="toasterOntology/measure#distance">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#physicalQuantity"/>
+    <rdfs:subMeasure rdf:resource="toasterOntology/utility#absolute"/>
+    <rdfs:label>distance</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#foot -->
+  <owl:Measure rdf:about="toasterOntology/measure#foot">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#distance"/>
+    <rdfs:label>foot</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#centimeter -->
+  <owl:Measure rdf:about="toasterOntology/measure#centimeter">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#distance"/>
+    <rdfs:label>centimeter</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#inch -->
+  <owl:Measure rdf:about="toasterOntology/measure#inch">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#distance"/>
+    <rdfs:label>inch</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#meter -->
+  <owl:Measure rdf:about="toasterOntology/measure#meter">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#distance"/>
+    <rdfs:label>meter</rdfs:label>
+  </owl:Measure>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      // speed
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/measure#speed -->
+  <owl:Measure rdf:about="toasterOntology/measure#speed">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#time"/>
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#distance"/>
+    <rdfs:label>speed</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#km/h -->
+  <owl:Measure rdf:about="toasterOntology/measure#km/h">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#speed"/>
+    <rdfs:subMeasure rdf:resource="toasterOntology/utility#absolute"/>
+    <rdfs:label>km/h</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#m/s -->
+  <owl:Measure rdf:about="toasterOntology/measure#m/s">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#speed"/>
+    <rdfs:subMeasure rdf:resource="toasterOntology/utility#absolute"/>
+    <rdfs:label>m/s</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#fast -->
+  <owl:Measure rdf:about="toasterOntology/measure#fast">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#speed"/>
+    <rdfs:subMeasure rdf:resource="toasterOntology/utility#relative"/>
+    <rdfs:label>fast</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#slow -->
+  <owl:Measure rdf:about="toasterOntology/measure#slow">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#speed"/>
+    <rdfs:subMeasure rdf:resource="toasterOntology/utility#relative"/>
+    <rdfs:label>slow</rdfs:label>
+  </owl:Measure>
+  <!--
+      ///////////////////////////////////////////////////////////////////////////////////////
+      // time
+      ///////////////////////////////////////////////////////////////////////////////////////
+  -->
+  <!-- toasterOntology/measure#time -->
+  <owl:Measure rdf:about="toasterOntology/measure#time">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#physicalQuantity"/>
+    <rdfs:label>time</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#clockTime -->
+  <owl:Measure rdf:about="toasterOntology/measure#clockTime">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#time"/>
+    <rdfs:subMeasure rdf:resource="toasterOntology/utility#absolute"/>
+    <rdfs:label>clockTime</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#calendar -->
+  <owl:Measure rdf:about="toasterOntology/measure#calendar">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#time"/>
+    <rdfs:subMeasure rdf:resource="toasterOntology/utility#absolute"/>
+    <rdfs:label>calendar</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#date -->
+  <owl:Measure rdf:about="toasterOntology/measure#date">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#calendar"/>
+    <rdfs:label>date</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#week -->
+  <owl:Measure rdf:about="toasterOntology/measure#week">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#calendar"/>
+    <rdfs:label>week</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#day -->
+  <owl:Measure rdf:about="toasterOntology/measure#day">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#calendar"/>
+    <rdfs:label>day</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#year -->
+  <owl:Measure rdf:about="toasterOntology/measure#year">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#calendar"/>
+    <rdfs:label>year</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#relativeDate -->
+  <owl:Measure rdf:about="toasterOntology/measure#relativeDate">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#time"/>
+    <rdfs:subMeasure rdf:resource="toasterOntology/utility#relative"/>
+    <rdfs:label>relativeDate</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#tomorrow -->
+  <owl:Measure rdf:about="toasterOntology/measure#tomorrow">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#relativeDate"/>
+    <rdfs:label>tomorrow</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#today -->
+  <owl:Measure rdf:about="toasterOntology/measure#today">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#relativeDate"/>
+    <rdfs:label>today</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#yesterday -->
+  <owl:Measure rdf:about="toasterOntology/measure#yesterday">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#relativeDate"/>
+    <rdfs:label>yesterday</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#inXDay -->
+  <owl:Measure rdf:about="toasterOntology/measure#inXDay">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#relativeDate"/>
+    <rdfs:label>inXDay</rdfs:label>
+  </owl:Measure>
+  <!-- toasterOntology/measure#XDayAgo -->
+  <owl:Measure rdf:about="toasterOntology/measure#XDayAgo">
+    <rdfs:subMeasure rdf:resource="toasterOntology/measure#relativeDate"/>
+    <rdfs:label>XDayAgo</rdfs:label>
+  </owl:Measure>
+</rdf:RDF>
