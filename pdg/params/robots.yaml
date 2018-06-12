@@ -2,3 +2,4 @@
 pdg:
     pr2Robot : false
     spencerRobot : false
+    fullRobotConfig : true

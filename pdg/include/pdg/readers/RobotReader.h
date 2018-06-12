@@ -28,6 +28,13 @@ class RobotReader : public Reader<Robot>{
 
         virtual void Publish(struct toasterList_t& list_msg);
 
+        void setFullConfig(bool fullConfig) {fullRobot_ = fullConfig; }
+        void setFullConfig(std::string param)
+        {
+          if (node_->hasParam(param))
+            node_->getParam(param, fullRobot_);
+        }
+
     protected:
         bool fullRobot_;
 

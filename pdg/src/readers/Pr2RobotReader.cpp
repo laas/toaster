@@ -48,7 +48,7 @@ void Pr2RobotReader::init(ros::NodeHandle* node, std::string param) {
 
 void Pr2RobotReader::updateRobot(tf::TransformListener &listener)
 {
-  if(fullRobot_)
+  if((fullRobot_ == true) && (activated_ == true))
   {
     Robot* curRobot = lastConfig_["pr2"];
     Joint* curJoint = new Joint("pr2_base_link", "pr2");

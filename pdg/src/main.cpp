@@ -193,23 +193,31 @@ int main(int argc, char** argv) {
     //Data reading
     vector<HumanReader*> humanReaders;
     groupHumanRd.init(&node, "/spencer/perception/tracked_groups", "/pdg/groupHuman");
+    groupHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&groupHumanRd);
     morseHumanRd.init(&node, "/pdg/morseHuman");
+    morseHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&morseHumanRd);
     //niutHumanRd.init(&node, "/niut/Human", "/pdg/niutHuman")
     mocapHumanRd.init(&node, "/optitrack_person/tracked_persons", "/pdg/mocapHuman");
+    mocapHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&mocapHumanRd);
     adreamMocapHumanRd.init(&node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2", "/pdg/adreamMocapHuman");
+    adreamMocapHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&adreamMocapHumanRd);
     toasterSimuHumanRd.init(&node, "/pdg/toasterSimuHuman");
+    toasterSimuHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&toasterSimuHumanRd);
 
     vector<RobotReader*> robotReaders;
     pr2RobotRd.init(&node, "/pdg/pr2Robot");
+    pr2RobotRd.setFullConfig("/pdg/fullRobotConfig");
     robotReaders.push_back(&pr2RobotRd);
     spencerRobotRd.init(&node, "/pdg/spencerRobot");
+    spencerRobotRd.setFullConfig("/pdg/fullRobotConfig");
     robotReaders.push_back(&spencerRobotRd);
     toasterSimuRobotRd.init(&node, "/pdg/toasterSimuRobot");
+    toasterSimuRobotRd.setFullConfig("/pdg/fullRobotConfig");
     robotReaders.push_back(&toasterSimuRobotRd);
 
     vector<ObjectReader*> objectReaders;

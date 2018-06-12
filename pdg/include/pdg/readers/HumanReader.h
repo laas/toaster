@@ -20,22 +20,28 @@
 #include <map>
 #include <string>
 
-class HumanReader : public Reader<Human>{
+class HumanReader : public Reader<Human>
+{
+  public:
+    HumanReader();
+    HumanReader(const HumanReader&) = delete;
+    virtual ~HumanReader();
 
-    public:
-      HumanReader();
-      HumanReader(const HumanReader&) = delete;
-      virtual ~HumanReader();
+    virtual void Publish(struct toasterList_t& list_msg);
 
-      bool fullHuman_;
+    void setFullConfig(bool fullConfig) {fullHuman_ = fullConfig; }
+    void setFullConfig(std::string param)
+    {
+      if (node_->hasParam(param))
+        node_->getParam(param, fullHuman_); 
+    }
 
-      bool isPresent(std::string id);
+  public:
+    bool fullHuman_;
 
-      virtual void Publish(struct toasterList_t& list_msg);
+    bool isPresent(std::string id);
 
-    public:
-      toaster_msgs::Fact DefaultFactMsg(std::string subjectId, uint64_t factTime);
+    toaster_msgs::Fact DefaultFactMsg(std::string subjectId, uint64_t factTime);
 };
-
 
 #endif	/* HUMANREADER_H */
