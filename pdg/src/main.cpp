@@ -134,7 +134,7 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
 
     if (req.id != "") {
         double roll, pitch, yaw;
-        Entity newPoseEnt("")
+        Entity newPoseEnt("");
         newPoseEnt.setId(req.id);
         newPoseEnt.position_.set<0>(req.pose.position.x);
         newPoseEnt.position_.set<1>(req.pose.position.y);
