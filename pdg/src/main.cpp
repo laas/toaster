@@ -285,21 +285,21 @@ int main(int argc, char** argv) {
           newPoseEnt_.pop();
 
           for(vector<HumanReader*>::iterator it = humanReaders.begin(); it != humanReaders.end(); ++it)
-          {
             (*it)->updateEntityPose(newPoseEnt);
-            (*it)->Publish(list_msg);
-          }
+
 
           for(vector<RobotReader*>::iterator it = robotReaders.begin(); it != robotReaders.end(); ++it)
-          {
             (*it)->updateEntityPose(newPoseEnt);
-            (*it)->Publish(list_msg);
-          }
 
           for(vector<ObjectReader*>::iterator it = objectReaders.begin(); it != objectReaders.end(); ++it)
             (*it)->updateEntityPose(newPoseEnt);
         }
+	
+	for(vector<HumanReader*>::iterator it = humanReaders.begin(); it != humanReaders.end(); ++it)
+	    (*it)->Publish(list_msg);
 
+	  for(vector<RobotReader*>::iterator it = robotReaders.begin(); it != robotReaders.end(); ++it)
+	    (*it)->Publish(list_msg);
 
 
         //do publication for all objects
