@@ -279,7 +279,7 @@ int main(int argc, char** argv) {
         //////////////////
         // publish data //
         //////////////////
-        if(!newPoseEnt_.empty())
+        while(!newPoseEnt_.empty())
         {
           Entity newPoseEnt = newPoseEnt_.front();
           newPoseEnt_.pop();
