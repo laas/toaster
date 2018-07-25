@@ -158,14 +158,14 @@ visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, st
     marker.color.r = 0.75;
     marker.color.g = 0.5;
     marker.color.b = 0.25;
-    marker.color.a = 1.0;
+    marker.color.a = 0.7;
   }
   else
   {
     marker.color.r = 0.25;
     marker.color.g = 0.5;
     marker.color.b = 0.75;
-    marker.color.a = 1.0;
+    marker.color.a = 0.0;
   }
 
   //scale
@@ -203,14 +203,14 @@ visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, st
         marker.color.r = 0.75;
         marker.color.g = 0.5;
         marker.color.b = 0.25;
-        marker.color.a = 0.2;
+        marker.color.a = 0.7;
       }
       else
       {
         marker.color.r = 0.25;
         marker.color.g = 0.5;
         marker.color.b = 0.75;
-        marker.color.a = 1.0;      }
+        marker.color.a = 0.0;      }
 
       elem = NULL;
     }
@@ -306,10 +306,15 @@ visualization_msgs::Marker MarkerCreator::defineHuman(geometry_msgs::Pose pose, 
 
             elem = NULL;
         } else {
-            if (pose.position.z < -0.4) {
+
+	    //std::cout << pose.position.z << std::endl;
+
+            if (pose.position.z < -0.7) {
                 //human is seating
+		//std::cout << "humanSeat.dae" << std::endl;
                 marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/humanSeat.dae"; //using 3d human model
             } else {
+		//std::cout << "human.dae" << std::endl;
                 marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/human.dae"; //using 3d human model
             }
             marker.mesh_use_embedded_materials = true;

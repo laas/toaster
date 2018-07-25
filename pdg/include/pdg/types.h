@@ -18,8 +18,8 @@ struct objectIn_t
 
 struct fullConfig_t
 {
-  bool Human_ = false; //If false we will use only position and orientation
-  bool Robot_ = false; //If false we will use only position and orientation
+  bool Human_ = true; //If false we will use only position and orientation
+  bool Robot_ = true; //If false we will use only position and orientation
 };
 
 struct toasterList_t
