@@ -305,18 +305,14 @@ visualization_msgs::Marker MarkerCreator::defineHuman(geometry_msgs::Pose pose, 
             marker.mesh_use_embedded_materials = true;
 
             elem = NULL;
-        } else {
-
-	    //std::cout << pose.position.z << std::endl;
-
-            if (pose.position.z < -0.7) {
-                //human is seating
-		//std::cout << "humanSeat.dae" << std::endl;
+        } 
+	else 
+	{
+            if (pose.position.z < -0.7) //human is seating
                 marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/humanSeat.dae"; //using 3d human model
-            } else {
-		//std::cout << "human.dae" << std::endl;
+            else
                 marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/human.dae"; //using 3d human model
-            }
+            
             marker.mesh_use_embedded_materials = true;
         }
     }
