@@ -349,7 +349,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.2991686 0.2991686 0.2991686 1</color>
@@ -381,7 +381,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.2991686 0.2991686 0.2991686 1</color>
@@ -423,7 +423,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="_b3f2fc0_dds-sampler" texcoord="UVMap"/>
@@ -465,7 +465,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="_b3ea180_dds-sampler" texcoord="UVMap"/>
@@ -507,7 +507,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="_b3f2fc0_dds_001_dds-sampler" texcoord="UVMap"/>
@@ -549,7 +549,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="_b3f2fc0_dds_002_dds-sampler" texcoord="UVMap"/>
@@ -591,7 +591,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="_fead4c0_dds-sampler" texcoord="UVMap"/>
@@ -623,7 +623,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.2991686 0.2991686 0.2991686 1</color>
@@ -655,7 +655,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.2991686 0.2991686 0.2991686 1</color>
@@ -687,7 +687,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <color sid="diffuse">0.2991686 0.2991686 0.2991686 1</color>

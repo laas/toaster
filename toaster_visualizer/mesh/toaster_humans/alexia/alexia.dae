@@ -434,7 +434,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="TX_Wm_NPC_Tania_Head_D_tga-sampler" texcoord="UVMap"/>
@@ -476,7 +476,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="TX_Wm_NPC_TaniaCloth_Hair_D_tga-sampler" texcoord="UVMap"/>
@@ -524,7 +524,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="TX_Wm_NPC_TaniaCloth_Body_D_tga-sampler" texcoord="UVMap"/>

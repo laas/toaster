@@ -359,7 +359,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="Stan_Lee_Glass_D_tga-sampler" texcoord="UVMap"/>
@@ -407,7 +407,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="Stan_Lee_Eye_Reflection_D_tga-sampler" texcoord="UVMap"/>
@@ -455,7 +455,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="Stan_Lee_Head_D_tga-sampler" texcoord="UVMap"/>
@@ -497,7 +497,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="Stan_Lee_Body_D_tga-sampler" texcoord="UVMap"/>
@@ -539,7 +539,7 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0 0 0 1</color>
+              <color sid="ambient">0.1 0.1 0.1 1</color>
             </ambient>
             <diffuse>
               <texture texture="Stan_Lee_Hair_D_tga-sampler" texcoord="UVMap"/>
