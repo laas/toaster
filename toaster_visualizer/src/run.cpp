@@ -172,7 +172,8 @@ public:
                                                       msg->objectList[i].meEntity.id,
                                                       listObj);
 
-            if (visualizer.mustPrintName()) {
+            if (visualizer.mustPrintName())
+            {
                 visualization_msgs::Marker mn = MarkerCreator::defineName(m);
                 mn = MarkerCreator::setSize(mn, 0, 0, visualizer.getObjectNameScale());
 
@@ -225,28 +226,13 @@ public:
                for(int iMarker =0 ; iMarker<3 ; iMarker++)
                 m.markers[iMarker] = MarkerCreator::setRandomColor(m.markers[iMarker]);
 
-                double posx = 0.0;
-                double posy = 0.0;
-                double posz = 0.0;
+                visualization_msgs::Marker mn = MarkerCreator::defineName(m.markers[0]);
+                mn = MarkerCreator::setSize(mn, 0.0, 0.0, 0.1);
+                mn = MarkerCreator::setPosition(mn, m.markers[0].points[0].x, m.markers[0].points[0].y,  msg->areaList[i].zmax + 0.5);
+                area_list.markers.push_back(mn);
+
             		for (int j = 0; j<3; j++)
-                {
-                  for (int iPoint = 0; iPoint < m.markers[j].points.size(); iPoint++)
-                  {
-                    posx = posx + m.markers[j].points[iPoint].x;
-                    posy = posy + m.markers[j].points[iPoint].y;
-                    posz = posz + msg->areaList[i].zmin;
-                  }
-
-                area_list.markers.push_back(m.markers[j]);
-              }
-
-
-              visualization_msgs::Marker mn = MarkerCreator::defineName(m.markers[0]);
-              mn = MarkerCreator::setSize(mn, 0.0, 0.0, 0.1);
-              mn = MarkerCreator::setPosition(mn, m.markers[0].points[0].x, m.markers[0].points[0].y,  msg->areaList[i].zmax + 0.5);
-              area_list.markers.push_back(mn);
-               // ROS_DEBUG("poly %d", m.id);
-
+                  area_list.markers.push_back(m.markers[j]);
             }
 
         }

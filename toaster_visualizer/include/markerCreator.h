@@ -39,7 +39,7 @@ public:
    * @param marker	marker to which we want to create a name marker
    * @return marker 	name marker
    */
-  static visualization_msgs::Marker defineName(visualization_msgs::Marker marker);
+  static visualization_msgs::Marker defineName(visualization_msgs::Marker& marker);
 
   /**
    * create an object marker

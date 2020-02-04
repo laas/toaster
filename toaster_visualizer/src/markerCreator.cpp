@@ -58,6 +58,7 @@ visualization_msgs::MarkerArray MarkerCreator::definePolygon(geometry_msgs::Poly
   std::ostringstream nameSpace;
   nameSpace << name;
 
+  line_strip1.text = line_strip2.text = line_list.text = nameSpace.str();
   line_strip1.ns = line_strip2.ns = line_list.ns = nameSpace.str();
   line_strip1.id = 1;
   line_strip2.id = 2;
@@ -224,7 +225,7 @@ visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, st
   return marker;
 }
 
-visualization_msgs::Marker MarkerCreator::defineName(visualization_msgs::Marker marker) {
+visualization_msgs::Marker MarkerCreator::defineName(visualization_msgs::Marker& marker) {
   //declaration
   std::stringstream ss;
   visualization_msgs::Marker nameMarker = marker;
@@ -246,6 +247,7 @@ visualization_msgs::Marker MarkerCreator::defineName(visualization_msgs::Marker 
 
   //text field
   nameMarker.text = marker.text;
+  marker.text = "";
 
   ss << nameMarker.ns << "_name";
   nameMarker.ns = ss.str();
@@ -269,6 +271,7 @@ visualization_msgs::Marker MarkerCreator::defineHuman(geometry_msgs::Pose pose, 
     std::ostringstream nameSpace;
     nameSpace << name;
     marker.ns = nameSpace.str();
+    marker.text = nameSpace.str();
     marker.id = id; //creation of an unique id based on marker's name
 
     //action
@@ -337,6 +340,7 @@ visualization_msgs::Marker MarkerCreator::defineRobot(geometry_msgs::Pose pose, 
     std::ostringstream nameSpace;
     nameSpace << name;
     marker.ns = nameSpace.str();
+    marker.text = nameSpace.str();
     marker.id = id; //creation of an unique id based on marker's name
 
     //action
