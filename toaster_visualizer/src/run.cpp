@@ -168,7 +168,8 @@ public:
             visualization_msgs::Marker m = MarkerCreator::defineObj(msg->objectList[i].meEntity.pose,
                                                       msg->objectList[i].meEntity.name,
                                                       isActivated(msg->objectList[i].meEntity.id),
-                                                      visualizer.id_generator(msg->objectList[i].meEntity.name),
+                                                      visualizer.id_generator(msg->objectList[i].meEntity.id),
+                                                      msg->objectList[i].meEntity.id,
                                                       listObj);
 
             if (visualizer.mustPrintName()) {
@@ -187,7 +188,7 @@ public:
         p.position.y = 0.0;
         p.position.z = -0.05;
         p.orientation.w = 1.0;
-        visualization_msgs::Marker m = MarkerCreator::defineObj(p, "env", false, visualizer.id_generator("env"), listObj);
+        visualization_msgs::Marker m = MarkerCreator::defineObj(p, "env", false, visualizer.id_generator("env"), "env", listObj);
         obj_list.markers.push_back(m);
     }
 
@@ -393,7 +394,7 @@ public:
                                 markerTempo.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/mocapMorse/baseSeat.dae"; //using 3d human model
                              else
                                 markerTempo.mesh_resource = mesh_r;
-                            
+
                             markerTempo.mesh_use_embedded_materials = true;
 
                             elem = NULL;

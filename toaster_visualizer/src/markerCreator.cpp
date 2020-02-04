@@ -129,7 +129,7 @@ visualization_msgs::MarkerArray MarkerCreator::definePolygon(geometry_msgs::Poly
   return markersarray;
 }
 
-visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, std::string name, bool activated, int id, TiXmlDocument& listObj, double scale){
+visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, std::string name, bool activated, int id, std::string str_id, TiXmlDocument& listObj, double scale){
   //declaration
   double roll, pitch, yaw;
   visualization_msgs::Marker marker;
@@ -138,10 +138,12 @@ visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, st
   marker.header.frame_id = "map";
 
   //namespace
-  std::ostringstream nameSpace;
+  /*std::ostringstream nameSpace;
   nameSpace << name;
-  marker.ns = nameSpace.str();
+  marker.ns = nameSpace.str();*/
+  marker.ns = "toaster_objects";
   marker.id = id; //creation of an unique id based on marker's name
+  marker.text = str_id;
 
   //action
   marker.action = visualization_msgs::Marker::ADD;
@@ -207,10 +209,11 @@ visualization_msgs::Marker MarkerCreator::defineObj(geometry_msgs::Pose pose, st
       }
       else
       {
-        marker.color.r = 0.25;
-        marker.color.g = 0.5;
-        marker.color.b = 0.75;
-        marker.color.a = 0.0;      }
+        marker.color.r = 0;//0.25;
+        marker.color.g = 0;//0.5;
+        marker.color.b = 0;//0.75;
+        marker.color.a = 0;
+      }
 
       elem = NULL;
     }
@@ -242,9 +245,9 @@ visualization_msgs::Marker MarkerCreator::defineName(visualization_msgs::Marker 
   nameMarker.type = 9;
 
   //text field
-  nameMarker.text = marker.ns;
+  nameMarker.text = marker.text;
 
-  ss << nameMarker.text << "_name";
+  ss << nameMarker.ns << "_name";
   nameMarker.ns = ss.str();
 
   //scale
@@ -305,14 +308,14 @@ visualization_msgs::Marker MarkerCreator::defineHuman(geometry_msgs::Pose pose, 
             marker.mesh_use_embedded_materials = true;
 
             elem = NULL;
-        } 
-	else 
+        }
+	else
 	{
             if (pose.position.z < -0.7) //human is seating
                 marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/humanSeat.dae"; //using 3d human model
             else
                 marker.mesh_resource = "package://toaster_visualizer/mesh/toaster_humans/human.dae"; //using 3d human model
-            
+
             marker.mesh_use_embedded_materials = true;
         }
     }
