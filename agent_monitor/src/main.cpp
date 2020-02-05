@@ -14,14 +14,11 @@
 #include <dynamic_reconfigure/server.h>
 #include <agent_monitor/agent_monitorConfig.h>
 
-#include "AgentManager.h"
 #include "AgentMonitor.h"
-#include "LookingFact.h"
 #include "Distances.h"
 #include "Motion2D.h"
 #include "FactCreator.h"
 
-AgentManager agentsManager_;
 AgentMonitor agentsMonitor_;
 
 //For convinience
@@ -309,7 +306,7 @@ int main(int argc, char** argv) {
     ROS_INFO("[Request] Ready to receive request for pointing.");
 
 
-    agentsManager_.init(&node);
+    agentsMonitor_.init(&node);
 
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("agent_monitor/factList", 1000);
 
@@ -320,137 +317,44 @@ int main(int argc, char** argv) {
     /* Start of the Ros loop*/
     /************************/
 
-    while (node.ok()) {
-        toaster_msgs::FactList factList_msg;
-        toaster_msgs::FactList agentFactList_msg;
-        toaster_msgs::Fact fact_msg;
-        // We received agentMonitored
+    while (node.ok())
+    {
+      toaster_msgs::FactList factList_msg;
+      toaster_msgs::FactList agentFactList_msg;
+      toaster_msgs::Fact fact_msg;
+      // We received agentMonitored
 
-        std::vector<std::string> agentsMonitored = agentsManager_.getMonitoredAgents();
-        std::map<std::string, std::vector<std::string> > mapAgentToJointsMonitored = agentsManager_.getMonitoredJoints();
+      //////////////////////////////////////
+      //           Updating data          //
+      //////////////////////////////////////
+      agentsMonitor_.setHumanMap(humanRd.lastConfig_);
+      humanRd.clear();
+      agentsMonitor_.setRobotMap(robotRd.lastConfig_);
+      robotRd.clear();
+      agentsMonitor_.setObjectMap(objectRd.lastConfig_);
+      objectRd.clear();
 
-        //////////////////////////////////////
-        //           Updating data          //
-        //////////////////////////////////////
-        humansMap = humanRd.lastConfig_;
-        humanRd.clear();
-        robotsMap = robotRd.lastConfig_;
-        robotRd.clear();
-        objectsMap = objectRd.lastConfig_;
-        objectRd.clear();
-
-        // If we start to monitor all humans, we add them to the agentsMonitored vector
-        if (agentsManager_.startMonitorAllHumans())
-            for (std::map<std::string, Human*>::iterator it = humansMap.begin(); it != humansMap.end(); ++it)
-                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) == agentsMonitored.end()))
-                    agentsManager_.addMonitoredAgent(it->first);
-
-        // If we start to monitor all robots, we add them to the agentsMonitored vector
-        if (agentsManager_.startMonitorAllRobots())
-            for (std::map<std::string, Robot*>::iterator it = robotsMap.begin(); it != robotsMap.end(); ++it)
-                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) == agentsMonitored.end()))
-                    agentsManager_.addMonitoredAgent(it->first);
-
-        // If we stop to monitor all humans, we add them to the agentsMonitored vector
-        if (agentsManager_.stopMonitorAllHumans())
-            for (std::map<std::string, Human*>::iterator it = humansMap.begin(); it != humansMap.end(); ++it)
-                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) != agentsMonitored.end()))
-                    agentsManager_.removeMonitoredAgent(it->first);
-
-        // If we stop to monitor all robots, we add them to the agentsMonitored vector
-        if (agentsManager_.stopMonitorAllRobots())
-            for (std::map<std::string, Robot*>::iterator it = robotsMap.begin(); it != robotsMap.end(); ++it)
-                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) != agentsMonitored.end()))
-                    agentsManager_.removeMonitoredAgent(it->first);
-
-      // Reload monitored agents
-      agentsMonitored = agentsManager_.getMonitoredAgents();
+      agentsMonitor_.updateMonitored();
 
       /////////////////////////////////////
       // Update TRBuffer for each entity //
       /////////////////////////////////////
-      // for each entity
-      //Put the following in a function?
 
-      agentsMonitor_.updateUnmonitoredEntitieTRBuffer(humansMap, agentsMonitored);
-      agentsMonitor_.updateUnmonitoredEntitieTRBuffer(robotsMap, agentsMonitored);
-      agentsMonitor_.updateUnmonitoredEntitieTRBuffer(objectsMap, agentsMonitored);
+      agentsMonitor_.updateUnmonitoredEntitieTRBuffer();
 
         // All the following computation are done for each monitored agents!
-        for (std::vector<std::string>::iterator itAgnt = agentsMonitored.begin(); itAgnt != agentsMonitored.end(); ++itAgnt)
+        for (std::vector<std::string>::iterator itAgnt = agentsMonitor_.agentsMonitored_.begin(); itAgnt != agentsMonitor_.agentsMonitored_.end(); ++itAgnt)
         {
-            Agent* agentMonitored = nullptr;
+            Agent* agentMonitored = agentsMonitor_.getMonitoredAgent((*itAgnt));
 
-            bool isHuman = true;
-
-            // Let's find back the monitored agent:
-            if (robotsMap.find((*itAgnt)) != robotsMap.end()) {
-              agentMonitored = robotsMap[(*itAgnt)];
-              isHuman = false;
-            }
-            else if (humansMap.find((*itAgnt)) != humansMap.end())
-                agentMonitored = humansMap[(*itAgnt)];
-            else
-                continue; // objects
+            if(agentMonitored == nullptr)
+              continue; // object
 
             // We verify if the buffer is already there...
-            std::map<std::string, TRBuffer < Entity* > >::iterator itTRB = agentsMonitor_.mapTRBEntity_.find((*itAgnt));
-            if (itTRB == agentsMonitor_.mapTRBEntity_.end())
+            if(!agentsMonitor_.updateAgentTRBuffer(agentMonitored))
             {
-              //1st time, we initialize variables
-              TRBuffer<Entity*> buffAgnt, buffJnt;
-              buffAgnt.push_back(agentMonitored->getTime(), agentMonitored);
-              agentsMonitor_.mapTRBEntity_[agentMonitored->getId()] = buffAgnt;
-
-              // We will use directly the joint from the agent buffer
-              /*// adding monitored joints to the entity.
-              for (std::vector<std::string>::iterator itJnt = mapAgentToJointsMonitored[ agntCur->getId() ].begin(); itJnt != mapAgentToJointsMonitored[ agntCur->getId() ].end(); ++itJnt) {
-                  jntCur = new Joint(agntCur->skeleton_[(*itJnt)]->getId(), agntCur->getId());
-                  memcpy(jntCur, humanRd.lastConfig_[agentMonitored]->skeleton_[jointsMonitoredName[i]], sizeof (Joint));
-
-                  buffJnt.push_back(jntCur->getTime(), jntCur);
-
-                  agentsMonitor_.mapTRBEntity_[jntCur->getId()] = buffJnt;
-                  // printf("adding joint named: reader %d %s, tmp %s, in buffer: %s\n", agntCur->skeleton_[jointMonitoredName]->getId(), agntCur->skeleton_[jointMonitoredName]->getName().c_str(), jntCur->getName().c_str(), agentsMonitor_.mapTRBEntity_[jntCur->getId()].back()->getName().c_str());
-                  if (jointsMonitoredId.size() < i + 1)
-                      jointsMonitoredId.push_back(jntCur->getId());
-              }*/
-
-              // This module is made for temporal reasoning.
-              // We need more data to make computation, so we will end the loop here.
+              factList_msg.factList.insert(factList_msg.factList.end(), previousAgentsFactList_[*itAgnt].begin(), previousAgentsFactList_[*itAgnt].end());
               continue;
-            }
-            else // Agent is present in agentsMonitor_.mapTRBEntity_
-            {
-              // If this is a new data we add it to the buffer
-              bool newData = false;
-
-              if(agentMonitored->getId() != "")
-              {
-                if(isHuman)
-                  newData = (agentsMonitor_.mapTRBEntity_[(*itAgnt)].back()->getTime() < agentMonitored->getTime());
-                else
-                  newData = (agentsMonitor_.mapTRBEntity_[(*itAgnt)].back()->getTime() < agentMonitored->getTime());
-              }
-
-              if (newData)
-              {
-                agentsMonitor_.mapTRBEntity_[agentMonitored->getId()].push_back(agentMonitored->getTime(), agentMonitored);
-
-                /*
-                // adding monitored joint to the entities.
-                for (unsigned int i = 0; i < jointsMonitoredName.size(); i++) {
-                    jntCur = new Joint(humCur->skeleton_[jointsMonitoredName[i]]->getId(), agentMonitored);
-                    memcpy(jntCur, humanRd.lastConfig_[agentMonitored]->skeleton_[jointsMonitoredName[i]], sizeof (Joint));
-
-                    agentsMonitor_.mapTRBEntity_[jntCur->getId()].push_back(jntCur->getTime(), jntCur);
-                }*/
-              }
-              else  // If we don't have new data
-              {     // Do we need this? Or should we update other entities?
-                factList_msg.factList.insert(factList_msg.factList.end(), previousAgentsFactList_[*itAgnt].begin(), previousAgentsFactList_[*itAgnt].end());
-                continue;
-              }
             }
 
             //////////////////////////////////////////////
@@ -460,22 +364,11 @@ int main(int argc, char** argv) {
             ROS_DEBUG("[agent_monitor] computing facts for agent %s\n", (*itAgnt).c_str());
 
             //looking facts
-            std::map<std::string, double> mapIdValue;
-            mapIdValue = LookingFact::compute(agentsMonitor_.mapTRBEntity_, (*itAgnt), lookTwdDeltaDist_, lookTwdAngularAperture_);
-            LookingFact::createTowardFact(mapIdValue, factList_msg,
-                                          lookTwdAngularAperture_,
-                                          (*itAgnt),
-                                          agentsMonitor_.mapTRBEntity_[(*itAgnt)].back());
+            agentsMonitor_.computeLookingFacts(agentMonitored, lookTwdDeltaDist_, lookTwdAngularAperture_, factList_msg);
 
-		mapIdValue.clear();
-            mapIdValue = LookingFact::compute(agentsMonitor_.mapTRBEntity_, (*itAgnt), lookTwdDeltaDist_*0.5, lookTwdAngularAperture_*0.25);
-            LookingFact::createAtFact(mapIdValue, factList_msg,
-                                          lookTwdAngularAperture_*0.25,
-                                          (*itAgnt),
-                                          agentsMonitor_.mapTRBEntity_[(*itAgnt)].back());
+            std::map<std::string, double> mapIdValue;
             // If the agent is moving
             double speed = Motion2D::compute(agentsMonitor_.mapTRBEntity_[(*itAgnt)], motion2DBodyTime_);
-
             if (speed > (motion2DBodySpeedThreshold_)) //if in movement
             {
                 double confidence = speed * 3.6 / 5.0; // Confidence is 1 if speed is 5 km/h or above
@@ -519,9 +412,12 @@ int main(int argc, char** argv) {
                 std::string dist3DString;
 
                 // What is the distance between joints and objects?
-                for (std::vector<std::string>::iterator itJnt = mapAgentToJointsMonitored[(*itAgnt)].begin(); itJnt != mapAgentToJointsMonitored[(*itAgnt)].end(); ++itJnt) {
-
+                for (std::vector<std::string>::iterator itJnt = agentsMonitor_.mapAgentToJointsMonitored_[(*itAgnt)].begin(); itJnt != agentsMonitor_.mapAgentToJointsMonitored_[(*itAgnt)].end(); ++itJnt)
+                {
                     Joint* curMonitoredJnt = ((Agent*) agentsMonitor_.mapTRBEntity_[(*itAgnt)].back())->skeleton_[(*itJnt)];
+                    if(curMonitoredJnt == nullptr)
+                      continue; // emulated join
+
                     for (std::map<std::string, TRBuffer < Entity*> >::iterator itEnt = agentsMonitor_.mapTRBEntity_.begin(); itEnt != agentsMonitor_.mapTRBEntity_.end(); ++itEnt) {
                         // if in same room as monitored agent and not monitored joint
                         //if ((roomOfInterest == it->second.back()->getRoomId()) && (it->first != jointsMonitoredId[i])) {
