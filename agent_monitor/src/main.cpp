@@ -341,23 +341,32 @@ int main(int argc, char** argv) {
         objectsMap = objectRd.lastConfig_;
         objectRd.clear();
 
-        // If we monitor all humans, we add them to the agentsMonitored vector
-        if (agentsManager_.monitorAllHumans())
-            for (std::map<std::string, Human*>::iterator it = humansMap.begin(); it != humansMap.end(); ++it) {
-                // If the pointer was updated and is not the swapped one
-                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) == agentsMonitored.end())) {
-                    agentsMonitored.push_back(it->first);
-                }
-            }
+        // If we start to monitor all humans, we add them to the agentsMonitored vector
+        if (agentsManager_.startMonitorAllHumans())
+            for (std::map<std::string, Human*>::iterator it = humansMap.begin(); it != humansMap.end(); ++it)
+                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) == agentsMonitored.end()))
+                    agentsManager_.addMonitoredAgent(it->first);
 
-        // If we monitor all robots, we add them to the agentsMonitored vector
-        if (agentsManager_.monitorAllRobots())
+        // If we start to monitor all robots, we add them to the agentsMonitored vector
+        if (agentsManager_.startMonitorAllRobots())
             for (std::map<std::string, Robot*>::iterator it = robotsMap.begin(); it != robotsMap.end(); ++it)
-            { // If the pointer was updated and is not the swapped one
-                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) == agentsMonitored.end())) {
-                    agentsMonitored.push_back(it->first);
-                }
-            }
+                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) == agentsMonitored.end()))
+                    agentsManager_.addMonitoredAgent(it->first);
+
+        // If we stop to monitor all humans, we add them to the agentsMonitored vector
+        if (agentsManager_.stopMonitorAllHumans())
+            for (std::map<std::string, Human*>::iterator it = humansMap.begin(); it != humansMap.end(); ++it)
+                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) != agentsMonitored.end()))
+                    agentsManager_.removeMonitoredAgent(it->first);
+
+        // If we stop to monitor all robots, we add them to the agentsMonitored vector
+        if (agentsManager_.stopMonitorAllRobots())
+            for (std::map<std::string, Robot*>::iterator it = robotsMap.begin(); it != robotsMap.end(); ++it)
+                if ((it->second->getId() != "") && (std::find(agentsMonitored.begin(), agentsMonitored.end(), it->second->getId()) != agentsMonitored.end()))
+                    agentsManager_.removeMonitoredAgent(it->first);
+
+      // Reload monitored agents
+      agentsMonitored = agentsManager_.getMonitoredAgents();
 
       /////////////////////////////////////
       // Update TRBuffer for each entity //
