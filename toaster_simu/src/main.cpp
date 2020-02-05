@@ -202,14 +202,10 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
             float X = x*rot[0] + y*rot[1] + z*rot[2];
             float Y = x*rot[3] + y*rot[4] + z*rot[5];
             float Z = x*rot[6] + y*rot[7] + z*rot[8];
-            hum.meAgent.meEntity.pose.position.x += X;
-            hum.meAgent.meEntity.pose.position.y += Y;
-            hum.meAgent.meEntity.pose.position.z += Z;
-
-            hum.meAgent.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollEnt, pitchEnt, yawEnt);
 
             // Update joints
-            for (int i = 0; i < itH->second.meAgent.skeletonJoint.size(); i++) {
+            for (int i = 0; i < itH->second.meAgent.skeletonJoint.size(); i++)
+            {
                 toaster_msgs::Joint joint;
                 double rollJnt, pitchJnt, yawJnt;
                 joint = itH->second.meAgent.skeletonJoint[i];
@@ -222,28 +218,38 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
                 pitchJnt += pitch;
                 yawJnt += yaw;
 
-                cy = cos(yawJnt);
-                sy = sin(yawJnt);
-                cp = cos(pitchJnt);
-                sp = sin(pitchJnt);
-                cr = cos(rollJnt);
-                sr = sin(rollJnt);
-                std::vector<float> jrot {cy*cp, cy*sp*sr-sy*cr, cy*sp*cr+sy*sr,
-                                        sy*cp, sy*sp*sr+cy*cr, sy*sp*cr-cy*sr,
-                                        -sp,   cp*sr,          cp*cr};
+                cy = cos(yaw);
+                sy = sin(yaw);
+                cp = cos(pitch);
+                sp = sin(pitch);
+                cr = cos(roll);
+                sr = sin(roll);
+                std::vector<double> jrot {cy*cp, cy*sp*sr-sy*cr, cy*sp*cr+sy*sr,
+                                          sy*cp, sy*sp*sr+cy*cr, sy*sp*cr-cy*sr,
+                                          -sp,   cp*sr,          cp*cr};
 
-                float jX = x*jrot[0] + y*jrot[1] + z*jrot[2];
-                float jY = x*jrot[3] + y*jrot[4] + z*jrot[5];
-                float jZ = x*jrot[6] + y*jrot[7] + z*jrot[8];
-                joint.meEntity.pose.position.x += jX;
-                joint.meEntity.pose.position.y += jY;
-                joint.meEntity.pose.position.z += jZ;
+                double dx = - hum.meAgent.meEntity.pose.position.x + joint.meEntity.pose.position.x;
+                double dy = - hum.meAgent.meEntity.pose.position.y + joint.meEntity.pose.position.y;
+                double dz = - hum.meAgent.meEntity.pose.position.z + joint.meEntity.pose.position.z;
+                double djX = dx*jrot[0] + dy*jrot[1] + dz*jrot[2];
+                double djY = dx*jrot[3] + dy*jrot[4] + dz*jrot[5];
+                double djZ = dx*jrot[6] + dy*jrot[7] + dz*jrot[8];
+
+                joint.meEntity.pose.position.x = djX + hum.meAgent.meEntity.pose.position.x + X;
+                joint.meEntity.pose.position.y = djY + hum.meAgent.meEntity.pose.position.y + Y;
+                joint.meEntity.pose.position.z = djZ + hum.meAgent.meEntity.pose.position.z + Z;
 
                 joint.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollJnt, pitchJnt, yawJnt);
 
                 hum.meAgent.skeletonJoint.push_back(joint);
                 hum.meAgent.skeletonNames.push_back(joint.meEntity.name);
             }
+
+            hum.meAgent.meEntity.pose.position.x += X;
+            hum.meAgent.meEntity.pose.position.y += Y;
+            hum.meAgent.meEntity.pose.position.z += Z;
+
+            hum.meAgent.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollEnt, pitchEnt, yawEnt);
 
             human_map[id] = hum;
         }

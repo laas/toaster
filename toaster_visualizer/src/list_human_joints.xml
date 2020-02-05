@@ -2,37 +2,32 @@
 <list_members>
 
     <object name="HeadZ"                        mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Head.dae" />
-    <object name="TorsoZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/chest.dae" />
-    <object name="lAnkleZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Foot.L.dae" />
-    <object name="rAnkleZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Foot.R.dae" />
-    <object name="HeadZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/hair.dae" />
-    <object name="lWristZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Hand.L.dae" />
-    <object name="rWristZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Hand.R.dae" />
+    <object name="TorsoZ" 			                mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/chest.dae" />
+    <object name="lAnkleZ" 			                mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Foot.L.dae" />
+    <object name="rAnkleZ" 			                mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Foot.R.dae" />
+    <object name="HeadZ" 			                  mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/hair.dae" />
+    <object name="lWristZ" 			                mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Hand.L.dae" />
+    <object name="rWristZ" 			                mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Hand.R.dae" />
     <object name="lShoulderZ"                   mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/LoArm.L.dae" />
     <object name="rShoulderZ"                   mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/LoArm.R.dae" />
-    <object name="lHipZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/LoLeg.L.dae" />
-    <object name="rHipZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/LoLeg.R.dae" />
-    <object name="Pelvis" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Pelvis.dae" />
-    <object name="lElbowZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/UpArm.L.dae" />
-    <object name="rElbowZ" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/UpArm.R.dae" />
-    <object name="lKnee" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/UpLeg.L.dae" />
-    <object name="rKnee" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/UpLeg.R.dae" />
+    <object name="lHipZ" 			                  mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/LoLeg.L.dae" />
+    <object name="rHipZ" 			                  mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/LoLeg.R.dae" />
+    <object name="Pelvis" 			                mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/Pelvis.dae" />
+    <object name="lElbowZ" 			                mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/UpArm.L.dae" />
+    <object name="rElbowZ" 			                mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/UpArm.R.dae" />
+    <object name="lKnee" 			                  mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/UpLeg.L.dae" />
+    <object name="rKnee" 			                  mesh_resource="package://toaster_visualizer/mesh/toaster_humans/morse/UpLeg.R.dae" />
 
-
-
-    <object name="baseAndHead" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/humanMocap.dae" />
+    <object name="baseAndHead" 			            mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/humanMocap.dae" />
     <object name="rightHand"                    mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/rightHand.dae" />
+    <object name="lefttHand"                    mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/rightHand.dae" />
 
-
-
-    <!--object name="torso" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapVincent/torso.dae" />
-    <object name="base" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapVincent/base.dae" />
+    <!--object name="torso" 			              mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapVincent/torso.dae" />
+    <object name="base" 			                  mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapVincent/base.dae" />
     <object name="head"                         mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapVincent/head.dae" /-->
 
-
-    <object name="torso" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/torso.dae" />
-    <object name="base" 			mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/base.dae" />
+    <object name="torso" 			                  mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/torso.dae" />
+    <object name="base" 			                  mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/base.dae" />
     <object name="head"                         mesh_resource="package://toaster_visualizer/mesh/toaster_humans/mocapMorse/head.dae" />
 
-</list_members>	
-
+</list_members>
