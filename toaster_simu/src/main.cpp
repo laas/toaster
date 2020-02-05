@@ -54,7 +54,7 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
             // TODO: update joints too
 
             human_map[id] = hum;
-        } else 
+        } else
             return false;
 
         // Ok, not a human, mb a robot??
@@ -135,13 +135,11 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
 bool updateEntityPose(std::string id, double x, double y, double z, double roll, double pitch, double yaw) {
     // Is it an object?
     std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.find(id);
-    if (it != object_map.end()) {
+    if (it != object_map.end())
+    {
         double rollEnt, pitchEnt, yawEnt;
         toaster_msgs::Object obj;
         obj.meEntity = it->second.meEntity;
-        obj.meEntity.pose.position.x += x;
-        obj.meEntity.pose.position.y += y;
-        obj.meEntity.pose.position.z += z;
 
         tf::Quaternion q(obj.meEntity.pose.orientation.x, obj.meEntity.pose.orientation.y,
                 obj.meEntity.pose.orientation.z, obj.meEntity.pose.orientation.w);
@@ -151,20 +149,37 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
         pitchEnt += pitch;
         yawEnt += yaw;
 
+        float cy = cos(yawEnt);
+        float sy = sin(yawEnt);
+        float cp = cos(pitchEnt);
+        float sp = sin(pitchEnt);
+        float cr = cos(rollEnt);
+        float sr = sin(rollEnt);
+        std::vector<float> rot {cy*cp, cy*sp*sr-sy*cr, cy*sp*cr+sy*sr,
+                                sy*cp, sy*sp*sr+cy*cr, sy*sp*cr-cy*sr,
+                                -sp,   cp*sr,          cp*cr};
+
+        float X = x*rot[0] + y*rot[1] + z*rot[2];
+        float Y = x*rot[3] + y*rot[4] + z*rot[5];
+        float Z = x*rot[6] + y*rot[7] + z*rot[8];
+        obj.meEntity.pose.position.x += X;
+        obj.meEntity.pose.position.y += Y;
+        obj.meEntity.pose.position.z += Z;
+
         obj.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollEnt, pitchEnt, yawEnt);
 
         object_map[id] = obj;
         objectUpdate[id] = true;
-    } else {
+    }
+    else
+    {
         // Ok, not an object, mb a human?
         std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(id);
-        if (itH != human_map.end()) {
+        if (itH != human_map.end())
+        {
             toaster_msgs::Human hum;
             double rollEnt, pitchEnt, yawEnt;
             hum.meAgent.meEntity = itH->second.meAgent.meEntity;
-            hum.meAgent.meEntity.pose.position.x += x;
-            hum.meAgent.meEntity.pose.position.y += y;
-            hum.meAgent.meEntity.pose.position.z += z;
 
             tf::Quaternion q(hum.meAgent.meEntity.pose.orientation.x, hum.meAgent.meEntity.pose.orientation.y,
                     hum.meAgent.meEntity.pose.orientation.z, hum.meAgent.meEntity.pose.orientation.w);
@@ -174,6 +189,23 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
             pitchEnt += pitch;
             yawEnt += yaw;
 
+            float cy = cos(yawEnt);
+            float sy = sin(yawEnt);
+            float cp = cos(pitchEnt);
+            float sp = sin(pitchEnt);
+            float cr = cos(rollEnt);
+            float sr = sin(rollEnt);
+            std::vector<float> rot {cy*cp, cy*sp*sr-sy*cr, cy*sp*cr+sy*sr,
+                                    sy*cp, sy*sp*sr+cy*cr, sy*sp*cr-cy*sr,
+                                    -sp,   cp*sr,          cp*cr};
+
+            float X = x*rot[0] + y*rot[1] + z*rot[2];
+            float Y = x*rot[3] + y*rot[4] + z*rot[5];
+            float Z = x*rot[6] + y*rot[7] + z*rot[8];
+            hum.meAgent.meEntity.pose.position.x += X;
+            hum.meAgent.meEntity.pose.position.y += Y;
+            hum.meAgent.meEntity.pose.position.z += Z;
+
             hum.meAgent.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollEnt, pitchEnt, yawEnt);
 
             // Update joints
@@ -181,10 +213,6 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
                 toaster_msgs::Joint joint;
                 double rollJnt, pitchJnt, yawJnt;
                 joint = itH->second.meAgent.skeletonJoint[i];
-                joint.meEntity.pose.position.x += x;
-                joint.meEntity.pose.position.y += y;
-                joint.meEntity.pose.position.z += z;
-
 
                 tf::Quaternion q(joint.meEntity.pose.orientation.x, joint.meEntity.pose.orientation.y,
                         joint.meEntity.pose.orientation.z, joint.meEntity.pose.orientation.w);
@@ -194,6 +222,23 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
                 pitchJnt += pitch;
                 yawJnt += yaw;
 
+                cy = cos(yawJnt);
+                sy = sin(yawJnt);
+                cp = cos(pitchJnt);
+                sp = sin(pitchJnt);
+                cr = cos(rollJnt);
+                sr = sin(rollJnt);
+                std::vector<float> jrot {cy*cp, cy*sp*sr-sy*cr, cy*sp*cr+sy*sr,
+                                        sy*cp, sy*sp*sr+cy*cr, sy*sp*cr-cy*sr,
+                                        -sp,   cp*sr,          cp*cr};
+
+                float jX = x*jrot[0] + y*jrot[1] + z*jrot[2];
+                float jY = x*jrot[3] + y*jrot[4] + z*jrot[5];
+                float jZ = x*jrot[6] + y*jrot[7] + z*jrot[8];
+                joint.meEntity.pose.position.x += jX;
+                joint.meEntity.pose.position.y += jY;
+                joint.meEntity.pose.position.z += jZ;
+
                 joint.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollJnt, pitchJnt, yawJnt);
 
                 hum.meAgent.skeletonJoint.push_back(joint);
@@ -201,16 +246,15 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
             }
 
             human_map[id] = hum;
-        } else {
+        }
+        else
+        {
             // Ok, not a human, mb a robot??
             std::map<std::string, toaster_msgs::Robot>::const_iterator itR = robot_map.find(id);
             if (itR != robot_map.end()) {
                 toaster_msgs::Robot rob;
                 double rollEnt, pitchEnt, yawEnt;
                 rob.meAgent.meEntity = itR->second.meAgent.meEntity;
-                rob.meAgent.meEntity.pose.position.x += x;
-                rob.meAgent.meEntity.pose.position.y += y;
-                rob.meAgent.meEntity.pose.position.z += z;
 
                 tf::Quaternion q(rob.meAgent.meEntity.pose.orientation.x, rob.meAgent.meEntity.pose.orientation.y,
                         rob.meAgent.meEntity.pose.orientation.z, rob.meAgent.meEntity.pose.orientation.w);
@@ -220,6 +264,23 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
                 pitchEnt += pitch;
                 yawEnt += yaw;
 
+                float cy = cos(yawEnt);
+                float sy = sin(yawEnt);
+                float cp = cos(pitchEnt);
+                float sp = sin(pitchEnt);
+                float cr = cos(rollEnt);
+                float sr = sin(rollEnt);
+                std::vector<float> rot {cy*cp, cy*sp*sr-sy*cr, cy*sp*cr+sy*sr,
+                                        sy*cp, sy*sp*sr+cy*cr, sy*sp*cr-cy*sr,
+                                        -sp,   cp*sr,          cp*cr};
+
+                float X = x*rot[0] + y*rot[1] + z*rot[2];
+                float Y = x*rot[3] + y*rot[4] + z*rot[5];
+                float Z = x*rot[6] + y*rot[7] + z*rot[8];
+                rob.meAgent.meEntity.pose.position.x += X;
+                rob.meAgent.meEntity.pose.position.y += Y;
+                rob.meAgent.meEntity.pose.position.z += Z;
+
                 rob.meAgent.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollEnt, pitchEnt, yawEnt);
 
                 // Update joints
@@ -228,9 +289,6 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
 
                     double rollJnt, pitchJnt, yawJnt;
                     joint = itR->second.meAgent.skeletonJoint[i];
-                    joint.meEntity.pose.position.x += x;
-                    joint.meEntity.pose.position.y += y;
-                    joint.meEntity.pose.position.z += z;
 
 
                     tf::Quaternion q(joint.meEntity.pose.orientation.x, joint.meEntity.pose.orientation.y,
@@ -240,6 +298,23 @@ bool updateEntityPose(std::string id, double x, double y, double z, double roll,
                     rollJnt += roll;
                     pitchJnt += pitch;
                     yawJnt += yaw;
+
+                    cy = cos(yawJnt);
+                    sy = sin(yawJnt);
+                    cp = cos(pitchJnt);
+                    sp = sin(pitchJnt);
+                    cr = cos(rollJnt);
+                    sr = sin(rollJnt);
+                    std::vector<float> jrot {cy*cp, cy*sp*sr-sy*cr, cy*sp*cr+sy*sr,
+                                            sy*cp, sy*sp*sr+cy*cr, sy*sp*cr-cy*sr,
+                                            -sp,   cp*sr,          cp*cr};
+
+                    float jX = x*jrot[0] + y*jrot[1] + z*jrot[2];
+                    float jY = x*jrot[3] + y*jrot[4] + z*jrot[5];
+                    float jZ = x*jrot[6] + y*jrot[7] + z*jrot[8];
+                    joint.meEntity.pose.position.x += jX;
+                    joint.meEntity.pose.position.y += jY;
+                    joint.meEntity.pose.position.z += jZ;
 
                     joint.meEntity.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(rollJnt, pitchJnt, yawJnt);
 
@@ -570,16 +645,16 @@ int main(int argc, char** argv) {
                     switch (k) {
                         case (SDLK_UP): { x = pressed ? 1.0 : 0.0; break; }
                         case (SDLK_DOWN): { x = pressed ? -1.0 : 0.0; break; }
-                        case (SDLK_LEFT): { y = pressed ? -1.0 : 0.0; break; }
-                        case (SDLK_RIGHT): { y = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_LEFT): { yaw = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_RIGHT): { yaw = pressed ? -1.0 : 0.0; break; }
                         case (SDLK_PAGEUP): { z = pressed ? 1.0 : 0.0; break; }
                         case (SDLK_PAGEDOWN): { z = pressed ? -1.0 : 0.0; break; }
                         case (SDLK_w): { roll = pressed ? 1.0 : 0.0; break; }
                         case (SDLK_s): { roll = pressed ? -1.0 : 0.0; break; }
                         case (SDLK_a): { pitch = pressed ? -1.0 : 0.0; break; }
                         case (SDLK_d): { pitch = pressed ? 1.0 : 0.0; break; }
-                        case (SDLK_q): { yaw = pressed ? -1.0 : 0.0; break; }
-                        case (SDLK_e): { yaw = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_q): { y = pressed ? 1.0 : 0.0; break; }
+                        case (SDLK_e): { y = pressed ? -1.0 : 0.0; break; }
                         case (SDLK_KP_MINUS): { inc /= 1.2; break; }
                         case (SDLK_KP_PLUS): { inc *= 1.2; break; }
                     }

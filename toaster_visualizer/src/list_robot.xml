@@ -3,9 +3,6 @@
 
     <object name="Spencer"           mesh_resource="package://toaster_visualizer/mesh/toaster_robots/spencer_robot_full.dae" />
     <object name="spencer"           mesh_resource="package://toaster_visualizer/mesh/toaster_robots/spencer_robot_full.dae" />
+    <object name="pr2"               mesh_resource="package://toaster_visualizer/mesh/toaster_robots/pr2.dae" />
 
-
-
-	
-</list_robot>	
-
+</list_robot>
