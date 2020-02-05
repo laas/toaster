@@ -89,14 +89,12 @@ void AgentMonitor::computeLookingFacts(Agent* agent, double lookTwdDeltaDist, do
 {
   std::map<std::string, double> mapIdValue;
   mapIdValue = LookingFact::compute(mapTRBEntity_, agent->getId(), lookTwdDeltaDist, lookTwdAngularAperture);
-  std::cout << "toward " << mapIdValue.size() << std::endl;
   LookingFact::createTowardFact(mapIdValue, factList_msg,
                                 lookTwdAngularAperture,
                                 agent->getId(),
                                 mapTRBEntity_[agent->getId()].back());
 
   mapIdValue = LookingFact::compute(mapTRBEntity_, agent->getId(), lookTwdDeltaDist*0.5, lookTwdAngularAperture*0.25);
-  std::cout << "at " << mapIdValue.size() << std::endl;
   LookingFact::createAtFact(mapIdValue, factList_msg,
                                 lookTwdAngularAperture*0.25,
                                 agent->getId(),
