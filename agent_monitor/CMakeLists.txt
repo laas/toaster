@@ -115,6 +115,7 @@ include_directories(
 ## Declare a cpp executable
 set(${PROJECT_NAME}_SOURCES
     src/AgentManager.cpp
+    src/AgentMonitor.cpp
     src/LookingFact.cpp
     src/Distances.cpp
     src/Motion2D.cpp
