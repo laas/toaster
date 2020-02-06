@@ -31,20 +31,23 @@ std::string keyboardControlled_ = "";
 
 bool setEntityPose(std::string id, std::string type, std::string ownerId, geometry_msgs::Pose pose) {
     // Is it an object?
-    if (boost::iequals(type, "object")) {
+    if (boost::iequals(type, "object"))
+    {
         std::map<std::string, toaster_msgs::Object>::const_iterator it = object_map.find(id);
-        if (it != object_map.end()) {
-            toaster_msgs::Object obj;
-            obj.meEntity = it->second.meEntity;
-            obj.meEntity.pose = pose;
+        if (it != object_map.end())
+        {
+          toaster_msgs::Object obj;
+          obj.meEntity = it->second.meEntity;
+          obj.meEntity.pose = pose;
 
-            object_map[id] = obj;
-            objectUpdate[id] = true;
-        } else
-            return false;
-
-        // Ok, not an object, mb a human?
-    } else if (boost::iequals(type, "human")) {
+          object_map[id] = obj;
+          objectUpdate[id] = true;
+        }
+        else
+          return false;
+    } // Ok, not an object, mb a human?
+    else if (boost::iequals(type, "human"))
+    {
         std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(id);
         if (itH != human_map.end()) {
             toaster_msgs::Human hum;
@@ -56,20 +59,23 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
             human_map[id] = hum;
         } else
             return false;
-
-        // Ok, not a human, mb a robot??
-    } else if (boost::iequals(type, "robot")) {
+    }   // Ok, not a human, mb a robot??
+    else if (boost::iequals(type, "robot"))
+    {
         std::map<std::string, toaster_msgs::Robot>::const_iterator itR = robot_map.find(id);
-        if (itR != robot_map.end()) {
-            toaster_msgs::Robot rob;
-            rob.meAgent.meEntity = itR->second.meAgent.meEntity;
-            rob.meAgent.meEntity.pose = pose;
+        if (itR != robot_map.end())
+        {
+          toaster_msgs::Robot rob;
+          rob.meAgent.meEntity = itR->second.meAgent.meEntity;
+          rob.meAgent.meEntity.pose = pose;
 
-            robot_map[id] = rob;
-        } else {
-            return false;
+          robot_map[id] = rob;
         }
-    } else if (boost::iequals(type, "joint")) {
+        else
+          return false;
+    }
+    else if (boost::iequals(type, "joint"))
+    {
         ROS_DEBUG("Changing joint position");
         std::map<std::string, toaster_msgs::Human>::const_iterator itH = human_map.find(ownerId);
         if (itH != human_map.end()) {
@@ -346,7 +352,7 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
     if (req.id != "") {
 
         if (setEntityPose(req.id, req.type, req.ownerId, req.pose)) {
-            ROS_INFO("[toaster_simu][Request][INFO] request to set entity pose with "
+            ROS_DEBUG("[toaster_simu][Request][INFO] request to set entity pose with "
                     "id %s successful", req.id.c_str());
             res.answer = true;
         } else {

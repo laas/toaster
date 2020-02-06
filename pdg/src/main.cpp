@@ -256,7 +256,7 @@ int main(int argc, char** argv) {
     ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotListStamped>("pdg/robotList", 1000);
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("pdg/factList", 1000);
 
-    ros::ServiceClient setPoseClient = node.serviceClient<toaster_msgs::SetEntityPose>("/toaster_simu/set_entity_pose", true);
+    ros::ServiceClient setPoseClient = node.serviceClient<toaster_msgs::SetEntityPose>("/toaster_simu/set_entity_pose"); // , true
     EntityUtility_setClient(&setPoseClient);
 
     ros::Rate loop_rate(30);
@@ -294,7 +294,7 @@ int main(int argc, char** argv) {
           for(vector<ObjectReader*>::iterator it = objectReaders.begin(); it != objectReaders.end(); ++it)
             (*it)->updateEntityPose(newPoseEnt);
         }
-	
+
 	for(vector<HumanReader*>::iterator it = humanReaders.begin(); it != humanReaders.end(); ++it)
 	    (*it)->Publish(list_msg);
 
