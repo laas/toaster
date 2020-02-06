@@ -85,10 +85,11 @@ bool setEntityPose(std::string id, std::string type, std::string ownerId, geomet
             // find the joint
             int index = -1;
             for (int i = 0; i < itH->second.meAgent.skeletonJoint.size(); i++) {
-                ROS_INFO("we compare %s and %s", itH->second.meAgent.skeletonJoint[i].meEntity.id.c_str(), id.c_str());
-                if (boost::iequals(itH->second.meAgent.skeletonJoint[i].meEntity.id, id)) {
-                    ROS_INFO("true");
+                ROS_DEBUG("we compare %s and %s", itH->second.meAgent.skeletonJoint[i].meEntity.id.c_str(), id.c_str());
+                //if (boost::iequals(itH->second.meAgent.skeletonJoint[i].meEntity.id, id)) {
+                if(itH->second.meAgent.skeletonJoint[i].meEntity.id == id){
                     index = i;
+                    break;
                 }
             }
 
