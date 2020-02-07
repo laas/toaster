@@ -371,12 +371,11 @@ int main(int argc, char** argv) {
             double speed = Motion2D::compute(agentsMonitor_.mapTRBEntity_[(*itAgnt)], motion2DBodyTime_);
             if (speed > (motion2DBodySpeedThreshold_)) //if in movement
             {
-                double confidence = speed * 3.6 / 5.0; // Confidence is 1 if speed is 5 km/h or above
-                confidence = (confidence > 1.0) ? 1.0 : confidence;
-                //Fact moving
-                fact_msg = FactCreator::setFactBase((*itAgnt), agentsMonitor_.mapTRBEntity_);
-                fact_msg = FactCreator::setMotionFact(fact_msg, speed, confidence);
-                agentFactList_msg.factList.push_back(fact_msg);
+              toaster_msgs::Fact fact_base = FactCreator::setFactBase((*itAgnt), agentsMonitor_.mapTRBEntity_);
+
+              //Fact moving
+              fact_msg = FactCreator::setMotionFact(fact_base, speed, 5.0);
+              agentFactList_msg.factList.push_back(fact_msg);
 
                 // We compute the direction toward fact:
                 double angleDirection = Motion2D::computeDirection(agentsMonitor_.mapTRBEntity_[(*itAgnt)], motion2DBodyDirTime_);
@@ -387,8 +386,7 @@ int main(int argc, char** argv) {
                   if (it->second > movingTwdBodyDeltaDistThreshold_)
                   {
                     //Fact moving toward
-                    fact_msg = FactCreator::setFactBase((*itAgnt), agentsMonitor_.mapTRBEntity_);
-                    fact_msg = FactCreator::setDirectionFact(fact_msg, it->first, it->second);
+                    fact_msg = FactCreator::setDirectionFact(fact_base, it->first, it->second);
                     agentFactList_msg.factList.push_back(fact_msg);
                   }
                 }
@@ -400,8 +398,7 @@ int main(int argc, char** argv) {
                   if (it->second > movingTwdBodyDeltaDistThreshold_)
                   {
                     //Fact moving toward
-                    fact_msg = FactCreator::setFactBase((*itAgnt), agentsMonitor_.mapTRBEntity_);
-                    fact_msg = FactCreator::setDistanceFact(fact_msg, it->first, it->second);
+                    fact_msg = FactCreator::setDistanceFact(fact_base, it->first, it->second);
                     agentFactList_msg.factList.push_back(fact_msg);
                   }
                 }
@@ -418,7 +415,9 @@ int main(int argc, char** argv) {
                     if(curMonitoredJnt == nullptr)
                       continue; // emulated join
 
-                    for (std::map<std::string, TRBuffer < Entity*> >::iterator itEnt = agentsMonitor_.mapTRBEntity_.begin(); itEnt != agentsMonitor_.mapTRBEntity_.end(); ++itEnt) {
+                    toaster_msgs::Fact fact_base = FactCreator::setFactBase(curMonitoredJnt);
+                    for (std::map<std::string, TRBuffer < Entity*> >::iterator itEnt = agentsMonitor_.mapTRBEntity_.begin(); itEnt != agentsMonitor_.mapTRBEntity_.end(); ++itEnt)
+                    {
                         // if in same room as monitored agent and not monitored joint
                         //if ((roomOfInterest == it->second.back()->getRoomId()) && (it->first != jointsMonitoredId[i])) {
                         dist3D = bg::distance(curMonitoredJnt->getPosition(), itEnt->second.back()->getPosition());
@@ -435,7 +434,7 @@ int main(int argc, char** argv) {
                             dist3DString = "out";
 
                         //Fact distance
-                        fact_msg = FactCreator::setFactBase(curMonitoredJnt);
+                        fact_msg = fact_base;
                         fact_msg.property = "Distance";
                         fact_msg.propertyType = "position";
                         fact_msg.subProperty = "3D";
@@ -455,12 +454,9 @@ int main(int argc, char** argv) {
                     //We consider motion when it moves more than 3 cm during 1/4 second, so when higher than 0.12 m/s
                     if (speed > (motion2DJointSpeedThreshold_))
                     {
-                        double confidence = speed * 3.6 / 20.0; // Confidence is 1 if speed is 20 km/h or above
-                        confidence = (confidence > 1.0) ? 1.0 : confidence;
-
                         //Fact moving
-                        fact_msg = FactCreator::setFactBase(curMonitoredJnt);
-                        fact_msg = FactCreator::setMotionFact(fact_msg, speed, confidence, "joint");
+                        fact_msg = fact_base;
+                        fact_msg = FactCreator::setMotionFact(fact_msg, speed, 20.0, "joint");
                         agentFactList_msg.factList.push_back(fact_msg);
 
                         // We compute the direction toward fact:
@@ -468,7 +464,7 @@ int main(int argc, char** argv) {
                         mapIdValue = Motion2D::computeToward(agentsMonitor_.mapTRBEntity_, (*itAgnt), angleDirection, motionTwd2DJointAngleThresold_, (*itJnt));
                         for (std::map<std::string, double>::iterator it = mapIdValue.begin(); it != mapIdValue.end(); ++it)
                         {
-                          fact_msg = FactCreator::setFactBase(curMonitoredJnt);
+                          fact_msg = fact_base;
                           fact_msg = FactCreator::setDirectionFact(fact_msg, it->first, it->second);
                           agentFactList_msg.factList.push_back(fact_msg);
                         }
@@ -479,7 +475,7 @@ int main(int argc, char** argv) {
                         {
                           if (it->second > movingTwdJointDeltaDistThreshold_)
                           {
-                            fact_msg = FactCreator::setFactBase(curMonitoredJnt);
+                            fact_msg = fact_base;
                             fact_msg = FactCreator::setDistanceFact(fact_msg, it->first, it->second);
                             agentFactList_msg.factList.push_back(fact_msg);
                           }

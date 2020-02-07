@@ -22,8 +22,11 @@ toaster_msgs::Fact FactCreator::setFactBase(string agent, map<string, TRBuffer <
   return fact_msg;
 }
 
-toaster_msgs::Fact FactCreator::setMotionFact(toaster_msgs::Fact baseFact, double speed, double confidence, string type)
+toaster_msgs::Fact FactCreator::setMotionFact(toaster_msgs::Fact baseFact, double speed, double max_speed, const std::string& type)
 {
+  double confidence = speed * 3.6 / max_speed; // Confidence is 1 if speed is 5 km/h or above
+  confidence = (confidence > 1.0) ? 1.0 : confidence;
+
   baseFact.property = "IsMoving";
   baseFact.propertyType = "motion";
   baseFact.subProperty = type;
