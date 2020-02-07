@@ -6,6 +6,8 @@
 
 #include "toaster_msgs/Fact.h"
 
+#include "tf/transform_datatypes.h"
+
 using namespace std;
 
 map<string, double> LookingFact::compute(map<string, TRBuffer < Entity* > > mapEnts,
@@ -13,22 +15,16 @@ map<string, double> LookingFact::compute(map<string, TRBuffer < Entity* > > mapE
                                         double angularAperture)
 {
     Map_t returnMap;
-    Pair_t pair;
     Entity * currentEntity;
     Entity * monitoredAgentHead;
     float halfAperture = angularAperture / 2.f;
     Vec_t agentHeadPosition(3);
     Vec_t agentHeadOrientation(3);
     Vec_t entityPosition(3);
-    Vec_t agentToEntity(3);
-    Vec_t coneAxis(3);
-    Vec_t coneBase(3);
     float entitytoAxisAngle;
     Mat_t rotX(3);
     Mat_t rotY(3);
     Mat_t rotZ(3);
-    bool isInInfiniteCone = false;
-    double angle;
 
     //Get the monitored agent head entity
     //TODO add a rosparam for robot's head joint name
@@ -80,23 +76,29 @@ map<string, double> LookingFact::compute(map<string, TRBuffer < Entity* > > mapE
         entityPosition[0] = bg::get<0>(currentEntity->getPosition());
         entityPosition[1] = bg::get<1>(currentEntity->getPosition());
         entityPosition[2] = bg::get<2>(currentEntity->getPosition());
-        //Compute cone base coordinates
-        coneBase[0] = agentHeadPosition[0] + deltaDist;
-        coneBase[1] = agentHeadPosition[1];
-        coneBase[2] = agentHeadPosition[2];
-        //Compute cone axis
-        coneAxis = MathFunctions::diffVec(agentHeadPosition, coneBase);
-        //Apply rotation matrix from agent head orientation to cone base
-        coneAxis = MathFunctions::multiplyMatVec(rotY, coneAxis);
-        coneAxis = MathFunctions::multiplyMatVec(rotZ, coneAxis);
-        //Compute the 3d vector from agent head to current entity
-        agentToEntity = MathFunctions::diffVec(agentHeadPosition, entityPosition);
-        //Compute angle
-        angle = (MathFunctions::dotProd(agentToEntity, coneAxis) / MathFunctions::magn(agentToEntity) / MathFunctions::magn(coneAxis));
-        //Test
-        if (angle > cos(halfAperture))
-          if (MathFunctions::dotProd(agentToEntity, coneAxis) / MathFunctions::magn(coneAxis) < MathFunctions::magn(coneAxis))
-              returnMap.insert(std::pair<string, double>(it->first, angle));
+
+        double dx = entityPosition[0] - agentHeadPosition[0];
+        double dy = entityPosition[1] - agentHeadPosition[1];
+        double dz = entityPosition[2] - agentHeadPosition[2];
+        double d = dx*dx + dy*dy + dz*dz;
+
+        if(d <= deltaDist*deltaDist)
+        {
+          std::cout << "distance from " << agentMonitored << " head to " << it->first << " = " << d << std::endl;
+
+          float cy = cos(agentHeadOrientation[2]);
+          float sy = sin(agentHeadOrientation[2]);
+          float cp = cos(agentHeadOrientation[1]);
+          float sp = sin(agentHeadOrientation[1]);
+
+          std::vector<float> rot {cp*cy, cp*sy, -sp};
+
+          float X = dx*rot[0] + dy*rot[1] + dz*rot[2];
+
+          double ang = acos(X/sqrt(d));
+          if (ang < halfAperture)
+              returnMap.insert(std::pair<string, double>(it->first, ang));
+        }
       }
     }
     return returnMap;
