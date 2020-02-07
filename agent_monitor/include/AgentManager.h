@@ -22,14 +22,22 @@ public:
 
   void init(ros::NodeHandle* node);
 
-  bool monitorAllHumans() { return monitorAllHumans_; }
-  bool monitorAllRobots() { return monitorAllRobots_; }
+  bool startMonitorAllHumans();
+  bool stopMonitorAllHumans();
+  bool startMonitorAllRobots();
+  bool stopMonitorAllRobots();
+
   vector<string> getMonitoredAgents() { return agentsMonitored_; }
   map<string, vector<string> > getMonitoredJoints() { return mapAgentToJointsMonitored_;}
 
+  bool addMonitoredAgent(string id);
+  bool removeMonitoredAgent(string id);
+
 private:
-  bool monitorAllHumans_;
-  bool monitorAllRobots_;
+  bool startMonitorAllHumans_;
+  bool stopMonitorAllHumans_;
+  bool startMonitorAllRobots_;
+  bool stopMonitorAllRobots_;
 
   vector<string> agentsMonitored_;
   map<string, vector<string> > mapAgentToJointsMonitored_;
@@ -38,7 +46,6 @@ private:
 
   ros::ServiceServer serviceAdd_;
   ros::ServiceServer serviceAddJoint_;
-  bool addMonitoredAgent(string id);
   bool addAgent(toaster_msgs::AddAgent::Request &req,
                 toaster_msgs::AddAgent::Response & res);
   bool addJointToAgent(toaster_msgs::AddJointToAgent::Request &req,
@@ -46,7 +53,6 @@ private:
 
   ros::ServiceServer serviceRemove_;
   ros::ServiceServer serviceRemoves_;
-  bool removeMonitoredAgent(string id);
   bool removeAgent(toaster_msgs::RemoveAgent::Request &req,
                   toaster_msgs::RemoveAgent::Response & res);
   bool removeAllAgents(toaster_msgs::Empty::Request &req,

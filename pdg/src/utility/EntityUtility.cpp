@@ -64,6 +64,7 @@ bool updateToasterSimu(Entity* storedEntity, std::string type) {
     }
 }
 
+// putAtJointPosition for humans
 bool putAtJointPosition(Entity* storedEntity, std::string agentId, std::string joint,
         toaster_msgs::HumanListStamped& humanList_msg, bool toastersimu) {
 
@@ -100,7 +101,7 @@ bool putAtJointPosition(Entity* storedEntity, std::string agentId, std::string j
                 (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
 
                 if (toastersimu)
-                    updateToasterSimu(storedEntity, "object");
+                  updateToasterSimu(storedEntity, "object");
 
                 return true;
             } else
@@ -110,6 +111,7 @@ bool putAtJointPosition(Entity* storedEntity, std::string agentId, std::string j
     return false;
 }
 
+// putAtJointPosition for robots
 bool putAtJointPosition(Entity* storedEntity, std::string agentId, std::string joint,
         toaster_msgs::RobotListStamped robotList_msg, bool toastersimu) {
 
@@ -146,7 +148,7 @@ bool putAtJointPosition(Entity* storedEntity, std::string agentId, std::string j
                 (*itAgent).meAgent.busyHands.push_back(jointEntity.id);
 
                 if (toastersimu)
-                    updateToasterSimu(storedEntity, "object");
+                  updateToasterSimu(storedEntity, "object");
 
                 return true;
             } else

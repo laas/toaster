@@ -39,7 +39,7 @@ public:
    * @param marker	marker to which we want to create a name marker
    * @return marker 	name marker
    */
-  static visualization_msgs::Marker defineName(visualization_msgs::Marker marker);
+  static visualization_msgs::Marker defineName(visualization_msgs::Marker& marker);
 
   /**
    * create an object marker
@@ -50,7 +50,7 @@ public:
    * @param name 		marker's name
    * @return marker 	object marker or mesh marker if the object is in the mesh database
    */
-  static visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, std::string name, bool activated, int id, TiXmlDocument& listObj, double scale = 1);
+  static visualization_msgs::Marker defineObj(geometry_msgs::Pose pose, std::string name, bool activated, int id, std::string str_id, TiXmlDocument& listObj, double scale = 1);
 
   /**
    * create a human marker

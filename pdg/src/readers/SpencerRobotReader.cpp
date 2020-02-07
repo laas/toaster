@@ -30,7 +30,7 @@ void SpencerRobotReader::initJointsName() {
 
 void SpencerRobotReader::updateRobot(tf::TransformListener &listener)
 {
-  if(fullRobot_)
+  if((fullRobot_ == true) && (activated_ == true))
   {
     Robot* curRobot = lastConfig_["spencer"];
     Joint* curJoint = new Joint("spencer_base_link", "spencer");

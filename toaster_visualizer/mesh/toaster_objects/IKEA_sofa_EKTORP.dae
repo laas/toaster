@@ -111,10 +111,10 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <ambient>
-              <color sid="ambient">0.1 0.1 0.1 1</color>
+              <color sid="ambient">0.001 0.001 0.001 1</color>
             </ambient>
             <diffuse>
-              <color sid="diffuse">0.3093228 0.002346007 0.03391431 1</color>
+              <color sid="diffuse">0.3979666 0.02501445 0.02170516 1</color>
             </diffuse>
             <index_of_refraction>
               <float sid="index_of_refraction">1</float>

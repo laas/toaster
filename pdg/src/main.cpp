@@ -30,6 +30,8 @@
 
 #include "pdg/types.h"
 
+#include <queue>
+
 struct fullConfig_t fullConfig;
 
 // Stream to activate
@@ -53,7 +55,7 @@ MocapObjectsReader mocapObjectsRd;
 struct objectIn_t objectIn;
 
 //Used to change position of an entity
-Entity newPoseEnt_("");
+std::queue<Entity> newPoseEnt_;
 
 //////////////
 // Services //
@@ -132,10 +134,11 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
 
     if (req.id != "") {
         double roll, pitch, yaw;
-        newPoseEnt_.setId(req.id);
-        newPoseEnt_.position_.set<0>(req.pose.position.x);
-        newPoseEnt_.position_.set<1>(req.pose.position.y);
-        newPoseEnt_.position_.set<2>(req.pose.position.z);
+        Entity newPoseEnt("");
+        newPoseEnt.setId(req.id);
+        newPoseEnt.position_.set<0>(req.pose.position.x);
+        newPoseEnt.position_.set<1>(req.pose.position.y);
+        newPoseEnt.position_.set<2>(req.pose.position.z);
 
         tf::Quaternion q;
 
@@ -143,11 +146,13 @@ bool setEntityPose(toaster_msgs::SetEntityPose::Request &req,
         tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
 
 	     ros::Time now = ros::Time::now();
-	     newPoseEnt_.setTime(now.toNSec());
+	     newPoseEnt.setTime(now.toNSec());
 
-        newPoseEnt_.orientation_[0] = roll;
-        newPoseEnt_.orientation_[1] = pitch;
-        newPoseEnt_.orientation_[2] = yaw;
+        newPoseEnt.orientation_[0] = roll;
+        newPoseEnt.orientation_[1] = pitch;
+        newPoseEnt.orientation_[2] = yaw;
+
+        newPoseEnt_.push(newPoseEnt);
         ROS_INFO("[toaster_simu][Request][INFO] request to set entity pose with "
                 "id %s successful", req.id.c_str());
         res.answer = true;
@@ -193,23 +198,31 @@ int main(int argc, char** argv) {
     //Data reading
     vector<HumanReader*> humanReaders;
     groupHumanRd.init(&node, "/spencer/perception/tracked_groups", "/pdg/groupHuman");
+    groupHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&groupHumanRd);
     morseHumanRd.init(&node, "/pdg/morseHuman");
+    morseHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&morseHumanRd);
     //niutHumanRd.init(&node, "/niut/Human", "/pdg/niutHuman")
     mocapHumanRd.init(&node, "/optitrack_person/tracked_persons", "/pdg/mocapHuman");
+    mocapHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&mocapHumanRd);
     adreamMocapHumanRd.init(&node, "/optitrack/bodies/Rigid_Body_3", "/optitrack/bodies/Rigid_Body_1", "/optitrack/bodies/Rigid_Body_2", "/pdg/adreamMocapHuman");
+    adreamMocapHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&adreamMocapHumanRd);
     toasterSimuHumanRd.init(&node, "/pdg/toasterSimuHuman");
+    toasterSimuHumanRd.setFullConfig("/pdg/fullHumanConfig");
     humanReaders.push_back(&toasterSimuHumanRd);
 
     vector<RobotReader*> robotReaders;
     pr2RobotRd.init(&node, "/pdg/pr2Robot");
+    pr2RobotRd.setFullConfig("/pdg/fullRobotConfig");
     robotReaders.push_back(&pr2RobotRd);
     spencerRobotRd.init(&node, "/pdg/spencerRobot");
+    spencerRobotRd.setFullConfig("/pdg/fullRobotConfig");
     robotReaders.push_back(&spencerRobotRd);
     toasterSimuRobotRd.init(&node, "/pdg/toasterSimuRobot");
+    toasterSimuRobotRd.setFullConfig("/pdg/fullRobotConfig");
     robotReaders.push_back(&toasterSimuRobotRd);
 
     vector<ObjectReader*> objectReaders;
@@ -243,7 +256,7 @@ int main(int argc, char** argv) {
     ros::Publisher robot_pub = node.advertise<toaster_msgs::RobotListStamped>("pdg/robotList", 1000);
     ros::Publisher fact_pub = node.advertise<toaster_msgs::FactList>("pdg/factList", 1000);
 
-    ros::ServiceClient setPoseClient = node.serviceClient<toaster_msgs::SetEntityPose>("/toaster_simu/set_entity_pose", true);
+    ros::ServiceClient setPoseClient = node.serviceClient<toaster_msgs::SetEntityPose>("/toaster_simu/set_entity_pose"); // , true
     EntityUtility_setClient(&setPoseClient);
 
     ros::Rate loop_rate(30);
@@ -266,21 +279,28 @@ int main(int argc, char** argv) {
         //////////////////
         // publish data //
         //////////////////
-
-        for(vector<HumanReader*>::iterator it = humanReaders.begin(); it != humanReaders.end(); ++it)
+        while(!newPoseEnt_.empty())
         {
-          (*it)->updateEntityPose(newPoseEnt_);
-          (*it)->Publish(list_msg);
+          Entity newPoseEnt = newPoseEnt_.front();
+          newPoseEnt_.pop();
+
+          for(vector<HumanReader*>::iterator it = humanReaders.begin(); it != humanReaders.end(); ++it)
+            (*it)->updateEntityPose(newPoseEnt);
+
+
+          for(vector<RobotReader*>::iterator it = robotReaders.begin(); it != robotReaders.end(); ++it)
+            (*it)->updateEntityPose(newPoseEnt);
+
+          for(vector<ObjectReader*>::iterator it = objectReaders.begin(); it != objectReaders.end(); ++it)
+            (*it)->updateEntityPose(newPoseEnt);
         }
 
-        for(vector<RobotReader*>::iterator it = robotReaders.begin(); it != robotReaders.end(); ++it)
-        {
-          (*it)->updateEntityPose(newPoseEnt_);
-          (*it)->Publish(list_msg);
-        }
+	for(vector<HumanReader*>::iterator it = humanReaders.begin(); it != humanReaders.end(); ++it)
+	    (*it)->Publish(list_msg);
 
-        for(vector<ObjectReader*>::iterator it = objectReaders.begin(); it != objectReaders.end(); ++it)
-          (*it)->updateEntityPose(newPoseEnt_);
+	  for(vector<RobotReader*>::iterator it = robotReaders.begin(); it != robotReaders.end(); ++it)
+	    (*it)->Publish(list_msg);
+
 
         //do publication for all objects
         ObjectReader tmp;

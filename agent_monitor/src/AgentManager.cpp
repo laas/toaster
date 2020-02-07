@@ -2,7 +2,8 @@
 
 using namespace std;
 
-AgentManager::AgentManager() : monitorAllHumans_(false), monitorAllRobots_(false)
+AgentManager::AgentManager() : startMonitorAllHumans_(false), stopMonitorAllHumans_(false),
+                               startMonitorAllRobots_(false), stopMonitorAllRobots_(false)
 {
 
 }
@@ -39,6 +40,50 @@ void AgentManager::init(ros::NodeHandle* node)
 
   serviceMonitorAllRobots_ = node_->advertiseService("agent_monitor/monitor_all_robots", &AgentManager::monitorAllRobots, this);
   ROS_INFO("[Request] Ready to monitor all robots.");
+}
+
+bool AgentManager::startMonitorAllHumans()
+{
+  if(startMonitorAllHumans_)
+  {
+    startMonitorAllHumans_ = false;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool AgentManager::stopMonitorAllHumans()
+{
+  if(stopMonitorAllHumans_)
+  {
+    stopMonitorAllHumans_ = false;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool AgentManager::startMonitorAllRobots()
+{
+  if(startMonitorAllRobots_)
+  {
+    startMonitorAllRobots_ = false;
+    return true;
+  }
+  else
+    return false;
+}
+
+bool AgentManager::stopMonitorAllRobots()
+{
+  if(stopMonitorAllRobots_)
+  {
+    stopMonitorAllRobots_ = false;
+    return true;
+  }
+  else
+    return false;
 }
 
 bool AgentManager::addMonitoredAgent(string id)
@@ -114,10 +159,11 @@ bool AgentManager::addJointToAgent(toaster_msgs::AddJointToAgent::Request &req,
 
 bool AgentManager::removeMonitoredAgent(string id)
 {
-  if (std::find(agentsMonitored_.begin(), agentsMonitored_.end(), id) == agentsMonitored_.end())
+  auto it = std::find(agentsMonitored_.begin(), agentsMonitored_.end(), id);
+  if (it != agentsMonitored_.end())
   {
     ROS_INFO("[agent_monitor][INFO] Agent %s no more monitored", id.c_str());
-    agentsMonitored_.erase(std::remove(agentsMonitored_.begin(), agentsMonitored_.end(), id), agentsMonitored_.end());
+    agentsMonitored_.erase(it);
   }
   else
     ROS_INFO("[agent_monitor][INFO] Agent %s is already not monitored", id.c_str());
@@ -227,33 +273,50 @@ bool AgentManager::printAllMonitoredAgents(toaster_msgs::Empty::Request &req,
 bool AgentManager::monitorAllAgents(toaster_msgs::MonitorAll::Request &req,
                                     toaster_msgs::MonitorAll::Response & res)
 {
-    monitorAllHumans_ = req.monitorAll;
-    monitorAllRobots_ = req.monitorAll;
-    if (req.monitorAll)
-        ROS_INFO("[agent_monitor][REQUEST] Start monitoring all agents");
+    if(req.monitorAll)
+    {
+      startMonitorAllHumans_ = true;
+      startMonitorAllRobots_ = true;
+      ROS_INFO("[agent_monitor][REQUEST] Start monitoring all agents");
+    }
     else
-        ROS_INFO("[agent_monitor][REQUEST] Stop monitoring all agents");
+    {
+      stopMonitorAllHumans_ = true;
+      stopMonitorAllRobots_ = true;
+      ROS_INFO("[agent_monitor][REQUEST] Stop monitoring all agents");
+    }
+
     return true;
 }
 
 bool AgentManager::monitorAllHumans(toaster_msgs::MonitorAll::Request &req,
                                     toaster_msgs::MonitorAll::Response & res)
 {
-    monitorAllHumans_ = req.monitorAll;
     if (req.monitorAll)
-        ROS_INFO("[agent_monitor][REQUEST] Start monitoring all humans");
+    {
+      startMonitorAllHumans_ = true;
+      ROS_INFO("[agent_monitor][REQUEST] Start monitoring all humans");
+    }
     else
-        ROS_INFO("[agent_monitor][REQUEST] Stop monitoring all humans");
+    {
+      stopMonitorAllHumans_ = true;
+      ROS_INFO("[agent_monitor][REQUEST] Stop monitoring all humans");
+    }
     return true;
 }
 
 bool AgentManager::monitorAllRobots(toaster_msgs::MonitorAll::Request &req,
                                     toaster_msgs::MonitorAll::Response & res)
 {
-    monitorAllRobots_ = req.monitorAll;
     if (req.monitorAll)
-        ROS_INFO("[agent_monitor][REQUEST] Start monitoring all robots");
+    {
+      startMonitorAllRobots_ = true;
+      ROS_INFO("[agent_monitor][REQUEST] Start monitoring all robots");
+    }
     else
-        ROS_INFO("[agent_monitor][REQUEST] Stop monitoring all robots");
+    {
+      stopMonitorAllRobots_ = true;
+      ROS_INFO("[agent_monitor][REQUEST] Stop monitoring all robots");
+    }
     return true;
 }

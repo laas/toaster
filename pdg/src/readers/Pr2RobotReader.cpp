@@ -48,7 +48,7 @@ void Pr2RobotReader::init(ros::NodeHandle* node, std::string param) {
 
 void Pr2RobotReader::updateRobot(tf::TransformListener &listener)
 {
-  if(fullRobot_)
+  if((fullRobot_ == true) && (activated_ == true))
   {
     Robot* curRobot = lastConfig_["pr2"];
     Joint* curJoint = new Joint("pr2_base_link", "pr2");
@@ -112,9 +112,14 @@ void Pr2RobotReader::setRobotJointLocation(tf::TransformListener &listener, Join
     }
 }
 
-void Pr2RobotReader::pr2JointStateCallBack(const sensor_msgs::JointState::ConstPtr & msg) {
-    if (!initJointsName_) {
-        for (unsigned int i = 0; i < msg->name.size(); i++) {
+void Pr2RobotReader::pr2JointStateCallBack(const sensor_msgs::JointState::ConstPtr & msg) 
+{
+	if((fullRobot_ == true) && (activated_ == true))
+	{
+		if (!initJointsName_) 
+		{
+        for (unsigned int i = 0; i < msg->name.size(); i++) 
+				{
             std::string jointName = msg->name[i];
             jointName = jointName.substr(0, msg->name[i].size() - 5);
             if (jointName.compare("r_gripper_") == 0 || jointName.compare("l_gripper_") == 0)
@@ -130,11 +135,13 @@ void Pr2RobotReader::pr2JointStateCallBack(const sensor_msgs::JointState::ConstP
         initJointsName_ = true;
     }
 
-    if (pr2JointsName_.size() == msg->position.size()) {
-        for (unsigned int i = 0; i < pr2JointsName_.size(); i++) {
+    if (pr2JointsName_.size() == msg->position.size()) 
+		{
+        for (unsigned int i = 0; i < pr2JointsName_.size(); i++)
             lastConfig_["pr2"]->skeleton_[pr2JointsName_[i]]->position = msg->position[i];
-        }
+   
     }
+	}
 }
 
 

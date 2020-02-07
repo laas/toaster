@@ -6,3 +6,4 @@ pdg:
     mocapHuman : false
     adreamMocapHuman : true
     adaptationHuman : false
+    fullHumanConfig : true

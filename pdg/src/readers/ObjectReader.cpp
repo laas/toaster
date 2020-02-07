@@ -95,9 +95,9 @@ void ObjectReader::putInHand(struct objectIn_t& objectIn, string id, MovableObje
   {
     bool addFactHand = true;
     if (!putAtJointPosition(object, objectIn.Agent_[id], objectIn.Hand_[id],
-                            list_msg.human_msg, true)) // try to put in human
+                            list_msg.human_msg, false)) // try to put in human, why should we set it as simu ?
       if (!putAtJointPosition(object, objectIn.Agent_[id], objectIn.Hand_[id],
-                              list_msg.robot_msg, true)) // try to put in robot
+                              list_msg.robot_msg, false)) // try to put in robot, why should we set it as simu ?
       {
         ROS_INFO("[pdg][put_in_hand] couldn't find joint %s for agent %s \n",
                  objectIn.Hand_[id].c_str(), objectIn.Agent_[id].c_str());

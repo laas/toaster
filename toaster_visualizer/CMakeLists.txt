@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(toaster_visualizer)
 
+set (CMAKE_CXX_STANDARD 11)
+
 find_package(catkin REQUIRED COMPONENTS roscpp rospy genmsg toaster_msgs cmake_modules roslib)
 find_package(cmake_modules REQUIRED)
 find_package(TinyXML REQUIRED)
