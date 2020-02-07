@@ -84,8 +84,6 @@ map<string, double> LookingFact::compute(map<string, TRBuffer < Entity* > > mapE
 
         if(d <= deltaDist*deltaDist)
         {
-          std::cout << "distance from " << agentMonitored << " head to " << it->first << " = " << d << std::endl;
-
           float cy = cos(agentHeadOrientation[2]);
           float sy = sin(agentHeadOrientation[2]);
           float cp = cos(agentHeadOrientation[1]);
